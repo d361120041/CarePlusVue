@@ -1,47 +1,38 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
+    <!-- 頁首 開始 -->
+    <header>
+        <h1>頁首</h1>
+    </header>
+    <!-- 頁尾 結束-->
 
-  <main>
-    <TheWelcome />
-  </main>
+    <!-- 導覽列 開始-->
+    <nav>
+        <Navigationbar></Navigationbar>
+    </nav>
+    <!-- 導覽列 結束-->
+
+    <!-- 輪播圖 開始-->
+    <!-- 輪播圖 結束-->
+
+    <main>
+        <RouterView></RouterView>
+    </main>
+
+    <!-- 頁尾 -->
+    <footer>
+        <h1>頁尾</h1>
+    </footer>
+    <!-- 頁尾 -->
 </template>
 
+<script setup>
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import { RouterView, RouterLink } from 'vue-router'
+import Navigationbar from '@/views/Navigationbar.vue';
+</script>
+
 <style scoped>
-header {
-  line-height: 1.5;
-}
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
 </style>
