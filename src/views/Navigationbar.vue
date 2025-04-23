@@ -23,10 +23,20 @@
         <router-link to="/social">交流平台</router-link>
       </li>
     </ul>
+    <div class="login-button">
+  <button @click="goLogin" >登入</button>
+</div>
   </div>
 </template>
 
 <script setup>
+
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+const goLogin = () => {
+  router.push('/caregiverLogin')
+}
 
 </script>
 
