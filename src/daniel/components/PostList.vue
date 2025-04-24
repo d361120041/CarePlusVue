@@ -5,11 +5,12 @@
         </div>
     </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue';
 import myAxios from '@/plugins/axios.js'
-
 import PostItem from '@/daniel/components/PostItem.vue';
+
 const posts = ref([]);
 
 const reloadPosts = async () => {
@@ -18,5 +19,6 @@ const reloadPosts = async () => {
 }
 onMounted(reloadPosts)
 
+defineExpose({ reloadPosts })
 
 </script>

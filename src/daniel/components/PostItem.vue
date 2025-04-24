@@ -1,19 +1,20 @@
 <template>
     <article>
         <h2>{{ post.title }}</h2>
-        
-        <!-- 圖片列表 -->
-        <div class="post-images" v-if="post.images && post.images.length">
-            <img v-for="img in post.images" :key="img.imageId" :src="`data:image/jpeg;base64,${img.imageData}`"
-                alt="Post Image" />
-        </div>
         <p>{{ post.content }}</p>
 
         <!-- 圖片上傳元件 -->
         <PostImageUpload :postId="post.postId" @uploaded="reloadImages" />
-
+        
+        <!-- 圖片列表 -->
+        <div class="post-images" v-if="post.images && post.images.length">
+            <img v-for="img in post.images" :key="img.imageId" :src="`data:image/jpeg;base64,${img.imageData}`"
+            alt="Post Image" />
+        </div>
+        
         <!-- 留言列表 -->
         <CommentList :postId="post.postId" />
+        
     </article>
 </template>
 
