@@ -15,7 +15,6 @@
 <script setup>
 import { ref } from 'vue';
 import myAxios from '@/plugins/axios.js';
-import { defineEmits } from 'vue';
 
 const emit = defineEmits(['created']);
 

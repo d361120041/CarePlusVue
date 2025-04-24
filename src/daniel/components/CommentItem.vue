@@ -8,7 +8,6 @@
 
 <script setup>
 import ReplyList from '@/daniel/components/ReplyList.vue'
-import { defineEmits } from 'vue'
 const props = defineProps({ comment: Object })
 const emit = defineEmits(['replied'])
 const emitReload = () => emit('replied')
