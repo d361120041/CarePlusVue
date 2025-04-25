@@ -23,8 +23,6 @@ const content = ref('');
 
 async function submitPost() {
 
-    title.value = '新增貼文標題Vue'
-    content.value = '新增貼文內容Vue'
     const payload = {
         title: title.value,
         content: content.value,
