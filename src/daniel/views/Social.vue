@@ -1,12 +1,17 @@
 <template>
-    <h1>Social</h1>
+    <div class="social-layout">
+        <div class="social-container">
+            <h1>Social</h1>
 
-    <!-- 新增貼文按鈕 -->
-    <button @click="isModalOpen = true">新增貼文</button>
-    <PostList ref="postListRef" />
+            <!-- 新增貼文按鈕 -->
+            <button @click="isModalOpen = true">新增貼文</button>
+            <PostList ref="postListRef" />
 
-    <!-- 統一的 Modal -->
-    <PostFormModal :visible="isModalOpen" :post="currentPost" @close="isModalOpen = false" @saved="handleSaved" />
+            <!-- 統一的 Modal -->
+            <PostFormModal :visible="isModalOpen" :post="currentPost" @close="isModalOpen = false"
+                @saved="handleSaved" />
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -36,4 +41,25 @@ function handleSaved(post) {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+social-layout {
+    .layout {
+        display: grid;
+        grid-template-columns: 1fr min(80ch, 100%) 1fr;
+    }
+
+    .main {
+        grid-column: 2;
+        /* 內容都放第二欄 */
+    }
+}
+
+.social-container {
+    max-width: 500px;
+    /* 或 90ch，視內容量調整 */
+    margin: 0 auto;
+    /* 左右置中 */
+    padding: 1rem;
+    /* 內側留白 */
+}
+</style>

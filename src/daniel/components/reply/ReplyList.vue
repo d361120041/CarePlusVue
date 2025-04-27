@@ -1,11 +1,11 @@
 // src/components/ReplyList.vue
 <template>
-    <div style="padding-left: 20px;">
+    <section class="reply-section">
         <div v-for="reply in replies" :key="reply.replyId">
             <ReplyItem :reply="reply" @updated="reloadReplies" @deleted="onDeleted" />
         </div>
         <ReplyForm :commentId="props.commentId" @added="reloadReplies" />
-    </div>
+    </section>
 </template>
 
 <script setup>
@@ -28,3 +28,19 @@ function onDeleted(id) {
     replies.value = replies.value.filter(r => r.replyId !== id)
 }
 </script>
+
+<style scoped>
+.reply-section {
+    margin-top: 0.5rem;
+    padding-left: 1.5rem;
+    border-left: 2px dashed #ddd;
+}
+
+.reply-item {
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+</style>

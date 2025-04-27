@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <section class="comment-section">
         <div v-for="c in comments" :key="c.commentId">
             <CommentItem :comment="c" @replied="reloadComments" @updated="reloadComments" @deleted="onDeleted" />
         </div>
         <CommentForm :postId="props.postId" @added="reloadComments" />
-    </div>
+    </section>
 </template>
 
 <script setup>
@@ -28,3 +28,14 @@ function onDeleted(deletedId) {
 
 onMounted(reloadComments)
 </script>
+
+<style scoped>
+.comment-section {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #fafafa;
+    border-left: 4px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+</style>

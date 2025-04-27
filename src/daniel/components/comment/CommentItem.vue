@@ -73,11 +73,12 @@ const emitReload = () => emit('replied')
 
 <style scoped>
 .comment-item {
-    position: relative;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
+    background: #fff;
     border: 1px solid #eee;
     border-radius: 4px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    position: relative;
 }
 
 .comment-menu-wrapper {

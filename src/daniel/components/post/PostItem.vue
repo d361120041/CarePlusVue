@@ -127,21 +127,27 @@ async function sharePost() {
 
 <style scoped>
 .post-item {
-    position: relative;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1rem;
-    border-bottom: 1px solid #eee;
+    margin-bottom: 2rem;
+    position: relative;
 }
+
 .menu-wrapper {
     position: absolute;
     top: 1rem;
     right: 1rem;
 }
+
 .hamburger-btn {
     background: none;
     border: none;
     font-size: 1.4rem;
     cursor: pointer;
 }
+
 .post-dropdown {
     position: absolute;
     right: 0;
@@ -154,16 +160,20 @@ async function sharePost() {
     margin: 0;
     z-index: 10;
 }
+
 .post-dropdown li {
     padding: 0.5rem 1rem;
     cursor: pointer;
 }
+
 .post-dropdown li:hover {
     background: #f0f0f0;
 }
+
 .post-images {
     margin-bottom: 1em;
 }
+
 .post-images img {
     max-width: 100px;
     margin-right: 10px;

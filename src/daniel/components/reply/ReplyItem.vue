@@ -70,9 +70,12 @@ async function confirmDelete() {
 
 <style scoped>
 .reply-item {
-    position: relative;
-    padding-left: 20px;
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+    padding: 0.5rem;
     margin-bottom: 0.5rem;
+    position: relative;
 }
 
 .reply-menu-wrapper {
