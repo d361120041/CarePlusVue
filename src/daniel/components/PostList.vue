@@ -1,8 +1,6 @@
 <template>
     <div>
-        <div v-for="post in posts" :key="post.postId">
-            <PostItem :post="post" />
-        </div>
+        <PostItem v-for="post in posts" :key="post.postId" :post="post" @refresh="reloadPosts" />
     </div>
 </template>
 

@@ -1,10 +1,10 @@
 // src/components/ReplyList.vue
 <template>
     <div style="padding-left: 20px;">
-        <ReplyForm :commentId="props.commentId" @added="reloadReplies" />
         <div v-for="reply in replies" :key="reply.replyId">
             <ReplyItem :reply="reply" />
         </div>
+        <ReplyForm :commentId="props.commentId" @added="reloadReplies" />
     </div>
 </template>
 

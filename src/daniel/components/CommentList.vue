@@ -1,9 +1,9 @@
 <template>
     <div>
-        <CommentForm :postId="props.postId" @added="reloadComments" />
         <div v-for="c in comments" :key="c.commentId">
             <CommentItem :comment="c" @replied="reloadComments" />
         </div>
+        <CommentForm :postId="props.postId" @added="reloadComments" />
     </div>
 </template>
 
