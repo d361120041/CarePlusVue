@@ -2,7 +2,7 @@
 <template>
     <div style="padding-left: 20px;">
         <div v-for="reply in replies" :key="reply.replyId">
-            <ReplyItem :reply="reply" />
+            <ReplyItem :reply="reply" @updated="reloadReplies" @deleted="onDeleted" />
         </div>
         <ReplyForm :commentId="props.commentId" @added="reloadReplies" />
     </div>
@@ -11,8 +11,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import myAxios from '@/plugins/axios.js'
-import ReplyForm from '@/daniel/components/ReplyForm.vue'
-import ReplyItem from '@/daniel/components/ReplyItem.vue'
+import ReplyForm from '@/daniel/components/reply/ReplyForm.vue'
+import ReplyItem from '@/daniel/components/reply/ReplyItem.vue'
 
 const props = defineProps({ commentId: Number })
 const replies = ref([])
@@ -23,4 +23,8 @@ const reloadReplies = async () => {
 }
 
 onMounted(reloadReplies)
+
+function onDeleted(id) {
+    replies.value = replies.value.filter(r => r.replyId !== id)
+}
 </script>

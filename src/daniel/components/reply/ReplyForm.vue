@@ -13,7 +13,15 @@ const emit = defineEmits(['added'])
 const content = ref('')
 
 const submit = async () => {
-    await myAxios.post('/api/replies', { content: content.value, comment: { commentId: props.commentId }, userId: 1 })
+    await myAxios.post('/api/replies', {
+        content: content.value,
+        user: {
+            userId: 1
+        },
+        comment: {
+            commentId: props.commentId
+        },
+    })
     content.value = ''
     emit('added')
 }

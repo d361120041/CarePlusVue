@@ -1,5 +1,6 @@
 <template>
     <h1>Social</h1>
+
     <!-- 新增貼文按鈕 -->
     <button @click="isModalOpen = true">新增貼文</button>
     <PostList ref="postListRef" />
@@ -12,8 +13,8 @@
 import { ref } from 'vue'
 import myAxios from '@/plugins/axios.js'
 
-import PostList from '@/daniel/components/PostList.vue'
-import PostFormModal from '@/daniel/components/PostFormModal.vue'
+import PostList from '@/daniel/components/post/PostList.vue'
+import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
 
 const isModalOpen = ref(false)
 const postListRef = ref(null)

@@ -41,8 +41,8 @@
 import { ref, onMounted } from 'vue'
 import myAxios from '@/plugins/axios.js'
 
-import CommentList from '@/daniel/components/CommentList.vue'
-import PostFormModal from '@/daniel/components/PostFormModal.vue'
+import CommentList from '@/daniel/components/comment/CommentList.vue'
+import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
 
 const props = defineProps({ post: Object })
 const emit = defineEmits(['refresh']) // 父層 PostList.vue 會用到

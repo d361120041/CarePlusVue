@@ -7,7 +7,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import myAxios from '@/plugins/axios.js'
-import PostItem from '@/daniel/components/PostItem.vue';
+import PostItem from '@/daniel/components/post/PostItem.vue';
 
 const posts = ref([]);
 
