@@ -1,16 +1,22 @@
 <template>
+
     <!-- 利用 Teleport 將 Modal 結構渲染到 body 下 -->
     <Teleport to="body">
         <div v-if="visible" class="modal-backdrop" @click.self="$emit('close')">
-            <div class="modal-content">
+
+            <!-- 在這一層攔截掉所有內部點擊，避免冒泡到 backdrop -->
+            <div class="modal-content" @click.stop>
+
                 <header class="modal-header">
                     <h3>{{ title }}</h3>
                     <button class="close-btn" @click="$emit('close')">✕</button>
                 </header>
+
                 <!-- 主內容由 slot 提供 -->
                 <section class="modal-body">
                     <slot />
                 </section>
+
             </div>
         </div>
     </Teleport>
@@ -20,17 +26,18 @@
 const props = defineProps({
     visible: Boolean,
     title: { type: String, default: 'Modal' }
-});
-const emit = defineEmits(['close']);
+})
+const emit = defineEmits(['close'])
 </script>
 
 <style scoped>
 .modal-backdrop {
     position: fixed;
-    top: 0;
+    /* top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: 0; */
+    inset: 0; /* top/right/bottom/left 全部 0 */
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
