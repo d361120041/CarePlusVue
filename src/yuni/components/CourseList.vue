@@ -17,7 +17,7 @@
           <li v-for="course in courses" :key="course.courseId" class="border-b p-4 flex gap-4 items-center">
             <!-- 封面圖片 -->
             <img
-              :src="`/api/courses/${course.courseId}/image`"
+              :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`"
               alt="封面圖"
               class="w-8 h-8 object-cover rounded shadow"
             />
@@ -37,10 +37,11 @@
   </template>
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios.js'
 
 const courses = ref([])
 const searchKeyword = ref('')
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
 const fetchCourses = async () => {
   try {
@@ -50,6 +51,8 @@ const fetchCourses = async () => {
     console.error(err)
   }
 }
+
+
 
 const searchCourses = async () => {
   try {
@@ -65,6 +68,9 @@ const searchCourses = async () => {
     console.error(err)
   }
 }
+
+
+
 
 onMounted(fetchCourses)
 </script>
