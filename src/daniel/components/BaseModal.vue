@@ -2,7 +2,7 @@
 
     <!-- 利用 Teleport 將 Modal 結構渲染到 body 下 -->
     <Teleport to="body">
-        <div v-if="visible" class="modal-backdrop" @click.self="$emit('close')">
+        <div v-if="visible" class="modal-backdrop">
 
             <!-- 在這一層攔截掉所有內部點擊，避免冒泡到 backdrop -->
             <div class="modal-content" @click.stop>
