@@ -24,7 +24,7 @@
       </li>
     </ul>
     <div class="login-button">
-  <button @click="goLogin" >登入</button>
+  <button @click="goLogin" >照顧者登入</button>
 </div>
   </div>
 </template>
