@@ -1,6 +1,6 @@
 <template>
     <div style="margin-bottom: 10px;">
-        <input v-model="content" placeholder="輸入回覆..." />
+        <textarea v-model="content" placeholder="輸入回覆..." rows="1"></textarea>
         <button @click="submit">送出回覆</button>
     </div>
 </template>
@@ -13,7 +13,15 @@ const emit = defineEmits(['added'])
 const content = ref('')
 
 const submit = async () => {
-    await myAxios.post('/api/replies', { content: content.value, comment: { commentId: props.commentId }, userId: 1 })
+    await myAxios.post('/api/replies', {
+        content: content.value,
+        user: {
+            userId: 1
+        },
+        comment: {
+            commentId: props.commentId
+        },
+    })
     content.value = ''
     emit('added')
 }

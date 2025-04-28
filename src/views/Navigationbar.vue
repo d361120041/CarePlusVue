@@ -20,7 +20,7 @@
         <router-link to="/course">線上課程</router-link>
       </li>
       <li>
-        <router-link to="/social">交流平台</router-link>
+        <router-link to="/social">討論區</router-link>
       </li>
     </ul>
     <div class="login-button">
