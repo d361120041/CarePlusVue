@@ -22,14 +22,11 @@
                 alt="Post Image" />
         </div>
 
-        <!-- 留言列表 -->
-        <CommentList :postId="post.postId" />
-
         <!-- 觀看次數 -->
         <div style="text-align: right;">
             <small>觀看次數{{ post.views }}次</small>
         </div>
-
+        
         <!-- 貼文動作列 -->
         <div class="post-actions">
             <button class="action-btn"> <!-- @click="likePost" -->
@@ -42,6 +39,9 @@
                 🔗 分享 ({{ shareCount }})
             </button>
         </div>
+        
+        <!-- 留言列表 -->
+        <CommentList :postId="post.postId" />
 
     </article>
 </template>

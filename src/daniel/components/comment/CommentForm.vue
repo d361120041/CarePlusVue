@@ -1,7 +1,7 @@
 <template>
     <div style="margin-bottom: 10px;">
         <textarea v-model="content" placeholder="輸入留言..." rows="1"></textarea>
-        <button @click="submit">送出留言</button>
+        <button @click="submit">送出評論</button>
     </div>
 </template>
 

@@ -19,6 +19,7 @@
         </div>
 
         <small>由 User {{ comment.userId }} 發佈於 {{ comment.createdAt }}</small>
+        
         <ReplyList :commentId="comment.commentId" @reloaded="emitReload" />
     </div>
 </template>
