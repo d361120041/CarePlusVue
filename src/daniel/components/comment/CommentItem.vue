@@ -3,7 +3,7 @@
 
         <!-- 漢堡選單 -->
         <div class="comment-menu-wrapper">
-            <button class="hamburger-btn" @click.stop="toggleMenu">☰</button>
+            <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
             <ul v-if="menuOpen" class="comment-dropdown">
                 <li @click="startEdit">編輯評論</li>
                 <li @click="confirmDelete">刪除評論</li>

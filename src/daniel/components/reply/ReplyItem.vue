@@ -3,7 +3,7 @@
 
         <!-- 漢堡選單 -->
         <div class="reply-menu-wrapper">
-            <button class="hamburger-btn" @click.stop="toggleMenu">☰</button>
+            <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
             <ul v-if="menuOpen" class="reply-dropdown">
                 <li @click="startEdit">編輯回覆</li>
                 <li @click="confirmDelete">刪除回覆</li>

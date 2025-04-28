@@ -3,11 +3,10 @@
 
         <!-- 漢堡選單 -->
         <div class="menu-wrapper">
-            <button class="hamburger-btn" @click.stop="toggleMenu">☰</button>
+            <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
             <ul v-if="menuOpen" class="post-dropdown">
                 <li @click="openEdit">編輯貼文</li>
                 <li @click="confirmDelete">刪除貼文</li>
-                <!-- 可以擴充更多選項 -->
             </ul>
         </div>
 
@@ -27,12 +26,22 @@
         <CommentList :postId="post.postId" />
 
         <!-- 觀看次數 -->
-        <small>{{ post.title }} (已觀看：{{ post.views }} 次)</small>
+        <div style="text-align: right;">
+            <small>觀看次數{{ post.views }}次</small>
+        </div>
 
-        <!-- 分享貼文 -->
-        <button @click="sharePost">
-            <small>分享 (已分享：{{ shareCount }} 次)</small>
-        </button>
+        <!-- 貼文動作列 -->
+        <div class="post-actions">
+            <button class="action-btn"> <!-- @click="likePost" -->
+                👍 按讚 <!-- ({{ likeCount }}) -->
+            </button>
+            <button class="action-btn"> <!-- @click="scrollToComments" -->
+                💬 留言 <!-- ({{ comments.length }}) -->
+            </button>
+            <button class="action-btn" @click="sharePost">
+                🔗 分享 ({{ shareCount }})
+            </button>
+        </div>
 
     </article>
 </template>
@@ -177,5 +186,38 @@ async function sharePost() {
 .post-images img {
     max-width: 100px;
     margin-right: 10px;
+}
+
+.post-actions {
+    display: flex;
+    border-top: 1px solid #eee;
+    margin-top: 1rem;
+}
+
+.action-btn {
+    flex: 1;
+    /* 三等分 */
+    padding: 0.75rem 0;
+    /* 上下留白 */
+    text-align: center;
+    /* 文字置中 */
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.action-btn:not(:last-child) {
+    border-right: 1px solid #eee;
+    /* 區塊間隔線 */
+}
+
+/* Hover / Active 樣式 */
+.action-btn:hover {
+    background: #f5f5f5;
+}
+
+.action-btn:active {
+    background: #e0e0e0;
 }
 </style>
