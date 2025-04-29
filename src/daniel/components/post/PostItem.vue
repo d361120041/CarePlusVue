@@ -26,22 +26,20 @@
         <div style="text-align: right;">
             <small>觀看次數{{ post.views }}次</small>
         </div>
-        
+
         <!-- 貼文動作列 -->
         <div class="post-actions">
             <button class="action-btn"> <!-- @click="likePost" -->
                 👍 按讚 <!-- ({{ likeCount }}) -->
             </button>
-            <button class="action-btn"> <!-- @click="scrollToComments" -->
-                💬 留言 <!-- ({{ comments.length }}) -->
-            </button>
+            <button class="action-btn" @click="isDetailOpen = true"> 💬 留言 </button>
             <button class="action-btn" @click="sharePost">
                 🔗 分享 ({{ shareCount }})
             </button>
         </div>
-        
-        <!-- 留言列表 -->
-        <CommentList :postId="post.postId" />
+
+        <!-- 詳細 Modal -->
+        <PostDetailModal :visible="isDetailOpen" :post="post" @close="isDetailOpen = false" />
 
     </article>
 </template>
@@ -52,10 +50,13 @@ import myAxios from '@/plugins/axios.js'
 
 import CommentList from '@/daniel/components/comment/CommentList.vue'
 import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
+import PostDetailModal from '@/daniel/components/post/PostDetailModal.vue'
 
 const props = defineProps({ post: Object })
 const emit = defineEmits(['refresh']) // 父層 PostList.vue 會用到
 const shareCount = ref(props.post.share || 0)
+// 控制詳細 Modal 顯示
+const isDetailOpen = ref(false)
 
 //================= 漢堡選單 開始 =================
 // 下拉選單狀態
