@@ -1,23 +1,26 @@
-import { createRouter, createWebHistory } from 'vue-router'
-
+import { createRouter, createWebHistory } from "vue-router";
 
 // ================== 匯入套件 開始==================
-//  基礎頁面 
-import Home from '@/views/Home.vue'
-import NotFound from '@/views/NotFound.vue'
-import Forbidden from '@/views/Forbidden.vue'
+//  基礎頁面
+import Home from "@/views/Home.vue";
+import NotFound from "@/views/NotFound.vue";
+import Forbidden from "@/views/Forbidden.vue";
 
 // Course
-import CourseHome from '@/yuni/views/CourseHome.vue'
-import CourseAdmin from '@/yuni/views/admin/CourseAdmin.vue'
+import CourseHome from "@/yuni/views/CourseHome.vue";
+import CourseAdmin from "@/yuni/views/admin/CourseAdmin.vue";
 
 // Caregiver
-import CaregiverLogin from '@/yuuhou/CaregiverLogin.vue'
+import CaregiverLogin from "@/yuuhou/CaregiverLogin.vue";
 
 // Social
-import Social from '@/daniel/views/Social.vue'
-// ================== 匯入套件 結束==================
+import Social from "@/daniel/views/Social.vue";
+import UserLogin from "@/steve/views/UserLogin.vue";
 
+//UserInterface
+// import Login from "@/steve/views/UserLogin.vue";
+// import UserCenter from "@/steve/views/UserCenter.vue";
+// ================== 匯入套件 結束==================
 
 // ================== 路由設定 開始 ==================
 const routes = [
@@ -31,32 +34,42 @@ const routes = [
   { path: "/course/admin", component: CourseAdmin, name: "courseAdmin" },
 
   // Caregiver
-  { path: "/caregiverLogin", component: CaregiverLogin, name: "caregiverLogin" },
-  
+  {
+    path: "/caregiverLogin",
+    component: CaregiverLogin,
+    name: "caregiverLogin",
+  },
+
   // Social
   { path: "/social", component: Social, name: "social" },
+
+  //User
+  {
+    path: "/userlogin",
+    component: UserLogin,
+    name: "userLogin",
+  },
+  // { path: "/user-center", component: UserCenter, name: "userCenter" },
 ];
 // ================== 路由設定 結束 ==================
-
 
 // ================== 其他設定 開始 ==================
 const router = createRouter({
   routes: routes,
-    history: createWebHistory(),
-    linkActiveClass: 'active',
-    linkExactActiveClass: 'active--exact'
-  })
+  history: createWebHistory(),
+  linkActiveClass: "active",
+  linkExactActiveClass: "active--exact",
+});
 
-  router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
-  if (to.path === '/caregiver' && !isAuthenticated) {
-    alert('請先登入')
-    next('/caregiverLogin')
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+  if (to.path === "/caregiver" && !isAuthenticated) {
+    alert("請先登入");
+    next("/caregiverLogin");
   } else {
-    next()
+    next();
   }
-})
+});
 // ================== 其他設定 結束 ==================
 
-export default router
-
+export default router;

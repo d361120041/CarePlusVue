@@ -24,20 +24,23 @@
       </li>
     </ul>
     <div class="login-button">
-  <button @click="goLogin" >照顧者登入</button>
-</div>
+      <button @click="goLogin">照顧者登入</button>
+      <button @click="userLogin">使用者登入</button>
+    </div>
   </div>
 </template>
 
 <script setup>
-
-import { useRouter } from 'vue-router'
-const router = useRouter()
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 const goLogin = () => {
-  router.push('/caregiverLogin')
-}
+  router.push("/caregiverLogin");
+};
 
+const userLogin = () => {
+  router.push("/userLogin");
+};
 </script>
 
 <style scoped>
@@ -66,15 +69,15 @@ const goLogin = () => {
 
 /* 當前路由（包含子路由）被點擊時套用 */
 .active {
-  background-color: rgba(255, 255, 255, 0.2);  /* 半透明底色 */
-  font-weight: bold;                            /* 加粗文字 */
-  border-bottom: 2px solid #fff;                /* 底線強調 */
+  background-color: rgba(255, 255, 255, 0.2); /* 半透明底色 */
+  font-weight: bold; /* 加粗文字 */
+  border-bottom: 2px solid #fff; /* 底線強調 */
 }
 
 /* 精確對應當前路由才套用 */
 .active--exact {
-  background-color: #ffffff33;                  /* 較淡半透明底色 */
-  color: #000 !important;                       /* 強制文字變黑，與底色對比 */
+  background-color: #ffffff33; /* 較淡半透明底色 */
+  color: #000 !important; /* 強制文字變黑，與底色對比 */
 }
 
 /* 手機垂直版保留前述設定 */
