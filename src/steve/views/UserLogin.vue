@@ -17,7 +17,7 @@
   </div>
 </template>
 
-<script setup>
+<!-- <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -43,6 +43,35 @@ const goRegister = () => {
 // ✅ 導向忘記密碼頁
 const goForgot = () => {
   router.push("/forgotPassword");
+};
+</script> -->
+
+<script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import axios from "@/plugins/axios"; // ✅ 引用你自訂的 axios
+
+const email = ref("");
+const password = ref("");
+const router = useRouter();
+
+const login = async () => {
+  try {
+    const response = await axios.post("/user/login", {
+      userAccount: email.value,
+      userPassword: password.value,
+    });
+
+    alert("登入成功");
+    localStorage.setItem("isAuthenticated", "true");
+    router.push("/user-center"); // 這裡你要跳去登入後的頁面
+  } catch (error) {
+    if (error.response && error.response.data) {
+      alert("登入失敗：" + error.response.data);
+    } else {
+      alert("登入失敗（無法連線後端）");
+    }
+  }
 };
 </script>
 
