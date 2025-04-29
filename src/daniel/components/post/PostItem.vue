@@ -1,18 +1,30 @@
 <template>
     <article class="post-item">
 
-        <!-- 漢堡選單 -->
-        <div class="menu-wrapper">
-            <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
-            <ul v-if="menuOpen" class="post-dropdown">
-                <li @click="openEdit">編輯貼文</li>
-                <li @click="confirmDelete">刪除貼文</li>
-            </ul>
+        <div class="post-header">
+
+            <!-- 使用者資訊區塊 -->
+            <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
+            <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
+            <div class="user-info">
+                <div class="user-name">{{ post.user.userName }}</div>
+                <div class="post-time">{{ formattedTime }}</div>
+            </div>
+
+            <!-- 漢堡選單 -->
+            <div class="menu-wrapper">
+                <button class="hamburger-btn" @click.stop="toggleMenu">⋯</button>
+                <ul v-if="menuOpen" class="post-dropdown">
+                    <li @click="openEdit">編輯貼文</li>
+                    <li @click="confirmDelete">刪除貼文</li>
+                </ul>
+            </div>
         </div>
 
-        <!-- 統一 PostFormModal 編輯／檢視模式 -->
+        <!-- PostFormModal 編輯/檢視模式 -->
         <PostFormModal :visible="isFormModalOpen" :post="post" @close="closeEdit" @saved="handleSaved" />
 
+        <!-- 貼文內容 -->
         <h2>{{ post.title }}</h2>
         <p>{{ post.content }}</p>
 
@@ -45,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import myAxios from '@/plugins/axios.js'
 
 import CommentList from '@/daniel/components/comment/CommentList.vue'
@@ -57,10 +69,49 @@ const emit = defineEmits(['refresh']) // 父層 PostList.vue 會用到
 const shareCount = ref(props.post.share || 0)
 // 控制詳細 Modal 顯示
 const isDetailOpen = ref(false)
+const menuOpen = ref(false)
+const isFormModalOpen = ref(false)
+const currentUser = ref({
+    // avatarUrl: '/circle-user-regular.svg'
+    avatarUrl: '/circle-user-solid.svg'
+    // avatarUrl: '/user-regular.svg'
+    // avatarUrl: '/user-solid.svg'
+})
+
+// 格式化貼文時間（相對/絕對顯示）
+const formattedTime = computed(() => {
+    const now = Date.now()
+    const created = new Date(props.post.createdAt).getTime()
+    const diff = now - created
+    if (diff < 60_000) {
+        return '剛剛'
+    } else if (diff < 3_600_000) {
+        const mins = Math.floor(diff / 60_000)
+        return `${mins} 分鐘前`
+    } else if (diff < 86_400_000) {
+        const hrs = Math.floor(diff / 3_600_000)
+        return `${hrs} 小時前`
+    } else if (diff < 2 * 86_400_000) {
+        // 昨天 + 時間
+        const time = new Date(props.post.createdAt).toLocaleTimeString('zh-TW', {
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+        return `昨天 ${time}`
+    } else {
+        // 顯示日期和時間
+        return new Date(props.post.createdAt).toLocaleString('zh-TW', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    }
+})
 
 //================= 漢堡選單 開始 =================
 // 下拉選單狀態
-const menuOpen = ref(false)
 function toggleMenu() {
     menuOpen.value = !menuOpen.value
 }
@@ -71,7 +122,6 @@ function closeMenu() {
 
 //================= 編輯貼文 開始 =================
 // PostFormModal 狀態
-const isFormModalOpen = ref(false)
 function openEdit() {
     toggleMenu()
     isFormModalOpen.value = true
@@ -145,6 +195,34 @@ async function sharePost() {
     position: relative;
 }
 
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.user-name {
+    font-weight: bold;
+}
+
+.post-time {
+    font-size: 0.8rem;
+    color: #666;
+}
+
 .menu-wrapper {
     position: absolute;
     top: 1rem;
@@ -154,7 +232,7 @@ async function sharePost() {
 .hamburger-btn {
     background: none;
     border: none;
-    font-size: 1.4rem;
+    font-size: 1rem;
     cursor: pointer;
 }
 
