@@ -14,7 +14,7 @@
         <router-link to="/空白3">空白3</router-link>
       </li>
       <li>
-        <router-link to="/空白4">空白4</router-link>
+        <router-link to="/news">新聞列表</router-link>
       </li>
       <li>
         <router-link to="/course">線上課程</router-link>

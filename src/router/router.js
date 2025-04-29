@@ -16,6 +16,11 @@ import CaregiverLogin from '@/yuuhou/CaregiverLogin.vue'
 
 // Social
 import Social from '@/daniel/views/Social.vue'
+
+//News
+import NewsList from '@/allen/views/NewsList.vue'
+import NewsDetail from '@/allen/views/NewsDetail.vue'
+
 // ================== 匯入套件 結束==================
 
 
@@ -35,6 +40,11 @@ const routes = [
   
   // Social
   { path: "/social", component: Social, name: "social" },
+
+  // News
+  { path: "/news", component: NewsList, name: "news" },
+  { path: "/news/:id", component: NewsDetail, name: "newsDetail" },
+
 ];
 // ================== 路由設定 結束 ==================
 
