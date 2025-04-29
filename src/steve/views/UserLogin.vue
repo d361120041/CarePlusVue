@@ -2,14 +2,11 @@
   <div class="login">
     <h2>使用者登入</h2>
 
-    <!-- ✅ 輸入欄位 -->
-    <input v-model="email" placeholder="Email" />
+    <input v-model="userAccount" placeholder="帳號" />
     <input v-model="password" type="password" placeholder="密碼" />
 
-    <!-- ✅ 登入按鈕 -->
     <button @click="login">登入</button>
 
-    <!-- ✅ 額外功能按鈕 -->
     <div class="extra-buttons">
       <button class="register" @click="goRegister">註冊</button>
       <button class="forgot" @click="goForgot">忘記密碼</button>
@@ -17,54 +14,25 @@
   </div>
 </template>
 
-<!-- <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-
-const email = ref("");
-const password = ref("");
-const router = useRouter();
-
-// ✅ 登入流程
-const login = () => {
-  if (email.value === "daniel@example.com" && password.value === "123456") {
-    localStorage.setItem("isAuthenticated", "true");
-    router.push("/caregiver");
-  } else {
-    alert("帳號或密碼錯誤");
-  }
-};
-
-// ✅ 導向註冊頁面
-const goRegister = () => {
-  router.push("/caregiverRegister");
-};
-
-// ✅ 導向忘記密碼頁
-const goForgot = () => {
-  router.push("/forgotPassword");
-};
-</script> -->
-
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import axios from "@/plugins/axios"; // ✅ 引用你自訂的 axios
+import axios from "@/plugins/axios"; // ✅
 
-const email = ref("");
+const userAccount = ref("");
 const password = ref("");
 const router = useRouter();
 
 const login = async () => {
   try {
     const response = await axios.post("/user/login", {
-      userAccount: email.value,
+      userAccount: userAccount.value, // ✅ 跟後端的欄位完全一致
       userPassword: password.value,
     });
 
     alert("登入成功");
     localStorage.setItem("isAuthenticated", "true");
-    router.push("/user-center"); // 這裡你要跳去登入後的頁面
+    router.push("/user-center"); // ✅
   } catch (error) {
     if (error.response && error.response.data) {
       alert("登入失敗：" + error.response.data);
@@ -72,6 +40,14 @@ const login = async () => {
       alert("登入失敗（無法連線後端）");
     }
   }
+};
+
+const goRegister = () => {
+  router.push("/userregister");
+};
+
+const goForgot = () => {
+  router.push("/forgotPassword");
 };
 </script>
 

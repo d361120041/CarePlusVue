@@ -18,6 +18,10 @@ import Social from "@/daniel/views/Social.vue";
 
 //UserInterface
 import UserLogin from "@/steve/views/UserLogin.vue";
+import UserRegister from "@/steve/views/UserRegister.vue";
+import UserVerify from "@/steve/views/UserVerify.vue";
+import ForgotPassword from "@/steve/views/ForgotPassword.vue";
+import ResetPassword from "@/steve/views/ResetPassword.vue";
 // import UserCenter from "@/steve/views/UserCenter.vue";
 // ================== 匯入套件 結束==================
 
@@ -48,6 +52,14 @@ const routes = [
     component: UserLogin,
     name: "userLogin",
   },
+  { path: "/userregister", component: UserRegister, name: "userRegister" },
+  { path: "/verify", component: UserVerify, name: "userVerify" }, // ✅ 加這個
+  {
+    path: "/forgotPassword",
+    component: ForgotPassword,
+    name: "forgotPassword",
+  },
+  { path: "/resetPassword", component: ResetPassword, name: "resetPassword" },
   // { path: "/user-center", component: UserCenter, name: "userCenter" },
 ];
 // ================== 路由設定 結束 ==================
