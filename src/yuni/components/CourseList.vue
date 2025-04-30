@@ -10,7 +10,7 @@
     v-model="searchKeyword"
     @change="searchCourses"
     placeholder="輸入關鍵字搜尋課程"
-    class="form-control mb-3"
+    class="form-control mb-3 mx-auto search-input"
   />
 
   <div class="d-flex justify-content-center align-items-center">
@@ -25,14 +25,32 @@
     >
       {{ getCategoryLabel(category) }}
     </button>
+
+
+    
+
+<!-- 清除篩選條件 -->
+<button
+      @click="resetFilters"
+      class="btn btn-outline-secondary m-1"
+    >
+    &#88;
+    </button>
+
   </div>
 </div>
 </div>
 <!-- 課程卡片清單 -->
 <div
   v-if="courses.length > 0"
-  class="d-flex justify-content-center align-items-center min-vh-100 flex-column gap-3"
+  :class="[
+    'd-flex flex-column gap-3 w-100',
+    courses.length > 1
+      ? 'justify-content-center align-items-center min-vh-100'
+      : 'align-items-center'
+  ]"
 >
+
   <router-link
     v-for="course in paginatedCourses"
     :key="course.courseId"
@@ -213,7 +231,12 @@ const goToPage = (page) => {
 }
 
 
-
+const resetFilters = async () => {
+  searchKeyword.value = ''
+  selectedCategory.value = null
+  currentPage.value = 1
+  await fetchCourses()
+}
 
 
 
@@ -239,5 +262,9 @@ onMounted(fetchCourses)
   object-fit: cover;
 }
 
+.search-input {
+  width: 90%;
+  max-width: 1100px;
+}
 
 </style>
