@@ -26,3 +26,14 @@ export const searchPublishedNews = (searchRequest, page = 0, size = 10) => {
         },
     });
 };
+
+// ✅ 後台：取得所有新聞（不限定已發佈，支援分頁）
+export const fetchAllNews = (page = 0, size = 10) => {
+    return myAxios.get(`/news/admin`, {
+      params: {
+        page,
+        size,
+        sort: 'createAt,desc'
+      }
+    });
+  };

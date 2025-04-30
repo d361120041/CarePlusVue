@@ -16,8 +16,8 @@
           </router-link>
         </div>
 
-        <p>{{ news.summary }}</p>
-        <small>發布日期：{{ formatDate(news.publishAt) }}</small>
+        <p>發布日期：{{ formatDate(news.publishAt) }}</p>
+        <p>👁️ 瀏覽次數：{{ news.viewCount || 0 }}</p>
 
       </div>
 
@@ -34,7 +34,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { fetchPublishedNews } from '@/allen/services/newsService';
-import noImage from '@/assets/no-image.jpg'; // ✅ 引入預設縮圖
+import noImage from '@/assets/allen/no-image.jpg'; // ✅ 引入預設縮圖
 import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue' //  Skeleton 骨架屏
 
 // ✅ 引入處理 thumbnail 路徑的工具
