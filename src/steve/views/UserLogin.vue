@@ -26,13 +26,15 @@ const router = useRouter();
 const login = async () => {
   try {
     const response = await axios.post("/user/login", {
-      userAccount: userAccount.value, // ✅ 跟後端的欄位完全一致
+      userAccount: userAccount.value,
       userPassword: password.value,
     });
 
     alert("登入成功");
     localStorage.setItem("isAuthenticated", "true");
-    router.push("/user-center"); // ✅
+
+    console.log("✅ 登入成功，準備跳轉 /user-center");
+    router.push("/user-center");
   } catch (error) {
     if (error.response && error.response.data) {
       alert("登入失敗：" + error.response.data);
