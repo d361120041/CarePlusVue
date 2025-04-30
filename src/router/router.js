@@ -16,6 +16,7 @@ import CaregiverLogin from '@/yuuhou/CaregiverLogin.vue'
 
 // Social
 import Social from '@/daniel/views/Social.vue'
+import CourseDetail from '@/yuni/views/CourseDetail.vue'
 // ================== 匯入套件 結束==================
 
 
@@ -29,6 +30,7 @@ const routes = [
   // Course
   { path: "/course", component: CourseHome, name: "courseHome" },
   { path: "/course/admin", component: CourseAdmin, name: "courseAdmin" },
+  { path: '/courses/:id', component:CourseDetail, name: 'CourseDetail'},
 
   // Caregiver
   { path: "/caregiverLogin", component: CaregiverLogin, name: "caregiverLogin" },
