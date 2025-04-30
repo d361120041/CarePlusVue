@@ -16,35 +16,36 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/stores/useAuth'
 
 const email = ref('')
 const password = ref('')
 const router = useRouter()
+const authStore = useAuth()
 
-// ✅ 登入流程
-const login = () => {
-  if (email.value === 'daniel@example.com' && password.value === '123456') {
-    localStorage.setItem('isAuthenticated', 'true')
-    router.push('/caregiver')
-  } else {
-    alert('帳號或密碼錯誤')
+const login = async () => {
+  try {
+    await authStore.login(email.value, password.value) // ✅ 呼叫 Pinia login 自動打API
+
+    alert('✅ 登入成功！')
+
+    if (authStore.role === 'ADMIN') {
+      router.push('/admin/dashboard') 
+    } else if (authStore.role === 'CAREGIVER') {
+      router.push('/caregiver') 
+    } else {
+      router.push('/') // 其他身份回首頁
+    }
+  } catch (error) {
+    console.error(error)
+    alert('❌ 帳號或密碼錯誤')
   }
 }
-
-// ✅ 導向註冊頁面
-const goRegister = () => {
-  router.push('/caregiverRegister') 
-}
-
-// ✅ 導向忘記密碼頁
-const goForgot = () => {
-  router.push('/forgotPassword')    
-  }
 </script>
+
 
 <style scoped>
 .login {
