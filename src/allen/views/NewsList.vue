@@ -33,12 +33,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { fetchPublishedNews } from '@/services/newsService';
+import { fetchPublishedNews } from '@/allen/services/newsService';
 import noImage from '@/assets/no-image.jpg'; // ✅ 引入預設縮圖
 import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue' //  Skeleton 骨架屏
 
 // ✅ 引入處理 thumbnail 路徑的工具
-import { getFullImageUrl } from '@/utils/urlHelper';
+import { getFullImageUrl } from '@/allen/utils/urlHelper';
 
 // 變數定義
 const newsList = ref([]);

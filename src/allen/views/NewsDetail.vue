@@ -35,7 +35,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { fetchPublishedNewsById } from '@/services/newsService';
+import { fetchPublishedNewsById } from '@/allen/services/newsService';
 
 const route = useRoute();  // 拿網址上的 id
 
