@@ -1,8 +1,6 @@
 <template>
     <article class="post-item">
-
         <div class="post-header">
-
             <!-- 使用者資訊區塊 -->
             <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
             <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
@@ -26,13 +24,25 @@
 
         <!-- 貼文內容 -->
         <h2>{{ post.title }}</h2>
-        <p>{{ post.content }}</p>
+        <div class="post-content-wrapper">
+            <!-- 使用 span 使文字與按鈕同層顯示 -->
+            <span ref="contentRef" :class="['post-content', { expanded: isExpanded }]">
+                {{ post.content }}
+            </span>
+            <!-- Toggle 按鈕放在文字後，span 同一層級 -->
+            <span v-if="needsToggle" class="show-more-btn" @click="isExpanded = !isExpanded">
+                {{ isExpanded ? '顯示較少' : '顯示更多' }}
+            </span>
+        </div>
 
         <!-- 圖片列表 -->
         <div class="post-images" v-if="post.images && post.images.length">
-            <img v-for="img in post.images" :key="img.imageId" :src="`data:image/jpeg;base64,${img.imageData}`"
-                alt="Post Image" />
+            <img v-for="(img, idx) in post.images" :key="img.imageId" :src="`data:image/jpeg;base64,${img.imageData}`"
+                alt="Post Image" @click="showImage(idx)" class="clickable-img" />
         </div>
+
+        <!-- vue-easy-lightbox -->
+        <vue-easy-lightbox :visible="lightboxVisible" :imgs="imgs" :index="currentIndex" @hide="hideLightbox" />
 
         <!-- 觀看次數 -->
         <div style="text-align: right;">
@@ -42,23 +52,23 @@
         <!-- 貼文動作列 -->
         <div class="post-actions">
             <button class="action-btn"> <!-- @click="likePost" -->
-                👍 按讚 <!-- ({{ likeCount }}) -->
+                👍 按讚<!-- ({{ likeCount }}) -->
             </button>
-            <button class="action-btn" @click="isDetailOpen = true"> 💬 留言 </button>
+            <button class="action-btn" @click="isDetailOpen = true"> 💬 留言</button>
             <button class="action-btn" @click="sharePost">
                 🔗 分享 ({{ shareCount }})
             </button>
         </div>
 
         <!-- 詳細 Modal -->
-        <PostDetailModal :visible="isDetailOpen" :post="post" @close="isDetailOpen = false" />
-
+        <PostDetailModal :visible="isDetailOpen" :post="post" @close="isDetailOpen = false" @refresh="emit('refresh')" />
     </article>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import myAxios from '@/plugins/axios.js'
+import VueEasyLightbox from 'vue-easy-lightbox'
 
 import CommentList from '@/daniel/components/comment/CommentList.vue'
 import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
@@ -66,17 +76,26 @@ import PostDetailModal from '@/daniel/components/post/PostDetailModal.vue'
 
 const props = defineProps({ post: Object })
 const emit = defineEmits(['refresh']) // 父層 PostList.vue 會用到
-const shareCount = ref(props.post.share || 0)
-// 控制詳細 Modal 顯示
-const isDetailOpen = ref(false)
-const menuOpen = ref(false)
-const isFormModalOpen = ref(false)
+
+//================= ref, computed 開始 =================
+// 使用者資訊區塊
 const currentUser = ref({
     // avatarUrl: '/circle-user-regular.svg'
     avatarUrl: '/circle-user-solid.svg'
     // avatarUrl: '/user-regular.svg'
     // avatarUrl: '/user-solid.svg'
 })
+// 漢堡選單
+const menuOpen = ref(false)
+// PostFormModal 編輯/檢視模式
+const isFormModalOpen = ref(false)
+// 貼文內容
+const contentRef = ref(null)
+const isExpanded = ref(false)
+const needsToggle = ref(false)
+// 貼文動作列
+const isDetailOpen = ref(false)
+const shareCount = ref(props.post.share || 0)
 
 // 格式化貼文時間（相對/絕對顯示）
 const formattedTime = computed(() => {
@@ -109,6 +128,7 @@ const formattedTime = computed(() => {
         })
     }
 })
+//================= ref, computed 結束 =================
 
 //================= 漢堡選單 開始 =================
 // 下拉選單狀態
@@ -156,6 +176,24 @@ async function confirmDelete() {
 }
 //================= 刪除貼文 結束 =================
 
+// ================= Lightbox 開始 =================
+// Lightbox 狀態：visible 控制顯示，imgs 是圖片陣列，index 是預設開啟的那張
+const lightboxVisible = ref(false)
+const imgs = computed(() => props.post.images.map(img => `data:image/jpeg;base64,${img.imageData}`))
+const currentIndex = ref(0)
+
+// 開啟 Lightbox
+function showImage(idx) {
+    currentIndex.value = idx
+    lightboxVisible.value = true
+}
+
+// 關閉 Lightbox
+function hideLightbox() {
+    lightboxVisible.value = false
+}
+// ================= Lightbox 結束 =================
+
 //================= 觀看次數 開始 =================
 // 更新觀看次數
 onMounted(async () => {
@@ -163,6 +201,14 @@ onMounted(async () => {
         await myAxios.post(`/api/posts/${props.post.postId}/view`)
     } catch (e) {
         console.error('更新觀看次數失敗', e)
+    }
+
+    // 顯示更多、顯示更少
+    const el = contentRef.value
+    // 取得實際內容高度與單行高度
+    const lineHeight = parseFloat(getComputedStyle(el).lineHeight)   /* 行高 */
+    if (el.scrollHeight > lineHeight * 5) {                        /* scrollHeight 為內容總高度 */
+        needsToggle.value = true                                     /* 超過 5 行才顯示按鈕 */
     }
 })
 //================= 觀看次數 結束 =================
@@ -255,7 +301,47 @@ async function sharePost() {
 }
 
 .post-dropdown li:hover {
-    background: #f0f0f0;
+    background: #c7a0a0;
+}
+
+.post-content-wrapper {
+    line-height: 1.5;
+}
+
+.post-content-wrapper {
+    /* 父容器轉為 inline-block, 讓 span 同行 */
+    display: inline-block;
+    max-width: 100%;
+}
+
+.post-content {
+    /* 使用 span 並保持彈性盒字數截斷 */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    overflow: hidden;
+    white-space: pre-wrap;
+    word-break: break-word;
+    vertical-align: top;
+    transition: max-height 0.3s ease;
+}
+
+.post-content.expanded {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+}
+
+.show-more-btn {
+    display: inline;
+    margin-left: 0.5em;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #007bff;
+    vertical-align: top;
+}
+
+.show-more-btn:hover {
+    text-decoration: underline;
 }
 
 .post-images {
@@ -265,6 +351,15 @@ async function sharePost() {
 .post-images img {
     max-width: 100px;
     margin-right: 10px;
+}
+
+.post-images img.clickable-img {
+    cursor: pointer;
+    transition: transform .2s;
+}
+
+.post-images img.clickable-img:hover {
+    transform: scale(1.05);
 }
 
 .post-actions {
