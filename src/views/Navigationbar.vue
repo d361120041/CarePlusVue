@@ -14,7 +14,7 @@
         <router-link to="/空白3">空白3</router-link>
       </li>
       <li>
-        <router-link to="/空白4">找看護？</router-link>
+        <router-link to="/caregivers/search">找看護？</router-link>
       </li>
       <li>
         <router-link to="/course">線上課程</router-link>
@@ -42,7 +42,7 @@ const goLogin = () => {
 
 <style scoped>
 .navbar {
-  background-color: #0366d6;
+  background-color: #4DB6AC;
   padding: 0.5rem 1rem;
 }
 
