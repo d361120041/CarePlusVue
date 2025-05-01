@@ -51,8 +51,8 @@
 
         <!-- 貼文動作列 -->
         <div class="post-actions">
-            <button class="action-btn"> <!-- @click="likePost" -->
-                👍 按讚<!-- ({{ likeCount }}) -->
+            <button class="action-btn" @click="likePost">
+                👍 按讚({{ likeCount }})
             </button>
             <button class="action-btn" @click="isDetailOpen = true"> 💬 留言</button>
             <button class="action-btn" @click="sharePost">
@@ -70,12 +70,17 @@ import { ref, onMounted, computed } from 'vue'
 import myAxios from '@/plugins/axios.js'
 import VueEasyLightbox from 'vue-easy-lightbox'
 
-import CommentList from '@/daniel/components/comment/CommentList.vue'
 import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
 import PostDetailModal from '@/daniel/components/post/PostDetailModal.vue'
 
 const props = defineProps({ post: Object })
 const emit = defineEmits(['refresh']) // 父層 PostList.vue 會用到
+
+import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+const { formattedTime } = useTimeFormat(props.post.createdAt)
+
+import { useToggle } from '@/daniel/composables/useToggle'
+const [menuOpen, toggleMenu] = useToggle(false)
 
 //================= ref, computed 開始 =================
 // 使用者資訊區塊
@@ -85,8 +90,6 @@ const currentUser = ref({
     // avatarUrl: '/user-regular.svg'
     // avatarUrl: '/user-solid.svg'
 })
-// 漢堡選單
-const menuOpen = ref(false)
 // PostFormModal 編輯/檢視模式
 const isFormModalOpen = ref(false)
 // 貼文內容
@@ -95,46 +98,12 @@ const isExpanded = ref(false)
 const needsToggle = ref(false)
 // 貼文動作列
 const isDetailOpen = ref(false)
+const likeCount = ref(props.post.reactions?.length || 0)
 const shareCount = ref(props.post.share || 0)
 
-// 格式化貼文時間（相對/絕對顯示）
-const formattedTime = computed(() => {
-    const now = Date.now()
-    const created = new Date(props.post.createdAt).getTime()
-    const diff = now - created
-    if (diff < 60_000) {
-        return '剛剛'
-    } else if (diff < 3_600_000) {
-        const mins = Math.floor(diff / 60_000)
-        return `${mins} 分鐘前`
-    } else if (diff < 86_400_000) {
-        const hrs = Math.floor(diff / 3_600_000)
-        return `${hrs} 小時前`
-    } else if (diff < 2 * 86_400_000) {
-        // 昨天 + 時間
-        const time = new Date(props.post.createdAt).toLocaleTimeString('zh-TW', {
-            hour: '2-digit',
-            minute: '2-digit'
-        })
-        return `昨天 ${time}`
-    } else {
-        // 顯示日期和時間
-        return new Date(props.post.createdAt).toLocaleString('zh-TW', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        })
-    }
-})
 //================= ref, computed 結束 =================
 
 //================= 漢堡選單 開始 =================
-// 下拉選單狀態
-function toggleMenu() {
-    menuOpen.value = !menuOpen.value
-}
 function closeMenu() {
     menuOpen.value = false
 }
@@ -194,24 +163,16 @@ function hideLightbox() {
 }
 // ================= Lightbox 結束 =================
 
-//================= 觀看次數 開始 =================
-// 更新觀看次數
-onMounted(async () => {
+//================= 按讚 開始=================
+async function likePost() {
     try {
-        await myAxios.post(`/api/posts/${props.post.postId}/view`)
-    } catch (e) {
-        console.error('更新觀看次數失敗', e)
+        const res = await myAxios.post(`/api/reactions/posts/${props.post.postId}?userId=${props.post.user.userId}&type=1`)
+        likeCount.value = res.data
+    } catch (error) {
+        console.error('貼文按讚失敗', error);
     }
-
-    // 顯示更多、顯示更少
-    const el = contentRef.value
-    // 取得實際內容高度與單行高度
-    const lineHeight = parseFloat(getComputedStyle(el).lineHeight)   /* 行高 */
-    if (el.scrollHeight > lineHeight * 5) {                        /* scrollHeight 為內容總高度 */
-        needsToggle.value = true                                     /* 超過 5 行才顯示按鈕 */
-    }
-})
-//================= 觀看次數 結束 =================
+}
+//================= 按讚 結束=================
 
 //================= 分享次數 開始 =================
 // 更新分享次數
@@ -229,6 +190,25 @@ async function sharePost() {
     }
 }
 //================= 分享次數 結束 =================
+
+onMounted(async () => {
+    // 更新觀看次數
+    try {
+        await myAxios.post(`/api/posts/${props.post.postId}/view`)
+    } catch (e) {
+        console.error('更新觀看次數失敗', e)
+    }
+
+    // 顯示更多、顯示更少
+    const el = contentRef.value
+    // 取得實際內容高度與單行高度
+    const lineHeight = parseFloat(getComputedStyle(el).lineHeight)   /* 行高 */
+    if (el.scrollHeight > lineHeight * 5) {                        /* scrollHeight 為內容總高度 */
+        needsToggle.value = true                                     /* 超過 5 行才顯示按鈕 */
+    }
+
+    likeCount.value = props.post.reactions?.length || 0;
+})
 </script>
 
 <style scoped>
