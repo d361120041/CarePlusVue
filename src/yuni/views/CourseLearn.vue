@@ -27,12 +27,16 @@
             <div v-else class="text-muted">無法顯示的內容類型</div>
         </div>
 
-        <!-- 上一章 + 下一章 -->
-        <div class="d-flex justify-content-between">
-            <button class="btn btn-outline-secondary" :disabled="currentIndex <= 0" @click="goPrevious">上一章</button>
+<!-- 上一章 + 下一章 -->
+<div class="d-flex justify-content-between">
+  <button class="btn btn-primary" :disabled="currentIndex <= 0" @click="goPrevious">
+   上一章
+  </button>
 
-            <button class="btn btn-primary" :disabled="currentIndex >= chapters.length - 1" @click="goNext">下一章</button>
-        </div>
+  <button class="btn btn-primary" :disabled="currentIndex >= chapters.length - 1" @click="goNext">
+    下一章
+  </button>
+</div>
 
 
 
@@ -168,5 +172,12 @@ onMounted(async () => {
     border: none;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn.btn-primary:hover {
+  background-color: #0056b3; /* 深一點的藍色 */
+  border-color: #004d99;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.5); /* 輕微發光效果 */
+  transition: all 0.2s ease-in-out;
 }
 </style>
