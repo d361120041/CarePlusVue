@@ -26,6 +26,7 @@ import UserCenter from "@/steve/views/UserCenter.vue";
 import UserProfile from "@/steve/views/UserProfile.vue";
 import InquiryForm from "@/steve/views/InquiryForm.vue";
 import PatientsList from "@/steve/views/PatientsList.vue";
+import AddPatient from "@/steve/views/AddPatient.vue";
 // import UserCenter from "@/steve/views/UserCenter.vue";
 // ================== 匯入套件 結束==================
 
@@ -73,6 +74,7 @@ const routes = [
       { path: "profile", component: UserProfile },
       { path: "support", component: InquiryForm },
       { path: "patients", component: PatientsList },
+      { path: "patients/add", component: AddPatient },
     ],
   },
   // { path: "/user-center", component: UserCenter, name: "userCenter" },

@@ -24,24 +24,64 @@
       </li>
     </ul>
     <div class="login-button">
-      <!-- //更新登入後介面 -->
-      <!-- 登入之前 -->
-      <template v-if="!isAuthenticated">
+      <!-- 登入前 -->
+      <template v-if="!auth.isAuthenticated">
         <button @click="goLogin">照顧者登入</button>
         <button @click="userLogin">使用者登入</button>
       </template>
-      <!-- 登入之前 -->
-      <!-- 使用者已登入：顯示歡迎文字 -->
+      <!-- 登入後 -->
       <template v-else>
-        <span class="welcome-text">歡迎，老頭的家人： {{ userName }}</span>
+        <span class="welcome-text">
+          歡迎，老頭的家人：
+          <router-link
+            to="/user-center/profile"
+            class="underline hover:no-underline"
+          >
+            {{ auth.userName }}
+          </router-link>
+        </span>
         <button @click="logout" class="logout-button">登出</button>
       </template>
-      <!-- 使用者已登入：顯示歡迎文字 -->
     </div>
   </div>
 </template>
 
 <script setup>
+import { onMounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+
+const router = useRouter();
+const route = useRoute();
+const auth = useAuthStore();
+
+// 初次掛載時檢查登入狀態
+onMounted(() => {
+  auth.checkAuth();
+});
+// 每次路由改變時也重新檢查
+watch(
+  () => route.fullPath,
+  () => {
+    auth.checkAuth();
+  }
+);
+
+const goLogin = () => {
+  router.push("/caregiverLogin");
+};
+const userLogin = () => {
+  router.push("/userLogin");
+};
+const logout = async () => {
+  await auth.logout();
+  router.push("/");
+  // 確保狀態切換為未登入
+  auth.checkAuth();
+};
+</script>
+
+<!-- <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import axios from "@/plugins/axios";
@@ -96,7 +136,7 @@ const logout = async () => {
   }
 };
 /////////////////////////////////////看使用者有沒有登入 有的話就不顯示登入按鈕了///////////////////////////
-</script>
+</script> -->
 
 <style scoped>
 .navbar {

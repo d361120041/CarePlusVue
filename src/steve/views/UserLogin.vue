@@ -17,24 +17,25 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import axios from "@/plugins/axios"; // ✅
+import axios from "@/plugins/axios";
+import { useAuthStore } from "@/stores/auth";
 
 const userAccount = ref("");
 const password = ref("");
 const router = useRouter();
+const auth = useAuthStore();
 
 const login = async () => {
   try {
-    const response = await axios.post("/user/login", {
+    await axios.post("/user/login", {
       userAccount: userAccount.value,
       userPassword: password.value,
     });
-
     alert("登入成功");
-    localStorage.setItem("isAuthenticated", "true");
-
-    console.log("✅ 登入成功，準備跳轉 /user-center");
-    router.push("/user-center");
+    // 更新全域認證狀態
+    await auth.checkAuth();
+    // 返回首頁
+    router.push("/");
   } catch (error) {
     if (error.response && error.response.data) {
       alert("登入失敗：" + error.response.data);
@@ -78,12 +79,11 @@ button {
   margin-bottom: 1rem;
 }
 
-/* ✅ 額外按鈕樣式 */
+/* 額外功能按鈕 */
 .extra-buttons {
   display: flex;
   justify-content: space-between;
 }
-
 .extra-buttons .register {
   background-color: #007bff;
 }
