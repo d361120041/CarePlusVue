@@ -24,6 +24,7 @@ import ForgotPassword from "@/steve/views/ForgotPassword.vue";
 import ResetPassword from "@/steve/views/ResetPassword.vue";
 import UserCenter from "@/steve/views/UserCenter.vue";
 import UserProfile from "@/steve/views/UserProfile.vue";
+import InquiryForm from "@/steve/views/InquiryForm.vue";
 
 // import UserCenter from "@/steve/views/UserCenter.vue";
 // ================== 匯入套件 結束==================
@@ -70,6 +71,7 @@ const routes = [
     children: [
       { path: "", redirect: "/user-center/profile" }, // ✅ 改成絕對路徑
       { path: "profile", component: UserProfile },
+      { path: "support", component: InquiryForm },
     ],
   },
   // { path: "/user-center", component: UserCenter, name: "userCenter" },

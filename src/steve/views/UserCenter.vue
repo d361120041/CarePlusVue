@@ -1,13 +1,13 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="flex">
+  <div class="user-center-layout">
+    <div class="flex h-screen">
       <!-- 左側 Sidebar -->
-      <aside class="w-64 min-h-screen bg-gray-100 p-4 shadow-md">
+      <aside class="w-64 bg-gray-100 p-4 shadow-md">
         <Sidebar />
       </aside>
 
       <!-- 右側內容 -->
-      <main class="flex-1 p-6 bg-white">
+      <main class="flex-1 p-6 bg-white overflow-y-auto">
         <router-view />
       </main>
     </div>
@@ -24,5 +24,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 可視需要微調 */
+.user-center-layout {
+  height: 100vh; /* 撐滿整個視窗 */
+}
 </style>

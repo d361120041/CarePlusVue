@@ -1,6 +1,31 @@
 <template>
   <div class="max-w-2xl mx-auto p-4">
     <h2 class="text-xl font-bold mb-4">編輯使用者資料</h2>
+    <div class="mb-4">
+      <label class="block font-medium">目前頭像</label>
+      <div class="w-32 h-32 border rounded overflow-hidden">
+        <img
+          v-if="user?.profilePicture"
+          :src="user.profilePicture"
+          alt="使用者頭像"
+          class="w-full h-full object-cover"
+        />
+        <div
+          v-else
+          class="w-full h-full flex items-center justify-center text-gray-400 text-sm"
+        >
+          無頭像
+        </div>
+      </div>
+
+      <label class="block font-medium mt-4">上傳新頭像</label>
+      <input type="file" @change="handleImageUpload" class="mt-1" />
+      <img
+        v-if="previewImage"
+        :src="previewImage"
+        class="mt-2 w-32 h-32 object-cover rounded"
+      />
+    </div>
 
     <div v-if="user">
       <div class="mb-4">
@@ -65,16 +90,6 @@
         ></textarea>
       </div>
 
-      <div class="mb-4">
-        <label class="block font-medium">頭像上傳</label>
-        <input type="file" @change="handleImageUpload" />
-        <img
-          v-if="previewImage"
-          :src="previewImage"
-          class="mt-2 w-32 h-32 object-cover rounded"
-        />
-      </div>
-
       <button
         @click="updateUser"
         class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
@@ -87,7 +102,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import axios from "axios";
+import axios from "@/plugins/axios";
 
 const user = ref(null);
 const previewImage = ref(null);
