@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/stores/useAuth'
@@ -27,7 +27,7 @@ const login = async () => {
 
     if (role === 'ADMIN') {
       alert('✅ 登入成功！轉跳管理者後台')
-      router.push('/admin/dashboard')
+      router.push('/admin/menuQ')
     } else if (role === 'CAREGIVER') {
       alert('✅ 登入成功！轉跳照顧者後台')
       router.push('/caregiver')
@@ -50,4 +50,4 @@ const goRegister = () => {
 const goForgot = () => {
   router.push('/forgot')    // ✅ 忘記密碼頁是 /forgot
 }
-</script>
+</script> -->
