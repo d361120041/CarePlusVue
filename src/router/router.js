@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 // import { useAuth } from '@/stores/useAuth'
 
+<<<<<<< Updated upstream
 // ================== 匯入套件 開始==================
 import Home from "@/views/Home.vue";
 import NotFound from "@/views/NotFound.vue";
@@ -32,6 +33,16 @@ import AdminNewsDetail from "@/allen/views/AdminNewsDetail.vue";
 import CaregiverLogin from "@/yuuhou/CaregiverLogin.vue";
 import CaregiverProfileView from "@/yuuhou/CaregiverProfileView.vue";
 import CaregiverPricing from "@/yuuhou/EditService.vue";
+=======
+import Home from '@/views/Home.vue'
+import NotFound from '@/views/NotFound.vue'
+import Forbidden from '@/views/Forbidden.vue'
+import Social from '@/Daniel/views/Social.vue'
+// yuuhou
+import CaregiverLogin from '@/yuuhou/CaregiverLogin.vue'
+import CaregiverProfileView from '@/yuuhou/CaregiverProfileView.vue'
+import CaregiverPricing from '@/yuuhou/EditService.vue'
+>>>>>>> Stashed changes
 // import CaregiverSchedule from '@/yuuhou/Schedule.vue'
 // import CaregiverOrders from '@/yuuhou/Orders.vue'
 // import CaregiverReviews from '@/yuuhou/Reviews.vue'
