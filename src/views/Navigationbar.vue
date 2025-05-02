@@ -5,13 +5,7 @@
                 <router-link to="/">首頁</router-link>
             </li>
             <li>
-                <router-link to="/空白1">空白1</router-link>
-            </li>
-            <li>
-                <router-link to="/空白2">空白2</router-link>
-            </li>
-            <li>
-                <router-link to="/空白3">空白3</router-link>
+                <router-link to="/caregivers/search">找看護？</router-link>
             </li>
             <li>
                 <router-link to="/news">新聞列表</router-link>
@@ -28,7 +22,6 @@
                 <router-link to="/social">討論區</router-link>
             </li>
         </ul>
-
         <div class="login-button">
             <template v-if="!isLogin">
                 <button @click="goLogin">照顧者登入</button>
@@ -80,11 +73,11 @@ const logout = () => {
 
 
 .navbar {
-    background-color: #0366d6;
-    padding: 0.5rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: #4DB6AC;
+    padding: 0.5rem 1rem;
 }
 
 .navbar ul {

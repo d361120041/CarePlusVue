@@ -33,6 +33,17 @@ import { RouterView, RouterLink } from 'vue-router'
 import Navigationbar from '@/views/Navigationbar.vue';
 </script>
 
-<style scoped>
+<style>  
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #FFF8F0; /* ✅ 米白背景 */
+}
 
+#app {
+  position: relative;
+  background-color: transparent; /* ✅ 不蓋掉背景圖片 */
+}
 </style>
+
