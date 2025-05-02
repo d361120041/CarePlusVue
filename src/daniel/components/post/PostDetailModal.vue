@@ -1,80 +1,88 @@
 <template>
-    <article class="post-item">
-        <div class="post-header">
-            <!-- 使用者資訊區塊 -->
-            <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
-            <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
-            <div class="user-info">
-                <div class="user-name">{{ post.user.userName }}</div>
-                <div class="post-time">{{ formattedTime }}</div>
+    <BaseModal :visible="visible" :title="`${post.user.userName}的貼文`" @close="$emit('close')">
+        <div class="post-detail">
+            <div class="post-header">
+                <!-- 使用者資訊區塊 -->
+                <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
+                <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
+                <div class="user-info">
+                    <div class="user-name">{{ post.user.userName }}</div>
+                    <div class="post-time">{{ formattedTime }}</div>
+                </div>
+
+                <!-- 漢堡選單 -->
+                <div class="menu-wrapper">
+                    <button class="hamburger-btn" @click.stop="toggleMenu">⋯</button>
+                    <ul v-if="menuOpen" class="post-dropdown">
+                        <li @click="openEdit">編輯貼文</li>
+                        <li @click="confirmDelete">刪除貼文</li>
+                    </ul>
+                </div>
             </div>
 
-            <!-- 漢堡選單 -->
-            <div class="menu-wrapper">
-                <button class="hamburger-btn" @click.stop="toggleMenu">⋯</button>
-                <ul v-if="menuOpen" class="post-dropdown">
-                    <li @click="openEdit">編輯貼文</li>
-                    <li @click="confirmDelete">刪除貼文</li>
-                </ul>
+            <!-- PostFormModal 編輯/檢視模式 -->
+            <PostFormModal :visible="isFormModalOpen" :post="post" @close="closeEdit" @saved="handleSaved" />
+
+            <!-- 貼文內容 -->
+            <h2>{{ post.title }}</h2>
+            <div class="post-content">
+                <p>{{ post.content }}</p>
+            </div>
+
+            <!-- 圖片列表 -->
+            <div class="post-images" v-if="post.images && post.images.length">
+                <img v-for="(img, idx) in post.images" :key="img.imageId"
+                    :src="`data:image/jpeg;base64,${img.imageData}`" alt="Post Image" @click="showImage(idx)"
+                    class="clickable-img" />
+            </div>
+
+            <!-- vue-easy-lightbox -->
+            <vue-easy-lightbox :visible="lightboxVisible" :imgs="imgs" :index="currentIndex" @hide="hideLightbox" />
+
+            <!-- 觀看次數 -->
+            <div style="text-align: right;">
+                <small>觀看次數{{ post.views }}次</small>
+            </div>
+
+            <!-- 貼文動作列 -->
+            <div class="post-actions">
+                <button class="action-btn"> <!-- @click="likePost" -->
+                    👍 按讚<!-- ({{ likeCount }}) -->
+                </button>
+                <button class="action-btn"> 💬 留言</button>
+                <button class="action-btn" @click="sharePost">
+                    🔗 分享 ({{ shareCount }})
+                </button>
+            </div>
+
+            <!-- 留言列表 -->
+            <div v-if="post.comments && post.comments.length">
+                <CommentList ref="commentList" :postId="post.postId" class="comment-list" />
+            </div>
+
+            <!-- 留言表單 -->
+            <div class="comment-form-wrapper">
+                <CommentForm :postId="post.postId" @added="onCommentAdded" />
             </div>
         </div>
-
-        <!-- PostFormModal 編輯/檢視模式 -->
-        <PostFormModal :visible="isFormModalOpen" :post="post" @close="closeEdit" @saved="handleSaved" />
-
-        <!-- 貼文內容 -->
-        <h2>{{ post.title }}</h2>
-        <div class="post-content-wrapper">
-            <!-- 使用 span 使文字與按鈕同層顯示 -->
-            <span ref="contentRef" :class="['post-content', { expanded: isExpanded }]">
-                {{ post.content }}
-            </span>
-            <!-- Toggle 按鈕放在文字後，span 同一層級 -->
-            <span v-if="needsToggle" class="show-more-btn" @click="isExpanded = !isExpanded">
-                {{ isExpanded ? '顯示較少' : '顯示更多' }}
-            </span>
-        </div>
-
-        <!-- 圖片列表 -->
-        <div class="post-images" v-if="post.images && post.images.length">
-            <img v-for="(img, idx) in post.images" :key="img.imageId" :src="`data:image/jpeg;base64,${img.imageData}`"
-                alt="Post Image" @click="showImage(idx)" class="clickable-img" />
-        </div>
-
-        <!-- vue-easy-lightbox -->
-        <vue-easy-lightbox :visible="lightboxVisible" :imgs="imgs" :index="currentIndex" @hide="hideLightbox" />
-
-        <!-- 觀看次數 -->
-        <div style="text-align: right;">
-            <small>觀看次數{{ post.views }}次</small>
-        </div>
-
-        <!-- 貼文動作列 -->
-        <div class="post-actions">
-            <button class="action-btn" @click="likePost">
-                👍 按讚({{ likeCount }})
-            </button>
-            <button class="action-btn" @click="isDetailOpen = true"> 💬 留言</button>
-            <button class="action-btn" @click="sharePost">
-                🔗 分享 ({{ shareCount }})
-            </button>
-        </div>
-
-        <!-- 詳細 Modal -->
-        <PostDetailModal :visible="isDetailOpen" :post="post" @close="isDetailOpen = false" @refresh="emit('refresh')" />
-    </article>
+    </BaseModal>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import myAxios from '@/plugins/axios.js'
 import VueEasyLightbox from 'vue-easy-lightbox'
 
+import BaseModal from '@/daniel/components/BaseModal.vue'
 import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
-import PostDetailModal from '@/daniel/components/post/PostDetailModal.vue'
+import CommentList from '@/daniel/components/comment/CommentList.vue'
+import CommentForm from '@/daniel/components/comment/CommentForm.vue'
 
-const props = defineProps({ post: Object })
-const emit = defineEmits(['refresh']) // 父層 PostList.vue 會用到
+const props = defineProps({
+    visible: Boolean,
+    post: Object
+})
+const emit = defineEmits(['close', 'refresh'])
 
 import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
 const { formattedTime } = useTimeFormat(props.post.createdAt)
@@ -92,18 +100,15 @@ const currentUser = ref({
 })
 // PostFormModal 編輯/檢視模式
 const isFormModalOpen = ref(false)
-// 貼文內容
-const contentRef = ref(null)
-const isExpanded = ref(false)
-const needsToggle = ref(false)
 // 貼文動作列
 const isDetailOpen = ref(false)
-const likeCount = ref(props.post.reactions?.length || 0)
 const shareCount = ref(props.post.share || 0)
-
+// 評論清單
+const commentList = ref(null)
 //================= ref, computed 結束 =================
 
 //================= 漢堡選單 開始 =================
+// 下拉選單狀態
 function closeMenu() {
     menuOpen.value = false
 }
@@ -155,6 +160,7 @@ const currentIndex = ref(0)
 function showImage(idx) {
     currentIndex.value = idx
     lightboxVisible.value = true
+    console.log(`props.post.images->`, props.post.images)
 }
 
 // 關閉 Lightbox
@@ -163,16 +169,16 @@ function hideLightbox() {
 }
 // ================= Lightbox 結束 =================
 
-//================= 按讚 開始=================
-async function likePost() {
+//================= 觀看次數 開始 =================
+// 更新觀看次數
+onMounted(async () => {
     try {
-        const res = await myAxios.post(`/api/reactions/posts/${props.post.postId}?userId=${props.post.user.userId}&type=1`)
-        likeCount.value = res.data
-    } catch (error) {
-        console.error('貼文按讚失敗', error);
+        await myAxios.post(`/api/posts/${props.post.postId}/view`)
+    } catch (e) {
+        console.error('更新觀看次數失敗', e)
     }
-}
-//================= 按讚 結束=================
+})
+//================= 觀看次數 結束 =================
 
 //================= 分享次數 開始 =================
 // 更新分享次數
@@ -191,33 +197,19 @@ async function sharePost() {
 }
 //================= 分享次數 結束 =================
 
-onMounted(async () => {
-    // 更新觀看次數
-    try {
-        await myAxios.post(`/api/posts/${props.post.postId}/view`)
-    } catch (e) {
-        console.error('更新觀看次數失敗', e)
+function onCommentAdded() {
+    // 當表單送出後，刷新留言清單
+    if (commentList.value && typeof commentList.value.reloadComments === 'function') {
+        commentList.value.reloadComments()
     }
-
-    // 顯示更多、顯示更少
-    const el = contentRef.value
-    // 取得實際內容高度與單行高度
-    const lineHeight = parseFloat(getComputedStyle(el).lineHeight)   /* 行高 */
-    if (el.scrollHeight > lineHeight * 5) {                        /* scrollHeight 為內容總高度 */
-        needsToggle.value = true                                     /* 超過 5 行才顯示按鈕 */
-    }
-
-    likeCount.value = props.post.reactions?.length || 0;
-})
+}
 </script>
 
 <style scoped>
-.post-item {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-    margin-bottom: 2rem;
+.post-detail {
+    /* 讓裡面 sticky 生效 */
+    max-height: 70vh;
+    overflow-y: auto;
     position: relative;
 }
 
@@ -284,44 +276,9 @@ onMounted(async () => {
     background: #c7a0a0;
 }
 
-.post-content-wrapper {
-    line-height: 1.5;
-}
-
-.post-content-wrapper {
-    /* 父容器轉為 inline-block, 讓 span 同行 */
-    display: inline-block;
-    max-width: 100%;
-}
-
 .post-content {
-    /* 使用 span 並保持彈性盒字數截斷 */
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 5;
-    overflow: hidden;
     white-space: pre-wrap;
     word-break: break-word;
-    vertical-align: top;
-    transition: max-height 0.3s ease;
-}
-
-.post-content.expanded {
-    -webkit-line-clamp: unset;
-    overflow: visible;
-}
-
-.show-more-btn {
-    display: inline;
-    margin-left: 0.5em;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: #007bff;
-    vertical-align: top;
-}
-
-.show-more-btn:hover {
-    text-decoration: underline;
 }
 
 .post-images {
@@ -330,7 +287,7 @@ onMounted(async () => {
 
 .post-images img {
     max-width: 100px;
-    margin-right: 10px;
+    margin-right: 0.5rem;
 }
 
 .post-images img.clickable-img {
@@ -373,5 +330,24 @@ onMounted(async () => {
 
 .action-btn:active {
     background: #e0e0e0;
+}
+
+/* 留言列表底下距離留給表單黏底 */
+.comment-list {
+    margin-bottom: 0;
+    /* 這裡已經用 padding-bottom 處理 */
+}
+
+/* 黏底表單 */
+.comment-form-wrapper {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    /* 遮住後面的內容 */
+    padding: 0.75rem 1rem;
+    /* 依表單內部間距調整 */
+    border-top: 1px solid #eee;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    z-index: 10;
 }
 </style>

@@ -1,4 +1,3 @@
-// src/components/ReplyList.vue
 <template>
     <section class="reply-section">
         <div v-for="reply in replies" :key="reply.replyId">

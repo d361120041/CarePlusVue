@@ -1,13 +1,21 @@
 <template>
     <div class="reply-item">
-
-        <!-- 漢堡選單 -->
-        <div class="reply-menu-wrapper">
-            <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
-            <ul v-if="menuOpen" class="reply-dropdown">
-                <li @click="startEdit">編輯回覆</li>
-                <li @click="confirmDelete">刪除回覆</li>
-            </ul>
+        <div class="reply-header">
+            <!-- 使用者資訊區塊 -->
+            <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
+            <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
+            <div class="user-info">
+                <div class="user-name">{{ reply.user.userName }}</div>
+                <div class="reply-time">{{ formattedTime }}</div>
+            </div>
+            <!-- 漢堡選單 -->
+            <div class="reply-menu-wrapper">
+                <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
+                <ul v-if="menuOpen" class="reply-dropdown">
+                    <li @click="startEdit">編輯回覆</li>
+                    <li @click="confirmDelete">刪除回覆</li>
+                </ul>
+            </div>
         </div>
 
         <!-- 編輯表單與顯示內容切換 -->
@@ -18,24 +26,38 @@
             <p>{{ reply.content }}</p>
         </div>
 
-        <small>由 User {{ reply.userId }} 發佈於 {{ reply.createdAt }}</small>
-
+        <!-- 按讚按鈕 -->
+        <div class="reply-actions">
+            <button class="action-btn" @click="likeReply">讚</button>
+            <span>(👍{{ likeCount }})</span>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import myAxios from '@/plugins/axios.js'
+
 import EditReplyForm from '@/daniel/components/reply/EditReplyForm.vue'
 
 const props = defineProps({ reply: Object })
 const emit = defineEmits(['updated', 'deleted'])
 
+import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+const { formattedTime } = useTimeFormat(props.reply.createdAt)
+
+import { useToggle } from '@/daniel/composables/useToggle'
+const [menuOpen, toggleMenu] = useToggle(false)
+
+// 使用者資訊區塊
+const currentUser = ref({
+    // avatarUrl: '/circle-user-regular.svg'
+    avatarUrl: '/circle-user-solid.svg'
+    // avatarUrl: '/user-regular.svg'
+    // avatarUrl: '/user-solid.svg'
+})
+
 // 下拉選單狀態
-const menuOpen = ref(false)
-function toggleMenu() {
-    menuOpen.value = !menuOpen.value
-}
 function closeMenu() {
     menuOpen.value = false
 }
@@ -66,6 +88,20 @@ async function confirmDelete() {
         alert('刪除回覆失敗，請稍後再試')
     }
 }
+
+const likeCount = ref(props.reply.reactions?.length || 0)
+async function likeReply() {
+    try {
+        const res = await myAxios.post(`/api/reactions/replies/${props.reply.replyId}?userId=${props.reply.user.userId}&type=1`)
+        likeCount.value = res.data
+    } catch (e) {
+        console.error('回覆按讚失敗', e)
+    }
+}
+
+onMounted(() => {
+    likeCount.value = props.reply.reactions?.length || 0
+})
 </script>
 
 <style scoped>
@@ -76,6 +112,34 @@ async function confirmDelete() {
     padding: 0.5rem;
     margin-bottom: 0.5rem;
     position: relative;
+}
+
+.reply-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.user-name {
+    font-weight: bold;
+}
+
+.reply-time {
+    font-size: 0.8rem;
+    color: #666;
 }
 
 .reply-menu-wrapper {
@@ -111,5 +175,23 @@ async function confirmDelete() {
 
 .reply-dropdown li:hover {
     background-color: #f5f5f5;
+}
+
+.reply-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.action-btn:hover {
+    text-decoration: underline
 }
 </style>
