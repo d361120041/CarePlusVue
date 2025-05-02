@@ -1,20 +1,26 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuth } from '@/stores/useAuth'
+// import { useAuth } from '@/stores/useAuth'
 
 // ================== 匯入套件 開始==================
-// ------------------ 基礎頁面 ------------------
 import Home from '@/views/Home.vue'
 import NotFound from '@/views/NotFound.vue'
 import Forbidden from '@/views/Forbidden.vue'
+
 
 // ------------------ daniel ------------------
 import Social from '@/daniel/views/Social.vue'
 // ------------------ daniel ------------------
 
+
 // ------------------ yuni ------------------
 import CourseHome from '@/yuni/views/CourseHome.vue'
 import CourseAdmin from '@/yuni/views/admin/CourseAdmin.vue'
+import CourseDetail from '@/yuni/views/CourseDetail.vue'
+import MyCourse from '@/yuni/views/MyCourse.vue'
+import CourseLearn from '@/yuni/views/CourseLearn.vue'
+import CourseProgress from '@/yuni/views/CourseProgress.vue'
 // ------------------ yuni ------------------
+
 
 // ------------------ yuuhou ------------------
 import CaregiverLogin from '@/yuuhou/CaregiverLogin.vue'
@@ -50,14 +56,21 @@ const routes = [
   { path: "/:pathMatch(.*)", component: NotFound, name: "notfound" },
   { path: "/403", component: Forbidden, name: "forbidden" },
 
+
 // ------------------ daniel ------------------
-{ path: "/social", component: Social, name: "social" },
+  { path: "/social", component: Social, name: "social" },
 // ------------------ daniel ------------------
 
+
 // ------------------ yuni ------------------
-{ path: "/course", component: CourseHome, name: "courseHome" },
-{ path: "/course/admin", component: CourseAdmin, name: "courseAdmin" },
+  { path: "/course", component: CourseHome, name: "courseHome" },
+  { path: "/course/admin", component: CourseAdmin, name: "courseAdmin" },
+  { path: '/courses/:id', component: CourseDetail, name: 'CourseDetail' },
+  { path: '/my-courses', component: MyCourse, name: 'MyCourse' },
+  { path: '/learn/:courseId', component: CourseLearn, name: 'CourseLearn' },
+  { path: '/course-progress/:courseId', component: CourseProgress, name: 'CourseProgress' },
 // ------------------ yuni ------------------
+
 
 // ------------------ yuuhou ------------------
   { path: "/caregiverLogin", component: CaregiverLogin, name: "caregiverLogin" },
@@ -96,12 +109,12 @@ const routes = [
 // ================== 其他設定 開始 ==================
 const router = createRouter({
   routes: routes,
-    history: createWebHistory(),
-    linkActiveClass: 'active',
-    linkExactActiveClass: 'active--exact'
-  })
+  history: createWebHistory(),
+  linkActiveClass: 'active',
+  linkExactActiveClass: 'active--exact'
+})
 
-  router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
   if (to.path === '/caregiver' && !isAuthenticated) {
     alert('請先登入')

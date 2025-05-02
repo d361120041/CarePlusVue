@@ -1,6 +1,9 @@
 
 <template>
     <h1>Course</h1>
+    <RouterLink to="/my-courses">
+      <button class="btn btn-primary mb-3">我的課程</button>
+    </RouterLink>
     <CourseList />
   </template>
     
