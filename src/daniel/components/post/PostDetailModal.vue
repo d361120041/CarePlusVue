@@ -84,6 +84,12 @@ const props = defineProps({
 })
 const emit = defineEmits(['close', 'refresh'])
 
+import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+const { formattedTime } = useTimeFormat(props.post.createdAt)
+
+import { useToggle } from '@/daniel/composables/useToggle'
+const [menuOpen, toggleMenu] = useToggle(false)
+
 //================= ref, computed 開始 =================
 // 使用者資訊區塊
 const currentUser = ref({
@@ -92,8 +98,6 @@ const currentUser = ref({
     // avatarUrl: '/user-regular.svg'
     // avatarUrl: '/user-solid.svg'
 })
-// 漢堡選單
-const menuOpen = ref(false)
 // PostFormModal 編輯/檢視模式
 const isFormModalOpen = ref(false)
 // 貼文動作列
@@ -101,45 +105,10 @@ const isDetailOpen = ref(false)
 const shareCount = ref(props.post.share || 0)
 // 評論清單
 const commentList = ref(null)
-
-// 格式化貼文時間（相對/絕對顯示）
-const formattedTime = computed(() => {
-    const now = Date.now()
-    const created = new Date(props.post.createdAt).getTime()
-    const diff = now - created
-    if (diff < 60_000) {
-        return '剛剛'
-    } else if (diff < 3_600_000) {
-        const mins = Math.floor(diff / 60_000)
-        return `${mins} 分鐘前`
-    } else if (diff < 86_400_000) {
-        const hrs = Math.floor(diff / 3_600_000)
-        return `${hrs} 小時前`
-    } else if (diff < 2 * 86_400_000) {
-        // 昨天 + 時間
-        const time = new Date(props.post.createdAt).toLocaleTimeString('zh-TW', {
-            hour: '2-digit',
-            minute: '2-digit'
-        })
-        return `昨天 ${time}`
-    } else {
-        // 顯示日期和時間
-        return new Date(props.post.createdAt).toLocaleString('zh-TW', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        })
-    }
-})
 //================= ref, computed 結束 =================
 
 //================= 漢堡選單 開始 =================
 // 下拉選單狀態
-function toggleMenu() {
-    menuOpen.value = !menuOpen.value
-}
 function closeMenu() {
     menuOpen.value = false
 }
