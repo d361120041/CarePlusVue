@@ -1,6 +1,8 @@
 // ================ style 開始 ================
 import '@/assets/css/main.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
+//allen 新增
+import '@fortawesome/fontawesome-free/css/all.min.css';
 // ================ style 結束 ================
 
 
@@ -16,6 +18,12 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { far } from '@fortawesome/free-regular-svg-icons'
 library.add( far)
 // ---------------- daniel ----------------
+
+// ---------------- allen ----------------
+//allen 新增: npm install @fortawesome/fontawesome-free 
+import { fas } from '@fortawesome/free-solid-svg-icons' // allen 新增
+library.add(far, fas) //allen 新增  
+// ---------------- allen ----------------
 
 // ---------------- yuuhou ----------------
 import { useAuth } from '@/stores/useAuth'

@@ -14,12 +14,8 @@
                 <router-link to="/空白3">空白3</router-link>
             </li>
             <li>
-                <router-link to="/空白4">空白4</router-link>
+                <router-link to="/news">新聞列表</router-link>
             </li>
-            <!-- <li>
-        <router-link to="/course">線上課程</router-link>
-      </li> -->
-
             <!-- Dropdown menu -->
             <li class="dropdown">
                 <span class="dropdown-label">線上課程</span>
@@ -28,7 +24,6 @@
                     <li><router-link to="/my-courses">我的課程</router-link></li>
                 </ul>
             </li>
-
             <li>
                 <router-link to="/social">討論區</router-link>
             </li>
