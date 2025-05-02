@@ -29,13 +29,9 @@
 
 <!-- 上一章 + 下一章 -->
 <div class="d-flex justify-content-between">
-  <button class="btn btn-primary" :disabled="currentIndex <= 0" @click="goPrevious">
-   上一章
-  </button>
+  <button class="btn btn-primary" :disabled="currentIndex <= 0" @click="goPrevious">上一章</button>
 
-  <button class="btn btn-primary" :disabled="currentIndex >= chapters.length - 1" @click="goNext">
-    下一章
-  </button>
+  <button class="btn btn-primary" @click="handleNextOrFinish">{{ currentIndex >= chapters.length - 1 ? '完成' : '下一章' }}</button>
 </div>
 
 
@@ -45,11 +41,13 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import axios from '@/plugins/axios.js'
 
 
+
 const route = useRoute()
+const router = useRoute()
 const courseId = Number(route.params.courseId)
 const userId = Number(localStorage.getItem('userId') || 3)
 
@@ -134,6 +132,18 @@ watch(() => route.query.chapterId, async (newChapterId) => {
     }
   }
 })
+
+
+
+// const handleNextOrFinish = async () => {
+//   if (currentIndex.value >= chapters.length - 1) {
+//     // 你可以改導向「我的課程」或「課程總覽」
+//     router.push('/my-courses')
+//   } else {
+//     await goNext()
+//   }
+// }
+
 
 onMounted(async () => {
   await fetchChapters()
