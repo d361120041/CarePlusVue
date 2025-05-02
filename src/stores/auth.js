@@ -6,6 +6,7 @@ export const useAuthStore = defineStore("auth", {
   state: () => ({
     isAuthenticated: false,
     userName: "",
+    storeReady: false, // ✅ 補上這一行！
   }),
   actions: {
     // 檢查使用者是否已登入
@@ -31,5 +32,5 @@ export const useAuthStore = defineStore("auth", {
       }
     },
   },
-  persist: true, // 保持登入狀態
+  persist: true,
 });

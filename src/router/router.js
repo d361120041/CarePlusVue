@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "@/stores/auth"; // 加上這行
 // import { useAuth } from '@/stores/useAuth'
 
 // ================== 匯入套件 開始==================
@@ -246,23 +247,29 @@ const router = createRouter({
   linkExactActiveClass: "active--exact",
 });
 
-router.beforeEach((to, from, next) => {
-  const isUserAuthenticated =
-    localStorage.getItem("isAuthenticated") === "true";
-  const caregiverToken = localStorage.getItem("token");
+router.beforeEach(async (to, from, next) => {
+  const auth = useAuthStore(); // ✅ 使用 Pinia Store
+
+  const caregiverToken = localStorage.getItem("token"); // ✅ 組員原有邏輯
+
+  // ✅ 初始化使用者登入狀態
+  if (!auth.storeReady) {
+    await auth.checkAuth(); // 這裡才能用 await
+    auth.storeReady = true;
+  }
 
   // ✅ 照顧者頁面但沒登入
   if (to.path === "/caregiver" && !caregiverToken) {
     alert("請先登入照顧者帳號");
-    next("/caregiverLogin");
+    return next("/caregiverLogin");
   }
   // ✅ 使用者中心頁面但沒登入
-  else if (to.path.startsWith("/user-center") && !isUserAuthenticated) {
+  if (to.path.startsWith("/user-center") && !auth.isAuthenticated) {
     alert("請先登入使用者帳號");
-    next("/userlogin");
-  } else {
-    next(); // ✅ 放行
+    return next("/userlogin");
   }
+
+  return next(); // ✅ 放行
 });
 
 // ================== 其他設定 結束 ==================
