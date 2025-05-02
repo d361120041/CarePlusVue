@@ -32,5 +32,6 @@ export const useAuthStore = defineStore("auth", {
       }
     },
   },
+  // asdfasdf
   persist: true,
 });
