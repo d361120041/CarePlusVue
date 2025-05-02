@@ -46,7 +46,7 @@ import CaregiverDashboard from "@/yuuhou/CaregiverDashboard.vue";
 import AdminMenu from "@/yuuhou/AdminMenu.vue";
 import ComingSoon from "@/views/ComingSoon.vue";
 import VerifySuccess from "@/yuuhou/VerifySuccess.vue";
-import ResetPassword from "@/yuuhou/ResetPassword.vue";
+import ResetPasswordYuuhou from "@/yuuhou/ResetPassword.vue";
 import VerifyFailed from "@/yuuhou/VerifyFailed.vue";
 import VerifyReminder from "@/yuuhou/VerifyReminder.vue";
 // ------------------ yuuhou ------------------
@@ -55,7 +55,7 @@ import UserLogin from "@/steve/views/UserLogin.vue";
 import UserRegister from "@/steve/views/UserRegister.vue";
 import UserVerify from "@/steve/views/UserVerify.vue";
 import ForgotPassword from "@/steve/views/ForgotPassword.vue";
-import ResetPassword from "@/steve/views/ResetPassword.vue";
+import ResetPasswordSteve from "@/steve/views/ResetPassword.vue";
 import UserCenter from "@/steve/views/UserCenter.vue";
 import UserProfile from "@/steve/views/UserProfile.vue";
 import InquiryForm from "@/steve/views/InquiryForm.vue";
@@ -126,7 +126,7 @@ const routes = [
   },
   // { path: '/adminLogin', component: AdminLogin, name: 'adminLogin' },
   { path: "/admin/dashboard", component: AdminDashboard },
-  { path: "/reset-password", component: ResetPassword },
+  { path: "/reset/yuuhou", component: ResetPasswordYuuhou },
   { path: "/verify-success", component: VerifySuccess, name: "verifySuccess" },
   { path: "/admin/menu", component: AdminMenu },
   { path: "/verify-reminder", component: VerifyReminder },
@@ -217,7 +217,11 @@ const routes = [
     component: ForgotPassword,
     name: "forgotPassword",
   },
-  { path: "/resetPassword", component: ResetPassword, name: "resetPassword" },
+  {
+    path: "/reset/steve",
+    component: ResetPasswordSteve,
+    name: "resetPassword",
+  },
 
   {
     path: "/user-center",
@@ -243,14 +247,24 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-  if (to.path === "/caregiver" && !isAuthenticated) {
-    alert("請先登入");
+  const isUserAuthenticated =
+    localStorage.getItem("isAuthenticated") === "true";
+  const caregiverToken = localStorage.getItem("token");
+
+  // ✅ 照顧者頁面但沒登入
+  if (to.path === "/caregiver" && !caregiverToken) {
+    alert("請先登入照顧者帳號");
     next("/caregiverLogin");
+  }
+  // ✅ 使用者中心頁面但沒登入
+  else if (to.path.startsWith("/user-center") && !isUserAuthenticated) {
+    alert("請先登入使用者帳號");
+    next("/userlogin");
   } else {
-    next();
+    next(); // ✅ 放行
   }
 });
+
 // ================== 其他設定 結束 ==================
 
 export default router;

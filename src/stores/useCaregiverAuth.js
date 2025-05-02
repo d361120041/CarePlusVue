@@ -1,12 +1,12 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue'
-import { jwtDecode } from 'jwt-decode';
-import authApi from '@/api/auth';
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { jwtDecode } from "jwt-decode";
+import authApi from "@/api/auth";
 
-export const useAuth = defineStore('auth', () => {
-  const token = ref(localStorage.getItem('token') || null);
-  const role = ref(localStorage.getItem('role') || null);
-  const email = ref(localStorage.getItem('email') || null);
+export const useCaregiverAuth = defineStore("caregiverAuth", () => {
+  const token = ref(localStorage.getItem("token") || null);
+  const role = ref(localStorage.getItem("role") || null);
+  const email = ref(localStorage.getItem("email") || null);
 
   const login = async (emailInput, password) => {
     const { data } = await authApi.login(emailInput, password); // ✅ 呼叫剛剛authApi的login
@@ -15,14 +15,14 @@ export const useAuth = defineStore('auth', () => {
 
   const setToken = (newToken) => {
     token.value = newToken;
-    localStorage.setItem('token', newToken);
+    localStorage.setItem("token", newToken);
 
     const decoded = jwtDecode(newToken);
     role.value = decoded.role;
     email.value = decoded.sub;
 
-    localStorage.setItem('role', decoded.role);
-    localStorage.setItem('email', decoded.sub);
+    localStorage.setItem("role", decoded.role);
+    localStorage.setItem("email", decoded.sub);
   };
 
   const logout = () => {
@@ -33,9 +33,9 @@ export const useAuth = defineStore('auth', () => {
   };
 
   const restoreLogin = () => {
-    const savedToken = localStorage.getItem('token');
-    const savedRole = localStorage.getItem('role');
-    const savedEmail = localStorage.getItem('email');
+    const savedToken = localStorage.getItem("token");
+    const savedRole = localStorage.getItem("role");
+    const savedEmail = localStorage.getItem("email");
 
     if (savedToken && savedRole && savedEmail) {
       token.value = savedToken;
@@ -46,8 +46,6 @@ export const useAuth = defineStore('auth', () => {
 
   return { token, role, email, login, setToken, logout, restoreLogin };
 });
-
-
 
 // import { defineStore } from 'pinia';
 // import { ref } from 'vue'
@@ -99,4 +97,3 @@ export const useAuth = defineStore('auth', () => {
 
 //   return { token, role, email, login, setToken, logout, restoreLogin };
 // });
-
