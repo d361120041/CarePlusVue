@@ -23,27 +23,64 @@
         <router-link to="/social">討論區</router-link>
       </li>
     </ul>
+
     <div class="login-button">
-  <button @click="goLogin" >照顧者登入</button>
-</div>
+      <template v-if="!isLogin">
+        <button @click="goLogin">照顧者登入</button>
+      </template>
+      <template v-else>
+        <div class="user-info">
+          <img src="@/assets/user-icon.png" alt="user" class="user-icon" />
+          <span class="welcome">歡迎，{{ authStore.email }}</span>
+          <button @click="logout" class="logout-button">登出</button>
+        </div>
+      </template>
+    </div>
+
   </div>
 </template>
 
-<script setup>
 
+<script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/stores/useAuth'
+
 const router = useRouter()
+const authStore = useAuth()
+
+const isLogin = computed(() => !!authStore.token)  // ✅ 只要有 token 就是登入
 
 const goLogin = () => {
   router.push('/caregiverLogin')
 }
 
+const logout = () => {
+  authStore.logout()
+  router.push('/caregiverLogin')
+}
 </script>
 
 <style scoped>
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+
 .navbar {
   background-color: #0366d6;
   padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .navbar ul {
@@ -66,19 +103,48 @@ const goLogin = () => {
 
 /* 當前路由（包含子路由）被點擊時套用 */
 .active {
-  background-color: rgba(255, 255, 255, 0.2);  /* 半透明底色 */
-  font-weight: bold;                            /* 加粗文字 */
-  border-bottom: 2px solid #fff;                /* 底線強調 */
+  background-color: rgba(255, 255, 255, 0.2);
+  font-weight: bold;
+  border-bottom: 2px solid #fff;
 }
 
 /* 精確對應當前路由才套用 */
 .active--exact {
-  background-color: #ffffff33;                  /* 較淡半透明底色 */
-  color: #000 !important;                       /* 強制文字變黑，與底色對比 */
+  background-color: #ffffff33;
+  color: #000 !important;
 }
 
-/* 手機垂直版保留前述設定 */
+/* 登入區域 */
+.login-button {
+  display: flex;
+  align-items: center;
+}
+
+.login-button button {
+  margin-left: 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.login-button .logout-button {
+  background-color: #dc3545;
+}
+
+.welcome {
+  color: white;
+  margin-right: 0.5rem;
+}
+
+/* 手機垂直版 */
 @media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
   .navbar ul {
     flex-direction: column;
     align-items: stretch;
