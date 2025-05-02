@@ -162,7 +162,7 @@ async function submitAll() {
                 { 
                     title: form.value.title, 
                     content: form.value.content, 
-                    user: { userId: 1 } 
+                    user: { userId: 3 } 
                 }
             )
         } else {
@@ -171,7 +171,7 @@ async function submitAll() {
                 { 
                     title: form.value.title, 
                     content: form.value.content, 
-                    user: { userId: 1 } 
+                    user: { userId: 3 } 
                 }
             )
         }
