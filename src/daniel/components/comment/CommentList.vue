@@ -1,16 +1,14 @@
 <template>
     <section class="comment-section">
-        <div v-for="c in comments" :key="c.commentId">
-            <CommentItem :comment="c" @replied="reloadComments" @updated="reloadComments" @deleted="onDeleted" />
+        <div v-for="comment in comments" :key="comment.commentId">
+            <CommentItem :comment="comment" @replied="reloadComments" @updated="reloadComments" @deleted="onDeleted" />
         </div>
-        <CommentForm :postId="props.postId" @added="reloadComments" />
     </section>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import myAxios from '@/plugins/axios.js'
-import CommentForm from '@/daniel/components/comment/CommentForm.vue'
 import CommentItem from '@/daniel/components/comment/CommentItem.vue'
 
 const props = defineProps({ postId: Number })
@@ -20,6 +18,7 @@ const reloadComments = async () => {
     const { data } = await myAxios.get(`/api/comments?postId=${props.postId}`)
     comments.value = data
 }
+defineExpose({ reloadComments })
 
 function onDeleted(deletedId) {
     // 過濾掉已刪除的評論

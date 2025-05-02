@@ -33,6 +33,16 @@ import { RouterView } from "vue-router";
 import Navigationbar from "@/views/Navigationbar.vue";
 </script>
 
-<style scoped>
-/* 你可以根據需求補充 App layout 样式 */
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #fff8f0; /* ✅ 米白背景 */
+}
+
+#app {
+  position: relative;
+  background-color: transparent; /* ✅ 不蓋掉背景圖片 */
+}
 </style>

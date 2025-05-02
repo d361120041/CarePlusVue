@@ -1,52 +1,102 @@
 <template>
   <div class="login">
-    <h2>員工登入</h2>
+    <h2>照服員登入</h2>
 
     <!-- ✅ 輸入欄位 -->
-    <input v-model="email" placeholder="Email" />
-    <input v-model="password" type="password" placeholder="密碼" />
+    <input v-model="email" type="email" placeholder="Email" />
+<p v-if="emailError" class="error">{{ emailError }}</p>
+
+<input v-model="password" type="password" placeholder="密碼" />
+<p v-if="passwordError" class="error">{{ passwordError }}</p>
+
+<p v-if="generalError" class="error">{{ generalError }}</p>
 
     <!-- ✅ 登入按鈕 -->
     <button @click="login">登入</button>
 
     <!-- ✅ 額外功能按鈕 -->
     <div class="extra-buttons">
-      <button class="register" @click="goRegister">註冊照顧者</button>
-      <button class="forgot" @click="goForgot">忘記密碼</button>
-    </div>
+  <router-link to="/register">
+    <button class="register">註冊照顧者</button>
+  </router-link>
+
+  <router-link to="/forgot">
+    <button class="forgot">忘記密碼</button>
+  </router-link>
+</div>
+
   </div>
 </template>
-
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuth } from '@/stores/useAuth'
+import { onMounted } from 'vue'
 
+const emailError = ref('')
+const passwordError = ref('')
+const generalError = ref('')
 const email = ref('')
 const password = ref('')
 const router = useRouter()
+const authStore = useAuth()
 
-// ✅ 登入流程
-const login = () => {
-  if (email.value === 'daniel@example.com' && password.value === '123456') {
-    localStorage.setItem('isAuthenticated', 'true')
-    router.push('/caregiver')
-  } else {
-    alert('帳號或密碼錯誤')
+
+onMounted(() => {
+  if (authStore.token) {
+    if (authStore.role === 'ADMIN') {
+      router.push('/admin/menu')
+    } else if (authStore.role === 'CAREGIVER') {
+      router.push('/caregiver')
+    } else {
+      router.push('/403')
+    }
+      
+    
+  }
+})
+
+const login = async () => {
+  emailError.value = ''
+  passwordError.value = ''
+  generalError.value = ''
+
+  if (!email.value.trim()) {
+    emailError.value = '請輸入帳號（Email）'
+    return
+  }
+
+  if (!password.value.trim()) {
+    passwordError.value = '請輸入密碼'
+    return
+  }
+
+  try {
+    await authStore.login(email.value, password.value)
+
+    if (authStore.role === 'ADMIN') {
+      router.push('/admin/menu')
+    } else if (authStore.role === 'CAREGIVER') {
+      router.push('/caregiver')
+    } else {
+      generalError.value = '未知角色，請聯絡管理員'
+    }
+  } catch (error) {
+    generalError.value = '帳號或密碼錯誤'
   }
 }
 
-// ✅ 導向註冊頁面
-const goRegister = () => {
-  router.push('/caregiverRegister') 
-}
-
-// ✅ 導向忘記密碼頁
-const goForgot = () => {
-  router.push('/forgotPassword')    
-  }
 </script>
 
+
 <style scoped>
+.error {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+
 .login {
   max-width: 400px;
   margin: 4rem auto;
