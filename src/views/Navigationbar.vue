@@ -76,7 +76,9 @@ onMounted(() => {
 });
 
 // 登入／登出事件
+//使用者登入按鈕
 const goUserLogin = () => router.push("/userlogin");
+//照護者登入按鈕
 const goCaregiverLogin = () => router.push("/caregiverLogin");
 
 const userLogout = async () => {
