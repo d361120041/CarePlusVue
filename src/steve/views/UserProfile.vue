@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-2xl mx-auto p-4">
     <h2 class="text-xl font-bold mb-4">編輯使用者資料</h2>
-
+    <!-- picture -->
     <!-- 頭像 -->
     <div class="mb-4">
       <label class="block font-medium">目前頭像</label>
