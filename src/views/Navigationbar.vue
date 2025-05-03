@@ -23,16 +23,23 @@
     <div class="login-button">
       <!-- ✅ 使用者登入後 -->
       <template v-if="isUserLogin">
-        <span class="welcome-text">
-          歡迎，老頭的家人：
-          <router-link
-            to="/user-center/profile"
-            class="underline hover:no-underline"
-          >
-            {{ auth.userName }}
+        <div class="user-info">
+          <!-- ✅ 純文字歡迎語 -->
+          <span class="welcome-text">歡迎：{{ auth.userName }}</span>
+
+          <!-- ✅ 點擊頭像導向個人資料頁 -->
+          <router-link to="/user-center/profile" class="user-icon-wrapper">
+            <img
+              v-if="imageUrl"
+              :src="imageUrl"
+              alt="使用者頭像"
+              class="user-icon"
+              title="編輯個人資料"
+            />
           </router-link>
-        </span>
-        <button @click="userLogout" class="logout-button">登出</button>
+
+          <button @click="userLogout" class="logout-button">登出</button>
+        </div>
       </template>
 
       <!-- ✅ 照顧者登入後 -->
@@ -54,13 +61,27 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
 // ✅ 使用者：Session-based 登入狀態
 import { useAuthStore } from "@/stores/auth";
 const auth = useAuthStore();
 const isUserLogin = computed(() => auth.isAuthenticated);
+const imageUrl = ref(null);
+const fetchImage = async () => {
+  try {
+    const res = await fetch("http://localhost:8082/user/profile-picture", {
+      credentials: "include",
+    });
+    if (res.ok) {
+      const blob = await res.blob();
+      imageUrl.value = URL.createObjectURL(blob);
+    }
+  } catch (e) {
+    imageUrl.value = null;
+  }
+};
 
 // ✅ 照顧者：JWT-based 登入狀態
 import { useCaregiverAuth } from "@/stores/useCaregiverAuth";
@@ -73,6 +94,9 @@ const route = useRoute();
 // 使用者登入狀態每次進入都確認（照顧者用 restoreLogin 不需要）
 onMounted(() => {
   auth.checkAuth?.();
+  if (auth.isAuthenticated) {
+    fetchImage(); // 只在使用者登入時取得頭像
+  }
 });
 
 // 登入／登出事件
@@ -275,5 +299,29 @@ const caregiverLogout = () => {
 .welcome-text {
   color: #fff;
   font-weight: bold;
+}
+.user-icon-wrapper {
+  display: inline-block;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  background-color: transparent;
+  border: none;
+}
+
+.user-icon-wrapper:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.user-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border: none;
 }
 </style>
