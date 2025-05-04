@@ -61,6 +61,18 @@ import UserProfile from "@/steve/views/UserProfile.vue";
 import InquiryForm from "@/steve/views/InquiryForm.vue";
 import PatientsList from "@/steve/views/PatientsList.vue";
 import AddPatient from "@/steve/views/AddPatient.vue";
+
+// ------------------ 後台cms ------------------
+//  後台管理頁面 
+
+import AdminLayout from '@/CMS/AdminLayout.vue'
+import CmsDashboard from '@/CMS/CmsDashboard.vue'
+
+import CourseAdminCms from '@/CMS/yuni/views/CourseAdminCms.vue'
+import ChapterAdmin from '@/CMS/yuni/views/ChapterAdmin.vue'
+import ProgressAdmin from '@/CMS/yuni/views/ProgressAdmin.vue'
+// ------------------ 後台cms ------------------
+
 // ================== 匯入套件 結束==================
 
 // ================== 設定路徑 開始==================
@@ -79,11 +91,9 @@ const routes = [
   { path: "/courses/:id", component: CourseDetail, name: "CourseDetail" },
   { path: "/my-courses", component: MyCourse, name: "MyCourse" },
   { path: "/learn/:courseId", component: CourseLearn, name: "CourseLearn" },
-  {
-    path: "/course-progress/:courseId",
-    component: CourseProgress,
-    name: "CourseProgress",
-  },
+  { path: "/course-progress/:courseId", component: CourseProgress, name: "CourseProgress" },
+
+
   // ------------------ yuni ------------------
 
   // ------------------ allen ------------------
@@ -235,6 +245,20 @@ const routes = [
     ],
   },
   // { path: "/user-center", component: UserCenter, name: "userCenter" }
+
+  {
+    path: "/admin",
+    component: AdminLayout,
+    children: [
+      { path: "", component: CmsDashboard, name: "cmsDashboard" },
+      { path: "cms/courses", component: CourseAdminCms, name: "cmsCourses" },
+      { path: "cms/chapters", component: ChapterAdmin, name: "cmsChapters" },
+      { path: "cms/progress", component: ProgressAdmin, name: "cmsProgress" }
+    ]
+  }
+  
+
+
 ];
 // ================== 設定路徑 結束==================
 

@@ -135,14 +135,14 @@ watch(() => route.query.chapterId, async (newChapterId) => {
 
 
 
-// const handleNextOrFinish = async () => {
-//   if (currentIndex.value >= chapters.length - 1) {
-//     // 你可以改導向「我的課程」或「課程總覽」
-//     router.push('/my-courses')
-//   } else {
-//     await goNext()
-//   }
-// }
+ const handleNextOrFinish = async () => {
+   if (currentIndex.value = chapters.length - 1) {
+     // 你可以改導向「我的課程」或「課程總覽」
+     router.push('/my-courses')
+   } else {
+     await goNext()
+   }
+ }
 
 
 onMounted(async () => {

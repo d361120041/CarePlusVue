@@ -1,12 +1,14 @@
 <template>
   <!-- 頁首 開始 -->
-  <header>
+  <header v-if="!isAdminRoute">
     <h1>頁首</h1>
   </header>
+
+
   <!-- 頁尾 結束 -->
 
   <!-- 導覽列 開始-->
-  <nav>
+  <nav v-if="!isAdminRoute">
     <Navigationbar />
   </nav>
   <!-- 導覽列 結束 -->
@@ -20,8 +22,9 @@
   </main>
 
   <!-- 頁尾 -->
-  <footer>
+  <footer v-if="!isAdminRoute">
     <h1>頁尾</h1>
+    <div><router-link to="/admin">後台管理</router-link></div>
   </footer>
   <!-- 頁尾 -->
 </template>
@@ -29,8 +32,15 @@
 <script setup>
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { RouterView } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
+import { computed } from "vue";
 import Navigationbar from "@/views/Navigationbar.vue";
+
+const route = useRoute();
+// ✅ 檢查是否為 admin 開頭的頁面
+const isAdminRoute = computed(() => route.path.startsWith("/admin"));
+
+
 </script>
 
 <style>
