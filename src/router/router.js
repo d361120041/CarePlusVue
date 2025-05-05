@@ -30,13 +30,15 @@ import AdminNewsDetail from "@/allen/views/AdminNewsDetail.vue";
 // ------------------ allen ------------------
 
 // ------------------ yuuhou ------------------
-import CaregiverLogin from "@/yuuhou/CaregiverLogin.vue";
+import CaregiverLogin from "@/yuuhou/LoginCaregiver.vue";
 import CaregiverProfileView from "@/yuuhou/CaregiverProfileView.vue";
 import CaregiverPricing from "@/yuuhou/EditService.vue";
+// import Navigationbar from "@/views/Navigationbar.vue";
 
 // import CaregiverSchedule from '@/yuuhou/Schedule.vue'
 // import CaregiverOrders from '@/yuuhou/Orders.vue'
 // import CaregiverReviews from '@/yuuhou/Reviews.vue'
+
 
 import LoginView from "@/yuuhou/LoginView.vue";
 import RegisterView from "@/yuuhou/RegisterView.vue";
@@ -45,7 +47,6 @@ import UserForgotPwd from "@/yuuhou/UserForgotPwd.vue";
 import AdminDashboard from "@/yuuhou/AdminDashboard.vue";
 import UserDashboard from "@/yuuhou/UserDashboard.vue";
 import CaregiverDashboard from "@/yuuhou/CaregiverDashboard.vue";
-import AdminMenu from "@/yuuhou/AdminMenu.vue";
 import ComingSoon from "@/views/ComingSoon.vue";
 import VerifySuccess from "@/yuuhou/VerifySuccess.vue";
 import ResetPasswordYuuhou from "@/yuuhou/ResetPassword.vue";
@@ -125,6 +126,7 @@ const routes = [
   { path: "/login", component: LoginView, name: "login" },
   { path: "/register", component: RegisterView, name: "register" },
   { path: "/forgot", component: UserForgotPwd, name: "forgotPwd" },
+  // { path: "/navigationbar" , component: Navigationbar, name: "navigationBar" },
   {
     path: "/admin/dashboard",
     component: AdminDashboard,
@@ -140,17 +142,15 @@ const routes = [
   { path: "/admin/dashboard", component: AdminDashboard },
   { path: "/reset/yuuhou", component: ResetPasswordYuuhou },
   { path: "/verify-success", component: VerifySuccess, name: "verifySuccess" },
-  { path: "/admin/menu", component: AdminMenu },
   { path: "/verify-reminder", component: VerifyReminder },
   { path: "/verify-failed", component: VerifyFailed },
-  { path: "/admin/yuni", component: ComingSoon }, //yuni
-  { path: "/admin/zonghan", component: ComingSoon }, //zonghan
-  { path: "/admin/rita1", component: ComingSoon }, //rita
-  { path: "/admin/rita2", component: ComingSoon }, //rita
-  { path: "/admin/steve", component: ComingSoon }, //steve
-  { path: "/admin/qilin", component: ComingSoon }, //qilin
   { path: "/caregiver/profile", component: CaregiverProfileView },
   { path: "/caregiver/pricing", component: CaregiverPricing },
+  { path: "/login-select", component: () => import("@/yuuhou/LoginSelect.vue") },
+{ path: "/login-caregiver", component: () => import("@/yuuhou/LoginCaregiver.vue") },
+{ path: "/login-admin", component: () => import("@/yuuhou/LoginAdmin.vue") },
+
+
   // { path: '/caregiver/schedule', component: CaregiverSchedule },
   // { path: '/caregiver/orders', component: CaregiverOrders },
   // { path: '/caregiver/reviews', component: CaregiverReviews },

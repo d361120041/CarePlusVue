@@ -56,8 +56,14 @@
 
       <!-- ✅ 都沒登入 -->
       <template v-else>
-        <button @click="goUserLogin">使用者登入</button>
-        <button @click="goCaregiverLogin">照服員登入</button>
+        <div class="dropdown-login">
+          <button class="login-dropdown-btn">登入/註冊</button>
+          <div class="dropdown-login-menu">
+    <button @click="goUserLogin">一般用戶登入</button>
+    <button @click="goCaregiverLogin">照服人員登入</button>
+    <button @click="goAdminLogin">系統管理員登入</button>
+  </div>
+</div>
       </template>
     </div>
   </div>
@@ -107,6 +113,8 @@ onMounted(() => {
 const goUserLogin = () => router.push("/userlogin");
 //照護者登入按鈕
 const goCaregiverLogin = () => router.push("/caregiverLogin");
+const goAdminLogin = () => router.push("/login-admin");
+
 
 const userLogout = async () => {
   await auth.logout();
@@ -115,7 +123,7 @@ const userLogout = async () => {
 
 const caregiverLogout = () => {
   caregiver.logout();
-  router.push("/caregiverLogin");
+  router.push("/");
 };
 </script>
 
@@ -327,4 +335,50 @@ const caregiverLogout = () => {
   display: block;
   border: none;
 }
+
+.dropdown-login {
+  position: relative;
+  display: inline-block;
+}
+
+.login-dropdown-btn {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.dropdown-login-menu {
+  display: none;
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  min-width: 160px;
+  border-radius: 6px;
+  overflow: hidden;
+  right: 0;
+}
+
+.dropdown-login-menu button {
+  background-color: white;
+  border: none;
+  color: #333;
+  padding: 10px 16px;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdown-login-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+/* 顯示下拉選單 */
+.dropdown-login:hover .dropdown-login-menu {
+  display: block;
+}
+
 </style>

@@ -35,7 +35,7 @@ footer {
 /* 3. 主內容區塊 */
 main {
   flex: 1; /* 撐滿剩餘空間，實現黏性 footer :contentReference[oaicite:4]{index=4} */
-  padding: 1.5rem;
+  /* padding: 1.5rem; */
   overflow-y: auto;
 }
 

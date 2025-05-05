@@ -10,7 +10,7 @@
   </nav>
   <!-- 導覽列 結束 -->
   
-  <div style="text-align: right;"><router-link to="/admin">後台管理</router-link></div>
+ 
 
   <!-- 輪播圖 開始-->
   <!-- 輪播圖 結束 -->
@@ -33,6 +33,8 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { RouterView, useRoute } from "vue-router";
 import { computed } from "vue";
 import Navigationbar from "@/views/Navigationbar.vue";
+
+
 
 const route = useRoute();
 // ✅ 檢查是否為 admin 開頭的頁面
