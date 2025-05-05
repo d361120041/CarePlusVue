@@ -18,6 +18,7 @@ import CourseDetail from "@/yuni/views/CourseDetail.vue";
 import MyCourse from "@/yuni/views/MyCourse.vue";
 import CourseLearn from "@/yuni/views/CourseLearn.vue";
 import CourseProgress from "@/yuni/views/CourseProgress.vue";
+import Done from "@/yuni/views/Done.vue";
 // ------------------ yuni ------------------
 
 // ------------------ allen ------------------
@@ -64,6 +65,7 @@ import UserProfile from "@/steve/views/UserProfile.vue";
 import InquiryForm from "@/steve/views/InquiryForm.vue";
 import PatientsList from "@/steve/views/PatientsList.vue";
 import AddPatient from "@/steve/views/AddPatient.vue";
+import FavoritesView from "@/steve/views/FavoritesView.vue";
 
 // ------------------ 後台cms ------------------
 //  後台管理頁面 
@@ -75,6 +77,7 @@ import CourseAdminCms from '@/CMS/yuni/views/CourseAdminCms.vue'
 import ChapterAdmin from '@/CMS/yuni/views/ChapterAdmin.vue'
 import ProgressAdmin from '@/CMS/yuni/views/ProgressAdmin.vue'
 // ------------------ 後台cms ------------------
+
 
 // ================== 匯入套件 結束==================
 
@@ -95,6 +98,7 @@ const routes = [
   { path: "/my-courses", component: MyCourse, name: "MyCourse" },
   { path: "/learn/:courseId", component: CourseLearn, name: "CourseLearn" },
   { path: "/course-progress/:courseId", component: CourseProgress, name: "CourseProgress" },
+  { path: "/done/:courseId", component: Done, name: "Done" },
 
 
   // ------------------ yuni ------------------
@@ -147,9 +151,8 @@ const routes = [
   { path: "/caregiver/profile", component: CaregiverProfileView },
   { path: "/caregiver/pricing", component: CaregiverPricing },
   { path: "/login-select", component: () => import("@/yuuhou/LoginSelect.vue") },
-{ path: "/login-caregiver", component: () => import("@/yuuhou/LoginCaregiver.vue") },
-{ path: "/login-admin", component: () => import("@/yuuhou/LoginAdmin.vue") },
-
+  { path: "/login-caregiver", component: () => import("@/yuuhou/LoginCaregiver.vue") },
+  { path: "/login-admin", component: () => import("@/yuuhou/LoginAdmin.vue") },
 
   // { path: '/caregiver/schedule', component: CaregiverSchedule },
   // { path: '/caregiver/orders', component: CaregiverOrders },
@@ -244,6 +247,7 @@ const routes = [
       { path: "support", component: InquiryForm },
       { path: "patients", component: PatientsList },
       { path: "patients/add", component: AddPatient },
+      { path: "favorites", component: FavoritesView },
     ],
   },
   // { path: "/user-center", component: UserCenter, name: "userCenter" }
@@ -258,7 +262,7 @@ const routes = [
       { path: "cms/progress", component: ProgressAdmin, name: "cmsProgress" }
     ]
   }
-  
+
 
 
 ];
