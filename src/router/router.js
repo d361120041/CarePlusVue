@@ -33,6 +33,7 @@ import AdminNewsDetail from "@/allen/views/AdminNewsDetail.vue";
 import CaregiverLogin from "@/yuuhou/CaregiverLogin.vue";
 import CaregiverProfileView from "@/yuuhou/CaregiverProfileView.vue";
 import CaregiverPricing from "@/yuuhou/EditService.vue";
+
 // import CaregiverSchedule from '@/yuuhou/Schedule.vue'
 // import CaregiverOrders from '@/yuuhou/Orders.vue'
 // import CaregiverReviews from '@/yuuhou/Reviews.vue'

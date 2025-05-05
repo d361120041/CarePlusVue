@@ -4,9 +4,6 @@
     <h1>頁首</h1>
   </header> -->
 
-
-  <!-- 頁尾 結束 -->
-
   <!-- 導覽列 開始-->
   <nav v-if="!isAdminRoute">
     <Navigationbar />

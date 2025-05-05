@@ -1,6 +1,13 @@
 <template>
   <div class="profile-container">
     <h2>📝 編輯個人資料</h2>
+
+    <!-- ✅ 大頭貼區塊 -->
+    <div class="avatar-section">
+      <img :src="photoPreviewUrl" alt="目前大頭貼" class="avatar" />
+      <input type="file" @change="handlePhotoUpload" accept="image/*" />
+    </div>
+
     <form @submit.prevent="handleSubmit">
       <div><label>姓名：</label><input v-model="form.caregiverName" required /></div>
       <div><label>性別：</label>
@@ -39,16 +46,45 @@ import axios from '@/plugins/axios'
 const form = ref({
   caregiverName: '', gender: '男', birthday: '', phone: '',
   nationality: '中華民國', customNationality: '',
-  languages: '中文', yearOfExperience: 0, description: ''
+  languages: '中文', yearOfExperience: 0, description: '',
+  photoPath: ''
 })
+const photoPreviewUrl = ref('/yuuhou/images/default.png')
 const message = ref('')
 
 const fetchProfile = async () => {
   try {
     const { data } = await axios.get('/api/caregivers/me')
     form.value = { ...data }
+    photoPreviewUrl.value = 'http://localhost:8082' + data.photoPath
+
+    
   } catch (err) {
     message.value = '⚠️ 無法載入個人資料'
+  }
+}
+
+const handlePhotoUpload = async (event) => {
+  const file = event.target.files[0]
+  console.log("🚀 JWT token 發送前:", localStorage.getItem("token"));
+
+  if (!file) return
+
+  photoPreviewUrl.value = URL.createObjectURL(file)
+  const formData = new FormData()
+  formData.append('file', file)
+
+  try {
+    const { data } = await axios.post('/api/auth/api/caregivers/photo', formData, {
+  headers: {
+    "Content-Type": "multipart/form-data",
+     "Authorization": `Bearer ${token}`
+  }
+})
+    form.value.photoPath = data.photoPath
+    photoPreviewUrl.value = data.photoPath
+  } catch (err) {
+    message.value = '❌ 上傳大頭貼失敗'
   }
 }
 
@@ -75,6 +111,17 @@ onMounted(fetchProfile)
   padding: 1.5rem;
   border: 1px solid #ccc;
   border-radius: 10px;
+}
+.avatar-section {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.avatar {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 10px;
 }
 .profile-container div {
   margin-bottom: 12px;
