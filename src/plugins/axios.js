@@ -2,8 +2,8 @@ import axios from "axios";
 
 const myAxios = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  withCredentials: true,
 });
+
 
 // 攔截從後端傳回的所有403狀態
 myAxios.interceptors.response.use(
