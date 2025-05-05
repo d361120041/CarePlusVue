@@ -8,6 +8,9 @@
         <router-link to="/admin/cms/courses" style="color: white">課程管理</router-link>
         <router-link to="/admin/cms/chapters" style="color: white">章節管理</router-link>
         <router-link to="/admin/cms/progress" style="color: white">進度管理</router-link>
+        <!-- allen 新聞連結 -->
+        <router-link to="/admin/news" style="color: white">新聞管理</router-link>
+
       </nav>
     </aside>
 

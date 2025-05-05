@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div class="admin-menu">
       <h2>🔐 超級使用者功能選單</h2>
       <div class="button-grid">
@@ -50,4 +50,4 @@
     background-color: #024c9a;
   }
   </style>
-  
+   -->

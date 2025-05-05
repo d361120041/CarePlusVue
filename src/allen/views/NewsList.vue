@@ -1,13 +1,14 @@
 <template>
   <div class="news-list">
-    <!-- 🔍 搜尋欄卡片 -->
+    <!-- 搜尋欄 -->
     <div class="search-bar mx-auto max-w-4xl p-6 mb-10 bg-white rounded-xl shadow-lg border border-gray-300">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <input
           v-model="search.keyword"
           type="text"
           placeholder="🔍 請輸入關鍵字"
           class="border border-gray-300 p-2 rounded-md w-full"
+          @keyup.enter="handleSearch"
         />
 
         <select v-model="search.categoryId" class="border border-gray-300 p-2 rounded-md w-full">
@@ -17,29 +18,32 @@
           </option>
         </select>
 
-        <div class="flex gap-2">
-          <input type="date" v-model="search.dateFrom" class="border border-gray-300 p-2 rounded-md w-full" />
-          <input type="date" v-model="search.dateTo" class="border border-gray-300 p-2 rounded-md w-full" />
-        </div>
+        <select v-model="search.dateRange" class="border border-gray-300 p-2 rounded-md w-full">
+          <option value="">-- 不限制時間 --</option>
+          <option value="today">今天</option>
+          <option value="week">這週</option>
+          <option value="month">這個月</option>
+          <option value="year">今年</option>
+        </select>
+
+        <button @click="handleSearch" :disabled="loading" class="search-btn w-full">
+          🔍 搜尋
+        </button>
       </div>
 
-      <div class="mt-4 text-right">
-        <button
-          @click="handleSearch"
-          :disabled="loading"
-          class="search-btn"
-        >
-          🔍 搜尋
+      <!-- 搜尋摘要 -->
+      <div v-if="hasSearched && summaryText" class="text-gray-700 mt-4 text-sm">
+        🔎 以下是 {{ summaryText }} 的搜尋結果
+        <button @click="clearSearch" class="ml-4 text-blue-600 underline hover:text-blue-800">
+          取消篩選
         </button>
       </div>
     </div>
 
-    <!-- 📰 新聞標題 -->
     <h1 class="text-2xl font-bold mb-6 text-center">最新新聞列表</h1>
 
     <NewsListSkeleton v-if="loading" />
 
-    <!-- ✅ 新聞列表 -->
     <div v-else>
       <div
         v-for="news in newsList"
@@ -55,38 +59,31 @@
           />
         </router-link>
 
-        <div>
+        <div class="flex-1 pt-2">
           <router-link :to="`/news/${news.newsId}`" class="text-lg font-semibold hover:underline">
             {{ news.title }}
           </router-link>
-          <p class="text-sm text-gray-500">📅 發布日期：{{ formatDate(news.publishAt) }}</p>
-          <p class="text-sm text-gray-500">🛠️ 最後修改：{{ news.modifyAt ? formatDate(news.modifyAt) : '尚未修改' }}</p>
-          <p class="text-sm text-gray-500">👁️ 瀏覽次數：{{ news.viewCount || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">📅 發布日期：{{ formatDate(news.publishAt) }}</p>
+          <p class="text-sm text-gray-600">🛠️ 最後修改：{{ news.modifyAt ? formatDate(news.modifyAt) : '尚未修改' }}</p>
+          <p class="text-sm text-gray-600">👁️ 瀏覽次數：{{ news.viewCount || 0 }}</p>
         </div>
       </div>
 
-      <!-- 📄 分頁 -->
       <div class="pagination mt-6">
-        <button @click="prevPage" :disabled="page === 0 || loading" class="page-btn">
-          上一頁
-        </button>
+        <button @click="prevPage" :disabled="page === 0 || loading" class="page-btn">上一頁</button>
         <span>第 {{ page + 1 }} 頁</span>
-        <button @click="nextPage" :disabled="!hasNextPage || loading" class="page-btn">
-          下一頁
-        </button>
+        <button @click="nextPage" :disabled="!hasNextPage || loading" class="page-btn">下一頁</button>
       </div>
-
     </div>
-    
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import noImage from '@/assets/allen/no-image.jpg';
-import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue';
-import { getFullImageUrl } from '@/allen/utils/urlHelper';
+import { ref, computed, onMounted } from 'vue';
 import myAxios from '@/plugins/axios';
+import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue';
+import noImage from '@/assets/allen/no-image.jpg';
+import { getFullImageUrl } from '@/allen/utils/urlHelper';
 
 const newsList = ref([]);
 const page = ref(0);
@@ -94,54 +91,121 @@ const size = ref(5);
 const loading = ref(false);
 const hasNextPage = ref(true);
 const defaultThumbnail = noImage;
-
-const search = ref({
-  keyword: '',
-  categoryId: '',
-  dateFrom: '',
-  dateTo: ''
-});
+const hasSearched = ref(false);
+const searchSnapshot = ref({});
 
 const categories = ref([]);
+const search = ref({ keyword: '', categoryId: '', dateRange: '' });
 
-const handleSearch = () => {
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mi = String(date.getMinutes()).padStart(2, '0');
+  return `${yyyy}/${mm}/${dd} ${hh}:${mi}`;
+};
+
+const formatDateTime = (date) => {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mi = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+};
+
+const buildDateRange = () => {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  switch (search.value.dateRange) {
+    case 'today':
+      return {
+        dateFrom: formatDateTime(today),
+        dateTo: formatDateTime(new Date(today.getTime() + 86400000))
+      };
+    case 'week': {
+      const day = today.getDay();
+      const diffToMonday = day === 0 ? -6 : 1 - day;
+      const monday = new Date(today);
+      monday.setDate(today.getDate() + diffToMonday);
+      const endOfToday = new Date(today);
+      endOfToday.setHours(23, 59, 59, 999);
+      return {
+        dateFrom: formatDateTime(monday),
+        dateTo: formatDateTime(endOfToday)
+      };
+    }
+    case 'month': {
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+      return {
+        dateFrom: formatDateTime(firstDay),
+        dateTo: formatDateTime(now)
+      };
+    }
+    case 'year': {
+      const firstDay = new Date(today.getFullYear(), 0, 1);
+      return {
+        dateFrom: formatDateTime(firstDay),
+        dateTo: formatDateTime(now)
+      };
+    }
+    default:
+      return { dateFrom: null, dateTo: null };
+  }
+};
+
+const summaryText = computed(() => {
+  const parts = [];
+  const snap = searchSnapshot.value;
+  if (snap.keyword) parts.push(`關鍵字為「${snap.keyword}」`);
+  if (snap.categoryId) {
+    const found = categories.value.find(c => c.categoryId === Number(snap.categoryId));
+    if (found) parts.push(`分類為「${found.categoryName}」`);
+  }
+  const map = { today: '今天', week: '這週', month: '這月', year: '今年' };
+  if (snap.dateRange && map[snap.dateRange]) {
+    parts.push(`時間為「${map[snap.dateRange]}」`);
+  }
+  return parts.length ? parts.join('、') : '';
+});
+
+const clearSearch = () => {
+  search.value = { keyword: '', categoryId: '', dateRange: '' };
+  searchSnapshot.value = {};
+  hasSearched.value = false;
   page.value = 0;
   loadNews();
 };
 
-const handleImgError = (event) => {
-  if (event.target.src !== defaultThumbnail) {
-    event.target.src = defaultThumbnail;
+const loadNews = async () => {
+  loading.value = true;
+  const { dateFrom, dateTo } = buildDateRange();
+  const params = {
+    keyword: search.value.keyword.trim() || null,
+    categoryId: search.value.categoryId || null,
+    dateFrom,
+    dateTo
+  };
+  try {
+    const response = await myAxios.post(`/news/public/search?page=${page.value}&size=${size.value}`, params);
+    newsList.value = response.data.content;
+    hasNextPage.value = !response.data.last;
+  } catch (error) {
+    console.error('載入新聞失敗', error);
+  } finally {
+    loading.value = false;
   }
 };
 
-const loadNews = async () => {
-  loading.value = true;
-
-  try {
-    const params = {
-      keyword: search.value.keyword || null,
-      categoryId: search.value.categoryId || null,
-      dateFrom: search.value.dateFrom || null,
-      dateTo: search.value.dateTo || null,
-      page: page.value,
-      size: size.value
-    };
-
-    const response = await myAxios.post(
-      `/news/public/search?page=${page.value}&size=${size.value}`,
-      params
-    );
-
-    setTimeout(() => {
-      newsList.value = response.data.content;
-      hasNextPage.value = !response.data.last;
-      loading.value = false;
-    }, 500);
-  } catch (error) {
-    console.error('載入新聞失敗', error);
-    loading.value = false;
-  }
+const handleSearch = () => {
+  hasSearched.value = true;
+  page.value = 0;
+  searchSnapshot.value = { ...search.value };
+  loadNews();
 };
 
 const nextPage = () => {
@@ -156,9 +220,10 @@ const prevPage = () => {
   }
 };
 
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString();
+const handleImgError = (event) => {
+  if (event.target.src !== defaultThumbnail) {
+    event.target.src = defaultThumbnail;
+  }
 };
 
 const fetchCategories = async () => {
@@ -177,40 +242,30 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.news-list {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.search-bar {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
 .thumbnail {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
   object-fit: cover;
   border-radius: 0.375rem;
+  flex-shrink: 0;
 }
-
 .news-item {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1rem;
   border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  align-items: flex-start;
 }
-
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 1rem;
 }
-
 .page-btn {
   padding: 0.5rem 1.25rem;
   background-color: #e5e7eb;
@@ -218,34 +273,27 @@ onMounted(() => {
   font-weight: 500;
   transition: background-color 0.2s ease;
 }
-
 .page-btn:hover {
   background-color: #d1d5db;
 }
-
 .page-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-
-/* 搜尋按鈕樣式 */
 .search-btn {
-  background-color: #2563eb;
-  color: white;
+  background-color: #e5e7eb;
+  color: black;
   font-weight: 600;
   padding: 0.5rem 1.5rem;
   border-radius: 0.375rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
 }
-
 .search-btn:hover {
-  background-color: #1d4ed8;
+  background-color: #d1d5db;
 }
-
 .search-btn:disabled {
-  background-color: #2563eb;
   opacity: 0.5;
-  color: white;
   cursor: not-allowed;
 }
 </style>

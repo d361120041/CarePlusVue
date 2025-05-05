@@ -1,35 +1,33 @@
 <template>
-    <div class="container py-4" v-if="course">
-      <h2>{{ course.title }}</h2>
-      <p class="text-muted">#{{ getCategoryLabel(course.category) }}</p>
-  
-      <h4 class="mt-4">學習進度</h4>
-      <ul v-if="progressList.length > 0" class="list-group">
-  <li
-    v-for="progress in progressList"
-    :key="progress.progressId"
-    class="list-group-item d-flex justify-content-between align-items-center"
-  >
-    <router-link
-      :to="`/learn/${courseId}?chapterId=${progress.chapterId.chapterId}`"
-      class="text-decoration-none flex-grow-1"
-    >
-      {{ progress.chapterId.position }}. {{ progress.chapterId.title }}
-    </router-link>
+  <div class="container py-4" v-if="course">
+    <h2>{{ course.title }}</h2>
+    <p class="text-muted">#{{ getCategoryLabel(course.category) }}</p>
 
-    <span>
-      <span v-if="progress.isCompleted" class="badge bg-success">完成</span>
-      <span v-else class="badge bg-secondary">未完成</span>
-    </span>
-  </li>
-</ul>
-      <p v-else class="text-muted">尚無進度紀錄。</p>
-  
-      <button class="btn btn-primary mt-3" @click="goLearn">📖 開始上課</button>
-    </div>
-  </template>
-  
-  <script setup>
+    <h4 class="mt-4">學習進度</h4>
+    <ul v-if="progressList.length > 0" class="list-group">
+      <li v-for="progress in progressList" :key="progress.progressId"
+        class="list-group-item d-flex justify-content-between align-items-center">
+
+        <router-link :to="`/learn/${courseId}?chapterId=${progress.chapterId.chapterId}`"
+          class="text-decoration-none flex-grow-1">
+          {{ progress.chapterId.position }}. {{ progress.chapterId.title }}
+        </router-link>
+
+        <span>
+          <span v-if="progress.status === 'completed'" class="badge bg-success">完成</span>
+          <span v-else-if="progress.status === 'in_progress'" class="badge bg-warning text-dark">進行中</span>
+          <span v-else class="badge bg-secondary">未開始</span>
+
+        </span>
+      </li>
+    </ul>
+    <p v-else class="text-muted">尚無進度紀錄。</p>
+
+    <button class="btn btn-primary mt-3" @click="goLearn">📖 開始上課</button>
+  </div>
+</template>
+
+<script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from '@/plugins/axios.js'
@@ -68,7 +66,7 @@ const fetchData = async () => {
     let userProgress = []
     try {
       const resProgress = await axios.get(`/api/progress/user/${userId}/course/${courseId}`)
-      
+
       userProgress = resProgress.data
     } catch (err) {
       console.warn('目前尚無進度紀錄')
@@ -80,6 +78,7 @@ const fetchData = async () => {
       return {
         chapterId: ch,
         isCompleted: found?.isCompleted || false,
+        status: found?.status || 'not_started',
         progressId: found?.progressId || null
       }
     }).sort((a, b) => a.chapterId.position - b.chapterId.position)
@@ -106,11 +105,25 @@ const goPrevious = async () => {
 onMounted(fetchData)
 </script>
 
-  
-  <style scoped>
-  .badge {
-    font-size: 0.9rem;
-    padding: 0.4em 0.75em;
-  }
-  </style>
-  
+
+<style scoped>
+/* .badge {
+        font-size: 0.9rem;
+        padding: 0.4em 0.75em;
+      } */
+
+.badge {
+  font-size: 0.85rem;
+  padding: 0.4em 0.75em;
+  border-radius: 1em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.badge.bg-success {
+  background-color: #28a745 !important;
+}
+
+.badge.bg-secondary {
+  background-color: #6c757d !important;
+}
+</style>
