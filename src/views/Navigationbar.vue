@@ -10,6 +10,9 @@
       <li>
         <router-link to="/news">新聞列表</router-link>
       </li>
+      <li>
+        <router-link to="/social">討論區</router-link>
+      </li>
       <!-- Dropdown menu -->
       <li class="dropdown">
         <span class="dropdown-label">線上課程</span>
