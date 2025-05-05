@@ -1,7 +1,7 @@
 <template>
   <div class="container py-4">
     <div id="course-top"></div>
-    <h2 class="mb-4">課程列表</h2>
+    <h2 class="mb-4" style="text-align: center;">課程列表</h2>
 
     <!-- 搜尋欄 -->
     <div class="mb-4">
