@@ -203,75 +203,85 @@ const goBackToSearch = () => {
   max-width: 1300px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #ffffff; /* 白色背景 */
 }
 
-/* 搜尋條件卡片 */
-.search-conditions {
-  background-color: #f9fafb; /* 淺灰背景，與白色背景區分 */
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  padding: 1.5rem;
+/* 篩選條件區塊 */
+.filter-section {
+  padding: 2rem; /* 增加內距，顯得更寬鬆 */
+  background-color: #f9fafb; /* 淺灰背景 */
+  border: 1px solid #d1e9e5; /* 使用淺主題色邊框，增加獨立性 */
+  border-radius: 8px;
+  margin-bottom: 3rem; /* 增加底部間距 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* 輕微陰影，突出層次 */
 }
 
-/* 條件容器 */
-.conditions-container {
-  width: 100%;
-}
-
-/* 條件標籤容器 */
-.condition-tags {
+/* 篩選控制項 */
+.filter-controls {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem; /* 適當間距，防止擁擠 */
-  margin-top: 0.5rem;
+  flex-direction: column;
+  gap: 2rem; /* 保持舒適間距 */
 }
 
-/* 條件標籤 */
-.condition-tag {
-  display: inline-flex;
-  align-items: center;
-  background-color: #e6f4f3; /* 淺藍綠背景，與主題色搭配 */
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* 篩選組 */
+.filter-group {
+  display: flex;
+  flex-direction: column;
 }
 
-.condition-tag:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* 時間欄位 */
+.time-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.condition-tag .label {
+.time-fields .flex {
+  gap: 1.5rem;
+}
+
+/* 分隔線 */
+hr {
+  border: 0;
+  border-top: 2px solid #4DB6AC; /* 使用主題色，強化分隔 */
+  margin: 3rem 0; /* 增加上下間距 */
+  position: relative;
+}
+
+hr::before {
+  content: '搜尋結果';
+  position: absolute;
+  top: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff; /* 背景色與父介面一致 */
+  padding: 0 1rem;
+  color: #4DB6AC;
+  font-size: 1rem;
   font-weight: 500;
-  color: #2A9287; /* 深色主題色，提升標籤可讀性 */
-  margin-right: 0.5rem;
 }
 
-.condition-tag .value {
-  color: #4b5563;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 250px; /* 限制長度，防止溢出 */
+/* 結果區塊 */
+.results-section {
+  padding-top: 2rem; /* 增加頂部間距 */
 }
 
 /* 標頭 */
 .header h3 {
-  color: #4DB6AC; /* 主色 */
+  color: #4DB6AC;
 }
 
 .header select {
   border: 1px solid #d1d5db;
   background-color: #fff;
   transition: border-color 0.2s ease;
+  border-radius: 6px;
 }
 
 /* 看護網格 */
 .caregiver-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 /* 看護卡片 */
@@ -303,13 +313,13 @@ const goBackToSearch = () => {
 .info-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .info-row span {
   padding: 0.25rem 0.5rem;
-  background-color: #f1f5f9; /* 淺灰背景 */
+  background-color: #f1f5f9;
   border-radius: 4px;
   font-size: 0.875rem;
 }
@@ -321,10 +331,10 @@ const goBackToSearch = () => {
 
 .caregiver-info p {
   color: #4b5563;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
-/* 限制描述文字為兩行，超出顯示省略號 */
+/* 限制描述文字為兩行 */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
