@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex; height: 100vh">
+  <div style="display: flex; height: 100vh" class="admin-root">
     <!-- Sidebar -->
     <aside style="width: 250px; background: #2d3748; color: white; padding: 1rem">
       <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 2rem">Care+ 後台</h1>
@@ -19,7 +19,7 @@
       </div>
 
       <!-- router-view -->
-      <main style="flex: 1; overflow-y: auto; background: #f7fafc; padding: 2rem; min-width: 0">
+      <main style="flex: 1; overflow-y: auto; background: #f7fafc; min-width: 0">
         <router-view />
       </main>
     </div>
@@ -29,3 +29,19 @@
 <script setup>
 import NavBar from '@/CMS/NavBar.vue'
 </script>
+
+
+<style scoped>
+.admin-root {
+  position: fixed; /* 或 absolute */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+</style>
