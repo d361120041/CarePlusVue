@@ -1,5 +1,8 @@
 <template>
   <div class="navbar">
+    <router-link to="/" class="logo">
+      <img src="@/assets/care+_logo.png" alt="網站 Logo" />
+    </router-link>
     <ul>
       <li>
         <router-link to="/">首頁</router-link>
@@ -128,6 +131,16 @@ const caregiverLogout = () => {
 </script>
 
 <style scoped>
+/* Logo 尺寸與間距 */
+.logo {
+  display: block;
+  margin-right: 1rem;
+}
+.logo img {
+  height: 40px;             /* 高度隨需求調整 */
+  display: block;
+}
+
 .user-info {
   display: flex;
   align-items: center;

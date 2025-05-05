@@ -46,8 +46,8 @@
 
             <!-- 貼文動作列 -->
             <div class="post-actions">
-                <button class="action-btn"> <!-- @click="likePost" -->
-                    👍 按讚<!-- ({{ likeCount }}) -->
+                <button class="action-btn" @click="likePost">
+                    👍 按讚({{ likeCount }})
                 </button>
                 <button class="action-btn"> 💬 留言</button>
                 <button class="action-btn" @click="sharePost">
@@ -56,9 +56,7 @@
             </div>
 
             <!-- 留言列表 -->
-            <div v-if="post.comments && post.comments.length">
-                <CommentList ref="commentList" :postId="post.postId" class="comment-list" />
-            </div>
+            <CommentList ref="commentList" :postId="post.postId" class="comment-list" />
 
             <!-- 留言表單 -->
             <div class="comment-form-wrapper">
@@ -101,7 +99,7 @@ const currentUser = ref({
 // PostFormModal 編輯/檢視模式
 const isFormModalOpen = ref(false)
 // 貼文動作列
-const isDetailOpen = ref(false)
+const likeCount = ref(props.post.reactions?.length || 0)
 const shareCount = ref(props.post.share || 0)
 // 評論清單
 const commentList = ref(null)
@@ -169,6 +167,17 @@ function hideLightbox() {
 }
 // ================= Lightbox 結束 =================
 
+//================= 按讚 開始=================
+async function likePost() {
+    try {
+        const res = await myAxios.post(`/api/reactions/posts/${props.post.postId}?userId=${props.post.user.userId}&type=1`)
+        likeCount.value = res.data
+    } catch (error) {
+        console.error('貼文按讚失敗', error);
+    }
+}
+//================= 按讚 結束=================
+
 //================= 觀看次數 開始 =================
 // 更新觀看次數
 onMounted(async () => {
@@ -177,6 +186,8 @@ onMounted(async () => {
     } catch (e) {
         console.error('更新觀看次數失敗', e)
     }
+    likeCount.value = props.post.reactions?.length || 0;
+
 })
 //================= 觀看次數 結束 =================
 

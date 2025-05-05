@@ -85,10 +85,7 @@ const [menuOpen, toggleMenu] = useToggle(false)
 //================= ref, computed 開始 =================
 // 使用者資訊區塊
 const currentUser = ref({
-    // avatarUrl: '/circle-user-regular.svg'
     avatarUrl: '/circle-user-solid.svg'
-    // avatarUrl: '/user-regular.svg'
-    // avatarUrl: '/user-solid.svg'
 })
 // PostFormModal 編輯/檢視模式
 const isFormModalOpen = ref(false)

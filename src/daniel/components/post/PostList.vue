@@ -1,22 +1,34 @@
 <template>
     <div>
-        <PostItem v-for="post in posts" :key="post.postId" :post="post" @refresh="reloadPosts" />
+        <PostItem v-for="post in postStore.posts" :key="post.postId" :post="post" @edit="() => $emit('edit-post', post)"
+            @refresh="loadAgain" />
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import myAxios from '@/plugins/axios.js'
-import PostItem from '@/daniel/components/post/PostItem.vue';
+import { watch, onMounted } from 'vue'
+import { usePostStore } from '@/daniel/stores/posts'
+import PostItem from '@/daniel/components/post/PostItem.vue'
 
-const posts = ref([]);
+const postStore = usePostStore()
 
-const reloadPosts = async () => {
-    const getPosts = await myAxios.get('/api/posts');
-    posts.value = getPosts.data
+const props = defineProps({
+    filterCategoryIds: { filterCategoryIds: Array }
+})
+
+function loadAgain() {
+    postStore.loadPosts({
+        postCategoryIds: props.filterCategoryIds
+    })
 }
-onMounted(reloadPosts)
 
-defineExpose({ reloadPosts })
+onMounted(() => {
+    watch(() => props.filterCategoryIds, loadAgain, { deep: true })
+})
 
+watch(
+    () => props.filterCategoryIds,
+    () => loadAgain(),
+    { deep: true }
+)
 </script>

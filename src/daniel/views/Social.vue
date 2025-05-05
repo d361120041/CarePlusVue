@@ -1,62 +1,108 @@
 <template>
     <div class="social-layout">
-        <div class="social-container">
+        <!-- 左側貼文篩選欄 -->
+        <aside class="filter-sidebar">
+            <h3 class="sidebar-title">Categories</h3>
+            <div class="categories">
+                <button v-for="cat in categoryStore.categories" :key="cat.id"
+                    @click="categoryStore.toggleCategory(cat.id)"
+                    :class="{ 'category-btn': true, active: categoryStore.selectedIds.includes(cat.id) }">
+                    {{ cat.name }}
+                </button>
+            </div>
+        </aside>
 
+        <!-- 中間貼文區域 -->
+        <div class="social-container">
             <!-- 新增貼文卡片 -->
-            <article class="post-item new-post-card" @click="openNew">
+            <article class="post-item new-post-card">
                 <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
-                <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
                 <input type="text" class="new-post-input" placeholder="What's on your mind?" readonly
-                    @click="openNew" />
+                    @click="postStore.openModal(null)" />
             </article>
 
             <!-- 貼文列表 -->
-            <PostList ref="postListRef" />
+            <PostList ref="postListRef" :filterCategoryIds="categoryStore.selectedIds" @edit-post="postStore.openModal"
+                @refresh="loadPostsAgain" />
 
             <!-- 新增與編輯 Modal -->
-            <PostFormModal :visible="isModalOpen" :post="currentPost" @close="isModalOpen = false"
-                @saved="handleSaved" />
+            <PostFormModal :visible="postStore.isModalOpen" :post="postStore.currentPost" @close="postStore.closeModal"
+                @saved="loadPostsAgain" />
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import myAxios from '@/plugins/axios.js'
+import { ref, onMounted } from 'vue'
+import { usePostStore } from '@/daniel/stores/posts'
+import { useCategoryStore } from '@/daniel/stores/categories.js'
 
 import PostList from '@/daniel/components/post/PostList.vue'
 import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
 
+const postStore = usePostStore()
+const categoryStore = useCategoryStore()
 const currentUser = ref({
-    // avatarUrl: '/circle-user-regular.svg'
-    avatarUrl: '/circle-user-solid.svg'
-    // avatarUrl: '/user-regular.svg'
-    // avatarUrl: '/user-solid.svg'
+    avatarUrl: '/circle-user-solid.svg',
+});
+
+async function loadPostsAgain() {
+    await postStore.loadPosts({ 
+        postCategoryIds: categoryStore.selectedIds 
+    })
+}
+
+onMounted(async () => {
+    await categoryStore.loadCategories()
+    await loadPostsAgain()
 })
-const isModalOpen = ref(false)
-const postListRef = ref(null)
-const currentPost = ref(null)
-
-function openNew() {
-    currentPost.value = null
-    isModalOpen.value = true
-}
-function openEdit(post) {
-    currentPost.value = post
-    isModalOpen.value = true
-}
-
-function handleSaved(post) {
-    isModalOpen.value = false
-    // 如果是新增，讓列表加一筆；如果是編輯，更新列表內該筆
-    postListRef.value.reloadPosts()
-}
 </script>
 
 <style scoped>
 .social-layout {
     display: grid;
-    grid-template-columns: 1fr min(80ch, 100%) 1fr;
+    grid-template-columns: 200px min(80ch, 100%) 1fr;
+    gap: 1rem;
+}
+
+.filter-sidebar {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-title {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.categories {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.category-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #f0f0f0;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.category-btn:hover {
+    background: #e0e0e0;
+}
+
+.category-btn.active {
+    background: #007bff;
+    color: #fff;
+    border-color: #0056b3;
+    transform: scale(1.05);
 }
 
 .social-container {
