@@ -1,13 +1,22 @@
 <template>
     <div class="comment-item">
+        <div class="comment-header">
+            <!-- 使用者資訊區塊 -->
+            <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
+            <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
+            <div class="user-info">
+                <div class="user-name">{{ comment.user.userName }}</div>
+                <div class="comment-time">{{ formattedTime }}</div>
+            </div>
 
-        <!-- 漢堡選單 -->
-        <div class="comment-menu-wrapper">
-            <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
-            <ul v-if="menuOpen" class="comment-dropdown">
-                <li @click="startEdit">編輯評論</li>
-                <li @click="confirmDelete">刪除評論</li>
-            </ul>
+            <!-- 漢堡選單 -->
+            <div class="comment-menu-wrapper">
+                <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
+                <ul v-if="menuOpen" class="comment-dropdown">
+                    <li @click="startEdit">編輯評論</li>
+                    <li @click="confirmDelete">刪除評論</li>
+                </ul>
+            </div>
         </div>
 
         <!-- 編輯表單與顯示切換 -->
@@ -18,26 +27,42 @@
             <p>{{ comment.content }}</p>
         </div>
 
-        <small>由 User {{ comment.userId }} 發佈於 {{ comment.createdAt }}</small>
-        
+        <!-- 按讚按鈕 -->
+        <div class="comment-actions">
+            <button class="action-btn" @click="likeComment">讚</button>
+            <span>(👍{{ likeCount }})</span>
+        </div>
+
         <ReplyList :commentId="comment.commentId" @reloaded="emitReload" />
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import myAxios from '@/plugins/axios.js'
+
 import ReplyList from '@/daniel/components/reply/ReplyList.vue'
 import EditCommentForm from '@/daniel/components/comment/EditCommentForm.vue'
 
 const props = defineProps({ comment: Object })
 const emit = defineEmits(['replied', 'updated', 'deleted'])
+const emitReload = () => emit('replied')
+
+import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+const { formattedTime } = useTimeFormat(props.comment.createdAt)
+
+import { useToggle } from '@/daniel/composables/useToggle'
+const [menuOpen, toggleMenu] = useToggle(false)
+
+// 使用者資訊區塊
+const currentUser = ref({
+    // avatarUrl: '/circle-user-regular.svg'
+    avatarUrl: '/circle-user-solid.svg'
+    // avatarUrl: '/user-regular.svg'
+    // avatarUrl: '/user-solid.svg'
+})
 
 // 下拉選單
-const menuOpen = ref(false)
-function toggleMenu() {
-    menuOpen.value = !menuOpen.value
-}
 function closeMenu() {
     menuOpen.value = false
 }
@@ -69,7 +94,22 @@ async function confirmDelete() {
     }
 }
 
-const emitReload = () => emit('replied')
+//================= 按讚 開始=================
+const likeCount = ref(props.comment.reactions?.length || 0)
+async function likeComment() {
+    try {
+        const res = await myAxios.post(`/api/reactions/comments/${props.comment.commentId}?userId=${props.comment.user.userId}&type=1`)
+        likeCount.value = res.data
+    } catch (error) {
+        console.error('評論按讚失敗', error);
+    }
+}
+//================= 按讚 結束=================
+
+onMounted(() => {
+    likeCount.value = props.comment.reactions?.length || 0
+})
+
 </script>
 
 <style scoped>
@@ -80,6 +120,34 @@ const emitReload = () => emit('replied')
     padding: 0.75rem;
     margin-bottom: 1rem;
     position: relative;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.user-name {
+    font-weight: bold;
+}
+
+.comment-time {
+    font-size: 0.8rem;
+    color: #666;
 }
 
 .comment-menu-wrapper {
@@ -115,5 +183,23 @@ const emitReload = () => emit('replied')
 
 .comment-dropdown li:hover {
     background-color: #f5f5f5;
+}
+
+.comment-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.action-btn:hover {
+    text-decoration: underline
 }
 </style>
