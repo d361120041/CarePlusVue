@@ -6,9 +6,8 @@
             <div class="form-group categories">
                 <label>貼文種類：</label>
                 <div class="category-buttons">
-                    <button v-for="cat in allCategories" :key="cat.id" type="button"
-                        @click="toggleCategory(cat.id)"
-                        :class="{ 'category-btn': true, active: form.categoryIds.includes(cat.id) }">
+                    <button v-for="cat in allCategories" :key="cat.id" type="button" @click="toggleCategory(cat.id)"
+                        :class="['category-btn', { active: form.categoryIds.includes(cat.id) }]">
                         {{ cat.name }}
                     </button>
                 </div>
@@ -51,9 +50,9 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-// import myAxios from '@/plugins/axios.js'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useCategoryStore } from '@/daniel/stores/categories'
+
 import BaseModal from '@/daniel/components/BaseModal.vue'
 
 const props = defineProps({
@@ -63,9 +62,6 @@ const props = defineProps({
 const emit = defineEmits(['close', 'saved'])
 const postStore = usePostStore()
 const categoryStore = useCategoryStore()
-
-// 表單欄位
-// const form = ref({ title: '', content: '', category: null })
 
 // form data
 const form = ref({
@@ -81,21 +77,19 @@ const form = ref({
 })
 const files = ref([])
 const previews = ref([])
-const fileInput = ref([])
+const fileInput = ref(null)
 
 const isEdit = computed(() => !!form.value.postId)
-// const title = computed(() => (isEdit.value ? '編輯貼文' : '新增貼文'))
 const modalTitle = computed(() => isEdit.value ? '編輯貼文' : '新增貼文')
 const submitText = computed(() => isEdit.value ? '更新貼文' : '送出貼文')
-
-// ================= 貼文種類 開始 =================
-// const categories = ref([])
-// const selectedCategory = ref(null)
 const allCategories = computed(() => categoryStore.categories)
 
 watch(() => props.visible, async open => {
-    if(open) {
-        if(!categoryStore.categories.length) await categoryStore.loadCategories()
+    if (open) {
+        files.value = []
+        previews.value = []
+        if (fileInput.value) fileInput.value.value = ''
+        if (!categoryStore.categories.length) await categoryStore.loadCategories()
         if (props.post) {
             Object.assign(form.value, {
                 postId: props.post.postId,
@@ -106,7 +100,7 @@ watch(() => props.visible, async open => {
                 tagIds: [...(props.post.tagIds || [])],
                 visibility: props.post.visibility,
                 status: props.post.status,
-                userId: props.post.userId
+                userId: props.post.user.userId,
             })
         } else {
             Object.assign(form.value, {
@@ -118,32 +112,15 @@ watch(() => props.visible, async open => {
                 tagIds: [],
                 visibility: 0,
                 status: 0,
-                userId: 3
+                userId: 3,
             })
         }
     }
 })
 
-// 統一縮圖資料
-// const thumbnails = computed(() => {
-//     const exist = images.value.map(img => ({
-//         type: 'existing',
-//         key: `e-${img.imageId}`,
-//         id: img.imageId,
-//         src: `data:image/jpeg;base64,${img.imageData}`
-//     }))
-//     const newly = previews.value.map((src, idx) => ({
-//         type: 'new',
-//         key: `n-${idx}`,
-//         index: idx,
-//         src
-//     }))
-//     return [...exist, ...newly]
-// })
-
 // thumbnails: combine existing + new
 const thumbnails = computed(() => {
-    const existing = (props.post?.image || []).map(img => ({
+    const existing = (props.post?.images || []).map(img => ({
         type: 'existing',
         key: `e-${img.imageId}`,
         id: img.imageId,
@@ -166,19 +143,6 @@ function toggleCategory(id) {
     else form.value.categoryIds.push(id)
 }
 
-// 處理檔案選取與預覽
-// function onFileChange(e) {
-//     const selected = Array.from(e.target.files)
-//     selected.forEach((file, idx) => {
-//         files.value.push(file)
-//         const reader = new FileReader()
-//         reader.onload = ev => previews.value.push(ev.target.result)
-//         reader.readAsDataURL(file)
-//     })
-//     // 清空 input 預備下次同檔案可重新選
-//     if (fileInput.value) fileInput.value.value = ''
-// }
-
 function onFileChange(e) {
     const selected = Array.from(e.target.files)
     selected.forEach(file => {
@@ -190,15 +154,6 @@ function onFileChange(e) {
     if (fileInput.value) fileInput.value.value = ''
 }
 
-// 根據縮圖類型刪除
-// function removeThumbnail(thumb, idx) {
-//     if (thumb.type === 'existing') {
-//         deleteImage(thumb.id)
-//     } else {
-//         removeFile(thumb.index)
-//     }
-// }
-
 async function removeThumbnail(thumb, idx) {
     if (thumb.type === 'existing') {
         await postStore.deleteImage(form.value.postId, thumb.id)
@@ -207,160 +162,6 @@ async function removeThumbnail(thumb, idx) {
         previews.value.splice(thumb.index, 1)
     }
 }
-
-// 載入分類
-// onMounted(async () => {
-//     try {
-//         const res = await myAxios.get('/api/categories')
-//         const list = res.data;
-//         categories.value = list
-//     } catch {
-//         categories.value = []
-//     }
-// })
-// 顯示分類
-// const displayedCategories = computed(() => {
-//     return !selectedCategory.value
-//         ? categories.value
-//         : [selectedCategory.value];
-// })
-// 選擇分類
-// function selectCategory(cat) {
-//     if (selectedCategory.value === cat) {
-//         selectedCategory.value = null;
-//         form.value.category = null;
-//     } else {
-//         selectedCategory.value = cat;
-//         form.value.category = cat.postCategory;
-//     }
-// }
-// ================= 貼文種類 結束 =================
-
-// 已選檔案與對應縮圖預覽
-// const files = ref([])
-// const previews = ref([])
-// 編輯模式的現有圖片
-// const images = ref([])
-// const isSubmitting = ref(false)
-// 檔案輸入欄位
-// const fileInput = ref(null)
-
-// 初始化文字欄位
-// watch(
-//     () => props.visible,
-//     async v => {
-//         if (v) {
-//             form.value.title = props.post?.title || ''
-//             form.value.content = props.post?.content || ''
-//             // 一定要先清空暫存檔與縮圖
-//             files.value = []
-//             previews.value = []
-//             if (isEdit.value) {
-//                 await loadImages()
-//             } else {
-//                 images.value = []
-//             }
-//         }
-//     }
-// )
-
-// 讀取現有後端圖片
-// async function loadImages() {
-//     try {
-//         const res = await myAxios.get(
-//             `/api/posts/${props.post.postId}/images`
-//         )
-//         images.value = res.data
-//     } catch (err) {
-//         console.error('載入圖片失敗', err)
-//     }
-// }
-
-// 刪除已存在的圖片
-// async function deleteImage(id) {
-//     try {
-//         await myAxios.delete(`/api/posts/${props.post.postId}/images/${id}`)
-//         await loadImages()
-//     } catch (err) {
-//         console.error('刪除圖片失敗', err)
-//         alert('刪除圖片失敗')
-//     }
-// }
-
-// 移除新選檔案
-// function removeFile(idx) {
-//     files.value.splice(idx, 1)
-//     previews.value.splice(idx, 1)
-// }
-
-// 提交資料：文字 + 新檔案上傳
-// async function submitAll() {
-//     if (!form.value.title || !form.value.content) return
-//     isSubmitting.value = true
-//     try {
-//         // （1）送文字貼文
-//         let postRes
-//         if (isEdit.value) {
-//             postRes = await myAxios.put(
-//                 `/api/posts/${props.post.postId}`,
-//                 {
-//                     title: form.value.title,
-//                     content: form.value.content,
-//                     user: { userId: 3 }
-//                 }
-//             )
-//         } else {
-//             const payload = {
-//                 title: form.value.title,
-//                 content: form.value.content,
-//                 visibility: 0,
-//                 status: 0,
-//                 userId: 3,
-//                 categoryIds: [4, 5],
-//                 topicIds: [1, 2],
-//                 tagIds: []
-//             }
-//             postRes = postStore.createPost(payload)
-//             console.log(`postRes->`,postRes)
-//         }
-//         const resPostId = postRes.postId
-
-//         // （2）送圖片
-//         if (files.value.length) {
-//             const formData = new FormData()
-//             files.value.forEach(f => formData.append('files', f))
-//             await myAxios.post(`/api/posts/${resPostId}/images`, formData)
-//         }
-
-        // （3）指派分類
-        // if (selectedCategory.value && selectedCategory.value.postCategoryId) {
-        //     await myAxios.post(
-        //         `/api/categories/assign`,
-        //         null,
-        //         {
-        //             params: {
-        //                 postId: resPostId,
-        //                 categoryId: selectedCategory.value.postCategoryId
-        //             }
-        //         }
-        //     );
-        // }
-
-        // （4）重新載入圖片、清空暫存、關閉 Modal
-//         if (isEdit.value) await loadImages()
-//         files.value = []
-//         previews.value = []
-//         if (fileInput.value) fileInput.value.value = ''
-
-//         emit('saved', { ...postRes.data, images: images.value })
-//         handleClose()
-//     } catch (err) {
-//         console.error('送出失敗', err)
-//         alert('送出失敗，請稍後重試')
-//     } finally {
-//         isSubmitting.value = false
-//     }
-// }
 
 async function onSubmit() {
     try {

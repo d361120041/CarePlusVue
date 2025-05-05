@@ -3,7 +3,6 @@
         <div class="post-header">
             <!-- 使用者資訊區塊 -->
             <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
-            <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
             <div class="user-info">
                 <div class="user-name">{{ post.user.userName }}</div>
                 <div class="post-time">{{ formattedTime }}</div>
@@ -13,14 +12,11 @@
             <div class="menu-wrapper">
                 <button class="hamburger-btn" @click.stop="toggleMenu">⋯</button>
                 <ul v-if="menuOpen" class="post-dropdown">
-                    <li @click="openEdit">編輯貼文</li>
-                    <li @click="confirmDelete">刪除貼文</li>
+                    <li @click="onEdit">編輯貼文</li>
+                    <li @click="onDelete">刪除貼文</li>
                 </ul>
             </div>
         </div>
-
-        <!-- PostFormModal 編輯/檢視模式 -->
-        <PostFormModal :visible="isFormModalOpen" :post="post" @close="closeEdit" @saved="handleSaved" />
 
         <!-- 貼文內容 -->
         <h2>{{ post.title }}</h2>
@@ -36,13 +32,13 @@
         </div>
 
         <!-- 圖片列表 -->
-        <div class="post-images" v-if="post.images && post.images.length">
-            <img v-for="(img, idx) in post.images" :key="img.imageId" :src="`data:image/jpeg;base64,${img.imageData}`"
-                alt="Post Image" @click="showImage(idx)" class="clickable-img" />
+        <div class="post-images" v-if="imgList.length">
+            <img v-for="(src, idx) in imgList" :key="idx" :src="src"
+                alt="Post Image" @click="openLightbox(idx)" class="clickable-img" />
         </div>
 
         <!-- vue-easy-lightbox -->
-        <vue-easy-lightbox :visible="lightboxVisible" :imgs="imgs" :index="currentIndex" @hide="hideLightbox" />
+        <vue-easy-lightbox :visible="lightboxVisible" :imgs="imgList" :index="currentIndex" @hide="lightboxVisible = false" />
 
         <!-- 觀看次數 -->
         <div style="text-align: right;">
@@ -67,19 +63,24 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+import { useToggle } from '@/daniel/composables/useToggle'
 import myAxios from '@/plugins/axios.js'
 import VueEasyLightbox from 'vue-easy-lightbox'
 
-import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
 import PostDetailModal from '@/daniel/components/post/PostDetailModal.vue'
 
-const props = defineProps({ post: Object })
-const emit = defineEmits(['refresh']) // 父層 PostList.vue 會用到
+const props = defineProps({ 
+    post: Object, required: true 
+})
+const emit = defineEmits([
+    'refresh', 'edit-post', 'delete-post'
+])
 
-import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+// 時間格式化
 const { formattedTime } = useTimeFormat(props.post.createdAt)
 
-import { useToggle } from '@/daniel/composables/useToggle'
+// 漢堡選單
 const [menuOpen, toggleMenu] = useToggle(false)
 
 //================= ref, computed 開始 =================
@@ -87,76 +88,103 @@ const [menuOpen, toggleMenu] = useToggle(false)
 const currentUser = ref({
     avatarUrl: '/circle-user-solid.svg'
 })
+
 // PostFormModal 編輯/檢視模式
-const isFormModalOpen = ref(false)
-// 貼文內容
+// const isFormModalOpen = ref(false)
+
+// 內容「顯示更多/較少」
 const contentRef = ref(null)
 const isExpanded = ref(false)
 const needsToggle = ref(false)
-// 貼文動作列
+
+// Lightbox
+const lightboxVisible = ref(false)
+const currentIndex = ref(0)
+const imgList = computed(() => props.post.images.map(img => `data:image/jpeg;base64,${img.imageData}`))
+
+// 讚與分享
 const isDetailOpen = ref(false)
 const likeCount = ref(props.post.reactions?.length || 0)
 const shareCount = ref(props.post.share || 0)
-
 //================= ref, computed 結束 =================
 
 //================= 漢堡選單 開始 =================
-function closeMenu() {
-    menuOpen.value = false
-}
+// function closeMenu() {
+//     menuOpen.value = false
+// }
 //================= 漢堡選單 結束 =================
 
 //================= 編輯貼文 開始 =================
 // PostFormModal 狀態
-function openEdit() {
+// function openEdit() {
+//     toggleMenu()
+//     isFormModalOpen.value = true
+// }
+// function closeEdit() {
+//     isFormModalOpen.value = false
+// }
+
+// 編輯貼文
+function onEdit() {
     toggleMenu()
-    isFormModalOpen.value = true
+    emit('edit-post', props.post)
 }
-function closeEdit() {
-    isFormModalOpen.value = false
+
+// 刪除貼文
+async function onDelete() {
+    toggleMenu()
+    if (!confirm('確定要刪除此貼文？此操作無法復原')) return
+    try {
+        await myAxios.delete(`/api/posts/${props.post.postId}`)
+        emit('delete-post', props.post.postId)
+    } catch (error) {
+        alert('刪除失敗，請稍後再試')
+    }
 }
+
 // 編輯或新增完成後
-function handleSaved(updatedPost) {
-    isFormModalOpen.value = false
+// function handleSaved(updatedPost) {
+//     isFormModalOpen.value = false
     // 刷新當前貼文資料（包含標題、內容、images）
-    props.post.title = updatedPost.title
-    props.post.content = updatedPost.content
-    if (updatedPost.images) props.post.images = updatedPost.images
+    // props.post.title = updatedPost.title
+    // props.post.content = updatedPost.content
+    // if (updatedPost.images) props.post.images = updatedPost.images
     // 通知列表重載整體列表
-    emit('refresh')
-}
+    // emit('refresh')
+// }
 //================= 編輯貼文 結束 =================
 
 //================= 刪除貼文 開始 =================
 // 刪除貼文
-async function confirmDelete() {
-    menuOpen.value = false
-    if (!window.confirm('確定要刪除此貼文？此操作無法復原')) return
-    try {
-        await myAxios.delete(`/api/posts/${props.post.postId}`)
-        emit('refresh')
-    } catch (err) {
-        console.error('刪除貼文失敗', err)
-        alert('刪除失敗，請稍後再試')
-    }
-}
+// async function confirmDelete() {
+//     menuOpen.value = false
+//     if (!window.confirm('確定要刪除此貼文？此操作無法復原')) return
+//     try {
+//         await myAxios.delete(`/api/posts/${props.post.postId}`)
+//         emit('refresh')
+//     } catch (err) {
+//         console.error('刪除貼文失敗', err)
+//         alert('刪除失敗，請稍後再試')
+//     }
+// }
 //================= 刪除貼文 結束 =================
 
 // ================= Lightbox 開始 =================
-// Lightbox 狀態：visible 控制顯示，imgs 是圖片陣列，index 是預設開啟的那張
-const lightboxVisible = ref(false)
-const imgs = computed(() => props.post.images.map(img => `data:image/jpeg;base64,${img.imageData}`))
-const currentIndex = ref(0)
-
-// 開啟 Lightbox
-function showImage(idx) {
-    currentIndex.value = idx
-    lightboxVisible.value = true
-}
+// Lightbox
+// function showImage(idx) {
+//     currentIndex.value = idx
+//     lightboxVisible.value = true
+// }
 
 // 關閉 Lightbox
-function hideLightbox() {
-    lightboxVisible.value = false
+// function hideLightbox() {
+//     lightboxVisible.value = false
+// }
+
+// lightbox
+function openLightbox(idx) {
+    currentIndex.value = idx
+    lightboxVisible.value = true
 }
 // ================= Lightbox 結束 =================
 
@@ -200,11 +228,9 @@ onMounted(async () => {
     const el = contentRef.value
     // 取得實際內容高度與單行高度
     const lineHeight = parseFloat(getComputedStyle(el).lineHeight)   /* 行高 */
-    if (el.scrollHeight > lineHeight * 5) {                        /* scrollHeight 為內容總高度 */
-        needsToggle.value = true                                     /* 超過 5 行才顯示按鈕 */
-    }
+    needsToggle.value = el.scrollHeight > lineHeight * 5
 
-    likeCount.value = props.post.reactions?.length || 0;
+    // likeCount.value = props.post.reactions?.length || 0;
 })
 </script>
 

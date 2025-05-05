@@ -22,11 +22,15 @@
             </article>
 
             <!-- 貼文列表 -->
-            <PostList ref="postListRef" :filterCategoryIds="categoryStore.selectedIds" @edit-post="postStore.openModal"
+            <PostList 
+                :filterCategoryIds="categoryStore.selectedIds" 
+                @edit-post="postStore.openModal"
+                @delete-post="loadPostsAgain"
                 @refresh="loadPostsAgain" />
 
             <!-- 新增與編輯 Modal -->
-            <PostFormModal :visible="postStore.isModalOpen" :post="postStore.currentPost" @close="postStore.closeModal"
+            <PostFormModal 
+                :visible="postStore.isModalOpen" :post="postStore.currentPost" @close="postStore.closeModal"
                 @saved="loadPostsAgain" />
         </div>
     </div>

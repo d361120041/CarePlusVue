@@ -52,8 +52,8 @@ export const usePostStore = defineStore('posts', () => {
                 tagIds: form.tagIds,
             }
             if (form.postId) {
-                await myAxios.put(`/api/posts/${form.postId}`, payload)
-                saved = { ...form }
+                const res = await myAxios.put(`/api/posts/${form.postId}`, payload)
+                saved = res.data
             } else {
                 const res = await myAxios.post('/api/posts', payload)
                 saved = res.data
