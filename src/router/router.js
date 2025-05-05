@@ -62,6 +62,8 @@ import UserProfile from "@/steve/views/UserProfile.vue";
 import InquiryForm from "@/steve/views/InquiryForm.vue";
 import PatientsList from "@/steve/views/PatientsList.vue";
 import AddPatient from "@/steve/views/AddPatient.vue";
+import FavoritesView from "@/steve/views/FavoritesView.vue";
+
 // ================== 匯入套件 結束==================
 
 // ================== 設定路徑 開始==================
@@ -140,6 +142,7 @@ const routes = [
   { path: "/admin/qilin", component: ComingSoon }, //qilin
   { path: "/caregiver/profile", component: CaregiverProfileView },
   { path: "/caregiver/pricing", component: CaregiverPricing },
+
   // { path: '/caregiver/schedule', component: CaregiverSchedule },
   // { path: '/caregiver/orders', component: CaregiverOrders },
   // { path: '/caregiver/reviews', component: CaregiverReviews },
@@ -233,6 +236,7 @@ const routes = [
       { path: "support", component: InquiryForm },
       { path: "patients", component: PatientsList },
       { path: "patients/add", component: AddPatient },
+      { path: "favorites", component: FavoritesView },
     ],
   },
   // { path: "/user-center", component: UserCenter, name: "userCenter" }
