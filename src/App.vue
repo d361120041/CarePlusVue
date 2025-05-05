@@ -1,8 +1,8 @@
 <template>
   <!-- 頁首 開始 -->
-  <header>
+  <!-- <header>
     <h1>頁首</h1>
-  </header>
+  </header> -->
   <!-- 頁尾 結束 -->
 
   <!-- 導覽列 開始-->

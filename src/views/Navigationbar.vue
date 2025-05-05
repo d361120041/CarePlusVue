@@ -47,7 +47,7 @@
       <!-- ✅ 都沒登入 -->
       <template v-else>
         <button @click="goUserLogin">使用者登入</button>
-        <button @click="goCaregiverLogin">照顧者登入</button>
+        <button @click="goCaregiverLogin">照服員登入</button>
       </template>
     </div>
   </div>

@@ -56,7 +56,9 @@ const fetchProfile = async () => {
   try {
     const { data } = await axios.get('/api/caregivers/me')
     form.value = { ...data }
-    photoPreviewUrl.value = data.photoPath || '/yuuhou/images/default.png'
+    photoPreviewUrl.value = 'http://localhost:8082' + data.photoPath
+
+    
   } catch (err) {
     message.value = '⚠️ 無法載入個人資料'
   }
@@ -64,13 +66,21 @@ const fetchProfile = async () => {
 
 const handlePhotoUpload = async (event) => {
   const file = event.target.files[0]
+  console.log("🚀 JWT token 發送前:", localStorage.getItem("token"));
+
   if (!file) return
 
+  photoPreviewUrl.value = URL.createObjectURL(file)
   const formData = new FormData()
-  formData.append('photo', file)
+  formData.append('file', file)
 
   try {
-    const { data } = await axios.post('/api/caregivers/photo', formData)
+    const { data } = await axios.post('/api/auth/api/caregivers/photo', formData, {
+  headers: {
+    "Content-Type": "multipart/form-data",
+     "Authorization": `Bearer ${token}`
+  }
+})
     form.value.photoPath = data.photoPath
     photoPreviewUrl.value = data.photoPath
   } catch (err) {
