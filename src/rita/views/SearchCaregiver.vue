@@ -24,7 +24,7 @@
       </div>
       <div class="process-buttons">
         <button class="search-btn" @click="scrollToRequestForm">搜尋人選</button>
-        <button class="request-btn">填寫需求單</button>
+        <button class="request-btn" @click="goToRequestTime">填寫需求單</button>
       </div>
     </div>
 
@@ -199,7 +199,18 @@
         </div>
       </div>
     </div>
+  <!-- 搜尋人選按鈕 -->
+  <div class="form-group mt-6">
+    <button
+  @click="searchCaregivers"
+  :disabled="!isFormComplete"
+  class="search-button px-4 py-2 bg-teal-600 text-white rounded-md text-sm font-medium"
+>
+  搜尋人選
+</button>
+
   </div>
+</div>
 
     <!-- 3. 介紹 -->
 <div class="intro-section card-section">
@@ -252,19 +263,123 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
 
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import myAxios from '@/plugins/axios'
+import { useRouter } from 'vue-router'
+import { useCaregiverStore } from '@/stores/caregiverStore'
+
+const router = useRouter()
+const store = useCaregiverStore()
+
+const searchCaregivers = async () => {
+  const { city, district, continuous, multi } = form.value
+
+  // 確保連續或多時段至少填寫一個
+  const continuousFilled = continuous.startDate && continuous.startTime && continuous.endDate && continuous.endTime;
+  const multiFilled = multi.startDate && multi.endDate && multi.startTime && multi.endTime;;
+
+  if (!(continuousFilled || multiFilled)) {
+    alert('請填寫連續時間或多時段的預約條件');
+    return;
+  }
+
+  const convertTo24Hour = (timeStr) => {
+  const [time, period] = timeStr.split(" ");
+  let [hour, minute] = time.split(":").map(Number);
+
+  if (period === "PM" && hour < 12) hour += 12;
+  if (period === "AM" && hour === 12) hour = 0;
+
+  return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+};
+
+
+// ✅ 不用 toISOString，直接組出 yyyy-MM-ddTHH:mm 格式（LocalDateTime）
+const toLocalDateTimeString = (dateStr, timeStr) => {
+  if (!dateStr || !timeStr) {
+    console.error("日期或時間格式錯誤", dateStr, timeStr);
+    return "";
+  }
+  // 處理 AM/PM
+  timeStr = convertTo24Hour(timeStr);
+  return `${dateStr}T${timeStr}`;
+};
+
+// 轉換時間格式
+const start = toLocalDateTimeString(continuous.startDate, continuous.startTime);
+const end = toLocalDateTimeString(continuous.endDate, continuous.endTime);
+
+// 處理多時段時間
+  let multiStart = null;
+  let multiEnd = null;
+  if (multi.startDate && multi.endDate && multi.timeSlots.length > 0) {
+    multiStart = toLocalDateTimeString(multi.startDate, multi.timeSlots[0].startTime);
+    multiEnd = toLocalDateTimeString(multi.endDate, multi.timeSlots[multi.timeSlots.length - 1].endTime);
+  }
+
+console.log("Start Time:", start);
+console.log("End Time:", end);
+
+  const filters = {
+  serviceCity: city,
+  serviceDistrict: form.value.district === '全部區域' || !form.value.district ? null : form.value.district,
+  desiredStartTime: start || multiStart,
+  desiredEndTime: end || multiEnd,
+  gender: form.value.gender || null,
+  nationality: form.value.nationality || null,
+  languages: form.value.languages || null,
+  hourlyRateMin: form.value.hourlyRateMin || null,
+  hourlyRateMax: form.value.hourlyRateMax || null
+}
+
+// 確保這些值不為空字串或無效的格式
+if (!filters.desiredStartTime || !filters.desiredEndTime) {
+  alert('請填寫有效的開始時間與結束時間');
+  return;
+}
+
+// 在這裡檢查過濾條件
+console.log("過濾條件:", filters);
+
+  try {
+    const res = await myAxios.get('/api/appointment/caregiver/available', { params: filters })
+
+    console.log("API 回應資料:", res.data); 
+    
+    store.setFilters(filters)
+    store.setCaregivers(res.data)
+    router.push('/caregivers/list')
+  } catch (err) {
+    console.error('搜尋失敗', err)
+    alert('搜尋失敗，請稍後再試')
+  }
+}
+
+// 表單是否完整
+const isFormComplete = computed(() => {
+  const continuousFilled = form.value.continuous.startDate && form.value.continuous.startTime && form.value.continuous.endDate && form.value.continuous.endTime;
+  const multiFilled = form.value.multi.startDate && form.value.multi.endDate;
+  
+  return (continuousFilled || multiFilled) && form.value.city && form.value.district;
+});
+
+
+//自動滑到填寫區域
 const scrollToRequestForm = () => {
   const requestForm = document.querySelector('.request-form.card-section');
   if (requestForm) {
     requestForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    // 可選：聚焦表單的第一個輸入框，提升可訪問性
     const firstInput = requestForm.querySelector('input, select, textarea');
     if (firstInput) {
       firstInput.focus();
     }
   }
+};
+
+const goToRequestTime = () => {
+  router.push('/request/time');
 };
 
 const form = ref({
@@ -301,7 +416,11 @@ onMounted(async () => {
 
 const onCityChange = () => {
   const city = cities.value.find(c => c.name === form.value.city)
-  districts.value = city ? city.districts : []
+  if (city) {
+    districts.value = ['全部區域', ...city.districts]
+  } else {
+    districts.value = []
+  }
   form.value.district = ''
 }
 
@@ -442,18 +561,18 @@ h2, h3 {
   cursor: pointer;
   transition: background-color 0.3s;
 }
-.search-btn {
+.request-btn {
   background-color: #FF9999;
   color: #fff;
 }
-.search-btn:hover {
+.request-btn:hover {
   background-color: #e68989;
 }
-.request-btn {
+.search-btn {
   background-color: #4DB6AC;
   color: #fff;
 }
-.request-btn:hover {
+.search-btn:hover {
   background-color: #3a9d93;
 }
 /* 填寫需求區塊 */
@@ -609,8 +728,23 @@ h2, h3 {
   transition: color 0.2s ease;
 }
 
+/* 搜尋按鈕 */
+.search-button {
+  padding: 0.625rem 1.25rem;
+  background-color: #4DB6AC;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.975rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
 .add-time-slot:hover {
   color: #2A9287; /* 深色變體，hover 反饋 */
+}
+.search-button:hover {
+  background-color: #2A9287;
 }
 
 /* 介紹 */
