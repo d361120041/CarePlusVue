@@ -1,10 +1,15 @@
 <template>
-    <div class="container py-4" v-if="chapter">
-        <h3 class="mb-3">{{ chapter.title }}</h3>
+  <div class="container py-4" v-if="chapter">
+    <div class="mt-3 text-end">
+      <button class="btn btn-outline-secondary" @click="backToProgress">
+        🔙 回到課程進度總覽
+      </button>
+    </div>
+    <h3 class="mb-3">{{ chapter.title }}</h3>
 
-        <!-- 顯示影片或文章 -->
-        <div class="mb-4">
-            <!-- <iframe
+    <!-- 顯示影片或文章 -->
+    <div class="mb-4">
+      <!-- <iframe
           v-if="chapter.contentType === 'video'"
           :src="embedUrl"
           frameborder="0"
@@ -18,25 +23,28 @@
           class="w-100 rounded content-frame"
         ></iframe> -->
 
-            <iframe v-if="chapter.contentType === 'video'" :src="embedUrl" frameborder="0" allowfullscreen
-                class="content-frame video-frame" />
+      <iframe v-if="chapter.contentType === 'video'" :src="embedUrl" frameborder="0" allowfullscreen
+        class="content-frame video-frame" />
 
-            <iframe v-else-if="chapter.contentType === 'article'" :src="embedUrl" frameborder="0"
-                class="content-frame article-frame" />
+      <iframe v-else-if="chapter.contentType === 'article'" :src="embedUrl" frameborder="0"
+        class="content-frame article-frame" />
 
-            <div v-else class="text-muted">無法顯示的內容類型</div>
-        </div>
+      <div v-else class="text-muted">無法顯示的內容類型</div>
+    </div>
 
-<!-- 上一章 + 下一章 -->
-<div class="d-flex justify-content-between">
-  <button class="btn btn-primary" :disabled="currentIndex <= 0" @click="goPrevious">上一章</button>
+    <!-- 上一章 + 下一章 -->
+    <div class="d-flex justify-content-between">
+      <button class="btn btn-primary" :disabled="currentIndex <= 0" @click="goPrevious">上一章</button>
 
-  <button class="btn btn-primary" @click="handleNextOrFinish">{{ currentIndex >= chapters.length - 1 ? '完成' : '下一章' }}</button>
-</div>
-
+      <button class="btn btn-primary" @click="handleNextOrFinish">{{ currentIndex >= chapters.length - 1 ? '完成' : '下一章'
+      }}</button>
 
 
     </div>
+
+
+
+  </div>
 </template>
 
 <script setup>
@@ -47,7 +55,7 @@ import axios from '@/plugins/axios.js'
 
 
 const route = useRoute()
-const router = useRoute()
+const router = useRouter()
 const courseId = Number(route.params.courseId)
 const userId = Number(localStorage.getItem('userId') || 3)
 
@@ -68,36 +76,44 @@ const embedUrl = computed(() => {
 })
 
 const fetchChapters = async () => {
-    const res = await axios.get(`/api/chapters/chapters/course/${courseId}`)
-    chapters.value = res.data
+  const res = await axios.get(`/api/chapters/chapters/course/${courseId}`)
+  chapters.value = res.data
 }
 
 const loadProgress = async () => {
-    try {
-        const res = await axios.get(`/api/progress/user/${userId}/course/${courseId}`)
-        const progresses = res.data
-        if (progresses.length > 0) {
-            const last = progresses.sort((a, b) => b.lastWatched - a.lastWatched)[0]
-            const idx = chapters.value.findIndex(c => c.chapterId === last.chapterId.chapterId)
-            currentIndex.value = idx !== -1 ? idx : 0
-        }
-    } catch (err) {
-        currentIndex.value = 0
+  try {
+    const res = await axios.get(`/api/progress/user/${userId}/course/${courseId}`)
+    const progresses = res.data
+    if (progresses.length > 0) {
+      const last = progresses.sort((a, b) => b.lastWatched - a.lastWatched)[0]
+      const idx = chapters.value.findIndex(c => c.chapterId === last.chapterId.chapterId)
+      currentIndex.value = idx !== -1 ? idx : 0
     }
-    chapter.value = chapters.value[currentIndex.value]
-    await ensureProgress()
+  } catch (err) {
+    currentIndex.value = 0
+  }
+  chapter.value = chapters.value[currentIndex.value]
+  await ensureProgress()
 }
 
+// const ensureProgress = async () => {
+//   await axios.get(`/api/progress/user/${userId}/chapter/${chapter.value.chapterId}/with-create`)
+// }
 const ensureProgress = async () => {
-    await axios.get(`/api/progress/user/${userId}/chapter/${chapter.value.chapterId}/with-create`)
+  try {
+    const res = await axios.get(`/api/progress/user/${userId}/chapter/${chapter.value.chapterId}/with-create`)
+    console.log('已建立或找到進度：', res.data)
+  } catch (err) {
+    console.error('建立或查詢進度失敗：', err)
+  }
 }
 
 const goNext = async () => {
-    if (currentIndex.value < chapters.value.length - 1) {
-        currentIndex.value++
-        chapter.value = chapters.value[currentIndex.value]
-        await ensureProgress()
-    }
+  if (currentIndex.value < chapters.value.length - 1) {
+    currentIndex.value++
+    chapter.value = chapters.value[currentIndex.value]
+    await ensureProgress()
+  }
 }
 
 const goPrevious = async () => {
@@ -135,20 +151,77 @@ watch(() => route.query.chapterId, async (newChapterId) => {
 
 
 
- const handleNextOrFinish = async () => {
-   if (currentIndex.value = chapters.length - 1) {
-     // 你可以改導向「我的課程」或「課程總覽」
-     router.push('/my-courses')
-   } else {
-     await goNext()
-   }
- }
+//  const handleNextOrFinish = async () => {
+//    if (currentIndex.value = chapters.length - 1) {
+//      // 你可以改導向「我的課程」或「課程總覽」
+//      router.push('/my-courses')
+//    } else {
+//      await goNext()
+//    }
+//  }
+
+const handleNextOrFinish = async () => {
+  if (currentIndex.value === chapters.value.length - 1) {
+    router.push(`/done/${courseId}`)
+  } else {
+    await goNext()
+  }
+}
+
+// const handleNextOrFinish = async () => {
+//   try {
+//     // 先標記當前章節為完成
+//     await axios.patch(`/api/progress/user/${userId}/chapter/${chapter.value.chapterId}/complete`)
+
+//     // 如果是最後一章，再標記整門課為完成，並導向結束頁面
+//     if (currentIndex.value === chapters.value.length - 1) {
+//       await axios.patch(`/api/progress/user/${userId}/course/${courseId}/complete-all`)
+//       router.push(`/done/${courseId}`)
+//     } else {
+//       await goNext()
+//     }
+
+//   } catch (err) {
+//     console.error('完成章節或課程失敗', err)
+//     alert('請稍後再試')
+//   }
+// }
+
+const backToProgress = async () => {
+  console.log("送出 PATCH 資料", {
+  userId,
+  chapterId: chapter.value.chapterId,
+  lastWatched: 1,
+  isCompleted: false,
+  status: 'in_progress'
+})
+  try {
+    await axios.patch(`/api/progress/chapter/${chapter.value.chapterId}/progress`, {
+      userId,
+      lastWatched: 1,
+      isCompleted: false,
+      status: 'in_progress'
+    })
+
+    // 若你想在離開前就標記目前章節為「完成」
+    // 可加上這行：
+    // await axios.patch(`/api/progress/user/${userId}/chapter/${chapter.value.chapterId}/complete`)
+
+    // 返回進度總覽頁面
+    router.push(`/course-progress/${courseId}`)
+  } catch (err) {
+    console.error('無法回到課程進度頁', err)
+    alert('操作失敗，請稍後再試')
+  }
+}
+
 
 
 onMounted(async () => {
   await fetchChapters()
   await loadChapterFromQuery()
 })
+
 </script>
 
 <style scoped>
@@ -158,36 +231,38 @@ onMounted(async () => {
   } */
 
 .content-frame {
-    border: none;
-    border-radius: 8px;
-    width: 100%;
+  border: none;
+  border-radius: 8px;
+  width: 100%;
 }
 
 .video-frame {
-    height: 600px;
+  height: 600px;
 }
 
 
 .article-frame {
-    display: block;
-    /* 強制變成可置中的區塊 */
-    width: 100%;
-    /* 確保在小螢幕仍能滿版顯示 */
-    max-width: 1200px;
-    /* 書本寬度 */
-    height: 800px;
-    /* 書本高度 */
-    margin: 0 auto;
-    /* 水平置中 */
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: block;
+  /* 強制變成可置中的區塊 */
+  width: 100%;
+  /* 確保在小螢幕仍能滿版顯示 */
+  max-width: 1200px;
+  /* 書本寬度 */
+  height: 800px;
+  /* 書本高度 */
+  margin: 0 auto;
+  /* 水平置中 */
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn.btn-primary:hover {
-  background-color: #0056b3; /* 深一點的藍色 */
+  background-color: #0056b3;
+  /* 深一點的藍色 */
   border-color: #004d99;
-  box-shadow: 0 0 6px rgba(0, 123, 255, 0.5); /* 輕微發光效果 */
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
+  /* 輕微發光效果 */
   transition: all 0.2s ease-in-out;
 }
 </style>

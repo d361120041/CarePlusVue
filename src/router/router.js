@@ -18,6 +18,7 @@ import CourseDetail from "@/yuni/views/CourseDetail.vue";
 import MyCourse from "@/yuni/views/MyCourse.vue";
 import CourseLearn from "@/yuni/views/CourseLearn.vue";
 import CourseProgress from "@/yuni/views/CourseProgress.vue";
+import Done from "@/yuni/views/Done.vue";
 // ------------------ yuni ------------------
 
 // ------------------ allen ------------------
@@ -94,6 +95,7 @@ const routes = [
   { path: "/my-courses", component: MyCourse, name: "MyCourse" },
   { path: "/learn/:courseId", component: CourseLearn, name: "CourseLearn" },
   { path: "/course-progress/:courseId", component: CourseProgress, name: "CourseProgress" },
+  { path: "/done/:courseId", component: Done, name: "Done" },
 
 
   // ------------------ yuni ------------------
