@@ -3,8 +3,13 @@
     <!-- 搜尋欄 -->
     <div class="search-bar mx-auto max-w-4xl p-6 mb-6 bg-white rounded-xl shadow-lg border border-gray-300">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <input v-model="search.keyword" type="text" placeholder="🔍 輸入關鍵字"
-               class="border border-gray-300 p-2 rounded-md w-full" />
+        <input
+          v-model="search.keyword"
+          type="text"
+          placeholder="🔍 請輸入關鍵字"
+          class="border border-gray-300 p-2 rounded-md w-full"
+          @keyup.enter="handleSearch"
+        />
 
         <select v-model="search.categoryId" class="border border-gray-300 p-2 rounded-md w-full">
           <option value="">-- 所有分類 --</option>
@@ -16,7 +21,7 @@
         <select v-model="search.dateRange" class="border border-gray-300 p-2 rounded-md w-full">
           <option value="">-- 不限制時間 --</option>
           <option value="today">今天</option>
-          <option value="week">這個禮拜</option>
+          <option value="week">這週</option>
           <option value="month">這個月</option>
           <option value="year">今年</option>
         </select>
@@ -27,7 +32,7 @@
       </div>
 
       <!-- 搜尋摘要 -->
-      <div v-if="summaryText" class="text-gray-700 mt-4 text-sm">
+      <div v-if="hasSearched && summaryText" class="text-gray-700 mt-4 text-sm">
         🔎 以下是 {{ summaryText }} 的搜尋結果
         <button @click="clearSearch" class="ml-4 text-blue-600 underline hover:text-blue-800">
           取消篩選
@@ -35,7 +40,7 @@
       </div>
     </div>
 
-    <!-- 標題與新增 -->
+    <!-- 上方標題與新增 -->
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-xl font-bold">🛠 最新新聞列表（後台）</h1>
       <button @click="goToCreate" class="btn-green">
@@ -53,7 +58,7 @@
                class="thumbnail" @error="handleImgError" />
         </router-link>
 
-        <div class="flex-1">
+        <div class="flex-1 pt-2">
           <router-link :to="`/admin/news/${news.newsId}`" class="text-lg font-semibold hover:underline">
             {{ news.title }}
           </router-link>
@@ -80,7 +85,7 @@
       </div>
 
       <!-- 分頁 -->
-      <div class="pagination">
+      <div class="pagination mt-6">
         <button @click="prevPage" :disabled="page === 0 || loading" class="page-btn">上一頁</button>
         <span>第 {{ page + 1 }} 頁</span>
         <button @click="nextPage" :disabled="!hasNextPage || loading" class="page-btn">下一頁</button>
@@ -106,30 +111,67 @@ const size = ref(5);
 const hasNextPage = ref(true);
 const loading = ref(false);
 const defaultThumbnail = noImage;
+const hasSearched = ref(false);
+const searchSnapshot = ref({});
 
 const search = ref({ keyword: '', categoryId: '', dateRange: '' });
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mi = String(date.getMinutes()).padStart(2, '0');
+  return `${yyyy}/${mm}/${dd} ${hh}:${mi}`;
+};
+
+const formatDateTime = (date) => {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mi = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`; // ✅ 中間是空格
+};
 
 const buildDateRange = () => {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
   switch (search.value.dateRange) {
     case 'today':
       return {
-        dateFrom: today.toISOString(),
-        dateTo: new Date(today.getTime() + 86400000).toISOString()
+        dateFrom: formatDateTime(today),
+        dateTo: formatDateTime(new Date(today.getTime() + 86400000))
       };
     case 'week': {
-      const start = new Date(today);
-      start.setDate(today.getDate() - today.getDay());
-      return { dateFrom: start.toISOString(), dateTo: now.toISOString() };
+      const day = today.getDay();
+      const diffToMonday = day === 0 ? -6 : 1 - day;
+      const monday = new Date(today);
+      monday.setDate(today.getDate() + diffToMonday);
+      const endOfToday = new Date(today);
+      endOfToday.setHours(23, 59, 59, 999);
+      return {
+        dateFrom: formatDateTime(monday),
+        dateTo: formatDateTime(endOfToday)
+      };
     }
     case 'month': {
-      const start = new Date(today.getFullYear(), today.getMonth(), 1);
-      return { dateFrom: start.toISOString(), dateTo: now.toISOString() };
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+      return {
+        dateFrom: formatDateTime(firstDay),
+        dateTo: formatDateTime(now)
+      };
     }
     case 'year': {
-      const start = new Date(today.getFullYear(), 0, 1);
-      return { dateFrom: start.toISOString(), dateTo: now.toISOString() };
+      const firstDay = new Date(today.getFullYear(), 0, 1);
+      return {
+        dateFrom: formatDateTime(firstDay),
+        dateTo: formatDateTime(now)
+      };
     }
     default:
       return { dateFrom: null, dateTo: null };
@@ -138,20 +180,27 @@ const buildDateRange = () => {
 
 const summaryText = computed(() => {
   const parts = [];
-  if (search.value.keyword) parts.push(`關鍵字為「${search.value.keyword}」`);
-  if (search.value.categoryId) {
-    const found = categories.value.find(c => c.categoryId === Number(search.value.categoryId));
+  const snap = searchSnapshot.value;
+
+  if (snap.keyword) parts.push(`關鍵字為「${snap.keyword}」`);
+
+  if (snap.categoryId) {
+    const found = categories.value.find(c => c.categoryId === Number(snap.categoryId));
     if (found) parts.push(`分類為「${found.categoryName}」`);
   }
+
   const map = { today: '今天', week: '這週', month: '這月', year: '今年' };
-  if (search.value.dateRange && map[search.value.dateRange]) {
-    parts.push(`時間為「${map[search.value.dateRange]}」`);
+  if (snap.dateRange && map[snap.dateRange]) {
+    parts.push(`時間為「${map[snap.dateRange]}」`);
   }
+
   return parts.length ? parts.join('、') : '';
 });
 
 const clearSearch = () => {
   search.value = { keyword: '', categoryId: '', dateRange: '' };
+  searchSnapshot.value = {}; // ✅ 清除摘要內容來源
+  hasSearched.value = false;
   page.value = 0;
   loadNews();
 };
@@ -159,13 +208,16 @@ const clearSearch = () => {
 const loadNews = async () => {
   loading.value = true;
   const { dateFrom, dateTo } = buildDateRange();
+
   const params = {
-    keyword: search.value.keyword || null,
-    categoryId: search.value.categoryId || null,
-    dateFrom,
-    dateTo,
-    status: -1
+    status: -1 // 一定要保留
   };
+
+  if (search.value.keyword) params.keyword = search.value.keyword;
+  if (search.value.categoryId) params.categoryId = search.value.categoryId;
+  if (dateFrom) params.dateFrom = dateFrom;
+  if (dateTo) params.dateTo = dateTo;
+
   try {
     const res = await myAxios.post(`/news/admin/search?page=${page.value}&size=${size.value}`, params);
     newsList.value = res.data.content;
@@ -178,12 +230,15 @@ const loadNews = async () => {
 };
 
 const handleSearch = () => {
+  hasSearched.value = true;
   page.value = 0;
+  searchSnapshot.value = { ...search.value }; // ✅ 固定當下搜尋條件
   loadNews();
 };
 
 const prevPage = () => { if (page.value > 0) { page.value--; loadNews(); } };
 const nextPage = () => { page.value++; loadNews(); };
+
 const confirmDelete = async (id) => {
   const result = await Swal.fire({
     title: '確定要刪除嗎？', icon: 'warning', showCancelButton: true,
@@ -195,22 +250,12 @@ const confirmDelete = async (id) => {
     loadNews();
   }
 };
+
 const publishNews = async (id) => { await myAxios.patch(`/news/admin/${id}/publish`); loadNews(); };
 const unpublishNews = async (id) => { await myAxios.patch(`/news/admin/${id}/unpublish`); loadNews(); };
 const goToCreate = () => router.push('/admin/news/new');
 const goToEdit = (id) => router.push(`/admin/news/edit/${id}`);
 const handleImgError = (e) => { if (e.target.src !== defaultThumbnail) e.target.src = defaultThumbnail; };
-const formatDate = (d) => {
-  if (!d) return '';
-  const date = new Date(d);
-  if (isNaN(date.getTime())) return '';
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
-  const hh = String(date.getHours()).padStart(2, '0');
-  const mi = String(date.getMinutes()).padStart(2, '0');
-  return `${yyyy}/${mm}/${dd} ${hh}:${mi}`;
-};
 
 const fetchCategories = async () => {
   const res = await myAxios.get('/news/category');
@@ -225,34 +270,66 @@ onMounted(() => {
 
 <style scoped>
 .thumbnail {
-  width: 120px; /* ✅ 固定寬度 */
+  width: 120px;
   height: 120px;
   object-fit: cover;
   border-radius: 0.375rem;
   flex-shrink: 0;
 }
-
 .news-item {
   display: flex;
   gap: 1.25rem;
   padding: 1rem;
   border-bottom: 1px solid #e5e7eb;
   margin-bottom: 1rem;
-  background-color: #fff; /* ✅ 背景更清爽 */
+  background-color: #fff;
   border-radius: 0.5rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  align-items: flex-start;
 }
 .news-list {
   max-width: 900px;
   margin: 2rem auto;
   padding: 1rem;
 }
-.news-item {
-  align-items: flex-start; /* ✅ 保證縮圖與文字不錯位 */
-}
-
 .news-item > div.flex-1 {
-  padding-top: 0.5rem; /* ✅ 稍微與圖片對齊 */
+  padding-top: 0.5rem;
 }
-
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.page-btn {
+  padding: 0.5rem 1.25rem;
+  background-color: #e5e7eb;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+.page-btn:hover {
+  background-color: #d1d5db;
+}
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.search-btn {
+  background-color: #e5e7eb;
+  color: black;
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.375rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+.search-btn:hover {
+  background-color: #d1d5db;
+}
+.search-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 </style>
