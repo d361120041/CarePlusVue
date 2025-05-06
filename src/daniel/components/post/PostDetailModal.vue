@@ -11,7 +11,7 @@
 
                 <!-- 漢堡選單 -->
                 <div class="menu-wrapper">
-                    <button class="hamburger-btn" @click.stop="toggleMenu">⋯</button>
+                    <button class="hamburger-btn" @click.stop="toggleMenu" v-if="post.user.userId === currentUser.userId">⋯</button>
                     <ul v-if="menuOpen" class="post-dropdown">
                         <li @click="() => postStore.edit(post)">編輯貼文</li>
                         <li @click="onDelete">刪除貼文</li>
@@ -88,6 +88,7 @@ const postStore = usePostStore()
 const authStore = useAuthStore()
 
 // 使用者頭貼
+const currentUser = authStore.user
 const imageURL = ref(null)
 imageURL.value = `data:image/png;base64,${props.post.user.profilePicture}`
 

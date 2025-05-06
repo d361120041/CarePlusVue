@@ -58,7 +58,7 @@
             <button class="action-btn" @click="likePost">
                 👍 按讚({{ likeCount }})
             </button>
-            <button class="action-btn" @click="openDetail"> 💬 留言</button>
+            <button class="action-btn" @click="() => postStore.openDetailModal(props.post)"> 💬 留言</button>
             <button class="action-btn" @click="sharePost">
                 🔗 分享 ({{ shareCount }})
             </button>
@@ -92,10 +92,6 @@ const authStore = useAuthStore()
 const currentUser = authStore.user
 const imageURL = ref(null)
 imageURL.value = `data:image/png;base64,${props.post.user.profilePicture}`
-
-function openDetail() {
-    postStore.openDetailModal(props.post)
-}
 
 // 內容「顯示更多/較少」
 const contentRef = ref(null)
