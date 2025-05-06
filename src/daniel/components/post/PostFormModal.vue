@@ -191,10 +191,6 @@ async function onSubmit() {
         alert('送出失敗，請稍後重試')
     }
 }
-
-function onClose() {
-    
-}
 </script>
 
 <style scoped>

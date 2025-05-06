@@ -8,7 +8,8 @@
                 <div class="post-time">{{ formattedTime }}</div>
             </div>
             <div class="post-categories">
-                <span v-for="cat in post.postCategoryClassifiers" :key="cat.postCategoryClassifierId" class="post-category-tag">
+                <span v-for="cat in post.postCategoryClassifiers" :key="cat.postCategoryClassifierId"
+                    class="post-category-tag">
                     {{ cat.postCategory.postCategory }}
                 </span>
             </div>
@@ -57,15 +58,11 @@
             <button class="action-btn" @click="likePost">
                 👍 按讚({{ likeCount }})
             </button>
-            <button class="action-btn" @click="isDetailOpen = true"> 💬 留言</button>
+            <button class="action-btn" @click="openDetail"> 💬 留言</button>
             <button class="action-btn" @click="sharePost">
                 🔗 分享 ({{ shareCount }})
             </button>
         </div>
-
-        <!-- 詳細 Modal -->
-        <PostDetailModal :visible="isDetailOpen" :post="post" @close="isDetailOpen = false"
-            @refresh="emit('refresh')" />
     </article>
 </template>
 
@@ -77,7 +74,6 @@ import { usePostStore } from '@/daniel/stores/posts'
 import { useAuthStore } from '@/stores/auth'
 
 import VueEasyLightbox from 'vue-easy-lightbox'
-import PostDetailModal from '@/daniel/components/post/PostDetailModal.vue'
 
 const props = defineProps({
     post: Object, required: true
@@ -96,6 +92,10 @@ const authStore = useAuthStore()
 const currentUser = authStore.user
 const imageURL = ref(null)
 imageURL.value = `data:image/png;base64,${props.post.user.profilePicture}`
+
+function openDetail() {
+    postStore.openDetailModal(props.post)
+}
 
 // 內容「顯示更多/較少」
 const contentRef = ref(null)
@@ -173,8 +173,6 @@ onMounted(async () => {
     // 取得實際內容高度與單行高度
     const lineHeight = parseFloat(getComputedStyle(el).lineHeight)   /* 行高 */
     needsToggle.value = el.scrollHeight > lineHeight * 5
-
-    // likeCount.value = props.post.reactions?.length || 0
 })
 </script>
 

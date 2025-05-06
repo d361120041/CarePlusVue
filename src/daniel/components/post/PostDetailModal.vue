@@ -1,5 +1,5 @@
 <template>
-    <BaseModal :visible="visible" :title="`${post.user.userName}的貼文`" @close="$emit('close')">
+    <BaseModal v-if="post" :visible="visible" :title="`${post.user.userName}的貼文`" @close="$emit('close')">
         <div class="post-detail">
             <div class="post-header">
                 <!-- 使用者資訊區塊 -->
@@ -74,7 +74,7 @@ import CommentForm from '@/daniel/components/comment/CommentForm.vue'
 
 const props = defineProps({
     visible: Boolean,
-    post: Object
+    post: { type: Object, default: null }
 })
 const emit = defineEmits(['close', 'refresh'])
 
@@ -87,40 +87,27 @@ const [menuOpen, toggleMenu] = useToggle(false)
 const postStore = usePostStore()
 const authStore = useAuthStore()
 
+// 使用者頭貼
 const imageURL = ref(null)
 imageURL.value = `data:image/png;base64,${props.post.user.profilePicture}`
 
-//================= ref, computed 開始 =================
-// PostFormModal 編輯/檢視模式
-const isFormModalOpen = ref(false)
 // 貼文動作列
 const likeCount = ref(props.post.reactions?.length || 0)
 const shareCount = ref(props.post.share || 0)
+
 // 評論清單
 const commentList = ref(null)
-//================= ref, computed 結束 =================
 
 function onEdit() {
     toggleMenu()
+    postStore.closeDetailModal()
     postStore.openModal(props.post)
 }
-
-// 編輯或新增完成後
-function handleSaved(updatedPost) {
-    isFormModalOpen.value = false
-    // 刷新當前貼文資料（包含標題、內容、images）
-    props.post.title = updatedPost.title
-    props.post.content = updatedPost.content
-    if (updatedPost.images) props.post.images = updatedPost.images
-    // 通知列表重載整體列表
-    emit('refresh')
-}
-//================= 編輯貼文 結束 =================
 
 // 刪除貼文
 async function onDelete() {
     toggleMenu()
-    menuOpen.value = false
+    // menuOpen.value = false
     if (!confirm('確定要刪除此貼文？此操作無法復原')) return
     try {
         await postStore.deletePost(props.post.postId)

@@ -24,11 +24,15 @@
             <!-- 貼文列表 -->
             <PostList :filterCategoryIds="categoryStore.selectedIds" @refresh="reloadPosts" />
 
-            <!-- 新增與編輯 Modal -->
-            <PostFormModal :visible="postStore.isModalOpen" :post="postStore.currentPost" @close="postStore.closeModal"
-                @saved="reloadPosts" />
         </div>
     </div>
+
+    <!-- 新增與編輯 Modal -->
+    <PostFormModal :visible="postStore.isModalOpen" :post="postStore.currentPost" @close="postStore.closeModal"
+        @saved="reloadPosts" />
+
+    <PostDetailModal v-if="postStore.detailPost" :visible="postStore.isDetailModalOpen" :post="postStore.detailPost"
+        @close="postStore.closeDetailModal" @refresh="reloadPosts" />
 </template>
 
 <script setup>
@@ -39,6 +43,7 @@ import { useAuthStore } from '@/stores/auth'
 
 import PostList from '@/daniel/components/post/PostList.vue'
 import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
+import PostDetailModal from '@/daniel/components/post/PostDetailModal.vue'
 
 const postStore = usePostStore()
 const categoryStore = useCategoryStore()
@@ -69,7 +74,7 @@ onMounted(async () => {
 <style scoped>
 .social-layout {
     display: grid;
-    grid-template-columns: 200px min(80ch, 100%) 1fr;
+    grid-template-columns: 1fr min(80ch, 100%) 1fr;
     gap: 1rem;
 }
 
@@ -153,7 +158,7 @@ onMounted(async () => {
     cursor: pointer;
 }
 
-.new-post-input::placeholder {
+.new-post-input::placeholder{
     color: #999;
 }
 </style>
