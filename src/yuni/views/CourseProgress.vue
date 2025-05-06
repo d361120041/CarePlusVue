@@ -3,7 +3,7 @@
     <h2>{{ course.title }}</h2>
     <p class="text-muted">#{{ getCategoryLabel(course.category) }}</p>
 
-    <h4 class="mt-4">學習進度</h4>
+    <h4 class="mt-4">{{ auth.userName }}的學習進度</h4>
     <ul v-if="progressList.length > 0" class="list-group">
       <li v-for="progress in progressList" :key="progress.progressId"
         class="list-group-item d-flex justify-content-between align-items-center">
@@ -32,10 +32,14 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from '@/plugins/axios.js'
 
+import { useAuthStore } from "@/stores/auth";
+const auth = useAuthStore();
+
 const route = useRoute()
 const router = useRouter()
 const courseId = Number(route.params.courseId)
-const userId = 3 // 暫時寫死
+// const userId = 3 // 暫時寫死
+const userId = ref(null)
 
 const course = ref(null)
 const progressList = ref([])
@@ -65,13 +69,12 @@ const fetchData = async () => {
 
     let userProgress = []
     try {
-      const resProgress = await axios.get(`/api/progress/user/${userId}/course/${courseId}`)
+      const resProgress = await axios.get(`/api/progress/user/${userId.value}/course/${courseId}`)
 
       userProgress = resProgress.data
     } catch (err) {
       console.warn('目前尚無進度紀錄')
     }
-
     // 建立章節進度清單
     progressList.value = allChapters.map(ch => {
       const found = userProgress.find(p => p.chapterId.chapterId === ch.chapterId)
@@ -87,6 +90,10 @@ const fetchData = async () => {
     console.error('資料載入失敗', err)
   }
 }
+ 
+      
+
+
 
 const goLearn = () => {
   const firstUnfinished = progressList.value.find(p => !p.isCompleted)
@@ -102,7 +109,22 @@ const goPrevious = async () => {
   }
 }
 
-onMounted(fetchData)
+onMounted(async () => {
+  try {
+    // 先取得目前登入的使用者資訊
+    const res = await axios.get('/user/profile', { withCredentials: true })
+    userId.value = res.data.userId
+
+    // 拿到 userId 後再載入課程與進度資料
+    await fetchData()
+  } catch (err) {
+    console.error('無法取得使用者資訊', err)
+    alert('尚未登入或 session 失效')
+    router.push('/login') // 導回登入頁或首頁
+  }
+})
+
+
 </script>
 
 

@@ -29,6 +29,9 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import axios from '@/plugins/axios.js'
 // favButton// favButton// favButton// favButton// favButton// favButton
 import { useAuthStore } from "@/stores/auth";
 // favButton// favButton// favButton// favButton// favButton// favButton
@@ -64,9 +67,10 @@ const toggleFavorite = async () => {
 // favButton// favButton// favButton// favButton// favButton// favButton
 
 const route = useRoute()
+const router = useRouter()
 const courseId = Number(route.params.id)
-const userId = 3  //先寫死！！
-
+// const userId = 3  //先寫死！！
+const userId = ref(null)
 const course = ref(null)
 const chapters = ref([])
 const enrolled = ref(false)
@@ -89,7 +93,7 @@ const getCategoryLabel = (key) => {
 // 檢查是否已加入課程
 const checkEnrolled = async () => {
   try {
-    const res = await axios.get(`/api/progress/user/${userId}/course/${courseId}`)
+    const res = await axios.get(`/api/progress/user/${userId.value}/course/${courseId}`)
 
     enrolled.value = res.data.length > 0
   } catch (err) {
@@ -97,35 +101,15 @@ const checkEnrolled = async () => {
   }
 }
 
-// 加入課程
-const enrollCourse = async () => {
-  try {
-    await axios.post('/api/progress/enroll', {
-      userId,
-      courseId
-    })
-    alert('成功加入課程！')
-    enrolled.value = true
-  } catch (err) {
-    if (err.response?.status === 409) {
-      alert('你已經加入過這門課了')
-    } else {
-      alert('加入課程失敗')
-    }
-  }
-}
-
 // 切換加入/取消
 const toggleEnrollment = async () => {
   try {
     if (!enrolled.value) {
-      await axios.post('/api/progress/enroll', { userId, courseId })
+      await axios.post('/api/progress/enroll', { userId: userId.value, courseId })
       enrolled.value = true
-      alert('成功加入課程！')
     } else {
-      await axios.delete(`/api/progress/user/${userId}/course/${courseId}`)
+      await axios.delete(`/api/progress/user/${userId.value}/course/${courseId}`)
       enrolled.value = false
-      alert('已取消加入課程')
     }
   } catch (err) {
     console.error(err)
@@ -135,6 +119,9 @@ const toggleEnrollment = async () => {
 
 onMounted(async () => {
   try {
+    const resProfile = await axios.get('/user/profile', { withCredentials: true })
+    userId.value = resProfile.data.userId
+
     const resCourse = await axios.get(`/api/courses/${courseId}`)
     course.value = resCourse.data
 
@@ -142,8 +129,11 @@ onMounted(async () => {
     chapters.value = resChapters.data
 
     await checkEnrolled()
+    await checkFavorite()
   } catch (err) {
-    console.error('取得課程或章節資料失敗', err)
+    console.error('使用者未登入或載入失敗', err)
+    alert('請先登入')
+    router.push('/login')
   }
 })
 </script>
