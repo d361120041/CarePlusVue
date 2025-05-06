@@ -27,17 +27,19 @@ const auth = useAuthStore();
 
 const login = async () => {
   try {
-    //把使用者輸入的帳密丟給後端
+    // 把使用者輸入的帳密丟給後端
     await axios.post("/user/login", {
       userAccount: userAccount.value,
       userPassword: password.value,
     });
-    alert("登入成功");
-    // 更新全域認證狀態
-    //呼叫Pinia auth store 裡的 checkAuth() 方法
+
+    // 呼叫 Pinia auth store 裡的 checkAuth() 方法（可保留）
     await auth.checkAuth();
-    // 返回首頁
-    router.push("/");
+
+    // 導向首頁並強制刷新頁面
+    router.push("/").then(() => {
+      window.location.reload(); // 這行會觸發整個 App 重新載入，Navbar 才會正確顯示頭像
+    });
   } catch (error) {
     if (error.response && error.response.data) {
       alert("登入失敗：" + error.response.data);
