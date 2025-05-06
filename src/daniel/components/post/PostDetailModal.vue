@@ -13,7 +13,7 @@
                 <div class="menu-wrapper">
                     <button class="hamburger-btn" @click.stop="toggleMenu">⋯</button>
                     <ul v-if="menuOpen" class="post-dropdown">
-                        <li @click="onEdit()">編輯貼文</li>
+                        <li @click="() => postStore.edit(post)">編輯貼文</li>
                         <li @click="onDelete">刪除貼文</li>
                     </ul>
                 </div>
@@ -97,12 +97,6 @@ const shareCount = ref(props.post.share || 0)
 
 // 評論清單
 const commentList = ref(null)
-
-function onEdit() {
-    toggleMenu()
-    postStore.closeDetailModal()
-    postStore.openModal(props.post)
-}
 
 // 刪除貼文
 async function onDelete() {

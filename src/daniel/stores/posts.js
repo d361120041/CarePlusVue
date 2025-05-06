@@ -24,6 +24,11 @@ export const usePostStore = defineStore('posts', () => {
         isModalOpen.value = false
     }
 
+    function edit(post) {
+        closeDetailModal()
+        openModal(post)
+    }
+
     // 多條件查詢貼文
     async function loadPosts(filter = {}) {
         isLoading.value = true
@@ -155,7 +160,7 @@ export const usePostStore = defineStore('posts', () => {
     return {
         posts, isLoading, error,
         isModalOpen, currentPost,
-        openModal, closeModal, 
+        openModal, closeModal, edit,
         loadPosts, savePost, deletePost, 
         deleteImage,
         like, view, share,

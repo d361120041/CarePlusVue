@@ -19,7 +19,7 @@
                 <button class="hamburger-btn" @click.stop="toggleMenu" v-if="post.user.userId === currentUser.userId">⋯
                 </button>
                 <ul v-if="menuOpen" class="post-dropdown">
-                    <li @click="onEdit">編輯貼文</li>
+                    <li @click="() => postStore.edit(post)">編輯貼文</li>
                     <li @click="onDelete">刪除貼文</li>
                 </ul>
             </div>
@@ -111,12 +111,6 @@ const imgList = computed(() => props.post.images.map(img => `data:image/jpeg;bas
 const isDetailOpen = ref(false)
 const likeCount = ref(props.post.reactions?.length || 0)
 const shareCount = ref(props.post.share || 0)
-
-// 編輯貼文
-function onEdit() {
-    toggleMenu()
-    postStore.openModal(props.post)
-}
 
 // 刪除貼文
 async function onDelete() {
