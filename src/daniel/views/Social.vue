@@ -16,48 +16,53 @@
         <div class="social-container">
             <!-- 新增貼文卡片 -->
             <article class="post-item new-post-card">
-                <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
+                <img class="user-avatar" :src="imageUrl" alt="User Avatar" />
                 <input type="text" class="new-post-input" placeholder="What's on your mind?" readonly
                     @click="postStore.openModal(null)" />
             </article>
 
             <!-- 貼文列表 -->
-            <PostList 
-                :filterCategoryIds="categoryStore.selectedIds" 
-                @delete-post="loadPostsAgain"
-                @refresh="loadPostsAgain" />
+            <PostList :filterCategoryIds="categoryStore.selectedIds" @refresh="reloadPosts" />
 
             <!-- 新增與編輯 Modal -->
-            <PostFormModal 
-                :visible="postStore.isModalOpen" :post="postStore.currentPost" @close="postStore.closeModal"
-                @saved="loadPostsAgain" />
+            <PostFormModal :visible="postStore.isModalOpen" :post="postStore.currentPost" @close="postStore.closeModal"
+                @saved="reloadPosts" />
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useCategoryStore } from '@/daniel/stores/categories.js'
+import { useAuthStore } from '@/stores/auth'
 
 import PostList from '@/daniel/components/post/PostList.vue'
 import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
 
 const postStore = usePostStore()
 const categoryStore = useCategoryStore()
-const currentUser = ref({
-    avatarUrl: '/circle-user-solid.svg',
-});
+const authStore = useAuthStore()
+const imageUrl = ref(null)
 
-async function loadPostsAgain() {
-    await postStore.loadPosts({ 
-        postCategoryIds: categoryStore.selectedIds 
+const currentUser = authStore.user
+imageUrl.value = `data:image/png;base64,${currentUser.profilePicture}`
+
+async function reloadPosts() {
+    await postStore.loadPosts({
+        postCategoryIds: categoryStore.selectedIds
     })
 }
 
+watch(
+    () => categoryStore.selectedIds.slice(), // 複製一份陣列讓 reactivity 生效
+    () => reloadPosts(),
+    { deep: true }
+)
+
 onMounted(async () => {
     await categoryStore.loadCategories()
-    await loadPostsAgain()
+    await reloadPosts()
 })
 </script>
 

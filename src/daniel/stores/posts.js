@@ -11,20 +11,6 @@ export const usePostStore = defineStore('posts', () => {
     const currentPost = ref(null)
 
     // —— actions —— 
-    // 多條件查詢貼文
-    async function loadPosts(filter = {}) {
-        isLoading.value = true
-        error.value = null
-        try {
-            const res = await myAxios.post('/api/posts/search', filter)
-            posts.value = res.data
-        } catch (error) {
-            error.value = error
-        } finally {
-            isLoading.value = false
-        }
-    }
-
     // 開啟新增/編輯 modal
     function openModal(post = null) {
         currentPost.value = post
@@ -36,6 +22,21 @@ export const usePostStore = defineStore('posts', () => {
         isModalOpen.value = false
     }
 
+    // 多條件查詢貼文
+    async function loadPosts(filter = {}) {
+        isLoading.value = true
+        error.value = null
+        try {
+            const res = await myAxios.post('/api/posts/search', filter)
+            posts.value = res.data
+        } catch (error) {
+            error.value = error
+        } finally {
+            isLoading.value = false
+        }    
+    }    
+    
+    // 新增或修改貼文
     async function savePost({ form, files }) {
         isLoading.value = true
         error.value = null
@@ -84,6 +85,22 @@ export const usePostStore = defineStore('posts', () => {
         }
     }
 
+    // 刪除貼文
+    async function deletePost(postId) {
+        isLoading.value = true
+        error.value = null
+        try {
+            await myAxios.delete(`/api/posts/${postId}`)
+            posts.value = posts.value.filter(p => p.postId !== postId)
+        } catch (error) {
+            error.value = error
+            throw error
+        } finally {
+            isLoading.value = false
+        }
+    }
+
+    // 刪除圖片
     async function deleteImage(postId, imageId) {
         try {
             await myAxios.delete(`/api/posts/${postId}/images/${imageId}`)
@@ -114,6 +131,7 @@ export const usePostStore = defineStore('posts', () => {
         }
     }
 
+    // 分享貼文
     async function share(postId) {
         try {
             await myAxios.post(`/api/posts/${postId}/share`)
@@ -125,9 +143,9 @@ export const usePostStore = defineStore('posts', () => {
     return {
         posts, isLoading, error,
         isModalOpen, currentPost,
-        loadPosts,
         openModal, closeModal, 
-        savePost, deleteImage,
+        loadPosts, savePost, deletePost, 
+        deleteImage,
         like, view, share
     }
 })

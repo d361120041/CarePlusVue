@@ -2,15 +2,21 @@
     <article class="post-item">
         <div class="post-header">
             <!-- 使用者資訊區塊 -->
-            <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
+            <img class="user-avatar" :src="imageURL" alt="User Avatar" />
             <div class="user-info">
                 <div class="user-name">{{ post.user.userName }}</div>
                 <div class="post-time">{{ formattedTime }}</div>
             </div>
+            <div class="post-categories">
+                <span v-for="cat in post.postCategoryClassifiers" :key="cat.postCategoryClassifierId" class="post-category-tag">
+                    {{ cat.postCategory.postCategory }}
+                </span>
+            </div>
 
             <!-- 漢堡選單 -->
             <div class="menu-wrapper">
-                <button class="hamburger-btn" @click.stop="toggleMenu">⋯</button>
+                <button class="hamburger-btn" @click.stop="toggleMenu" v-if="post.user.userId === currentUser.userId">⋯
+                </button>
                 <ul v-if="menuOpen" class="post-dropdown">
                     <li @click="onEdit">編輯貼文</li>
                     <li @click="onDelete">刪除貼文</li>
@@ -33,12 +39,13 @@
 
         <!-- 圖片列表 -->
         <div class="post-images" v-if="imgList.length">
-            <img v-for="(src, idx) in imgList" :key="idx" :src="src"
-                alt="Post Image" @click="openLightbox(idx)" class="clickable-img" />
+            <img v-for="(src, idx) in imgList" :key="idx" :src="src" alt="Post Image" @click="openLightbox(idx)"
+                class="clickable-img" />
         </div>
 
         <!-- vue-easy-lightbox -->
-        <vue-easy-lightbox :visible="lightboxVisible" :imgs="imgList" :index="currentIndex" @hide="lightboxVisible = false" />
+        <vue-easy-lightbox :visible="lightboxVisible" :imgs="imgList" :index="currentIndex"
+            @hide="lightboxVisible = false" />
 
         <!-- 觀看次數 -->
         <div style="text-align: right;">
@@ -57,7 +64,8 @@
         </div>
 
         <!-- 詳細 Modal -->
-        <PostDetailModal :visible="isDetailOpen" :post="post" @close="isDetailOpen = false" @refresh="emit('refresh')" />
+        <PostDetailModal :visible="isDetailOpen" :post="post" @close="isDetailOpen = false"
+            @refresh="emit('refresh')" />
     </article>
 </template>
 
@@ -66,18 +74,15 @@ import { ref, onMounted, computed } from 'vue'
 import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
 import { useToggle } from '@/daniel/composables/useToggle'
 import { usePostStore } from '@/daniel/stores/posts'
+import { useAuthStore } from '@/stores/auth'
 
-import myAxios from '@/plugins/axios.js'
 import VueEasyLightbox from 'vue-easy-lightbox'
-
 import PostDetailModal from '@/daniel/components/post/PostDetailModal.vue'
 
-const props = defineProps({ 
-    post: Object, required: true 
+const props = defineProps({
+    post: Object, required: true
 })
-const emit = defineEmits([
-    'refresh', 'delete-post'
-])
+const emit = defineEmits(['refresh'])
 
 // 時間格式化
 const { formattedTime } = useTimeFormat(props.post.createdAt)
@@ -86,11 +91,11 @@ const { formattedTime } = useTimeFormat(props.post.createdAt)
 const [menuOpen, toggleMenu] = useToggle(false)
 
 const postStore = usePostStore()
+const authStore = useAuthStore()
 
-// 使用者資訊區塊
-const currentUser = ref({
-    avatarUrl: '/circle-user-solid.svg'
-})
+const currentUser = authStore.user
+const imageURL = ref(null)
+imageURL.value = `data:image/png;base64,${props.post.user.profilePicture}`
 
 // 內容「顯示更多/較少」
 const contentRef = ref(null)
@@ -109,6 +114,7 @@ const shareCount = ref(props.post.share || 0)
 
 // 編輯貼文
 function onEdit() {
+    toggleMenu()
     postStore.openModal(props.post)
 }
 
@@ -117,8 +123,8 @@ async function onDelete() {
     toggleMenu()
     if (!confirm('確定要刪除此貼文？此操作無法復原')) return
     try {
-        await myAxios.delete(`/api/posts/${props.post.postId}`)
-        emit('delete-post', props.post.postId)
+        await postStore.deletePost(props.post.postId)
+        emit('refresh')
     } catch (error) {
         alert('刪除失敗，請稍後再試')
     }
@@ -151,7 +157,7 @@ async function sharePost() {
             text: props.post.content,
             url: window.location.href
         })
-        await myAxios.share(props.post.postId)
+        await postStore.share(props.post.postId)
         shareCount.value++
     } catch (e) {
         console.error('分享失敗或使用者取消', e)
@@ -168,7 +174,7 @@ onMounted(async () => {
     const lineHeight = parseFloat(getComputedStyle(el).lineHeight)   /* 行高 */
     needsToggle.value = el.scrollHeight > lineHeight * 5
 
-    // likeCount.value = props.post.reactions?.length || 0;
+    // likeCount.value = props.post.reactions?.length || 0
 })
 </script>
 
@@ -208,6 +214,22 @@ onMounted(async () => {
 .post-time {
     font-size: 0.8rem;
     color: #666;
+}
+
+.post-categories {
+    margin-top: 0.25rem;
+    margin-left: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.post-category-tag {
+    font-size: 0.75rem;
+    background: #eef;
+    color: #336;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
 }
 
 .menu-wrapper {

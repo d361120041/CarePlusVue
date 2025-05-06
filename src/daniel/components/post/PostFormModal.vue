@@ -52,6 +52,7 @@
 import { ref, watch, computed } from 'vue'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useCategoryStore } from '@/daniel/stores/categories'
+import { useAuthStore } from '@/stores/auth'
 
 import myAxios from '@/plugins/axios'
 import BaseModal from '@/daniel/components/BaseModal.vue'
@@ -63,6 +64,9 @@ const props = defineProps({
 const emit = defineEmits(['close', 'saved'])
 const postStore = usePostStore()
 const categoryStore = useCategoryStore()
+const authStore = useAuthStore() 
+
+const currentUser = authStore.user
 
 // form data
 const form = ref({
@@ -117,7 +121,7 @@ watch(() => props.visible, async open => {
             tagIds: [],
             visibility: 0,
             status: 0,
-            userId: 3,
+            userId: currentUser.userId,
         })
         existingImages.value = []
     }
@@ -175,15 +179,6 @@ function onFileChange(e) {
     })
     if (fileInput.value) fileInput.value.value = ''
 }
-
-// async function removeThumbnail(thumb, idx) {
-//     if (thumb.type === 'existing') {
-//         await postStore.deleteImage(form.value.postId, thumb.id)
-//     } else {
-//         files.value.splice(thumb.index, 1)
-//         previews.value.splice(thumb.index, 1)
-//     }
-// }
 
 async function onSubmit() {
     try {
