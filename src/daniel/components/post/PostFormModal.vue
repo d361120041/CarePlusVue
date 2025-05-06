@@ -53,6 +53,7 @@ import { ref, watch, computed } from 'vue'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useCategoryStore } from '@/daniel/stores/categories'
 
+import myAxios from '@/plugins/axios'
 import BaseModal from '@/daniel/components/BaseModal.vue'
 
 const props = defineProps({
@@ -78,6 +79,7 @@ const form = ref({
 const files = ref([])
 const previews = ref([])
 const fileInput = ref(null)
+const existingImages = ref([])
 
 const isEdit = computed(() => !!form.value.postId)
 const modalTitle = computed(() => isEdit.value ? '編輯貼文' : '新增貼文')
@@ -85,54 +87,40 @@ const submitText = computed(() => isEdit.value ? '更新貼文' : '送出貼文'
 const allCategories = computed(() => categoryStore.categories)
 
 watch(() => props.visible, async open => {
-    if (open) {
-        files.value = []
-        previews.value = []
-        if (fileInput.value) fileInput.value.value = ''
-        if (!categoryStore.categories.length) await categoryStore.loadCategories()
-        if (props.post) {
-            Object.assign(form.value, {
-                postId: props.post.postId,
-                title: props.post.title,
-                content: props.post.content,
-                categoryIds: [...(props.post.categoryIds) || []],
-                topicIds: [...(props.post.topicIds || [])],
-                tagIds: [...(props.post.tagIds || [])],
-                visibility: props.post.visibility,
-                status: props.post.status,
-                userId: props.post.user.userId,
-            })
-        } else {
-            Object.assign(form.value, {
-                postId: null,
-                title: '',
-                content: '',
-                categoryIds: [],
-                topicIds: [],
-                tagIds: [],
-                visibility: 0,
-                status: 0,
-                userId: 3,
-            })
-        }
-    }
-})
+    if (!open) return
+    files.value = []
+    previews.value = []
+    existingImages.value = []
 
-// thumbnails: combine existing + new
-const thumbnails = computed(() => {
-    const existing = (props.post?.images || []).map(img => ({
-        type: 'existing',
-        key: `e-${img.imageId}`,
-        id: img.imageId,
-        src: `data:image/jpeg;base64,${img.imageData}`
-    }))
-    const newly = previews.value.map((src, idx) => ({
-        type: 'new',
-        key: `n-${idx}`,
-        index: idx,
-        src
-    }))
-    return [...existing, ...newly]
+    if (fileInput.value) fileInput.value.value = ''
+
+    if (props.post?.postId) {
+        await loadImages(props.post.postId)
+        Object.assign(form.value, {
+            postId: props.post.postId,
+            title: props.post.title,
+            content: props.post.content,
+            categoryIds: [...(props.post.categoryIds) || []],
+            topicIds: [...(props.post.topicIds || [])],
+            tagIds: [...(props.post.tagIds || [])],
+            visibility: props.post.visibility,
+            status: props.post.status,
+            userId: props.post.user.userId,
+        })
+    } else {
+        Object.assign(form.value, {
+            postId: null,
+            title: '',
+            content: '',
+            categoryIds: [],
+            topicIds: [],
+            tagIds: [],
+            visibility: 0,
+            status: 0,
+            userId: 3,
+        })
+        existingImages.value = []
+    }
 })
 
 function toggleCategory(id) {
@@ -141,6 +129,40 @@ function toggleCategory(id) {
         form.value.categoryIds.splice(idx, 1)
     }
     else form.value.categoryIds.push(id)
+}
+
+async function loadImages(postId) {
+    if (!postId) return
+    const res = await myAxios.get(`/api/posts/${postId}/images`)
+    existingImages.value = res.data.map(img => ({
+        id: img.imageId,
+        src: `data:image/jpeg;base64,${img.imageData}`
+    }))
+}
+
+const thumbnails = computed(() => [
+    // 既有圖片：保留 id, src, 並標記 type
+    ...existingImages.value.map(img => ({
+        id: img.id,
+        src: img.src,
+        type: 'existing'
+    })),
+    // 新選檔案
+    ...previews.value.map((src, i) => ({
+        src,
+        type: 'new',
+        index: i
+    }))
+])
+
+async function removeThumbnail(thumb) {
+    if (thumb.type === 'existing') {
+        await postStore.deleteImage(props.post.postId, thumb.id)
+        existingImages.value = existingImages.value.filter(img => img.id !== thumb.id)
+    } else {
+        files.value.splice(thumb.index, 1)
+        previews.value.splice(thumb.index, 1)
+    }
 }
 
 function onFileChange(e) {
@@ -154,14 +176,14 @@ function onFileChange(e) {
     if (fileInput.value) fileInput.value.value = ''
 }
 
-async function removeThumbnail(thumb, idx) {
-    if (thumb.type === 'existing') {
-        await postStore.deleteImage(form.value.postId, thumb.id)
-    } else {
-        files.value.splice(thumb.index, 1)
-        previews.value.splice(thumb.index, 1)
-    }
-}
+// async function removeThumbnail(thumb, idx) {
+//     if (thumb.type === 'existing') {
+//         await postStore.deleteImage(form.value.postId, thumb.id)
+//     } else {
+//         files.value.splice(thumb.index, 1)
+//         previews.value.splice(thumb.index, 1)
+//     }
+// }
 
 async function onSubmit() {
     try {
