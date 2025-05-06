@@ -92,11 +92,42 @@ export const usePostStore = defineStore('posts', () => {
         }
     }
 
+    // 按讚，傳回最新按讚數
+    async function like(postId, userId) {
+        try {
+            const res = await myAxios.post(
+                `/api/reactions/posts/${postId}?userId=${userId}&type=1`
+            )
+            return res.data
+        } catch (error) {
+            error.value = error
+            throw error
+        }
+    }
+
+    // 更新瀏覽次數(+1)
+    async function view(postId) {
+        try {
+            await myAxios.post(`/api/posts/${postId}/view`)
+        } catch (error) {
+            error.value = error
+        }
+    }
+
+    async function share(postId) {
+        try {
+            await myAxios.post(`/api/posts/${postId}/share`)
+        } catch (error) {
+            error.value = error
+        }
+    }
+
     return {
         posts, isLoading, error,
         isModalOpen, currentPost,
         loadPosts,
         openModal, closeModal, 
-        savePost, deleteImage
+        savePost, deleteImage,
+        like, view, share
     }
 })

@@ -65,6 +65,8 @@
 import { ref, onMounted, computed } from 'vue'
 import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
 import { useToggle } from '@/daniel/composables/useToggle'
+import { usePostStore } from '@/daniel/stores/posts'
+
 import myAxios from '@/plugins/axios.js'
 import VueEasyLightbox from 'vue-easy-lightbox'
 
@@ -83,14 +85,12 @@ const { formattedTime } = useTimeFormat(props.post.createdAt)
 // 漢堡選單
 const [menuOpen, toggleMenu] = useToggle(false)
 
-//================= ref, computed 開始 =================
+const postStore = usePostStore()
+
 // 使用者資訊區塊
 const currentUser = ref({
     avatarUrl: '/circle-user-solid.svg'
 })
-
-// PostFormModal 編輯/檢視模式
-// const isFormModalOpen = ref(false)
 
 // 內容「顯示更多/較少」
 const contentRef = ref(null)
@@ -106,23 +106,6 @@ const imgList = computed(() => props.post.images.map(img => `data:image/jpeg;bas
 const isDetailOpen = ref(false)
 const likeCount = ref(props.post.reactions?.length || 0)
 const shareCount = ref(props.post.share || 0)
-//================= ref, computed 結束 =================
-
-//================= 漢堡選單 開始 =================
-// function closeMenu() {
-//     menuOpen.value = false
-// }
-//================= 漢堡選單 結束 =================
-
-//================= 編輯貼文 開始 =================
-// PostFormModal 狀態
-// function openEdit() {
-//     toggleMenu()
-//     isFormModalOpen.value = true
-// }
-// function closeEdit() {
-//     isFormModalOpen.value = false
-// }
 
 // 編輯貼文
 function onEdit() {
@@ -142,64 +125,25 @@ async function onDelete() {
     }
 }
 
-// 編輯或新增完成後
-// function handleSaved(updatedPost) {
-//     isFormModalOpen.value = false
-    // 刷新當前貼文資料（包含標題、內容、images）
-    // props.post.title = updatedPost.title
-    // props.post.content = updatedPost.content
-    // if (updatedPost.images) props.post.images = updatedPost.images
-    // 通知列表重載整體列表
-    // emit('refresh')
-// }
-//================= 編輯貼文 結束 =================
-
-//================= 刪除貼文 開始 =================
-// 刪除貼文
-// async function confirmDelete() {
-//     menuOpen.value = false
-//     if (!window.confirm('確定要刪除此貼文？此操作無法復原')) return
-//     try {
-//         await myAxios.delete(`/api/posts/${props.post.postId}`)
-//         emit('refresh')
-//     } catch (err) {
-//         console.error('刪除貼文失敗', err)
-//         alert('刪除失敗，請稍後再試')
-//     }
-// }
-//================= 刪除貼文 結束 =================
-
-// ================= Lightbox 開始 =================
-// Lightbox
-// function showImage(idx) {
-//     currentIndex.value = idx
-//     lightboxVisible.value = true
-// }
-
-// 關閉 Lightbox
-// function hideLightbox() {
-//     lightboxVisible.value = false
-// }
-
 // lightbox
 function openLightbox(idx) {
     currentIndex.value = idx
     lightboxVisible.value = true
 }
-// ================= Lightbox 結束 =================
 
-//================= 按讚 開始=================
+// 按讚貼文
 async function likePost() {
     try {
-        const res = await myAxios.post(`/api/reactions/posts/${props.post.postId}?userId=${props.post.user.userId}&type=1`)
-        likeCount.value = res.data
-    } catch (error) {
-        console.error('貼文按讚失敗', error);
+        const updated = await postStore.like(
+            props.post.postId,
+            props.post.user.userId
+        )
+        likeCount.value = updated
+    } catch {
+        console.error('貼文按讚失敗');
     }
 }
-//================= 按讚 結束=================
 
-//================= 分享次數 開始 =================
 // 更新分享次數
 async function sharePost() {
     try {
@@ -208,21 +152,16 @@ async function sharePost() {
             text: props.post.content,
             url: window.location.href
         })
-        await myAxios.post(`/api/posts/${props.post.postId}/share`)
+        await myAxios.share(props.post.postId)
         shareCount.value++
     } catch (e) {
         console.error('分享失敗或使用者取消', e)
     }
 }
-//================= 分享次數 結束 =================
 
 onMounted(async () => {
     // 更新觀看次數
-    try {
-        await myAxios.post(`/api/posts/${props.post.postId}/view`)
-    } catch (e) {
-        console.error('更新觀看次數失敗', e)
-    }
+    postStore.view(props.post.postId)
 
     // 顯示更多、顯示更少
     const el = contentRef.value
