@@ -125,7 +125,7 @@ async function onDelete() {
     try {
         await postStore.deletePost(props.post.postId)
         emit('refresh')
-    } catch (error) {
+    } catch {
         alert('刪除失敗，請稍後再試')
     }
 }

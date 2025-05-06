@@ -3,8 +3,7 @@
         <div class="post-detail">
             <div class="post-header">
                 <!-- 使用者資訊區塊 -->
-                <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
-                <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
+                <img class="user-avatar" :src="imageURL" alt="User Avatar" />
                 <div class="user-info">
                     <div class="user-name">{{ post.user.userName }}</div>
                     <div class="post-time">{{ formattedTime }}</div>
@@ -15,7 +14,7 @@
                     <button class="hamburger-btn" @click.stop="toggleMenu">⋯</button>
                     <ul v-if="menuOpen" class="post-dropdown">
                         <li @click="openEdit">編輯貼文</li>
-                        <li @click="confirmDelete">刪除貼文</li>
+                        <li @click="onDelete">刪除貼文</li>
                     </ul>
                 </div>
             </div>
@@ -68,6 +67,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { usePostStore } from '@/daniel/stores/posts'
+import { useAuthStore } from '@/stores/auth'
 import myAxios from '@/plugins/axios.js'
 import VueEasyLightbox from 'vue-easy-lightbox'
 
@@ -88,14 +89,13 @@ const { formattedTime } = useTimeFormat(props.post.createdAt)
 import { useToggle } from '@/daniel/composables/useToggle'
 const [menuOpen, toggleMenu] = useToggle(false)
 
+const postStore = usePostStore()
+const authStore = useAuthStore()
+
+const imageURL = ref(null)
+imageURL.value = `data:image/png;base64,${props.post.user.profilePicture}`
+
 //================= ref, computed 開始 =================
-// 使用者資訊區塊
-const currentUser = ref({
-    // avatarUrl: '/circle-user-regular.svg'
-    avatarUrl: '/circle-user-solid.svg'
-    // avatarUrl: '/user-regular.svg'
-    // avatarUrl: '/user-solid.svg'
-})
 // PostFormModal 編輯/檢視模式
 const isFormModalOpen = ref(false)
 // 貼文動作列
@@ -133,20 +133,18 @@ function handleSaved(updatedPost) {
 }
 //================= 編輯貼文 結束 =================
 
-//================= 刪除貼文 開始 =================
 // 刪除貼文
-async function confirmDelete() {
+async function onDelete() {
+    toggleMenu()
     menuOpen.value = false
-    if (!window.confirm('確定要刪除此貼文？此操作無法復原')) return
+    if (!confirm('確定要刪除此貼文？此操作無法復原')) return
     try {
-        await myAxios.delete(`/api/posts/${props.post.postId}`)
+        await postStore.deletePost(props.post.postId)
         emit('refresh')
-    } catch (err) {
-        console.error('刪除貼文失敗', err)
+    } catch {
         alert('刪除失敗，請稍後再試')
     }
 }
-//================= 刪除貼文 結束 =================
 
 // ================= Lightbox 開始 =================
 // Lightbox 狀態：visible 控制顯示，imgs 是圖片陣列，index 是預設開啟的那張
@@ -167,31 +165,21 @@ function hideLightbox() {
 }
 // ================= Lightbox 結束 =================
 
-//================= 按讚 開始=================
+// 按讚貼文
 async function likePost() {
     try {
-        const res = await myAxios.post(`/api/reactions/posts/${props.post.postId}?userId=${props.post.user.userId}&type=1`)
-        likeCount.value = res.data
-    } catch (error) {
-        console.error('貼文按讚失敗', error);
+        likeCount.value = await postStore.like(props.post.postId, authStore.user.userId)
+    } catch {
+        console.error('貼文按讚失敗');
     }
 }
-//================= 按讚 結束=================
 
-//================= 觀看次數 開始 =================
 // 更新觀看次數
 onMounted(async () => {
-    try {
-        await myAxios.post(`/api/posts/${props.post.postId}/view`)
-    } catch (e) {
-        console.error('更新觀看次數失敗', e)
-    }
-    likeCount.value = props.post.reactions?.length || 0;
-
+    postStore.view(props.post.postId)
+    // likeCount.value = props.post.reactions?.length || 0;
 })
-//================= 觀看次數 結束 =================
 
-//================= 分享次數 開始 =================
 // 更新分享次數
 async function sharePost() {
     try {
@@ -200,13 +188,12 @@ async function sharePost() {
             text: props.post.content,
             url: window.location.href
         })
-        await myAxios.post(`/api/posts/${props.post.postId}/share`)
+        await postStore.share(props.post.postId)
         shareCount.value++
-    } catch (e) {
-        console.error('分享失敗或使用者取消', e)
+    } catch {
+        console.error('分享失敗或使用者取消')
     }
 }
-//================= 分享次數 結束 =================
 
 function onCommentAdded() {
     // 當表單送出後，刷新留言清單
