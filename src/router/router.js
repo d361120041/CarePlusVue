@@ -13,7 +13,6 @@ import Social from "@/daniel/views/Social.vue";
 
 // ------------------ yuni ------------------
 import CourseHome from "@/yuni/views/CourseHome.vue";
-import CourseAdmin from "@/yuni/views/admin/CourseAdmin.vue";
 import CourseDetail from "@/yuni/views/CourseDetail.vue";
 import MyCourse from "@/yuni/views/MyCourse.vue";
 import CourseLearn from "@/yuni/views/CourseLearn.vue";
@@ -73,7 +72,7 @@ import FavoritesView from "@/steve/views/FavoritesView.vue";
 import AdminLayout from '@/CMS/AdminLayout.vue'
 import CmsDashboard from '@/CMS/CmsDashboard.vue'
 
-import CourseAdminCms from '@/CMS/yuni/views/CourseAdminCms.vue'
+import CourseAdmin from '@/CMS/yuni/views/CourseAdmin.vue'
 import ChapterAdmin from '@/CMS/yuni/views/ChapterAdmin.vue'
 import ProgressAdmin from '@/CMS/yuni/views/ProgressAdmin.vue'
 // ------------------ 後台cms ------------------
@@ -93,7 +92,6 @@ const routes = [
 
   // ------------------ yuni ------------------
   { path: "/course", component: CourseHome, name: "courseHome" },
-  { path: "/course/admin", component: CourseAdmin, name: "courseAdmin" },
   { path: "/courses/:id", component: CourseDetail, name: "CourseDetail" },
   { path: "/my-courses", component: MyCourse, name: "MyCourse" },
   { path: "/learn/:courseId", component: CourseLearn, name: "CourseLearn" },
@@ -257,7 +255,7 @@ const routes = [
     component: AdminLayout,
     children: [
       { path: "", component: CmsDashboard, name: "cmsDashboard" },
-      { path: "cms/courses", component: CourseAdminCms, name: "cmsCourses" },
+      { path: "cms/courses", component: CourseAdmin, name: "cmsCourses" },
       { path: "cms/chapters", component: ChapterAdmin, name: "cmsChapters" },
       { path: "cms/progress", component: ProgressAdmin, name: "cmsProgress" }
     ]

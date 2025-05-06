@@ -14,10 +14,10 @@
     </ul>
     <p v-else class="text-muted">此課程目前無章節。</p>
 
-    <!-- ✅ 單一切換按鈕 -->
-    <button class="btn mt-4" :class="enrolled ? 'btn-danger' : 'btn-success'" @click="toggleEnrollment">
-      {{ enrolled ? '取消加入課程' : '加入我的課程' }}
-    </button>
+    <!-- 單一切換按鈕 -->
+    <button class="btn btn-outline enroll-btn mt-4" :class="enrolled ? 'btn-danger' : ''" @click="toggleEnrollment">
+  {{ enrolled ? '取消加入' : '加入課程' }}
+</button>
 
     <!-- ✅ 收藏按鈕（登入後才顯示） -->
     <div class="mt-2" v-if="authStore.isAuthenticated">
@@ -137,3 +137,18 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.enroll-btn {
+  border: 2px solid #4DB6AC;
+  color: #4DB6AC;
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.enroll-btn:hover {
+  background-color: #4DB6AC;
+  color: white;
+}
+
+</style>

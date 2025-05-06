@@ -1,28 +1,26 @@
-<template>
-  <div style="display: flex; height: 100vh" class="admin-root">
-    <!-- Sidebar -->
-    <aside style="width: 250px; background: #2d3748; color: white; padding: 1rem">
-      <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 2rem">Care+ 後台</h1>
-      <nav style="display: flex; flex-direction: column; gap: 1rem">
-        <router-link to="/admin" style="color: white">首頁</router-link>
-        <router-link to="/admin/cms/courses" style="color: white">課程管理</router-link>
-        <router-link to="/admin/cms/chapters" style="color: white">章節管理</router-link>
-        <router-link to="/admin/cms/progress" style="color: white">進度管理</router-link>
-        <!-- allen 新聞連結 -->
-        <router-link to="/admin/news" style="color: white">新聞管理</router-link>
 
+<template>
+  <div class="admin-root">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h1 class="sidebar-title">後台管理系統</h1>
+      <nav class="sidebar-nav">
+        <router-link to="/admin" class="sidebar-link">首頁</router-link>
+        <router-link to="/admin/cms/courses" class="sidebar-link">課程管理</router-link>
+        <router-link to="/admin/cms/chapters" class="sidebar-link">章節管理</router-link>
+        <router-link to="/admin/cms/progress" class="sidebar-link">進度管理</router-link>
+                <!-- allen 新聞連結 -->
+        <router-link to="/admin/news" class="sidebar-link">新聞管理</router-link>
       </nav>
     </aside>
 
-    <!-- 右側主內容 -->
-    <div style="flex: 1; display: flex; flex-direction: column; height: 100vh; min-width: 0">
-      <!-- Navbar -->
-      <div style="flex-shrink: 0">
+    <!-- Main content -->
+    <div class="main-content">
+      <div class="navbar-wrapper">
         <NavBar />
       </div>
-
-      <!-- router-view -->
-      <main style="flex: 1; overflow-y: auto; background: #f7fafc; min-width: 0">
+<!-- router view -->
+      <main class="content-wrapper">
         <router-view />
       </main>
     </div>
@@ -33,18 +31,74 @@
 import NavBar from '@/CMS/NavBar.vue'
 </script>
 
-
 <style scoped>
 .admin-root {
-  position: fixed; /* 或 absolute */
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
   display: flex;
   height: 100vh;
-  margin: 0;
-  padding: 0;
+  background-color: #f7fafc;
+}
+
+/* Sidebar 樣式 */
+.sidebar {
+  width: 200px;
+  background-color: #2d3748;
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sidebar-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  transition: background 0.2s;
+}
+
+.sidebar-link:hover {
+  background-color: #4a5568;
+}
+
+/* 可擴充：高亮目前頁面 */
+.sidebar-link.router-link-exact-active {
+  background-color: #38b2ac;
+  color: white;
+}
+
+/* Main content 區域 */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100vh;
+}
+
+.navbar-wrapper {
+  flex-shrink: 0;
+}
+
+.content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  min-width: 0;
 }
 </style>
+
+
