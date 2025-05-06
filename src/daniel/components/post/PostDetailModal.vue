@@ -13,14 +13,11 @@
                 <div class="menu-wrapper">
                     <button class="hamburger-btn" @click.stop="toggleMenu">⋯</button>
                     <ul v-if="menuOpen" class="post-dropdown">
-                        <li @click="openEdit">編輯貼文</li>
+                        <li @click="onEdit()">編輯貼文</li>
                         <li @click="onDelete">刪除貼文</li>
                     </ul>
                 </div>
             </div>
-
-            <!-- PostFormModal 編輯/檢視模式 -->
-            <PostFormModal :visible="isFormModalOpen" :post="post" @close="closeEdit" @saved="handleSaved" />
 
             <!-- 貼文內容 -->
             <h2>{{ post.title }}</h2>
@@ -69,11 +66,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useAuthStore } from '@/stores/auth'
-import myAxios from '@/plugins/axios.js'
 import VueEasyLightbox from 'vue-easy-lightbox'
 
 import BaseModal from '@/daniel/components/BaseModal.vue'
-import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
 import CommentList from '@/daniel/components/comment/CommentList.vue'
 import CommentForm from '@/daniel/components/comment/CommentForm.vue'
 
@@ -105,22 +100,11 @@ const shareCount = ref(props.post.share || 0)
 const commentList = ref(null)
 //================= ref, computed 結束 =================
 
-//================= 漢堡選單 開始 =================
-// 下拉選單狀態
-function closeMenu() {
-    menuOpen.value = false
-}
-//================= 漢堡選單 結束 =================
-
-//================= 編輯貼文 開始 =================
-// PostFormModal 狀態
-function openEdit() {
+function onEdit() {
     toggleMenu()
-    isFormModalOpen.value = true
+    postStore.openModal(props.post)
 }
-function closeEdit() {
-    isFormModalOpen.value = false
-}
+
 // 編輯或新增完成後
 function handleSaved(updatedPost) {
     isFormModalOpen.value = false
