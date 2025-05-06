@@ -1,5 +1,5 @@
 <template>
-    <BaseModal :visible="visible" :title="modalTitle" @close="onClose">
+    <BaseModal :visible="visible" :title="modalTitle" @close="$emit('close')">
         <form @submit.prevent="onSubmit" class="form-container">
 
             <!-- 分類選擇 -->
@@ -193,7 +193,7 @@ async function onSubmit() {
 }
 
 function onClose() {
-    emit('close')
+    
 }
 </script>
 

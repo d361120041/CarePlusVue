@@ -9,6 +9,8 @@ export const usePostStore = defineStore('posts', () => {
     const error = ref(null)
     const isModalOpen = ref(false)
     const currentPost = ref(null)
+    const isDetailModalOpen = ref(false)
+    const detailPost = ref(null)
 
     // —— actions —— 
     // 開啟新增/編輯 modal
@@ -140,12 +142,24 @@ export const usePostStore = defineStore('posts', () => {
         }
     }
 
+    function openDetailModal(post) {
+        detailPost.value = post
+        isDetailModalOpen.value = true
+    }
+
+    function closeDetailModal() {
+        detailPost.value = null
+        isDetailModalOpen.value = false
+    }
+
     return {
         posts, isLoading, error,
         isModalOpen, currentPost,
         openModal, closeModal, 
         loadPosts, savePost, deletePost, 
         deleteImage,
-        like, view, share
+        like, view, share,
+        isDetailModalOpen, detailPost, 
+        openDetailModal, closeDetailModal
     }
 })
