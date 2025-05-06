@@ -6,6 +6,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 // ================ style 結束 ================
 
 // ================ 匯入套件 開始 ================
+
 import { createApp } from "vue";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import { createPinia } from "pinia";
