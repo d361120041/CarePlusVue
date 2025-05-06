@@ -59,11 +59,11 @@
         <div class="dropdown-login">
           <button class="login-dropdown-btn">登入/註冊</button>
           <div class="dropdown-login-menu">
-    <button @click="goUserLogin">一般用戶登入</button>
-    <button @click="goCaregiverLogin">照服人員登入</button>
-    <button @click="goAdminLogin">系統管理員登入</button>
-  </div>
-</div>
+            <button @click="goUserLogin">一般用戶登入</button>
+            <button @click="goCaregiverLogin">照服人員登入</button>
+            <button @click="goAdminLogin">系統管理員登入</button>
+          </div>
+        </div>
       </template>
     </div>
   </div>
@@ -103,7 +103,7 @@ const route = useRoute();
 // 使用者登入狀態每次進入都確認（照顧者用 restoreLogin 不需要）
 onMounted(() => {
   auth.checkAuth?.();
-  if (auth.isAuthenticated) {
+  if (auth.isAuthenticated && auth.user) {
     fetchImage(); // 只在使用者登入時取得頭像
   }
 });
@@ -114,7 +114,6 @@ const goUserLogin = () => router.push("/userlogin");
 //照護者登入按鈕
 const goCaregiverLogin = () => router.push("/caregiverLogin");
 const goAdminLogin = () => router.push("/login-admin");
-
 
 const userLogout = async () => {
   await auth.logout();
@@ -380,5 +379,4 @@ const caregiverLogout = () => {
 .dropdown-login:hover .dropdown-login-menu {
   display: block;
 }
-
 </style>
