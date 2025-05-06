@@ -24,7 +24,6 @@
             <!-- 貼文列表 -->
             <PostList 
                 :filterCategoryIds="categoryStore.selectedIds" 
-                @edit-post="postStore.openModal"
                 @delete-post="loadPostsAgain"
                 @refresh="loadPostsAgain" />
 

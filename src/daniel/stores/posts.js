@@ -88,7 +88,7 @@ export const usePostStore = defineStore('posts', () => {
         try {
             await myAxios.delete(`/api/posts/${postId}/images/${imageId}`)
         } catch (error) {
-            throw err
+            throw error
         }
     }
 

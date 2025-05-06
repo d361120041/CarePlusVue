@@ -76,7 +76,7 @@ const props = defineProps({
     post: Object, required: true 
 })
 const emit = defineEmits([
-    'refresh', 'edit-post', 'delete-post'
+    'refresh', 'delete-post'
 ])
 
 // 時間格式化
@@ -109,8 +109,7 @@ const shareCount = ref(props.post.share || 0)
 
 // 編輯貼文
 function onEdit() {
-    toggleMenu()
-    emit('edit-post', props.post)
+    postStore.openModal(props.post)
 }
 
 // 刪除貼文

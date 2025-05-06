@@ -1,7 +1,6 @@
 <template>
     <div>
         <PostItem v-for="post in postStore.posts" :key="post.postId" :post="post" 
-        @edit-post="() => $emit('edit-post', post)"
         @delete-post="() => $emit('delete-post', post)"
         @refresh="loadAgain" />
     </div>
@@ -20,7 +19,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
-    'edit-post', 'delete-post', 'refresh'
+    'delete-post', 'refresh'
 ])
 
 function loadAgain() {
