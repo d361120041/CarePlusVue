@@ -98,7 +98,7 @@
                   </option>
                 </select>
               </td>
-              <td><input v-model="editingCourse.duration" class="input-create" placeholder="時數" /></td>
+              <td><input v-model="editingCourse.duration" class="input-create" value="小時" /></td>
               <td class="action-cell">
                 <button @click="create" class="link green">送出</button>
                 <button @click="cancelCreate" class="link gray">取消</button>
