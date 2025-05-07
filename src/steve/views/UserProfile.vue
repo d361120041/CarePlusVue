@@ -119,9 +119,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "@/plugins/axios";
+import { useAuthStore } from "@/stores/auth";
 
-// 基本資料
-const user = ref(null);
+// Pinia 使用者資料
+const auth = useAuthStore();
+const user = ref({ ...auth.user }); // ✅ 初始從 Pinia 複製一份資料
 const imageUrl = ref(null);
 const imageFile = ref(null);
 
@@ -130,7 +132,6 @@ const selectedCity = ref("");
 const selectedDistrict = ref("");
 const availableDistricts = ref([]);
 
-// 縣市與區域資料
 const taiwanAddress = {
   臺北市: [
     "中正區",
@@ -238,14 +239,8 @@ const taiwanAddress = {
   連江縣: ["南竿鄉", "北竿鄉", "莒光鄉"],
 };
 
-// 初始資料
-const fetchProfile = async () => {
-  const res = await axios.get("http://localhost:8082/user/profile", {
-    withCredentials: true,
-  });
-  user.value = res.data;
-
-  // 還原地址（臺北市信義區）
+// 還原地址下拉式選單
+const restoreAddressSelect = () => {
   for (const city in taiwanAddress) {
     if (user.value.address?.startsWith(city)) {
       selectedCity.value = city;
@@ -256,9 +251,10 @@ const fetchProfile = async () => {
   }
 };
 
+// 取得頭像
 const fetchImage = async () => {
   try {
-    const res = await axios.get("http://localhost:8082/user/profile-picture", {
+    const res = await axios.get("/user/profile-picture", {
       responseType: "blob",
       withCredentials: true,
     });
@@ -268,31 +264,35 @@ const fetchImage = async () => {
   }
 };
 
+// 上傳圖片
 const handleImageUpload = (e) => {
   const file = e.target.files[0];
   if (file) imageFile.value = file;
 };
 
+// 切換縣市時更新區域選項
 const updateDistricts = () => {
   availableDistricts.value = taiwanAddress[selectedCity.value] || [];
   selectedDistrict.value = "";
 };
 
+// 儲存修改
 const updateUser = async () => {
   try {
-    // 合併城市與區為完整地址
+    // 合併地址
     if (selectedCity.value && selectedDistrict.value) {
       user.value.address = `${selectedCity.value}${selectedDistrict.value}`;
     }
 
-    await axios.put("http://localhost:8082/user/edit", user.value, {
+    await axios.put("/user/edit", user.value, {
       withCredentials: true,
     });
 
+    // 上傳圖片
     if (imageFile.value) {
       const formData = new FormData();
       formData.append("file", imageFile.value);
-      await axios.put("http://localhost:8082/user/edit/picture", formData, {
+      await axios.put("/user/edit/picture", formData, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -300,6 +300,10 @@ const updateUser = async () => {
     }
 
     await fetchImage();
+
+    // ✅ 更新 Pinia Store 裡的使用者資料
+    auth.user = { ...user.value };
+
     alert("資料更新成功");
   } catch {
     alert("更新失敗");
@@ -307,7 +311,7 @@ const updateUser = async () => {
 };
 
 onMounted(() => {
-  fetchProfile();
+  restoreAddressSelect();
   fetchImage();
 });
 </script>
