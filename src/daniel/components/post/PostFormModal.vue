@@ -64,7 +64,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'saved'])
 const postStore = usePostStore()
 const categoryStore = useCategoryStore()
-const authStore = useAuthStore() 
+const authStore = useAuthStore()
 
 const currentUser = authStore.user
 
@@ -92,19 +92,26 @@ const allCategories = computed(() => categoryStore.categories)
 
 watch(() => props.visible, async open => {
     if (!open) return
+
+    // 重置
     files.value = []
     previews.value = []
     existingImages.value = []
-
     if (fileInput.value) fileInput.value.value = ''
 
     if (props.post?.postId) {
+        // 載入舊圖
         await loadImages(props.post.postId)
+
+        // 將後端的已選分類取出 ID
+        const selectedCatIds = props.post.postCategoryClassifiers
+            .map(pcc => pcc.postCategory.postCategoryId)
+
         Object.assign(form.value, {
             postId: props.post.postId,
             title: props.post.title,
             content: props.post.content,
-            categoryIds: [...(props.post.categoryIds) || []],
+            categoryIds: [...selectedCatIds],
             topicIds: [...(props.post.topicIds || [])],
             tagIds: [...(props.post.tagIds || [])],
             visibility: props.post.visibility,
