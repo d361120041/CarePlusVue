@@ -69,13 +69,27 @@
               <!-- 顯示模式 -->
               <template v-else>
                 <td>{{ course.courseId }}</td>
-                <td>
+                <!-- <td>
                   <img
                     :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`"
                     class="cover-img"
                   />
                 </td>
-                <td>{{ course.title }}</td>
+                <td>{{ course.title }}</td> -->
+                <td>
+  <router-link :to="`/courses/${course.courseId}`">
+    <img
+      :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`"
+      class="cover-img"
+      style="cursor: pointer"
+    />
+  </router-link>
+</td>
+<td>
+  <router-link :to="`/courses/${course.courseId}`" class="link-title">
+    {{ course.title }}
+  </router-link>
+</td>
                 <td>{{ course.description }}</td>
                 <td class="text-cat">#{{ getCategoryLabel(course.category) }}</td>
                 <td>{{ course.duration }}</td>
@@ -302,17 +316,17 @@ onMounted(async () => {
 .page-wrapper {
   height: 100%;
   width: 100%;
-  padding: 24px;             /* 原本 Tailwind p-6 */
+  padding: 24px;             
   box-sizing: border-box;
-  background: #f5f6fa;       /* 約等於 gray-50 */
+  background: #f5f6fa;      
 }
 
 .card {
   max-width: 1280px;
-  margin: 10px 5px;          /* ★ 上下 10、左右 5 ★ */
+  margin: 10px 5px;         
   padding: 24px;
   background: #ffffff;
-  border: 1px solid #e5e7eb; /* gray-200 */
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0,0,0,.05);
 }
@@ -425,6 +439,7 @@ onMounted(async () => {
   padding: 0;
 }
 
+
 .link.blue   { color: #2563eb; }
 .link.green  { color: #16a34a; }
 .link.red    { color: #dc2626; }
@@ -435,18 +450,30 @@ onMounted(async () => {
 .link.red:hover    { color: #b91c1c; }
 .link.gray:hover   { color: #4b5563; }
 
-/* .action-cell { display: flex; gap: 8px; } */
-
-
 .action-cell {
   display: flex;
   gap: 8px;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   height: 105px;
 }
 
-td.action-cell { display: flex; align-items: center; justify-content: center; padding: 0; }
+td.action-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 12;
+}
 
 .text-cat { color: #64748b; }
+
+.link-title {
+  color: #111827;
+  text-decoration: none;
+  font-weight: 500;
+}
+.link-title:hover {
+  color: #111827;
+  text-decoration: none;
+}
 </style>
