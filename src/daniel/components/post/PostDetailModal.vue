@@ -74,7 +74,7 @@ import CommentForm from '@/daniel/components/comment/CommentForm.vue'
 
 const props = defineProps({
     visible: Boolean,
-    post: { type: Object, default: null }
+    post: Object
 })
 const emit = defineEmits(['close', 'refresh'])
 
@@ -93,8 +93,8 @@ const imageURL = ref(null)
 imageURL.value = `data:image/png;base64,${props.post.user.profilePicture}`
 
 // 貼文動作列
-const likeCount = ref(props.post.reactions?.length || 0)
-const shareCount = ref(props.post.share || 0)
+const likeCount = computed(() => props.post.reactions?.length || 0)
+const shareCount = computed(() => props.post.share || 0)
 
 // 評論清單
 const commentList = ref(null)
@@ -134,7 +134,7 @@ function hideLightbox() {
 // 按讚貼文
 async function likePost() {
     try {
-        likeCount.value = await postStore.like(props.post.postId, authStore.user.userId)
+        await postStore.like(props.post.postId, authStore.user.userId)
     } catch {
         console.error('貼文按讚失敗');
     }

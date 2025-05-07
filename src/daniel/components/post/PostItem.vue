@@ -56,7 +56,7 @@
         <!-- 貼文動作列 -->
         <div class="post-actions">
             <button class="action-btn" @click="likePost">
-                👍 按讚({{ likeCount }})
+                👍 按讚({{ post.reactions.length }})
             </button>
             <button class="action-btn" @click="() => postStore.openDetailModal(props.post)"> 💬 留言</button>
             <button class="action-btn" @click="sharePost">
@@ -104,8 +104,6 @@ const currentIndex = ref(0)
 const imgList = computed(() => props.post.images.map(img => `data:image/jpeg;base64,${img.imageData}`))
 
 // 讚與分享
-const isDetailOpen = ref(false)
-const likeCount = ref(props.post.reactions?.length || 0)
 const shareCount = ref(props.post.share || 0)
 
 // 刪除貼文
@@ -129,11 +127,10 @@ function openLightbox(idx) {
 // 按讚貼文
 async function likePost() {
     try {
-        const updated = await postStore.like(
+        await postStore.like(
             props.post.postId,
             props.post.user.userId
         )
-        likeCount.value = updated
     } catch {
         console.error('貼文按讚失敗');
     }

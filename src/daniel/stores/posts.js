@@ -40,9 +40,9 @@ export const usePostStore = defineStore('posts', () => {
             error.value = error
         } finally {
             isLoading.value = false
-        }    
-    }    
-    
+        }
+    }
+
     // 新增或修改貼文
     async function savePost({ form, files }) {
         isLoading.value = true
@@ -72,12 +72,12 @@ export const usePostStore = defineStore('posts', () => {
                 files.forEach(f => formData.append('files', f))
                 await myAxios.post(`/api/posts/${saved.postId}/images`, formData)
             }
-            
+
             const imagesRes = await myAxios.get(`/api/posts/${saved.postId}/images`)
             saved.images = imagesRes.data
             const idx = posts.value.findIndex(p => p.postId === saved.postId)
 
-            if(idx >= 0) {
+            if (idx >= 0) {
                 posts.value.splice(idx, 1, saved)
             } else {
                 posts.value.unshift(saved)
@@ -122,7 +122,21 @@ export const usePostStore = defineStore('posts', () => {
             const res = await myAxios.post(
                 `/api/reactions/posts/${postId}?userId=${userId}&type=1`
             )
-            return res.data
+            const newCount = res.data
+
+            // 找到這筆貼文並更新它的 reactions 長度或 share 欄位
+            const idx = posts.value.findIndex(p => p.postId === postId);
+            if (idx !== -1) {
+                posts.value[idx].reactions = Array(newCount).fill({});
+                // 或者如果你的後端回傳完整 reactions 陣列就直接用 res.data.reactions
+            }
+
+            // 如果 detailPost 正好是這個貼文，也更新它
+            if (detailPost.value?.postId === postId) {
+                detailPost.value.reactions = posts.value[idx].reactions;
+            }
+
+            return newCount
         } catch (error) {
             error.value = error
             throw error
@@ -161,10 +175,10 @@ export const usePostStore = defineStore('posts', () => {
         posts, isLoading, error,
         isModalOpen, currentPost,
         openModal, closeModal, edit,
-        loadPosts, savePost, deletePost, 
+        loadPosts, savePost, deletePost,
         deleteImage,
         like, view, share,
-        isDetailModalOpen, detailPost, 
+        isDetailModalOpen, detailPost,
         openDetailModal, closeDetailModal
     }
 })

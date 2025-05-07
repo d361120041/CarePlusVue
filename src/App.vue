@@ -3,6 +3,7 @@
   <!-- <header v-if="!isAdminRoute">
     <h1>頁首</h1>
   </header> -->
+  <!-- 頁首 結束 -->
 
   <!-- 導覽列 開始-->
   <nav v-if="!isAdminRoute">
@@ -10,21 +11,20 @@
   </nav>
   <!-- 導覽列 結束 -->
   
- 
-
   <!-- 輪播圖 開始-->
   <!-- 輪播圖 結束 -->
-
-  <!-- 主內容 -->
+  
+  <!-- 主內容 開始-->
   <main>
     <RouterView />
   </main>
+  <!-- 主內容 結束-->
 
-  <!-- 頁尾 -->
+  <!-- 頁尾 開始-->
   <footer v-if="!isAdminRoute">
     <h1>頁尾</h1>
   </footer>
-  <!-- 頁尾 -->
+  <!-- 頁尾 結束-->
 </template>
 
 <script setup>
