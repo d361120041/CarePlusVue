@@ -6,7 +6,7 @@
       <!-- 標題 -->
       <div class="mb-4">
         <label class="block font-semibold mb-1">標題</label>
-        <input v-model="news.title" type="text" class="w-full border p-2 rounded" required />
+        <input v-model="news.title" type="text" class="w-full border p-2 rounded" placeholder="請輸入標題" />
       </div>
 
       <!-- 分類 -->
@@ -20,11 +20,15 @@
         </select>
       </div>
 
+
       <!-- 縮圖 -->
       <div class="mb-4">
-        <label class="block font-semibold mb-1">縮圖</label>
-        <input type="file" @change="handleFileChange" accept="image/*" />
-        <div v-if="previewUrl" class="mt-2">
+        <label class="block font-semibold mb-1">圖片</label>
+        <div class="flex items-center gap-4">
+          <input type="file" @change="handleFileChange" accept="image/*" />
+          <button type="button" class="btn-remove-image" @click="removeImage">不使用圖片</button>
+        </div>
+        <div class="mt-2 flex items-center gap-4">
           <img :src="previewUrl" alt="預覽縮圖" class="h-32 object-cover rounded" />
         </div>
       </div>
@@ -46,6 +50,7 @@
       <div class="flex gap-2">
         <button type="submit" class="save">💾 儲存新聞</button>
         <button type="button" class="cancel" @click="handleBack">返回新聞列表</button>
+        <button type="button" class="preview" @click="handlePreview">預覽新聞</button>
       </div>
     </form>
   </div>
@@ -57,6 +62,7 @@ import { useRoute, useRouter } from 'vue-router';
 import myAxios from '@/plugins/axios';
 import { QuillEditor } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
+import Swal from 'sweetalert2';
 
 const route = useRoute();
 const router = useRouter();
@@ -85,14 +91,20 @@ const fetchNews = async () => {
     news.value = {
       title: res.data.title,
       content: res.data.content,
-      thumbnail: res.data.thumbnail,
+      thumbnail: res.data.thumbnail || '',
       category: res.data.category || { categoryId: '' }
     };
-    previewUrl.value = `http://localhost:8082${res.data.thumbnail}`;
+    previewUrl.value = news.value.thumbnail ? `http://localhost:8082${res.data.thumbnail}` : '/src/assets/allen/no-image.jpg';
   } catch (error) {
     alert('載入新聞失敗，可能不存在該筆資料');
     router.push('/admin/news');
   }
+};
+
+const removeImage = () => {
+  news.value.thumbnail = '';
+  previewUrl.value = '/src/assets/allen/no-image.jpg';
+  isDirty.value = true;
 };
 
 const handleFileChange = async (e) => {
@@ -114,17 +126,71 @@ const handleFileChange = async (e) => {
 
 const handleSubmit = async () => {
   try {
+    // 驗證標題
+    if (!news.value.title.trim()) {
+      Swal.fire({
+        icon: 'warning',
+        title: '標題不得為空！',
+        confirmButtonText: '確定'
+      });
+      return;
+    }
+
+    // 驗證分類
+    if (!news.value.category.categoryId) {
+      Swal.fire({
+        icon: 'warning',
+        title: '請選擇分類！',
+        confirmButtonText: '確定'
+      });
+      return;
+    }
+
+    //驗證內容
+    const cleanedContent = news.value.content
+      .replace(/<[^>]*>/g, '')  // 移除 HTML 標籤
+      .replace(/&nbsp;/g, '')   // 移除 HTML 空格符
+      .trim();
+
+    if (!cleanedContent) {
+      Swal.fire({
+        icon: 'warning',
+        title: '內容不得為空！',
+        confirmButtonText: '確定'
+      });
+      return;
+    }
+
+    // 如果沒有縮圖，使用預設圖片
+    if (!news.value.thumbnail) {
+      news.value.thumbnail = '/assets/allen/no-image.jpg';
+    }
+
+    // 儲存新聞
     if (isEditMode) {
       await myAxios.put(`/news/admin/${newsId}`, news.value);
-      alert('新聞已更新');
     } else {
       await myAxios.post('/news/admin', news.value);
-      alert('新聞已新增');
     }
+
     isDirty.value = false;
-    router.push('/admin/news');
+
+    // 儲存成功提示
+    Swal.fire({
+      icon: 'success',
+      title: '儲存成功！',
+      confirmButtonText: '確定'
+    }).then(() => {
+      router.push('/admin/news');
+    });
+
   } catch (err) {
-    alert('儲存失敗');
+    console.error('儲存失敗：', err);
+    Swal.fire({
+      icon: 'error',
+      title: '儲存失敗，請稍後再試',
+      confirmButtonText: '確定'
+    });
   }
 };
 
@@ -139,8 +205,40 @@ const handleBack = async () => {
   router.push('/admin/news');
 };
 
+const handlePreview = async () => {
+  try {
+    let updatedNewsId = newsId;
+
+    if (isEditMode) {
+      // 僅保存編輯內容，但不改變狀態
+      await myAxios.put(`/news/admin/${newsId}`, news.value);
+    } else {
+      // 新增新聞，狀態保持為 0（未發布）
+      const res = await myAxios.post('/news/admin', {
+        ...news.value,
+        status: 0
+      });
+      updatedNewsId = res.data.id;
+    }
+
+    // 跳轉到 AdminNewsPreview.vue 頁面
+    router.push(`/admin/news/preview/${updatedNewsId}`);
+
+  } catch (err) {
+    console.error('預覽失敗：', err);
+    alert('預覽失敗，請確認資料完整性');
+  }
+};
+
 // ✅ 加入 tooltip 標籤
 onMounted(() => {
+
+  fetchCategories();
+  
+  if (isEditMode) {
+    fetchNews();
+  }
+
   nextTick(() => {
     const tooltipMap = {
       bold: '粗體',
@@ -171,16 +269,121 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 容器置中 */
+.max-w-3xl {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #fafafa;
+  border-radius: 12px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
 label {
-  margin-bottom: 4px;
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
+
+input[type="text"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+input[type="file"] {
+  margin-bottom: 1rem;
+}
+
+input[type="file"] + .mt-2 {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.QuillEditor {
+  height: 300px;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.flex {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
 button {
-  @apply px-4 py-2 rounded border font-semibold transition;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.2s, color 0.2s;
 }
+
 button.save {
-  @apply bg-blue-600 text-white hover:bg-blue-700;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
 }
+
+button.save:hover {
+  background-color: #2980b9;
+}
+
 button.cancel {
-  @apply bg-gray-200 text-black hover:bg-gray-300;
+  background-color: #bdc3c7;
+  color: #333;
+  border: none;
+}
+
+button.cancel:hover {
+  background-color: #95a5a6;
+}
+button.preview {
+  background-color: #2ecc71;  /* 綠色按鈕 */
+  color: #fff;
+  border: none;
+}
+
+button.preview:hover {
+  background-color: #27ae60;
+}
+.btn-remove-image {
+  background-color: #e74c3c;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-remove-image:hover {
+  background-color: #c0392b;
 }
 </style>

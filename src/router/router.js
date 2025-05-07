@@ -28,6 +28,8 @@ import NewsDetail from "@/allen/views/NewsDetail.vue";
 import AdminNewsList from "@/allen/views/AdminNewsList.vue";
 import AdminEditNews from "@/allen/views/AdminEditNews.vue";
 import AdminNewsDetail from "@/allen/views/AdminNewsDetail.vue";
+import AdminNewsPreview from "@/allen/views/AdminNewsPreview.vue";
+
 // ------------------ allen ------------------
 
 // ------------------ yuuhou ------------------
@@ -109,16 +111,10 @@ const routes = [
   { path: "/news/:id", component: NewsDetail, name: "newsDetail" }, //前台新聞內容
   { path: "/admin/news", component: AdminNewsList, name: "adminNewsList" }, //後台新聞主頁
   { path: "/admin/news/new", component: AdminEditNews, name: "adminNewsNew" }, //後台新增新聞
-  {
-    path: "/admin/news/edit/:id",
-    component: AdminEditNews,
-    name: "adminNewsEdit",
-  }, //後台編輯新聞
-  {
-    path: "/admin/news/:id",
-    component: AdminNewsDetail,
-    name: "adminNewsDetail",
-  }, //後台新聞內容
+  { path: "/admin/news/edit/:id", component: AdminEditNews, name: "adminNewsEdit",}, //後台編輯新聞
+  { path: "/admin/news/:id", component: AdminNewsDetail, name: "adminNewsDetail", }, //後台新聞內容
+  { path: '/admin/news/preview/:id', component: AdminNewsPreview , name: 'AdminNewsPreview' }, //後台新聞預覽
+
   // ------------------ allen ------------------
 
   // ------------------ yuuhou ------------------

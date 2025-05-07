@@ -1,8 +1,13 @@
 <template>
   <div class="news-list">
+    <!-- 返回首頁按鈕 -->
+    <div class="fixed top-4 right-4 z-10">
+      <router-link to="/admin" class="btn-gray">🏠 返回後台首頁</router-link>
+    </div>
+
     <!-- 搜尋欄 -->
-    <div class="search-bar mx-auto max-w-4xl p-6 mb-6 bg-white rounded-xl shadow-lg border border-gray-300">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="search-bar mx-auto max-w-4xl p-6 mb-6 bg-white rounded-xl shadow-lg border border-gray-300 flex justify-between items-center">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
         <input
           v-model="search.keyword"
           type="text"
@@ -25,19 +30,16 @@
           <option value="month">這個月</option>
           <option value="year">今年</option>
         </select>
-
-        <button @click="handleSearch" :disabled="loading" class="search-btn w-full">
-          🔍 搜尋
-        </button>
       </div>
 
-      <!-- 搜尋摘要 -->
-      <div v-if="hasSearched && summaryText" class="text-gray-700 mt-4 text-sm">
-        🔎 以下是 {{ summaryText }} 的搜尋結果
-        <button @click="clearSearch" class="ml-4 text-blue-600 underline hover:text-blue-800">
-          取消篩選
-        </button>
-      </div>
+    </div>
+
+    <!-- 搜尋摘要 -->
+    <div v-if="hasSearched && summaryText" class="text-gray-700 mt-4 text-sm">
+      🔎 以下是 {{ summaryText }} 的搜尋結果
+      <button @click="clearSearch" class="ml-4 text-blue-600 underline hover:text-blue-800">
+        取消篩選
+      </button>
     </div>
 
     <!-- 上方標題與新增 -->
@@ -251,8 +253,48 @@ const confirmDelete = async (id) => {
   }
 };
 
-const publishNews = async (id) => { await myAxios.patch(`/news/admin/${id}/publish`); loadNews(); };
-const unpublishNews = async (id) => { await myAxios.patch(`/news/admin/${id}/unpublish`); loadNews(); };
+const publishNews = async (id) => {
+  try {
+    await myAxios.patch(`/news/admin/${id}/publish`);
+    
+    await Swal.fire({
+      icon: 'success',
+      title: '已成功發布！',
+      confirmButtonText: '確定'
+    });
+
+    loadNews();
+  } catch (err) {
+    console.error('發布失敗：', err);
+    Swal.fire({
+      icon: 'error',
+      title: '發布失敗',
+      text: err.message || '請稍後再試',
+      confirmButtonText: '確定'
+    });
+  }
+};
+const unpublishNews = async (id) => {
+  try {
+    await myAxios.patch(`/news/admin/${id}/unpublish`);
+    
+    await Swal.fire({
+      icon: 'success',
+      title: '已成功下架！',
+      confirmButtonText: '確定'
+    });
+
+    loadNews();
+  } catch (err) {
+    console.error('下架失敗：', err);
+    Swal.fire({
+      icon: 'error',
+      title: '下架失敗',
+      text: err.message || '請稍後再試',
+      confirmButtonText: '確定'
+    });
+  }
+};
 const goToCreate = () => router.push('/admin/news/new');
 const goToEdit = (id) => router.push(`/admin/news/edit/${id}`);
 const handleImgError = (e) => { if (e.target.src !== defaultThumbnail) e.target.src = defaultThumbnail; };
@@ -331,5 +373,25 @@ onMounted(() => {
 .search-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.fixed {
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+  z-index: 1000; /* 確保在其他元素上方 */
+}
+
+.btn-gray {
+  background-color: #e5e7eb;
+  color: #333;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s;
+}
+
+.btn-gray:hover {
+  background-color: #d1d5db;
 }
 </style>
