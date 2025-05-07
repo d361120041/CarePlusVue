@@ -4,14 +4,9 @@
     <div class="card">
       <!-- ────────── 搜尋列 ────────── -->
       <div class="search-row">
-        <input
-          v-model="searchKeyword"
-          @keyup.enter="search"
-          placeholder="輸入關鍵字搜尋"
-          class="search-input"
-        />
-        <button @click="search"        class="btn btn-primary">搜尋</button>
-        <button @click="fetchCourses"  class="btn btn-secondary">全部課程</button>
+        <input v-model="searchKeyword" @keyup.enter="search" placeholder="輸入關鍵字搜尋" class="search-input" />
+        <button @click="search" class="btn btn-primary">搜尋</button>
+        <button @click="fetchCourses" class="btn btn-secondary">全部課程</button>
       </div>
 
       <!-- ────────── 課程表格 ────────── -->
@@ -31,37 +26,27 @@
 
           <tbody>
             <!-- 列表列 -->
-            <tr
-              v-for="course in courses"
-              :key="course.courseId"
-              :class="{ 'row-hover': editingId !== course.courseId }"
-            >
+            <tr v-for="course in courses" :key="course.courseId"
+              :class="{ 'row-hover': editingId !== course.courseId }">
               <!-- 編輯模式 -->
               <template v-if="editingId === course.courseId">
                 <td>{{ course.courseId }}</td>
                 <td>
-                  <img
-                    :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`"
-                    class="cover-img"
-                  />
+                  <img :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`" class="cover-img" />
                 </td>
-                <td><input v-model="editingCourse.title"       class="input-edit" /></td>
+                <td><input v-model="editingCourse.title" class="input-edit" /></td>
                 <td><input v-model="editingCourse.description" class="input-edit" /></td>
                 <td>
                   <select v-model="editingCourse.category" class="input-edit">
                     <option disabled value="">請選擇分類</option>
-                    <option
-                      v-for="cat in categories"
-                      :key="cat"
-                      :value="cat"
-                    >
+                    <option v-for="cat in categories" :key="cat" :value="cat">
                       {{ getCategoryLabel(cat) }}
                     </option>
                   </select>
                 </td>
                 <td><input v-model="editingCourse.duration" class="input-edit" /></td>
                 <td class="action-cell">
-                  <button @click="save"       class="link green">儲存</button>
+                  <button @click="save" class="link green">儲存</button>
                   <button @click="cancelEdit" class="link gray">取消</button>
                 </td>
               </template>
@@ -77,28 +62,25 @@
                 </td>
                 <td>{{ course.title }}</td> -->
                 <td>
-  <router-link :to="`/courses/${course.courseId}`">
-    <img
-      :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`"
-      class="cover-img"
-      style="cursor: pointer"
-    />
-  </router-link>
-</td>
-<td>
-  <router-link :to="`/courses/${course.courseId}`" class="link-title">
-    {{ course.title }}
-  </router-link>
-</td>
+                  <router-link :to="`/courses/${course.courseId}`">
+                    <img :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`" class="cover-img"
+                      style="cursor: pointer" />
+                  </router-link>
+                </td>
+                <td>
+                  <router-link :to="`/courses/${course.courseId}`" class="link-title">
+                    {{ course.title }}
+                  </router-link>
+                </td>
                 <td>{{ course.description }}</td>
                 <td class="text-cat">#{{ getCategoryLabel(course.category) }}</td>
                 <td>{{ course.duration }}</td>
                 <td class="action-cell">
-                  <button @click="startEdit(course)"  class="link blue">編輯</button>
+                  <button @click="startEdit(course)" class="link blue">編輯</button>
                   <button @click="deleteOne(course.courseId)" class="link red">刪除</button>
                 </td>
 
-                
+
               </template>
             </tr>
 
@@ -106,7 +88,7 @@
             <tr v-if="isCreating" class="row-creating">
               <td>{{ courses.length + 1 }}</td>
               <td><input type="file" @change="handleFileUpload" /></td>
-              <td><input v-model="editingCourse.title"       class="input-create" placeholder="請輸入標題" /></td>
+              <td><input v-model="editingCourse.title" class="input-create" placeholder="請輸入標題" /></td>
               <td><input v-model="editingCourse.description" class="input-create" placeholder="請輸入介紹" /></td>
               <td>
                 <select v-model="editingCourse.category" class="input-create">
@@ -118,17 +100,13 @@
               </td>
               <td><input v-model="editingCourse.duration" class="input-create" placeholder="時數" /></td>
               <td class="action-cell">
-                <button @click="create"       class="link green">送出</button>
+                <button @click="create" class="link green">送出</button>
                 <button @click="cancelCreate" class="link gray">取消</button>
               </td>
             </tr>
 
             <!-- 新增按鈕列 -->
-            <tr
-              v-else
-              class="row-add"
-              @click="startCreate"
-            >
+            <tr v-else class="row-add" @click="startCreate">
               <td colspan="7">➕ 新增課程</td>
             </tr>
           </tbody>
@@ -279,7 +257,7 @@ const create = async () => {
 
     // 立刻將新增的課程插入最前面（避免等 fetchCourses）
     courses.value.push(res.data)
-  
+
     isCreating.value = false
     editingCourse.value = emptyCourse()
     selectedImage.value = null
@@ -316,19 +294,19 @@ onMounted(async () => {
 .page-wrapper {
   height: 100%;
   width: 100%;
-  padding: 24px;             
+  padding: 24px;
   box-sizing: border-box;
-  background: #f5f6fa;      
+  background: #f5f6fa;
 }
 
 .card {
   max-width: 1280px;
-  margin: 10px 5px;         
+  margin: 10px 5px;
   padding: 24px;
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
 }
 
 /* ─── 搜尋列 ─────────────────────────────── */
@@ -361,24 +339,32 @@ onMounted(async () => {
   border: none;
 }
 
-.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:hover {
+  background: #1d4ed8;
+}
 
 .btn-secondary {
   background: #fff;
   border: 1px solid #d1d5db;
 }
 
-.btn-secondary:hover { background: #f3f4f6; }
+.btn-secondary:hover {
+  background: #f3f4f6;
+}
 
 /* ─── 表格 ─────────────────────────────── */
-.table-wrapper { overflow-x: auto; }
+.table-wrapper {
+  overflow-x: auto;
+}
 
 .course-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.course-table thead { background: #f3f4f6; }
+.course-table thead {
+  background: #f3f4f6;
+}
 
 .course-table th,
 .course-table td {
@@ -387,14 +373,33 @@ onMounted(async () => {
   text-align: left;
 }
 
-.row-hover:hover { background: #f9fafb; }
+.row-hover:hover {
+  background: #f9fafb;
+}
 
-.col-idx      { width: 48px; }
-.col-cover    { width: 80px; }
-.col-title    { width: 192px; }
-.col-cat      { width: 128px; }
-.col-duration { width: 80px; }
-.col-action   { width: 128px; }
+.col-idx {
+  width: 48px;
+}
+
+.col-cover {
+  width: 80px;
+}
+
+.col-title {
+  width: 192px;
+}
+
+.col-cat {
+  width: 128px;
+}
+
+.col-duration {
+  width: 80px;
+}
+
+.col-action {
+  width: 128px;
+}
 
 /* 封面圖片固定 80x80 */
 .cover-img {
@@ -415,7 +420,9 @@ onMounted(async () => {
 }
 
 /* 建立行背景 */
-.row-creating { background: #fef9c3; }
+.row-creating {
+  background: #fef9c3;
+}
 
 /* 新增按鈕列 */
 .row-add {
@@ -440,15 +447,37 @@ onMounted(async () => {
 }
 
 
-.link.blue   { color: #2563eb; }
-.link.green  { color: #16a34a; }
-.link.red    { color: #dc2626; }
-.link.gray   { color: #6b7280; }
+.link.blue {
+  color: #2563eb;
+}
 
-.link.blue:hover   { color: #1d4ed8; }
-.link.green:hover  { color: #15803d; }
-.link.red:hover    { color: #b91c1c; }
-.link.gray:hover   { color: #4b5563; }
+.link.green {
+  color: #16a34a;
+}
+
+.link.red {
+  color: #dc2626;
+}
+
+.link.gray {
+  color: #6b7280;
+}
+
+.link.blue:hover {
+  color: #1d4ed8;
+}
+
+.link.green:hover {
+  color: #15803d;
+}
+
+.link.red:hover {
+  color: #b91c1c;
+}
+
+.link.gray:hover {
+  color: #4b5563;
+}
 
 .action-cell {
   display: flex;
@@ -465,15 +494,19 @@ td.action-cell {
   padding: 12;
 }
 
-.text-cat { color: #64748b; }
+.text-cat {
+  color: #64748b;
+}
 
 .link-title {
   color: #111827;
   text-decoration: none;
-  font-weight: 500;
 }
+
 .link-title:hover {
   color: #111827;
   text-decoration: none;
+  font-weight: 500;
+
 }
 </style>

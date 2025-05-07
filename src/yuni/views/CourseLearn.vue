@@ -215,7 +215,15 @@ const backToProgress = async () => {
 }
 
 
-
+const fetchCourseTitle = async () => {
+  try {
+    const res = await axios.get(`/api/courses/${courseId}`);
+    courseTitle.value = res.data.title;
+  } catch (err) {
+    console.error('取得課程標題失敗', err);
+    courseTitle.value = '(無標題)';
+  }
+};
 
 const fetchUserProfile = async () => {
   try {
@@ -236,6 +244,7 @@ const fetchUserProfile = async () => {
 
 onMounted(async () => {
   await fetchUserProfile()
+  await fetchCourseTitle();
   await fetchChapters()
   await loadChapterFromQuery()
 })

@@ -117,25 +117,53 @@ const toggleEnrollment = async () => {
   }
 }
 
+// onMounted(async () => {
+//   try {
+//     const resProfile = await axios.get('/user/profile', { withCredentials: true })
+//     userId.value = resProfile.data.userId
+
+//     const resCourse = await axios.get(`/api/courses/${courseId}`)
+//     course.value = resCourse.data
+
+//     const resChapters = await axios.get(`/api/chapters/chapters/course/${courseId}`)
+//     chapters.value = resChapters.data
+
+//     await checkEnrolled()
+//     await checkFavorite()
+//   } catch (err) {
+//     console.error('使用者未登入或載入失敗', err)
+//     alert('請先登入')
+//     router.push('/login')
+//   }
+// })
+
+
 onMounted(async () => {
   try {
+    // 嘗試取得登入資訊（不強制成功）
     const resProfile = await axios.get('/user/profile', { withCredentials: true })
     userId.value = resProfile.data.userId
 
+    await checkEnrolled()
+    await checkFavorite()
+  } catch (err) {
+    // 若失敗就當沒登入，不跳 login、不顯示錯誤
+    userId.value = null
+  }
+
+  try {
     const resCourse = await axios.get(`/api/courses/${courseId}`)
     course.value = resCourse.data
 
     const resChapters = await axios.get(`/api/chapters/chapters/course/${courseId}`)
     chapters.value = resChapters.data
-
-    await checkEnrolled()
-    await checkFavorite()
   } catch (err) {
-    console.error('使用者未登入或載入失敗', err)
-    alert('請先登入')
-    router.push('/login')
+    console.error('課程或章節載入失敗：', err)
   }
 })
+
+
+
 </script>
 
 <style scoped>
