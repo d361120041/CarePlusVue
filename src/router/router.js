@@ -6,6 +6,7 @@ import { useAuthStore } from "@/stores/auth"; // 加上這行
 import Home from "@/views/Home.vue";
 import NotFound from "@/views/NotFound.vue";
 import Forbidden from "@/views/Forbidden.vue";
+import HomeHero from "@/views/HomeHero.vue";
 
 // ------------------ daniel ------------------
 import Social from '@/daniel/views/Social.vue'
@@ -84,7 +85,7 @@ import ProgressAdmin from '@/CMS/yuni/views/ProgressAdmin.vue'
 
 // ================== 設定路徑 開始==================
 const routes = [
-  { path: "/", component: Home, name: "home" },
+  { path: "/", component: HomeHero, name: "homeHero" },
   { path: "/:pathMatch(.*)*", component: NotFound, name: "notfound" },
   { path: "/403", component: Forbidden, name: "forbidden" },
 
