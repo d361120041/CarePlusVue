@@ -2,7 +2,7 @@
     <div class="social-layout">
         <!-- 左側貼文篩選欄 -->
         <aside class="filter-sidebar">
-            <h3 class="sidebar-title">Categories</h3>
+            <h3 class="sidebar-title">你想找什麼？</h3>
             <div class="categories">
                 <button v-for="cat in categoryStore.categories" :key="cat.id"
                     @click="categoryStore.toggleCategory(cat.id)" :class="{
@@ -36,24 +36,29 @@ const categoryStore = useCategoryStore()
 .filter-sidebar {
     background: #fff;
     padding: 1rem;
+    margin: 1rem;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    justify-self: center;
+    font-size: 0.9rem;
+    max-width: 20vw;
 }
 
 .sidebar-title {
     margin-bottom: 0.5rem;
     font-size: 1.1rem;
     font-weight: bold;
+    text-align: center;
 }
 
 .categories {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    display: inline-box;
+    /* text-align: center; */
 }
 
 .category-btn {
-    padding: 0.5rem 1rem;
+    padding: 0.2rem 0.5rem;
+    margin: 0.2rem 0.5rem;
     border: 2px solid transparent;
     border-radius: 4px;
     cursor: pointer;

@@ -35,15 +35,14 @@ imageUrl.value = `data:image/png;base64,${authStore.user.profilePicture}`
 <style scoped>
 .mypost-container {
     display: flex;
-    gap: 2rem;
+    gap: 3rem;
     /* 欄間距 */
     padding: 1rem;
 }
 
 /* 左欄固定寬度或比例 */
 .user-info {
-    flex: 0 0 250px;
-    /* 固定 250px，或改成 flex: 1 */
+    flex: 0 0 35%;
     background: #fff;
     border-radius: 8px;
     padding: 1rem;
@@ -76,8 +75,7 @@ imageUrl.value = `data:image/png;base64,${authStore.user.profilePicture}`
 
 /* 右欄用剩下的空間 */
 .mypost-main {
-    flex: 1;
-    /* 自動填滿 */
+    flex: 1 1 65%;
 }
 
 .mypost-header {
