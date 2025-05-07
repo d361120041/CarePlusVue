@@ -37,7 +37,7 @@
 
             <!-- 觀看次數 -->
             <div style="text-align: right;">
-                <small>觀看次數{{ post.views }}次</small>
+                <small>觀看次數{{ formatCount(post.views) }}次</small>
             </div>
 
             <!-- 貼文動作列 -->
@@ -64,6 +64,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+import { useToggle } from '@/daniel/composables/useToggle'
+import { formatCount } from '@/daniel/composables/number.js'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useAuthStore } from '@/stores/auth'
 import VueEasyLightbox from 'vue-easy-lightbox'
@@ -78,10 +81,10 @@ const props = defineProps({
 })
 const emit = defineEmits(['close', 'refresh'])
 
-import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+// 時間格式化
 const { formattedTime } = useTimeFormat(props.post.createdAt)
 
-import { useToggle } from '@/daniel/composables/useToggle'
+// 漢堡選單
 const [menuOpen, toggleMenu] = useToggle(false)
 
 const postStore = usePostStore()

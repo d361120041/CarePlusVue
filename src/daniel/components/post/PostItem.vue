@@ -50,7 +50,7 @@
 
         <!-- 觀看次數 -->
         <div style="text-align: right;">
-            <small>觀看次數{{ post.views }}次</small>
+            <small>觀看次數{{ formatCount(post.views) }}次</small>
         </div>
 
         <!-- 貼文動作列 -->
@@ -70,6 +70,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
 import { useToggle } from '@/daniel/composables/useToggle'
+import { formatCount } from '@/daniel/composables/number.js'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useAuthStore } from '@/stores/auth'
 
@@ -89,6 +90,7 @@ const [menuOpen, toggleMenu] = useToggle(false)
 const postStore = usePostStore()
 const authStore = useAuthStore()
 
+// 使用者頭貼
 const currentUser = authStore.user
 const imageURL = ref(null)
 imageURL.value = `data:image/png;base64,${props.post.user.profilePicture}`
