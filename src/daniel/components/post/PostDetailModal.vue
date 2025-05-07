@@ -3,7 +3,7 @@
         <div class="post-detail">
             <div class="post-header">
                 <!-- 使用者資訊區塊 -->
-                <img class="user-avatar" :src="imageURL" alt="User Avatar" />
+                <UserAvatar :imageUrl="imageUrl" />
                 <div class="user-info">
                     <div class="user-name">{{ post.user.userName }}</div>
                     <div class="post-time">{{ formattedTime }}</div>
@@ -75,6 +75,7 @@ import VueEasyLightbox from 'vue-easy-lightbox'
 import BaseModal from '@/daniel/components/BaseModal.vue'
 import CommentList from '@/daniel/components/comment/CommentList.vue'
 import CommentForm from '@/daniel/components/comment/CommentForm.vue'
+import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
 
 const props = defineProps({
     visible: Boolean,
@@ -93,8 +94,8 @@ const authStore = useAuthStore()
 
 // 使用者頭貼
 const currentUser = authStore.user
-const imageURL = ref(null)
-imageURL.value = `data:image/png;base64,${props.post.user.profilePicture}`
+const imageUrl = ref(null)
+imageUrl.value = `data:image/png;base64,${props.post.user.profilePicture}`
 
 // 貼文動作列
 const likeCount = computed(() => props.post.reactions?.length || 0)
@@ -106,11 +107,11 @@ const commentList = ref(null)
 // 刪除貼文
 async function onDelete() {
     toggleMenu()
-    // menuOpen.value = false
     if (!confirm('確定要刪除此貼文？此操作無法復原')) return
     try {
         await postStore.deletePost(props.post.postId)
         emit('refresh')
+        postStore.closeDetailModal()
     } catch {
         alert('刪除失敗，請稍後再試')
     }

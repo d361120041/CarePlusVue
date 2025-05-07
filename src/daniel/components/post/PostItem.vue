@@ -2,7 +2,7 @@
     <article class="post-item">
         <div class="post-header">
             <!-- 使用者資訊區塊 -->
-            <img class="user-avatar" :src="imageURL" alt="User Avatar" />
+            <UserAvatar :imageUrl="imageUrl" />
             <div class="user-info">
                 <div class="user-name">{{ post.user.userName }}</div>
                 <div class="post-time">{{ formattedTime }}</div>
@@ -75,6 +75,7 @@ import { usePostStore } from '@/daniel/stores/posts'
 import { useAuthStore } from '@/stores/auth'
 
 import VueEasyLightbox from 'vue-easy-lightbox'
+import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
 
 const props = defineProps({
     post: Object, required: true
@@ -92,8 +93,8 @@ const authStore = useAuthStore()
 
 // 使用者頭貼
 const currentUser = authStore.user
-const imageURL = ref(null)
-imageURL.value = `data:image/png;base64,${props.post.user.profilePicture}`
+const imageUrl = ref(null)
+imageUrl.value = `data:image/png;base64,${props.post.user.profilePicture}`
 
 // 內容「顯示更多/較少」
 const contentRef = ref(null)

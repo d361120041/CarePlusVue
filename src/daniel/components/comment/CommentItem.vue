@@ -2,7 +2,7 @@
     <div class="comment-item">
         <div class="comment-header">
             <!-- 使用者資訊區塊 -->
-            <img class="user-avatar" :src="imageURL" alt="User Avatar" />
+            <UserAvatar :imageUrl="imageUrl" />
             <div class="user-info">
                 <div class="user-name">{{ comment.user.userName }}</div>
                 <div class="comment-time">{{ formattedTime }}</div>
@@ -42,6 +42,7 @@ import myAxios from '@/plugins/axios.js'
 
 import ReplyList from '@/daniel/components/reply/ReplyList.vue'
 import EditCommentForm from '@/daniel/components/comment/EditCommentForm.vue'
+import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
 
 const props = defineProps({ comment: Object })
 const emit = defineEmits(['replied', 'updated', 'deleted'])
@@ -54,8 +55,8 @@ import { useToggle } from '@/daniel/composables/useToggle'
 const [menuOpen, toggleMenu] = useToggle(false)
 
 // 使用者資訊區塊
-const imageURL = ref(null)
-imageURL.value = `data:image/png;base64,${props.comment.user.profilePicture}`
+const imageUrl = ref(null)
+imageUrl.value = `data:image/png;base64,${props.comment.user.profilePicture}`
 
 // 編輯狀態
 const editing = ref(false)
