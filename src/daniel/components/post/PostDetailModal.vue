@@ -11,7 +11,8 @@
 
                 <!-- 漢堡選單 -->
                 <div class="menu-wrapper">
-                    <button class="hamburger-btn" @click.stop="toggleMenu" v-if="post.user.userId === currentUser.userId">⋯</button>
+                    <button class="hamburger-btn" @click.stop="toggleMenu"
+                        v-if="post.user.userId === currentUser.userId">⋯</button>
                     <ul v-if="menuOpen" class="post-dropdown">
                         <li @click="() => postStore.edit(post)">編輯貼文</li>
                         <li @click="onDelete">刪除貼文</li>
@@ -43,11 +44,11 @@
             <!-- 貼文動作列 -->
             <div class="post-actions">
                 <button class="action-btn" @click="likePost">
-                    👍 按讚({{ likeCount }})
+                    👍 按讚({{ formatCount(likeCount) }})
                 </button>
                 <button class="action-btn"> 💬 留言</button>
                 <button class="action-btn" @click="sharePost">
-                    🔗 分享 ({{ shareCount }})
+                    🔗 分享 ({{ shareCount  }})
                 </button>
             </div>
 
@@ -97,7 +98,7 @@ imageURL.value = `data:image/png;base64,${props.post.user.profilePicture}`
 
 // 貼文動作列
 const likeCount = computed(() => props.post.reactions?.length || 0)
-const shareCount = computed(() => props.post.share || 0)
+const shareCount = ref(props.post.share || 0)
 
 // 評論清單
 const commentList = ref(null)
@@ -157,8 +158,8 @@ async function sharePost() {
             text: props.post.content,
             url: window.location.href
         })
-        await postStore.share(props.post.postId)
-        shareCount.value++
+        const newCount = await postStore.sharePost(props.post.postId)
+        shareCount.value = newCount
     } catch {
         console.error('分享失敗或使用者取消')
     }

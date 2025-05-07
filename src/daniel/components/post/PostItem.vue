@@ -56,11 +56,11 @@
         <!-- 貼文動作列 -->
         <div class="post-actions">
             <button class="action-btn" @click="likePost">
-                👍 按讚({{ post.reactions.length }})
+                👍 按讚({{ formatCount(post.reactions.length ?? 0) }})
             </button>
-            <button class="action-btn" @click="() => postStore.openDetailModal(props.post)"> 💬 留言</button>
+            <button class="action-btn" @click="() => postStore.openDetailModal(post)"> 💬 留言</button>
             <button class="action-btn" @click="sharePost">
-                🔗 分享 ({{ shareCount }})
+                🔗 分享 ({{ post.share }})
             </button>
         </div>
     </article>
@@ -105,9 +105,6 @@ const lightboxVisible = ref(false)
 const currentIndex = ref(0)
 const imgList = computed(() => props.post.images.map(img => `data:image/jpeg;base64,${img.imageData}`))
 
-// 讚與分享
-const shareCount = ref(props.post.share || 0)
-
 // 刪除貼文
 async function onDelete() {
     toggleMenu()
@@ -141,15 +138,18 @@ async function likePost() {
 // 更新分享次數
 async function sharePost() {
     try {
+        // 呼叫原生分享介面
         await navigator.share({
             title: props.post.title,
             text: props.post.content,
             url: window.location.href
         })
-        await postStore.share(props.post.postId)
-        shareCount.value++
+        // 統一呼叫 store 裡更新並同步的 action
+        await postStore.sharePost(props.post.postId)
+        // 通知父元件重新抓最新資料，讓 UI 跟著更新
+        emit('refresh')
     } catch (e) {
-        console.error('分享失敗或使用者取消', e)
+        console.error('分享失敗或取消', e)
     }
 }
 

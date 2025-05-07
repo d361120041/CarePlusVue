@@ -35,7 +35,21 @@ export const usePostStore = defineStore('posts', () => {
         error.value = null
         try {
             const res = await myAxios.post('/api/posts/search', filter)
-            posts.value = res.data
+            posts.value = res.data.map(p => ({
+                ...p,
+                user: p.user || {                 // 如果後端沒回 user，就給個空殼
+                    userId: null,
+                    userName: '匿名',
+                    profilePicture: ''
+                },
+                postCategoryClassifiers: Array.isArray(p.postCategoryClassifiers)
+                    ? p.postCategoryClassifiers
+                    : [],
+                reactions: Array.isArray(p.reactions) ? p.reactions : [],
+                images: Array.isArray(p.images) ? p.images : [],
+                views: typeof p.views === 'number' ? p.views : 0,
+                share: typeof p.share === 'number' ? p.share : 0,
+            }))
         } catch (error) {
             error.value = error
         } finally {
@@ -48,44 +62,69 @@ export const usePostStore = defineStore('posts', () => {
         isLoading.value = true
         error.value = null
         try {
-            let saved
-            const payload = {
-                title: form.title,
-                content: form.content,
-                visibility: form.visibility,
-                status: form.status,
-                userId: form.userId,
-                categoryIds: form.categoryIds,
-                topicIds: form.topicIds,
-                tagIds: form.tagIds,
-            }
+            // 1. 新增或修改
+            let res
             if (form.postId) {
-                const res = await myAxios.put(`/api/posts/${form.postId}`, payload)
-                saved = res.data
+                res = await myAxios.put(`/api/posts/${form.postId}`, {
+                    title: form.title,
+                    content: form.content,
+                    visibility: form.visibility,
+                    status: form.status,
+                    userId: form.userId,
+                    categoryIds: form.categoryIds,
+                    topicIds: form.topicIds,
+                    tagIds: form.tagIds,
+                })
             } else {
-                const res = await myAxios.post('/api/posts', payload)
-                saved = res.data
+                res = await myAxios.post('/api/posts', {
+                    title: form.title,
+                    content: form.content,
+                    visibility: form.visibility,
+                    status: form.status,
+                    userId: form.userId,
+                    categoryIds: form.categoryIds,
+                    topicIds: form.topicIds,
+                    tagIds: form.tagIds,
+                })
             }
+            const postId = res.data.postId
 
+            // 2. 如果有檔案就上傳
             if (files.length) {
                 const formData = new FormData()
                 files.forEach(f => formData.append('files', f))
-                await myAxios.post(`/api/posts/${saved.postId}/images`, formData)
+                await myAxios.post(`/api/posts/${postId}/images`, formData)
             }
 
-            const imagesRes = await myAxios.get(`/api/posts/${saved.postId}/images`)
-            saved.images = imagesRes.data
-            const idx = posts.value.findIndex(p => p.postId === saved.postId)
+            // 3. 再去拿一次完整貼文
+            const detailRes = await myAxios.get(`/api/posts/${postId}`)
+            let full = detailRes.data
 
+            // 4. normalize：補陣列與預設值
+            full = {
+                ...full,
+                user: full.user || { userId: null, userName: '匿名', profilePicture: '' },
+                postCategoryClassifiers: Array.isArray(full.postCategoryClassifiers)
+                    ? full.postCategoryClassifiers
+                    : [],
+                reactions: Array.isArray(full.reactions) ? full.reactions : [],
+                images: Array.isArray(full.images) ? full.images : [],
+                views: typeof full.views === 'number' ? full.views : 0,
+                share: typeof full.share === 'number' ? full.share : 0,
+            }
+
+            // 5. 更新到 posts.value
+            const idx = posts.value.findIndex(p => p.postId === postId)
             if (idx >= 0) {
-                posts.value.splice(idx, 1, saved)
+                posts.value.splice(idx, 1, full)
             } else {
-                posts.value.unshift(saved)
+                posts.value.unshift(full)
             }
+
             closeModal()
-            return saved
-        } catch (error) {
-            error.value = error
+            return full
+        } catch (err) {
+            error.value = err
             throw err
         } finally {
             isLoading.value = false
@@ -152,12 +191,28 @@ export const usePostStore = defineStore('posts', () => {
         }
     }
 
-    // 分享貼文
-    async function share(postId) {
+    // 分享貼文，呼叫後端並同步更新 Pinia state
+    async function sharePost(postId) {
         try {
-            await myAxios.post(`/api/posts/${postId}/share`)
-        } catch (error) {
-            error.value = error
+            // 1. 呼叫後端 +1 分享
+            const res = await myAxios.post(`/api/posts/${postId}/share`)
+            // 假設後端回傳 { share: 新的分享數 }
+            const newShareCount = res.data.share ?? res.data
+
+            // 2. 更新列表中的分享數
+            const idx = posts.value.findIndex(p => p.postId === postId)
+            if (idx !== -1) {
+                posts.value[idx].share = newShareCount
+            }
+
+            // 3. 如果 detailPost 正在開啟，也更新它
+            if (detailPost.value?.postId === postId) {
+                detailPost.value.share = newShareCount
+            }
+            return newShareCount
+        } catch (err) {
+            error.value = err
+            throw err
         }
     }
 
@@ -177,7 +232,7 @@ export const usePostStore = defineStore('posts', () => {
         openModal, closeModal, edit,
         loadPosts, savePost, deletePost,
         deleteImage,
-        like, view, share,
+        like, view, sharePost,
         isDetailModalOpen, detailPost,
         openDetailModal, closeDetailModal
     }
