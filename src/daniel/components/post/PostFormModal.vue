@@ -2,6 +2,14 @@
     <BaseModal :visible="visible" :title="modalTitle" @close="$emit('close')">
         <form @submit.prevent="onSubmit" class="form-container">
 
+            <!-- 使用者資訊區塊 -->
+            <div class="user-header">
+                <UserAvatar :imageUrl="imageUrl" />
+                <div class="user-info">
+                    <div class="user-name">{{ authStore.user.userName }}</div>
+                </div>
+            </div>
+
             <!-- 分類選擇 -->
             <div class="form-group categories">
                 <label>貼文種類：</label>
@@ -56,17 +64,23 @@ import { useAuthStore } from '@/stores/auth'
 
 import myAxios from '@/plugins/axios'
 import BaseModal from '@/daniel/components/BaseModal.vue'
+import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
 
 const props = defineProps({
     visible: Boolean,
     post: { type: Object }
 })
 const emit = defineEmits(['close', 'saved'])
+
 const postStore = usePostStore()
 const categoryStore = useCategoryStore()
 const authStore = useAuthStore()
 
+// 使用者頭貼
 const currentUser = authStore.user
+
+const imageUrl = ref(null)
+imageUrl.value = `data:image/png;base64,${authStore.user.profilePicture}`
 
 // form data
 const form = ref({
@@ -78,7 +92,7 @@ const form = ref({
     tagIds: [],
     visibility: 0,
     status: 0,
-    userId: 3
+    userId: authStore.user.userId
 })
 const files = ref([])
 const previews = ref([])
@@ -211,6 +225,22 @@ async function onSubmit() {
     display: flex;
     flex-direction: column;
     gap: 0.5rem
+}
+
+.user-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.user-name {
+    font-weight: bold;
 }
 
 .categories {

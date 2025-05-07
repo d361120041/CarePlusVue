@@ -1,17 +1,17 @@
 <template>
     <div class="social-container">
         <!-- 新增貼文卡片 -->
-        <article class="post-item new-post-card" @click="() => postStore.openModal(null)">
-            <img class="user-avatar" :src="imageUrl" alt="User Avatar" />
-            <input type="text" class="new-post-input" placeholder="What's on your mind?" readonly />
+        <article class="new-post-card">
+            <UserAvatar :imageUrl="imageUrl" />
+            <div class="new-post-input" @click="() => postStore.openModal(null)">{{ authStore.user.userName }}，在想些什麼？</div>
         </article>
 
         <!-- 貼文列表 -->
-        <PostList :filterCategoryIds="categoryStore.selectedIds" @refresh="reloadPosts" />
+        <PostList :filterCategoryIds="categoryStore.selectedIds" :filterUserId="onlyMine ? authStore.user.userId : null"  @refresh="reloadPosts" />
 
         <!-- 新增與編輯 Modal -->
-        <PostFormModal :visible="postStore.isModalOpen" :post="postStore.currentPost" @close="postStore.closeModal"
-            @saved="reloadPosts" />
+        <PostFormModal v-if="postStore.isModalOpen" :visible="postStore.isModalOpen" :post="postStore.currentPost"
+            @close="postStore.closeModal" @saved="reloadPosts" />
 
         <!-- 貼文詳情 Modal -->
         <PostDetailModal v-if="postStore.detailPost" :visible="postStore.isDetailModalOpen" :post="postStore.detailPost"
@@ -28,6 +28,14 @@ import { useAuthStore } from '@/stores/auth'
 import PostList from '@/daniel/components/post/PostList.vue'
 import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
 import PostDetailModal from '@/daniel/components/post/PostDetailModal.vue'
+import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
+
+const props = defineProps({
+    onlyMine: {
+        type: Boolean,
+        default: false
+    }
+})
 
 // 直接在元件內使用 Pinia store（或你也可以把它們當 props 傳進來）
 const postStore = usePostStore()
@@ -42,6 +50,7 @@ imageUrl.value = `data:image/png;base64,${authStore.user.profilePicture}`
 async function reloadPosts() {
     await postStore.loadPosts({
         postCategoryIds: categoryStore.selectedIds,
+        userId: props.onlyMine ? authStore.user.userId : null
     })
 }
 
@@ -68,7 +77,6 @@ onMounted(async () => {
     padding: 1rem;
 }
 
-/* 新增貼文卡片樣式 */
 .new-post-card {
     display: flex;
     align-items: center;
@@ -77,31 +85,26 @@ onMounted(async () => {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 0.75rem 1rem;
     margin-bottom: 1.5rem;
-    cursor: pointer;
     transition: background 0.2s;
 }
 
-.new-post-card:hover {
+/* .new-post-card:hover {
     background: #f9f9f9;
-}
-
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 1rem;
-}
+} */
 
 .new-post-input {
     flex: 1;
-    border: none;
-    outline: none;
+    color: #999;
     font-size: 1rem;
-    background: transparent;
+    background: #f5f5f5;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    transition: background 0.2s, box-shadow 0.2s;
     cursor: pointer;
 }
 
-.new-post-input::placeholder {
-    color: #999;
+.new-post-input:hover {
+    background: #eaeaea;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 </style>

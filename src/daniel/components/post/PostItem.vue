@@ -182,13 +182,6 @@ onMounted(async () => {
     margin-bottom: 1rem;
 }
 
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 0.75rem;
-}
-
 .user-info {
     display: flex;
     flex-direction: column;
