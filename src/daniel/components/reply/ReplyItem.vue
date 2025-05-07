@@ -2,8 +2,7 @@
     <div class="reply-item">
         <div class="reply-header">
             <!-- 使用者資訊區塊 -->
-            <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
-            <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
+            <img class="user-avatar" :src="imageURL" alt="User Avatar" />
             <div class="user-info">
                 <div class="user-name">{{ reply.user.userName }}</div>
                 <div class="reply-time">{{ formattedTime }}</div>
@@ -50,12 +49,8 @@ import { useToggle } from '@/daniel/composables/useToggle'
 const [menuOpen, toggleMenu] = useToggle(false)
 
 // 使用者資訊區塊
-const currentUser = ref({
-    // avatarUrl: '/circle-user-regular.svg'
-    avatarUrl: '/circle-user-solid.svg'
-    // avatarUrl: '/user-regular.svg'
-    // avatarUrl: '/user-solid.svg'
-})
+const imageURL = ref(null)
+imageURL.value = `data:image/png;base64,${props.reply.user.profilePicture}`
 
 // 下拉選單狀態
 function closeMenu() {

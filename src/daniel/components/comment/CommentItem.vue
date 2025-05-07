@@ -2,8 +2,7 @@
     <div class="comment-item">
         <div class="comment-header">
             <!-- 使用者資訊區塊 -->
-            <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
-            <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
+            <img class="user-avatar" :src="imageURL" alt="User Avatar" />
             <div class="user-info">
                 <div class="user-name">{{ comment.user.userName }}</div>
                 <div class="comment-time">{{ formattedTime }}</div>
@@ -55,17 +54,8 @@ import { useToggle } from '@/daniel/composables/useToggle'
 const [menuOpen, toggleMenu] = useToggle(false)
 
 // 使用者資訊區塊
-const currentUser = ref({
-    // avatarUrl: '/circle-user-regular.svg'
-    avatarUrl: '/circle-user-solid.svg'
-    // avatarUrl: '/user-regular.svg'
-    // avatarUrl: '/user-solid.svg'
-})
-
-// 下拉選單
-function closeMenu() {
-    menuOpen.value = false
-}
+const imageURL = ref(null)
+imageURL.value = `data:image/png;base64,${props.comment.user.profilePicture}`
 
 // 編輯狀態
 const editing = ref(false)

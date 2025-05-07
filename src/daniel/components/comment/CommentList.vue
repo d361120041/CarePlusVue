@@ -1,5 +1,5 @@
 <template>
-    <section class="comment-section">
+    <section v-if="comments.length" class="comment-section">
         <div v-for="comment in comments" :key="comment.commentId">
             <CommentItem :comment="comment" @replied="reloadComments" @updated="reloadComments" @deleted="onDeleted" />
         </div>
