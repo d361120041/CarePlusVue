@@ -4,7 +4,7 @@
     <p class="text-muted">＃{{ getCategoryLabel(course.category) }}</p>
     <p>{{ course.description }}</p>
     <p>時長：{{ course.duration }}</p>
-    <p>價格：{{ course.price }} 元</p>
+    <!-- <p>價格：{{ course.price }} 元</p> -->
 
     <h4 class="mt-4">章節列表</h4>
     <ul v-if="chapters.length > 0" class="list-group">

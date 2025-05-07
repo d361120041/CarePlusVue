@@ -6,7 +6,8 @@
       <div class="search-row">
         <input v-model="searchKeyword" @keyup.enter="search" placeholder="輸入關鍵字搜尋" class="search-input" />
         <button @click="search" class="btn btn-primary">搜尋</button>
-        <button @click="fetchCourses" class="btn btn-secondary">全部課程</button>
+        <!-- <button @click="fetchCourses" class="btn btn-secondary">全部課程</button> -->
+        <button @click="resetFilters" class="btn btn-secondary">✕</button>
       </div>
 
       <!-- ────────── 課程表格 ────────── -->
@@ -44,7 +45,7 @@
                     </option>
                   </select>
                 </td>
-                <td><input v-model="editingCourse.duration" class="input-edit" /></td>
+                <td><input v-model="editingCourse.duration" type="number" class="input-edit" placeholder="時數" /></td>
                 <td class="action-cell">
                   <button @click="save" class="link green">儲存</button>
                   <button @click="cancelEdit" class="link gray">取消</button>
@@ -74,7 +75,11 @@
                 </td>
                 <td>{{ course.description }}</td>
                 <td class="text-cat">#{{ getCategoryLabel(course.category) }}</td>
-                <td>{{ course.duration }}</td>
+                <!-- <td>{{ course.duration }}</td> -->
+
+                <td>{{ formatDuration(course.duration) }}</td>
+
+
                 <td class="action-cell">
                   <button @click="startEdit(course)" class="link blue">編輯</button>
                   <button @click="deleteOne(course.courseId)" class="link red">刪除</button>
@@ -88,8 +93,8 @@
             <tr v-if="isCreating" class="row-creating">
               <td>{{ courses.length + 1 }}</td>
               <td><input type="file" @change="handleFileUpload" /></td>
-              <td><input v-model="editingCourse.title" class="input-create" placeholder="請輸入標題" /></td>
-              <td><input v-model="editingCourse.description" class="input-create" placeholder="請輸入介紹" /></td>
+              <td><input v-model="editingCourse.title" class="input-create" placeholder="請輸入課程標題" /></td>
+              <td><input v-model="editingCourse.description" class="input-create" placeholder="請輸入課程介紹" /></td>
               <td>
                 <select v-model="editingCourse.category" class="input-create">
                   <option disabled value="">請選擇分類</option>
@@ -98,7 +103,14 @@
                   </option>
                 </select>
               </td>
-              <td><input v-model="editingCourse.duration" class="input-create" value="小時" /></td>
+
+              <!-- <td><input v-model="editingCourse.duration" class="input-create" value="小時" /></td> -->
+
+
+              <td>
+                <input v-model="editingCourse.duration" type="number" class="input-create" placeholder="課程時數" />
+              </td>
+
               <td class="action-cell">
                 <button @click="create" class="link green">送出</button>
                 <button @click="cancelCreate" class="link gray">取消</button>
@@ -126,6 +138,18 @@ import {
   deleteCourse,
   searchCourses,
 } from '@/CMS/yuni/api/courseApi'
+
+
+/**
+ * 將數字或已含「小時」字串轉為「n小時」
+ * @param {string|number} val
+ * @returns {string}
+ */
+const formatDuration = (val) => {
+  if (val == null || val === '') return ''
+  const s = String(val)
+  return s.includes('小時') ? s : `${s}小時`
+}
 
 const apiBaseUrl = ref(import.meta.env.VITE_API_BASE_URL)
 const courses = ref([])
@@ -178,13 +202,22 @@ const getCategoryLabel = (key) => {
 
 const fetchCourses = async () => {
   try {
+    // const res = await getAllCourses()
+    // // console.log('課程資料：', JSON.stringify(res.data, null, 2))
+    // courses.value = res.data
     const res = await getAllCourses()
-    console.log('課程資料：', JSON.stringify(res.data, null, 2))
     courses.value = res.data
   } catch (error) {
     console.error('載入課程失敗', error)
   }
 }
+
+// 清除關鍵字並重新載入全部課程
+const resetFilters = async () => {
+  searchKeyword.value = ''
+  await fetchCourses()
+}
+
 
 const search = async () => {
   const res = await searchCourses(searchKeyword.value)
@@ -196,7 +229,10 @@ const search = async () => {
 // }
 const startEdit = (course) => {
   editingId.value = course.courseId
-  editingCourse.value = { ...course }
+  editingCourse.value = {
+    ...course,
+    duration: String(course.duration).replace(/[^\d.]/g, ''),
+  }
 }
 
 const cancelEdit = () => {
@@ -204,16 +240,27 @@ const cancelEdit = () => {
   editingCourse.value = emptyCourse()
 }
 
+const toNumber = (v) => (v === '' || v == null ? null : Number(v))
+
 const save = async () => {
+
+  const payload = {
+    ...editingCourse.value,
+    duration: toNumber(editingCourse.value.duration),
+  }
+
   if (editingCourse.value.courseId) {
-    await updateCourse(editingCourse.value.courseId, editingCourse.value)
+    await updateCourse(editingCourse.value.courseId, payload)
   } else {
-    await createCourse(editingCourse.value)
+    await createCourse(payload)
   }
   await fetchCourses()
   editingCourse.value = emptyCourse()
   editingId.value = null
 }
+
+
+
 
 
 const deleteOne = async (id) => {
@@ -233,16 +280,23 @@ const startCreate = () => {
 const cancelCreate = () => {
   isCreating.value = false
   editingCourse.value = emptyCourse()
+  selectedImage.value = null
 }
 
 const create = async () => {
-  console.log('送出 JSON：', JSON.stringify(editingCourse.value))
-  console.log('Blob 內容', editingCourse.value)
+
+  const payload = {
+    ...editingCourse.value,
+    duration: toNumber(editingCourse.value.duration),
+  }
+
+  // console.log('送出 JSON：', JSON.stringify(editingCourse.value))
+  // console.log('Blob 內容', editingCourse.value)
 
   const formData = new FormData()
   formData.append(
     'course',
-    new Blob([JSON.stringify(editingCourse.value)], {
+    new Blob([JSON.stringify(payload)], {
       type: 'application/json',
     })
   )
@@ -255,7 +309,7 @@ const create = async () => {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
 
-    // 立刻將新增的課程插入最前面（避免等 fetchCourses）
+    // 立刻將新增的課程插入（避免等 fetchCourses）
     courses.value.push(res.data)
 
     isCreating.value = false
@@ -344,7 +398,7 @@ onMounted(async () => {
 }
 
 .btn-secondary {
-  background: #fff;
+  background: #dc2626;
   border: 1px solid #d1d5db;
 }
 
@@ -378,7 +432,7 @@ onMounted(async () => {
 }
 
 .col-idx {
-  width: 48px;
+  width: 30px;
 }
 
 .col-cover {
@@ -386,11 +440,11 @@ onMounted(async () => {
 }
 
 .col-title {
-  width: 192px;
+  width: 236px;
 }
 
 .col-cat {
-  width: 128px;
+  width: 120px;
 }
 
 .col-duration {
@@ -398,7 +452,7 @@ onMounted(async () => {
 }
 
 .col-action {
-  width: 128px;
+  width: 110px;
 }
 
 /* 封面圖片固定 80x80 */
