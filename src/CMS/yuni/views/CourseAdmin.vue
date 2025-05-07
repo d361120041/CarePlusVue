@@ -83,6 +83,8 @@
                   <button @click="startEdit(course)"  class="link blue">編輯</button>
                   <button @click="deleteOne(course.courseId)" class="link red">刪除</button>
                 </td>
+
+                
               </template>
             </tr>
 
@@ -263,7 +265,7 @@ const create = async () => {
 
     // 立刻將新增的課程插入最前面（避免等 fetchCourses）
     courses.value.push(res.data)
-
+  
     isCreating.value = false
     editingCourse.value = emptyCourse()
     selectedImage.value = null
@@ -433,7 +435,18 @@ onMounted(async () => {
 .link.red:hover    { color: #b91c1c; }
 .link.gray:hover   { color: #4b5563; }
 
-.action-cell { display: flex; gap: 8px; }
+/* .action-cell { display: flex; gap: 8px; } */
+
+
+.action-cell {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  height: 105px;
+}
+
+td.action-cell { display: flex; align-items: center; justify-content: center; padding: 0; }
 
 .text-cat { color: #64748b; }
 </style>
