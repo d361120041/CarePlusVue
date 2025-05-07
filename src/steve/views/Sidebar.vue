@@ -29,6 +29,13 @@
       active-class="bg-gray-200 font-semibold"
       ><br />
       客服讯息
+    </router-link>    
+    <router-link
+      to="/user-center/myPost"
+      class="px-4 py-2 rounded hover:bg-gray-200"
+      active-class="bg-gray-200 font-semibold"
+      ><br />
+      我的貼文
     </router-link>
   </nav>
 </template>

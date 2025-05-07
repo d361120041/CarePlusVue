@@ -8,7 +8,8 @@ import NotFound from "@/views/NotFound.vue";
 import Forbidden from "@/views/Forbidden.vue";
 
 // ------------------ daniel ------------------
-import Social from "@/daniel/views/Social.vue";
+import Social from '@/daniel/views/Social.vue'
+import MyPost from '@/daniel/views/MyPost.vue'
 // ------------------ daniel ------------------
 
 // ------------------ yuni ------------------
@@ -248,6 +249,7 @@ const routes = [
       { path: "patients", component: PatientsList },
       { path: "patients/add", component: AddPatient },
       { path: "favorites", component: FavoritesView },
+      { path: "myPost", component: MyPost },
     ],
   },
   // { path: "/user-center", component: UserCenter, name: "userCenter" }
