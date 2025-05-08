@@ -2,9 +2,25 @@
   <div class="max-w-2xl mx-auto p-6">
     <h2 class="text-2xl font-bold mb-4">客服信件</h2>
 
+    <!-- 公版按鈕 -->
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button class="px-3 py-1 bg-gray-200 rounded" @click="fillTemplate(1)">
+        諮詢照護者
+      </button>
+      <button class="px-3 py-1 bg-gray-200 rounded" @click="fillTemplate(2)">
+        諮詢課程
+      </button>
+      <button class="px-3 py-1 bg-gray-200 rounded" @click="fillTemplate(3)">
+        申訴
+      </button>
+      <button class="px-3 py-1 bg-gray-200 rounded" @click="fillTemplate(4)">
+        其他
+      </button>
+    </div>
+
     <form @submit.prevent="submitInquiry" class="space-y-4">
       <div>
-        <label class="block font-medium mb-1">Email </label>
+        <label class="block font-medium mb-1">Email</label>
         <input
           type="email"
           v-model="inquiry.email"
@@ -47,32 +63,37 @@ const inquiry = ref({
   inquiryText: "",
 });
 
-// 頁面載入時，拿使用者 email 填入
 onMounted(async () => {
   try {
-    const res = await axios.get("/user/profile"); // 假設這支 API 回傳 user 物件
+    const res = await axios.get("/user/profile");
     inquiry.value.email = res.data.emailAddress;
   } catch (err) {
-    console.error(err);
     alert("無法取得使用者資料，請重新登入");
     router.push("/userlogin");
   }
 });
+
+const fillTemplate = (type) => {
+  const templates = {
+    1: "您好，我對某位照護者的服務有疑問，想了解更多詳情，煩請協助說明。",
+    2: "您好，想詢問某門課程的內容或報名方式，請問可以提供更多資訊嗎？",
+    3: "您好，我想對先前的服務經驗提出申訴，以下是具體內容：",
+    4: "您好，我有一些其他問題或建議如下：",
+  };
+  inquiry.value.inquiryText = templates[type];
+};
 
 const submitInquiry = async () => {
   if (!inquiry.value.inquiryText.trim()) return;
   loading.value = true;
   try {
     await axios.post("/inquiry/submit", {
-      // 後端只需要 inquiryText 以及 session 裡的 userId
       inquiryText: inquiry.value.inquiryText,
     });
     alert("已成功送出，感謝您的反饋");
     inquiry.value.inquiryText = "";
   } catch (err) {
-    console.error(err);
-    const msg = err.response?.data || "送出失敗，請稍後再試";
-    alert(msg);
+    alert(err.response?.data || "送出失敗，請稍後再試");
   } finally {
     loading.value = false;
   }

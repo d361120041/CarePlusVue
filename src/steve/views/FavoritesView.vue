@@ -24,7 +24,7 @@
       </button>
     </div>
 
-    <!-- 收藏課程 -->
+    <!-- 收藏課程
     <div v-if="currentTab === 'courses'">
       <div v-if="favoriteCourses.length === 0" class="text-muted">
         尚未收藏任何課程。
@@ -57,6 +57,43 @@
           >
             取消收藏
           </button>
+        </div>
+      </div>
+    </div> -->
+    <!-- 收藏課程 -->
+    <div v-if="currentTab === 'courses'">
+      <div v-if="favoriteCourses.length === 0" class="text-muted">
+        尚未收藏任何課程。
+      </div>
+      <div v-else class="d-flex flex-column gap-3">
+        <div
+          v-for="item in favoriteCourses"
+          :key="item.favoriteId"
+          class="card course-card p-3"
+        >
+          <template v-if="item.course">
+            <div class="d-flex justify-content-between align-items-center">
+              <router-link
+                :to="`/courses/${item.course.courseId}`"
+                class="h5 text-decoration-none text-dark"
+              >
+                {{ item.course.title }}
+              </router-link>
+              <button
+                class="btn btn-sm btn-outline-danger"
+                @click="removeFavoriteCourse(item.course.courseId)"
+              >
+                取消收藏
+              </button>
+            </div>
+            <p class="mb-1 text-muted">
+              分類：{{ getCategoryLabel(item.course.category) }}
+            </p>
+            <p class="mb-0">{{ item.course.description || "無課程描述" }}</p>
+          </template>
+          <template v-else>
+            <p class="text-danger">⚠️ 課程資料遺失（ID: {{ item.courseId }})</p>
+          </template>
         </div>
       </div>
     </div>

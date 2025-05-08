@@ -5,7 +5,7 @@
         <router-link to="/">首頁</router-link>
       </li>
       <li>
-        <router-link to="/caregivers/search">找看護？</router-link>
+        <router-link to="/caregivers/search">找看護</router-link>
       </li>
       <li>
         <router-link to="/news">新聞列表</router-link>

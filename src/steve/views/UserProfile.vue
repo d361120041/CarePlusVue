@@ -38,6 +38,12 @@
         class="hidden"
         ref="fileInput"
       />
+      <div
+        @click="fileInput?.click()"
+        class="mt-2 text-blue-500 cursor-pointer hover:underline"
+      >
+        點擊更換頭像
+      </div>
     </div>
 
     <!-- 使用者資訊 -->
@@ -55,6 +61,7 @@
       <div class="mb-4">
         <label class="block font-medium">姓名</label>
         <input
+          style="margin-left: 96px"
           type="text"
           v-model="user.userName"
           class="w-full border rounded p-2"
@@ -64,6 +71,7 @@
       <div class="mb-4">
         <label class="block font-medium">Email</label>
         <input
+          style="margin-left: 88px"
           type="email"
           v-model="user.emailAddress"
           class="w-full border rounded p-2"
@@ -72,24 +80,16 @@
 
       <div class="mb-4">
         <label class="block font-medium">電話</label>
-        <div style="display: flex; gap: 0.5rem">
-          <select v-model="phoneCountryCode" class="border rounded p-2">
-            <option value="+886">+886</option>
-            <option value="+852">+852</option>
-            <option value="+81">+81</option>
-            <option value="+86">+86</option>
-          </select>
-          <input
-            type="tel"
-            v-model="phoneNumber"
-            class="w-full border rounded p-2"
-            minlength="8"
-            maxlength="10"
-            pattern="\\d{8,10}"
-            required
-            placeholder="電話號碼"
-          />
-        </div>
+        <input
+          style="margin-left: 96px"
+          type="tel"
+          v-model="user.phoneNumber"
+          class="w-full border rounded p-2"
+          minlength="8"
+          maxlength="10"
+          pattern="\\d{8,10}"
+          required
+        />
       </div>
 
       <!-- 地址 -->
@@ -125,13 +125,23 @@
       </div>
 
       <div class="mb-4">
-        <label class="block font-medium">個人簡介 Bio</label>
-        <textarea v-model="user.bio" class="w-full border rounded p-2" />
+        <label class="block font-medium">個人簡介</label>
+        <br />
+        <textarea
+          style="width: 70%; height: 100px"
+          v-model="user.bio"
+          class="w-full border rounded p-2"
+        />
       </div>
 
       <div class="mb-4">
-        <label class="block font-medium">自我介紹 Intro</label>
-        <textarea v-model="user.intro" class="w-full border rounded p-2" />
+        <label class="block font-medium">自我介紹</label>
+        <br />
+        <textarea
+          style="width: 70%; height: 100px"
+          v-model="user.intro"
+          class="w-full border rounded p-2"
+        />
       </div>
 
       <button
@@ -150,6 +160,7 @@ import { ref, onMounted } from "vue";
 import axios from "@/plugins/axios";
 import { useAuthStore } from "@/stores/auth";
 
+// 使用者與圖片資料
 const auth = useAuthStore();
 const user = ref({ ...auth.user });
 const imageUrl = ref(null);
@@ -157,9 +168,7 @@ const imageFile = ref(null);
 const fileInput = ref(null);
 const loading = ref(false);
 
-const phoneCountryCode = ref("+886");
-const phoneNumber = ref("");
-
+// 地址邏輯
 const selectedCity = ref("");
 const selectedDistrict = ref("");
 const availableDistricts = ref([]);
@@ -212,6 +221,7 @@ const taiwanAddress = {
     "大溪區",
     "龍潭區",
   ],
+  // ... 其他縣市省略
 };
 
 const restoreAddressSelect = () => {
@@ -222,16 +232,6 @@ const restoreAddressSelect = () => {
       selectedDistrict.value = user.value.address.slice(city.length);
       break;
     }
-  }
-
-  const rawPhone = user.value.phoneNumber;
-  const match = rawPhone?.match(/^(\+\d{2,4})(\d{6,})$/);
-  if (match) {
-    phoneCountryCode.value = match[1];
-    phoneNumber.value = match[2];
-  } else {
-    phoneCountryCode.value = "+886";
-    phoneNumber.value = rawPhone || "";
   }
 };
 
@@ -256,7 +256,7 @@ const handleImageUpload = (e) => {
   const file = e.target.files[0];
   if (file) {
     imageFile.value = file;
-    imageUrl.value = URL.createObjectURL(file);
+    imageUrl.value = URL.createObjectURL(file); // 預覽
   }
 };
 
@@ -265,8 +265,6 @@ const updateUser = async () => {
   loading.value = true;
 
   try {
-    user.value.phoneNumber = phoneCountryCode.value + phoneNumber.value;
-
     if (selectedCity.value && selectedDistrict.value) {
       user.value.address = `${selectedCity.value}${selectedDistrict.value}`;
     }
