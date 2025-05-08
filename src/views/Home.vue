@@ -3,13 +3,22 @@
 
 
 
-<div style="background-color: bisque;">yuni</div>
+<div style="background-color: bisque;">
+    <div>
+        <CourseFeat />
+    </div>
+
+</div>
+
 </template>
     
 <script setup>
-    
+import CourseFeat from '@/yuni/components/CourseFeat.vue';
+
+
+
 </script>
     
-<style>
+<style scoped>
     
 </style>
