@@ -45,23 +45,27 @@
         </div>
       </template>
 
+      
       <!-- ✅ 照顧者登入後 -->
-      <template v-else-if="isCaregiverLogin">
-        <div class="user-info">
-          <img src="@/assets/user-icon.png" alt="user" class="user-icon" />
-          <span class="welcome">歡迎，{{ caregiver.email }}</span>
-          <button @click="caregiverLogout" class="logout-button">登出</button>
-        </div>
-      </template>
+     <!-- Navbar.vue -->
+<template v-else-if="isCaregiverLogin">
+  <div class="user-info">
+    <router-link to="/caregiver" class="user-icon-wrapper">
+      <img v-if="photoPreviewUrl !== undefined && photoPreviewUrl !== ''" :src="photoPreviewUrl" class="avatar" @click.stop="triggerFileInput" />
+    </router-link>
+    <span class="welcome">歡迎，{{ caregiver.email }}</span>
+    <button @click="caregiverLogout" class="logout-button">登出</button>
+  </div>
+</template>
 
       <!-- ✅ 都沒登入 -->
       <template v-else>
         <div class="dropdown-login">
           <button class="login-dropdown-btn">登入/註冊</button>
           <div class="dropdown-login-menu">
-    <button @click="goUserLogin">一般用戶登入</button>
-    <button @click="goCaregiverLogin">照服人員登入</button>
-    <button @click="goAdminLogin">系統管理員登入</button>
+    <button @click="goUserLogin"> 一般用戶登入</button>
+    <button @click="goCaregiverLogin"> 照服人員登入</button>
+    <button @click="goAdminLogin"> 系統管理員登入</button>
   </div>
 </div>
       </template>
@@ -75,6 +79,7 @@ import { useRouter, useRoute } from "vue-router";
 
 // ✅ 使用者：Session-based 登入狀態
 import { useAuthStore } from "@/stores/auth";
+
 const auth = useAuthStore();
 const isUserLogin = computed(() => auth.isAuthenticated);
 const imageUrl = ref(null);
@@ -91,11 +96,20 @@ const fetchImage = async () => {
     imageUrl.value = null;
   }
 };
+const goToCaregiverPage = () => {
+  router.push('/caregiver') // ⬅️ 改成你想導向的網址
+}
+
+
+
+
 
 // ✅ 照顧者：JWT-based 登入狀態
 import { useCaregiverAuth } from "@/stores/useCaregiverAuth";
 const caregiver = useCaregiverAuth();
 const isCaregiverLogin = computed(() => !!caregiver.token);
+
+
 
 const router = useRouter();
 const route = useRoute();
@@ -104,9 +118,33 @@ const route = useRoute();
 onMounted(() => {
   auth.checkAuth?.();
   if (auth.isAuthenticated) {
-    fetchImage(); // 只在使用者登入時取得頭像
+    fetchImage();
   }
-});
+
+  caregiver.restoreLogin(); // ✅ 用 Pinia 的方法處理登入狀態與頭貼
+})
+
+// const fetchCaregiverPhoto = async () => {
+//   try {
+//     const res = await fetch(`http://localhost:8082/api/auth/caregiver/photo?email=${caregiver.email}`, {
+//       headers: {
+//         Authorization: `Bearer ${caregiver.token}`
+//       }
+//     })
+//     if (res.ok) {
+//       const blob = await res.blob()
+//       caregiverPhotoUrl.value = URL.createObjectURL(blob)
+//     } else {
+//       caregiverPhotoUrl.value = null
+//     }
+//   } catch (err) {
+//     console.error('載入大頭貼失敗', err)
+//   }
+// }
+
+
+
+
 
 // 登入／登出事件
 //使用者登入按鈕
@@ -131,6 +169,7 @@ const caregiverLogout = () => {
 .user-info {
   display: flex;
   align-items: center;
+  
 }
 
 .user-icon {
@@ -313,8 +352,8 @@ const caregiverLogout = () => {
 }
 .user-icon-wrapper {
   display: inline-block;
-  width: 48px;
-  height: 48px;
+  width: 32px; /* ⬅️ 原本是 48px */
+  height: 32px; /* ⬅️ 原本是 48px */
   border-radius: 50%;
   overflow: hidden;
   margin-left: 0.5rem;
@@ -323,17 +362,18 @@ const caregiverLogout = () => {
   border: none;
 }
 
+
 .user-icon-wrapper:focus {
   outline: none;
   box-shadow: none;
 }
 
 .user-icon {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  border: none;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;  /* ✅ 重點：等比例裁切填滿不變形 */
+  border-radius: 50%; /* ✅ 加圓形（可選） */
+  border: 2px solid #ccc;
 }
 
 .dropdown-login {
@@ -353,27 +393,29 @@ const caregiverLogout = () => {
 .dropdown-login-menu {
   display: none;
   position: absolute;
-  background-color: white;
+  background-color:  #40d462;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   min-width: 160px;
   border-radius: 6px;
   overflow: hidden;
+
   right: 0;
 }
 
 .dropdown-login-menu button {
-  background-color: white;
+  background-color: #40d462;
   border: none;
   color: #333;
   padding: 10px 16px;
   text-align: left;
   width: 100%;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .dropdown-login-menu button:hover {
-  background-color: #f0f0f0;
+  background-color: #28a745;
 }
 
 /* 顯示下拉選單 */
