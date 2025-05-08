@@ -22,6 +22,7 @@
       <div>
         <label class="block font-medium mb-1">Email</label>
         <input
+          style="margin-left: 88px; width: 30%"
           type="email"
           v-model="inquiry.email"
           disabled
@@ -31,7 +32,9 @@
 
       <div>
         <label class="block font-medium mb-1">內容</label>
+        <br />
         <textarea
+          style="width: 70%; height: 100px"
           v-model="inquiry.inquiryText"
           rows="6"
           placeholder="請在此輸入您的問題或建議…"

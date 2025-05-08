@@ -235,12 +235,12 @@ const routes = [
   { path: "/userregister", component: UserRegister, name: "userRegister" },
   { path: "/verify", component: UserVerify, name: "userVerify" }, //
   {
-    path: "/forgotPassword",
+    path: "/ForgotPassword",
     component: ForgotPassword,
-    name: "forgotPassword",
+    name: "ForgotPassword",
   },
   {
-    path: "/reset/steve",
+    path: "/resetPassword",
     component: ResetPasswordSteve,
     name: "resetPassword",
   },
