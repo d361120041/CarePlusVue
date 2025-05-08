@@ -1,57 +1,52 @@
 :root {
   /* ===== 顏色區塊 開始 ===== */
   /* ----- 基礎色彩 ----- */
-  --color-primary: #4DB6AC;           /* 主色：藍綠 */
-  --color-primary-text: #FFFFFF;      /* 主色文字顏色 */
-
-  --color-secondary: #FF9999;         /* 次色：粉紅 */
-  --color-secondary-text: #FFFFFF;    /* 次色文字顏色 */
-
-  --color-tertiary: #3E9BDC;          /* 輔助色：藍 */
-  --color-tertiary-text: #FFFFFF;     /* 輔助色文字顏色 */
+  --color-primary: #4db6ac; /* 主色：藍綠 */
+  --color-secondary: #ff9999; /* 次色：粉紅 */
+  --color-tertiary: #3e9bdc; /* 輔助色：藍 */
 
   /* ----- 背景色彩 ----- */
-  --color-bg-page: #FFF8F0;           /* 頁面背景：米白 */
-  --color-bg-surface: #FFFFFFE6;      /* 容器/卡片：微透明純白 */
-  --color-bg-card: #FFFFFF;           /* 卡片純白 */
-  
-  --color-hover-bg-light: #F5F5F5;    /* 背景懸停 */
+  --color-bg-page: #fff8f0; /* 頁面背景：米白 */
+  --color-bg-page-rgb: 255, 248, 240;
+  --color-bg-surface: #ffffffe6; /* 容器/卡片：微透明純白 */
+  --color-bg-card: #ffffff; /* 卡片純白 */
+
+  --color-hover-bg-light: #f5f5f5; /* 背景懸停 */
 
   /* ----- 文字色彩 ----- */
-  --color-text-primary: #1F2937;      /* 主要文字，最高對比 */
-  --color-text-secondary: #4B5563;    /* 次要文字，中度對比 */
-  --color-text-tertiary: #333333;     /* 中性色／輔助文字 */
-  --color-text-muted: #757575;        /* 註解、輔助說明 */
-  
-  --color-hover-text: #2A9287;        /* 文字懸停 */
+  --color-text-primary: #1f2937; /* 主要文字，最高對比 */
+  --color-text-secondary: #4b5563; /* 次要文字，中度對比 */
+  --color-text-tertiary: #333333; /* 中性色／輔助文字 */
+  --color-text-muted: #757575; /* 註解、輔助說明 */
+
+  --color-hover-text: #2a9287; /* 文字懸停 */
 
   /* ----- 按鈕色 ----- */
-  --color-btn-primary-bg: #4DB6AC;    /* 主要按鈕 背景 */
-  --color-btn-primary-text: #FFFFFF;  /* 主要按鈕文字色 */
-  --color-btn-primary-bg-hover: #3A9D93;
+  --color-btn-primary-bg: #4db6ac; /* 主要按鈕 背景 */
+  --color-btn-primary-text: #ffffff; /* 主要按鈕文字色 */
+  --color-btn-primary-bg-hover: #3a9d93;
 
-  --color-btn-secondary-bg: #FF9999;  /* 次要按鈕 背景 */
-  --color-btn-secondary-text: #FFFFFF;/* 次要按鈕文字色 */
-  --color-btn-secondary-bg-hover: #E68989;
+  --color-btn-secondary-bg: #ff9999; /* 次要按鈕 背景 */
+  --color-btn-secondary-text: #ffffff; /* 次要按鈕文字色 */
+  --color-btn-secondary-bg-hover: #e68989;
 
-  --color-btn-disabled-bg: #E0E0E0;   /* 禁用按鈕 */
+  --color-btn-disabled-bg: #e0e0e0; /* 禁用按鈕 */
   --color-btn-disabled-text: #757575; /* 禁用按鈕文字色 */
-  
+
   /* ----- 標題色 ----- */
-  --color-title: #4DB6AC;             /* section 標題色 */
+  --color-title: #4db6ac; /* section 標題色 */
 
   /* ----- 邊框與分隔 ----- */
-  --color-border: #E0E0E0;            /* 邊框、分隔線 */
+  --color-border: #e0e0e0; /* 邊框、分隔線 */
 
   /* ----- 進度／步驟 ----- */
-  --color-step-circle-bg: #FF9999;    /* 步驟圓背景 */
+  --color-step-circle-bg: #ff9999; /* 步驟圓背景 */
 
   /* ----- 狀態色 ----- */
-  --color-success: #4CAF50;           /* 成功提示 */
-  --color-warning: #FFC107;           /* 警告提示 */
-  --color-error: #E53935;             /* 錯誤提示 */
+  --color-success: #4caf50; /* 成功提示 */
+  --color-warning: #ffc107; /* 警告提示 */
+  --color-error: #e53935; /* 錯誤提示 */
   /* ===== 顏色區塊 結束 ===== */
-  
 
   /* ===== 排版系統 開始 =====*/
   /* ----- 字體 ----- */
@@ -86,25 +81,24 @@
   --space-xl: 2rem;
   --space-xxl: 3rem;
   /* ===== 排版系統 結束 =====*/
-  
 
   /* ===== 其他效果 開始 =====*/
   /* ----- 圓角效果 ----- */
   --radius-sm: 2px;
-  --radius-md: 4px;
+  --radius-md: 5px;
   --radius-lg: 8px;
   --radius-pill: 9999px;
 
   /* ----- 陰影效果 ----- */
   --shadow-none: none;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-  --shadow-lg: 0 10px 15px rgba(0,0,0,0.15);
-  --shadow-xl: 0 20px 25px rgba(0,0,0,0.2);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.2);
 
   /* ----- 動態過渡效果 ----- */
   --transition-fast: 150ms ease-in-out;
-  --transition-medium: 300ms ease;
+  --transition-medium: 200ms ease;
   --transition-slow: 500ms ease-out;
 
   /* ----- Media Query(響應式網頁) ----- */

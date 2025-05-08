@@ -30,7 +30,7 @@ body {
 /* 2. 頁首與頁尾 */
 header,
 footer {
-  background-color: var(--color-primary);
+  background-color: var(--color-bg-card);
   color: var(--color-primary-text);
   text-align: center;
   padding: 1rem 0;
@@ -45,21 +45,70 @@ main {
 }
 
 /* 4. 全站連結預設 */
-/* a {
+a {
   color: #0366d6;
   text-decoration: none;
-} */
-/* a:hover {
-  text-decoration: underline;
-} */
+}
+a:hover {
+  text-decoration: none;
+}
 
-/* h1,
+h1,
 h2,
 h3 {
-  color: var(--primary-color);
-} */
+  color: var(--color-text-primary);
+}
 
-/* #app {
+#app {
   position: relative;
   background-color: transparent;
-} */
+}
+
+.button-green {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+
+  border-radius: var(--radius-lg);
+  border: none;
+
+  padding: var(--space-sm) var(--space-lg);
+  transition: var(--transition-medium);
+  cursor: pointer;
+}
+
+.button-green:hover {
+  background-color: var(--color-btn-primary-bg-hover);
+}
+
+
+.button-pink {
+  background-color: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+
+  border-radius: var(--radius-lg);
+  border: none;
+
+  padding: var(--space-sm) var(--space-lg);
+  transition: var(--transition-medium);
+  cursor: pointer;
+}
+
+.button-pink:hover {
+  background-color: var(--color-btn-secondary-bg-hover);
+}
+
+.button-blue {
+  background-color: var(--color-btn-tertiary-bg);
+  color: var(--color-btn-tertiary-text);
+
+  border-radius: var(--radius-lg);
+  border: none;
+
+  padding: var(--space-sm) var(--space-lg);
+  transition: var(--transition-medium);
+  cursor: pointer;
+}
+
+.button-blue:hover {
+  background-color: var(--color-btn-tertiary-bg-hover);
+}
