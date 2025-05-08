@@ -8,7 +8,7 @@
     <!-- 使用者資訊與登出 -->
 
     <div class="right navbar-user">
-      <span>👤 Root User</span>
+      <span>👤 Admin </span>
       <button class="logout-button" @click="handleLogout">登出</button>
     </div>
   </header>
