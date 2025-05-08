@@ -3,27 +3,23 @@
     <div id="course-top"></div>
     <h2 class="mb-4" style="text-align: center;">課程列表</h2>
 
-    <!-- 搜尋欄 -->
+    <!-- 關鍵字搜尋 -->
     <div class="mb-4">
       <input type="text" v-model="searchKeyword" @change="searchCourses" placeholder="輸入關鍵字搜尋課程"
         class="form-control mb-3 mx-auto search-input" />
 
       <div class="d-flex justify-content-center align-items-center">
-        <!-- 進階搜尋：分類按鈕 -->
+        <!-- 分類搜尋 -->
         <div class="btn-group flex-wrap" role="group">
           <button v-for="category in categories" :key="category" @click="filterByCategory(category)" :class="[
             'btn',
             selectedCategory === category
               ? 'btn-primary'
               : 'btn-outline-primary',
-          ]" class="m-1">
-            {{ getCategoryLabel(category) }}
-          </button>
+          ]" class="m-1">{{ getCategoryLabel(category) }}</button>
 
-          <!-- 清除篩選條件 -->
-          <button @click="resetFilters" class="btn btn-outline-secondary m-1">
-            &#88;
-          </button>
+          <!-- 清空搜尋 -->
+          <button @click="resetFilters" class="btn btn-outline-secondary m-1">&#88;</button>
         </div>
       </div>
     </div>
@@ -36,31 +32,26 @@
         class="text-decoration-none w-100">
         <div class="card course-card mx-auto">
           <div class="d-flex h-100">
-            <!-- 課程圖片 -->
+            <!-- 封面圖片 -->
             <div class="p-3">
               <img :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`" class="course-img rounded" alt="課程封面" />
             </div>
 
-            <!-- 課程內容 -->
+            <!-- 課程標題＋簡介有的沒的 -->
             <div class="card-body d-flex flex-column justify-content-center text-dark">
               <h5 class="card-title">{{ course.title }}</h5>
-              <p class="card-text">
-                <small class="text-muted">#{{ getCategoryLabel(course.category) }}</small>
-              </p>
+              <p class="card-text"><small class="text-muted">#{{ getCategoryLabel(course.category) }}</small></p>
               <p class="card-text">{{ course.description }}</p>
-              <p class="card-text">
-                <small class="text-muted">No.{{ course.courseId }}</small>
-              </p>
+              <p class="card-text"><small class="text-muted">No.{{ course.courseId }}</small></p>
             </div>
           </div>
         </div>
       </router-link>
     </div>
-
     <div v-else class="text-center text-muted mt-4">查無課程資料。</div>
   </div>
 
-  <!-- 分頁 -->
+  <!-- 頁數有的沒的 -->
   <div class="d-flex justify-content-center align-items-center">
     <nav aria-label="Page navigation example">
       <ul class="pagination">
@@ -92,10 +83,10 @@ import axios from "@/plugins/axios.js";
 
 const courses = ref([]);
 const searchKeyword = ref("");
-const selectedCategory = ref(null); // 記錄目前選擇的分類
+const selectedCategory = ref(null);
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
-// 所有可選分類（對應 enum 名稱）
+// 課程分類(enum)
 const categories = [
   "daily_care",
   "dementia",
@@ -108,7 +99,6 @@ const categories = [
   "selfcare",
 ];
 
-// 顯示中文名稱（選擇性）
 const getCategoryLabel = (key) => {
   const map = {
     daily_care: "日常照護",
@@ -134,16 +124,15 @@ const fetchCourses = async () => {
   }
 };
 
-// 搜尋課程（依關鍵字）
+// 關鍵字搜尋課程
 const searchCourses = async () => {
   const keyword = searchKeyword.value.trim();
-  selectedCategory.value = null; // 清除分類選擇
+  selectedCategory.value = null; 
   currentPage.value = 1;
   if (keyword === "") {
     await fetchCourses();
     return;
   }
-
   try {
     const res = await axios.get("/api/courses/search", {
       params: { keyword },
@@ -160,7 +149,7 @@ const searchCourses = async () => {
 
 // 點分類按鈕時的搜尋
 const filterByCategory = async (category) => {
-  searchKeyword.value = ""; // 清空關鍵字搜尋
+  searchKeyword.value = "";
   selectedCategory.value = category;
   currentPage.value = 1;
   try {
