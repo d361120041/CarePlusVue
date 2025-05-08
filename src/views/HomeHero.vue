@@ -15,9 +15,9 @@
 
 <style scoped>
 .hero-section {
-    background: linear-gradient(rgba(62, 155, 220, 0.8), rgba(62, 155, 220, 0.8)),
+    background: linear-gradient(rgba(var(--color-bg-page)), var(--color-bg-page)),
         url('@/assets/hero_bg.jpg') center/cover no-repeat;
-    color: #fff;
+    color: var(--color-text-primary);
     padding: 6rem 0;
 }
 
