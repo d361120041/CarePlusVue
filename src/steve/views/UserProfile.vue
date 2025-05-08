@@ -1,24 +1,43 @@
 <template>
   <div class="max-w-2xl mx-auto p-4">
     <h2 class="text-xl font-bold mb-4">編輯使用者資料</h2>
-    <!-- picture -->
+
     <!-- 頭像 -->
     <div class="mb-4">
-      <label class="block font-medium">目前頭像</label>
+      <label class="block font-medium mb-2">目前頭像</label>
       <div
-        class="w-32 h-32 rounded-full overflow-hidden flex items-center justify-center border"
+        style="
+          width: 128px;
+          height: 128px;
+          border-radius: 9999px;
+          overflow: hidden;
+          border: 1px solid #ccc;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
       >
         <img
           v-if="imageUrl"
           :src="imageUrl"
           alt="使用者頭像"
-          class="object-cover rounded-full"
-          style="width: 128px; height: 128px"
+          style="width: 100%; height: 100%; object-fit: cover; display: block"
         />
-        <div v-else class="text-gray-400 text-sm text-center">無頭像</div>
+        <div
+          v-else
+          class="text-gray-400 text-sm text-center w-full h-full flex items-center justify-center"
+        >
+          無頭像
+        </div>
       </div>
+
       <label class="block font-medium mt-4">上傳新頭像</label>
-      <input type="file" @change="handleImageUpload" class="mt-1" />
+      <input
+        type="file"
+        @change="handleImageUpload"
+        class="hidden"
+        ref="fileInput"
+      />
     </div>
 
     <!-- 使用者資訊 -->
@@ -53,18 +72,27 @@
 
       <div class="mb-4">
         <label class="block font-medium">電話</label>
-        <input
-          type="tel"
-          v-model="user.phoneNumber"
-          class="w-full border rounded p-2"
-          minlength="8"
-          maxlength="10"
-          pattern="\\d{8,10}"
-          required
-        />
+        <div style="display: flex; gap: 0.5rem">
+          <select v-model="phoneCountryCode" class="border rounded p-2">
+            <option value="+886">+886</option>
+            <option value="+852">+852</option>
+            <option value="+81">+81</option>
+            <option value="+86">+86</option>
+          </select>
+          <input
+            type="tel"
+            v-model="phoneNumber"
+            class="w-full border rounded p-2"
+            minlength="8"
+            maxlength="10"
+            pattern="\\d{8,10}"
+            required
+            placeholder="電話號碼"
+          />
+        </div>
       </div>
 
-      <!-- ✅ 地址下拉式 -->
+      <!-- 地址 -->
       <div class="mb-4">
         <label class="block font-medium">地址</label>
         <div class="flex gap-2 mb-2">
@@ -108,9 +136,10 @@
 
       <button
         @click="updateUser"
-        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        :disabled="loading"
+        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
       >
-        儲存變更
+        {{ loading ? "儲存中..." : "儲存變更" }}
       </button>
     </div>
   </div>
@@ -121,17 +150,19 @@ import { ref, onMounted } from "vue";
 import axios from "@/plugins/axios";
 import { useAuthStore } from "@/stores/auth";
 
-// Pinia 使用者資料
 const auth = useAuthStore();
-const user = ref({ ...auth.user }); // ✅ 初始從 Pinia 複製一份資料
+const user = ref({ ...auth.user });
 const imageUrl = ref(null);
 const imageFile = ref(null);
+const fileInput = ref(null);
+const loading = ref(false);
 
-// 地址欄位
+const phoneCountryCode = ref("+886");
+const phoneNumber = ref("");
+
 const selectedCity = ref("");
 const selectedDistrict = ref("");
 const availableDistricts = ref([]);
-
 const taiwanAddress = {
   臺北市: [
     "中正區",
@@ -181,65 +212,8 @@ const taiwanAddress = {
     "大溪區",
     "龍潭區",
   ],
-  新竹市: ["東區", "北區", "香山區"],
-  新竹縣: ["竹北市", "竹東鎮", "新埔鎮"],
-  苗栗縣: ["苗栗市", "頭份市", "竹南鎮"],
-  臺中市: [
-    "中區",
-    "西區",
-    "北區",
-    "南區",
-    "東區",
-    "西屯區",
-    "南屯區",
-    "北屯區",
-    "太平區",
-    "大里區",
-    "潭子區",
-    "豐原區",
-  ],
-  彰化縣: ["彰化市", "員林市", "和美鎮"],
-  南投縣: ["南投市", "草屯鎮", "埔里鎮"],
-  雲林縣: ["斗六市", "虎尾鎮", "西螺鎮"],
-  嘉義市: ["東區", "西區"],
-  嘉義縣: ["太保市", "朴子市", "民雄鄉"],
-  臺南市: [
-    "中西區",
-    "東區",
-    "南區",
-    "北區",
-    "安平區",
-    "安南區",
-    "永康區",
-    "歸仁區",
-    "新化區",
-    "仁德區",
-  ],
-  高雄市: [
-    "鹽埕區",
-    "鼓山區",
-    "左營區",
-    "楠梓區",
-    "三民區",
-    "新興區",
-    "前金區",
-    "苓雅區",
-    "前鎮區",
-    "小港區",
-    "鳳山區",
-    "林園區",
-    "大寮區",
-  ],
-  屏東縣: ["屏東市", "潮州鎮", "東港鎮"],
-  宜蘭縣: ["宜蘭市", "羅東鎮", "礁溪鄉"],
-  花蓮縣: ["花蓮市", "吉安鄉", "新城鄉"],
-  臺東縣: ["臺東市", "成功鎮", "關山鎮"],
-  澎湖縣: ["馬公市", "湖西鄉"],
-  金門縣: ["金城鎮", "金湖鎮", "金沙鎮"],
-  連江縣: ["南竿鄉", "北竿鄉", "莒光鄉"],
 };
 
-// 還原地址下拉式選單
 const restoreAddressSelect = () => {
   for (const city in taiwanAddress) {
     if (user.value.address?.startsWith(city)) {
@@ -249,9 +223,23 @@ const restoreAddressSelect = () => {
       break;
     }
   }
+
+  const rawPhone = user.value.phoneNumber;
+  const match = rawPhone?.match(/^(\+\d{2,4})(\d{6,})$/);
+  if (match) {
+    phoneCountryCode.value = match[1];
+    phoneNumber.value = match[2];
+  } else {
+    phoneCountryCode.value = "+886";
+    phoneNumber.value = rawPhone || "";
+  }
 };
 
-// 取得頭像
+const updateDistricts = () => {
+  availableDistricts.value = taiwanAddress[selectedCity.value] || [];
+  selectedDistrict.value = "";
+};
+
 const fetchImage = async () => {
   try {
     const res = await axios.get("/user/profile-picture", {
@@ -264,31 +252,27 @@ const fetchImage = async () => {
   }
 };
 
-// 上傳圖片
 const handleImageUpload = (e) => {
   const file = e.target.files[0];
-  if (file) imageFile.value = file;
+  if (file) {
+    imageFile.value = file;
+    imageUrl.value = URL.createObjectURL(file);
+  }
 };
 
-// 切換縣市時更新區域選項
-const updateDistricts = () => {
-  availableDistricts.value = taiwanAddress[selectedCity.value] || [];
-  selectedDistrict.value = "";
-};
-
-// 儲存修改
 const updateUser = async () => {
+  if (loading.value) return;
+  loading.value = true;
+
   try {
-    // 合併地址
+    user.value.phoneNumber = phoneCountryCode.value + phoneNumber.value;
+
     if (selectedCity.value && selectedDistrict.value) {
       user.value.address = `${selectedCity.value}${selectedDistrict.value}`;
     }
 
-    await axios.put("/user/edit", user.value, {
-      withCredentials: true,
-    });
+    await axios.put("/user/edit", user.value, { withCredentials: true });
 
-    // 上傳圖片
     if (imageFile.value) {
       const formData = new FormData();
       formData.append("file", imageFile.value);
@@ -300,13 +284,12 @@ const updateUser = async () => {
     }
 
     await fetchImage();
-
-    // ✅ 更新 Pinia Store 裡的使用者資料
     auth.user = { ...user.value };
-
     alert("資料更新成功");
   } catch {
     alert("更新失敗");
+  } finally {
+    loading.value = false;
   }
 };
 

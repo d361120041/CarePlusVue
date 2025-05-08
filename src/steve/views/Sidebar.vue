@@ -28,7 +28,7 @@
       class="px-4 py-2 rounded hover:bg-gray-200"
       active-class="bg-gray-200 font-semibold"
       ><br />
-      客服讯息
+      聯絡客服
     </router-link>
   </nav>
 </template>

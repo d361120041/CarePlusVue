@@ -40,7 +40,6 @@ import CaregiverPricing from "@/yuuhou/EditService.vue";
 // import CaregiverOrders from '@/yuuhou/Orders.vue'
 // import CaregiverReviews from '@/yuuhou/Reviews.vue'
 
-
 import LoginView from "@/yuuhou/LoginView.vue";
 import RegisterView from "@/yuuhou/RegisterView.vue";
 import UserForgotPwd from "@/yuuhou/UserForgotPwd.vue";
@@ -68,16 +67,15 @@ import AddPatient from "@/steve/views/AddPatient.vue";
 import FavoritesView from "@/steve/views/FavoritesView.vue";
 
 // ------------------ 後台cms ------------------
-//  後台管理頁面 
+//  後台管理頁面
 
-import AdminLayout from '@/CMS/AdminLayout.vue'
-import CmsDashboard from '@/CMS/CmsDashboard.vue'
+import AdminLayout from "@/CMS/AdminLayout.vue";
+import CmsDashboard from "@/CMS/CmsDashboard.vue";
 
-import CourseAdminCms from '@/CMS/yuni/views/CourseAdminCms.vue'
-import ChapterAdmin from '@/CMS/yuni/views/ChapterAdmin.vue'
-import ProgressAdmin from '@/CMS/yuni/views/ProgressAdmin.vue'
+import CourseAdminCms from "@/CMS/yuni/views/CourseAdminCms.vue";
+import ChapterAdmin from "@/CMS/yuni/views/ChapterAdmin.vue";
+import ProgressAdmin from "@/CMS/yuni/views/ProgressAdmin.vue";
 // ------------------ 後台cms ------------------
-
 
 // ================== 匯入套件 結束==================
 
@@ -97,9 +95,12 @@ const routes = [
   { path: "/courses/:id", component: CourseDetail, name: "CourseDetail" },
   { path: "/my-courses", component: MyCourse, name: "MyCourse" },
   { path: "/learn/:courseId", component: CourseLearn, name: "CourseLearn" },
-  { path: "/course-progress/:courseId", component: CourseProgress, name: "CourseProgress" },
+  {
+    path: "/course-progress/:courseId",
+    component: CourseProgress,
+    name: "CourseProgress",
+  },
   { path: "/done/:courseId", component: Done, name: "Done" },
-
 
   // ------------------ yuni ------------------
 
@@ -150,8 +151,14 @@ const routes = [
   { path: "/verify-failed", component: VerifyFailed },
   { path: "/caregiver/profile", component: CaregiverProfileView },
   { path: "/caregiver/pricing", component: CaregiverPricing },
-  { path: "/login-select", component: () => import("@/yuuhou/LoginSelect.vue") },
-  { path: "/login-caregiver", component: () => import("@/yuuhou/LoginCaregiver.vue") },
+  {
+    path: "/login-select",
+    component: () => import("@/yuuhou/LoginSelect.vue"),
+  },
+  {
+    path: "/login-caregiver",
+    component: () => import("@/yuuhou/LoginCaregiver.vue"),
+  },
   { path: "/login-admin", component: () => import("@/yuuhou/LoginAdmin.vue") },
 
   // { path: '/caregiver/schedule', component: CaregiverSchedule },
@@ -242,11 +249,15 @@ const routes = [
     path: "/user-center",
     component: UserCenter,
     children: [
-      { path: "", redirect: "/user-center/profile" }, // ✅ 改成絕對路徑
+      { path: "", redirect: "/user-center/profile" },
       { path: "profile", component: UserProfile },
       { path: "support", component: InquiryForm },
       { path: "patients", component: PatientsList },
       { path: "patients/add", component: AddPatient },
+      {
+        path: "patients/edit/:id",
+        component: () => import("@/steve/views/EditPatient.vue"),
+      },
       { path: "favorites", component: FavoritesView },
     ],
   },
@@ -259,12 +270,9 @@ const routes = [
       { path: "", component: CmsDashboard, name: "cmsDashboard" },
       { path: "cms/courses", component: CourseAdminCms, name: "cmsCourses" },
       { path: "cms/chapters", component: ChapterAdmin, name: "cmsChapters" },
-      { path: "cms/progress", component: ProgressAdmin, name: "cmsProgress" }
-    ]
-  }
-
-
-
+      { path: "cms/progress", component: ProgressAdmin, name: "cmsProgress" },
+    ],
+  },
 ];
 // ================== 設定路徑 結束==================
 
@@ -294,6 +302,14 @@ router.beforeEach(async (to, from, next) => {
   }
   // ✅ 使用者中心頁面但沒登入
   if (to.path.startsWith("/user-center") && !auth.isAuthenticated) {
+    alert("請先登入使用者帳號");
+    return next("/userlogin");
+  }
+
+  //討論區驗證
+  if (to.path === "/social" && !auth.isAuthenticated) {
+    // 記住使用者想前往的路徑
+    sessionStorage.setItem("redirectAfterLogin", to.fullPath);
     alert("請先登入使用者帳號");
     return next("/userlogin");
   }

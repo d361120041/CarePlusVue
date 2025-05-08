@@ -4,9 +4,7 @@
 
     <form @submit.prevent="submitInquiry" class="space-y-4">
       <div>
-        <label class="block font-medium mb-1"
-          >Email（系統自動帶入，無法修改）</label
-        >
+        <label class="block font-medium mb-1">Email </label>
         <input
           type="email"
           v-model="inquiry.email"

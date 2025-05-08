@@ -37,8 +37,13 @@ const login = async () => {
     await auth.checkAuth();
 
     // 導向首頁並強制刷新頁面
-    router.push("/").then(() => {
-      window.location.reload(); // 這行會觸發整個 App 重新載入，Navbar 才會正確顯示頭像
+    // 登入成功後自動跳轉到先前想去的頁面（若有）
+    const redirectPath = sessionStorage.getItem("redirectAfterLogin");
+    sessionStorage.removeItem("redirectAfterLogin");
+
+    const target = redirectPath || "/";
+    router.push(target).then(() => {
+      window.location.reload();
     });
   } catch (error) {
     if (error.response && error.response.data) {
