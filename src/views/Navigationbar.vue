@@ -130,16 +130,18 @@ const caregiverLogout = () => {
 </script>
 
 <style scoped>
-/* Logo 尺寸與間距 */
+/* ----- Logo 開始 ----- */
 .logo {
   display: block;
   margin-right: 1rem;
 }
 .logo img {
-  height: 40px;             /* 高度隨需求調整 */
+  height: 40px;
   display: block;
 }
+/* ----- Logo 結束 ----- */
 
+/* ----- User 開始 -----*/
 .user-info {
   display: flex;
   align-items: center;
@@ -151,12 +153,14 @@ const caregiverLogout = () => {
   border-radius: 50%;
   margin-right: 8px;
 }
+/* ----- User 結束 -----*/
 
+/* ----- Navbar 開始 ----- */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--color-tertiary);
+  background-color: var(--color-primary);
   padding: 0.5rem 1rem;
   position: relative;
 }
@@ -178,7 +182,9 @@ const caregiverLogout = () => {
   transition: background 0.2s ease, color 0.2s ease;
   text-decoration: none;
 }
+/* ----- Navbar 結束 ----- */
 
+/* ----- yuni 開始 -----
 /* 讓 dropdown 定位正確 */
 .dropdown {
   position: relative;
@@ -249,6 +255,7 @@ const caregiverLogout = () => {
   /* hover 時的淺灰底色 */
   color: #000;
 }
+/* ----- yuni 結束 -----
 
 /* 當前路由（包含子路由）被點擊時套用 */
 .active {
@@ -263,6 +270,7 @@ const caregiverLogout = () => {
   color: #000 !important;
 }
 
+/* ----- 登入 開始 ----- */
 /* 登入區域 */
 .login-button {
   display: flex;
@@ -287,7 +295,9 @@ const caregiverLogout = () => {
   color: white;
   margin-right: 0.5rem; /* 強制文字變黑，與底色對比 */
 }
+/* ----- 登入 結束 ----- */
 
+/* ===== RWD 開始 ===== */
 /* 手機垂直版 */
 @media (max-width: 600px) {
   .navbar {
@@ -305,6 +315,7 @@ const caregiverLogout = () => {
   }
 }
 
+/* ----- user ----- */
 .logout-button {
   margin-left: 0.5rem;
   background: transparent;
@@ -324,6 +335,7 @@ const caregiverLogout = () => {
   color: #fff;
   font-weight: bold;
 }
+
 .user-icon-wrapper {
   display: inline-block;
   width: 48px;
@@ -349,6 +361,7 @@ const caregiverLogout = () => {
   border: none;
 }
 
+/* ----- login ----- */
 .dropdown-login {
   position: relative;
   display: inline-block;
@@ -393,4 +406,5 @@ const caregiverLogout = () => {
 .dropdown-login:hover .dropdown-login-menu {
   display: block;
 }
+/* ===== RWD 結束 ===== */
 </style>

@@ -1,109 +1,117 @@
-/* ----- 全域色彩（Color Palette）開始 ----- */
 :root {
-  /* 基礎色彩 */
-  --color-primary: #3e9bdc; /* 主色—藍 */ /* Logo 主色 */
-  --color-secondary: #ffa07a; /* 次色—暖橙 */ /* 強調提醒 */
-  --color-tertiary: #4db6ac; /* 三色—藍綠 */ /* 輔助配色 */
-  --background-color: #fff8f0;  /* ✅ 米白背景 */
+  /* ===== 顏色區塊 開始 ===== */
+  /* ----- 基礎色彩 ----- */
+  --color-primary: #4DB6AC;           /* 主色：藍綠 */
+  --color-primary-text: #FFFFFF;      /* 主色文字顏色 */
 
-  /* UI 狀態色 */
-  --color-success: #4caf50; /* 成功 */
-  --color-warning: #ffc107; /* 警告 */
-  --color-error: #e53935; /* 錯誤 */
+  --color-secondary: #FF9999;         /* 次色：粉紅 */
+  --color-secondary-text: #FFFFFF;    /* 次色文字顏色 */
 
-  /* 中性色系 */
-  --color-bg: #fff8f0; /* 頁面背景 */
-  --color-surface: #ffffff; /* 容器/卡片背景 */
-  --color-on-surface: #333333; /* 文字主色 */
-  --color-on-bg: #212121; /* 文字強調 */
-  --color-border: #e0e0e0; /* 分隔線 */
+  --color-tertiary: #3E9BDC;          /* 輔助色：藍 */
+  --color-tertiary-text: #FFFFFF;     /* 輔助色文字顏色 */
 
-  /* 文本輔助色 */
-  --color-text-muted: #757575; /* 次要文字 */
-}
-/* ----- 全域色彩（Color Palette）結束 ----- */
+  /* ----- 背景色彩 ----- */
+  --color-bg-page: #FFF8F0;           /* 頁面背景：米白 */
+  --color-bg-surface: #FFFFFFE6;      /* 容器/卡片：微透明純白 */
+  --color-bg-card: #FFFFFF;           /* 卡片純白 */
+  
+  --color-hover-bg-light: #F5F5F5;    /* 背景懸停 */
 
-/* ----- 排版系統（Typography）開始 ----- */
-:root {
-  /* 字體家族 */
-  --font-family-base: Arial, sans-serif; /* 繁中+拉丁字 */
-  --font-family-heading: "Poppins", sans-serif; /* 標題專用 */
+  /* ----- 文字色彩 ----- */
+  --color-text-primary: #1F2937;      /* 主要文字，最高對比 */
+  --color-text-secondary: #4B5563;    /* 次要文字，中度對比 */
+  --color-text-tertiary: #333333;     /* 中性色／輔助文字 */
+  --color-text-muted: #757575;        /* 註解、輔助說明 */
+  
+  --color-hover-text: #2A9287;        /* 文字懸停 */
 
-  /* 字重 */
+  /* ----- 按鈕色 ----- */
+  --color-btn-primary-bg: #4DB6AC;    /* 主要按鈕 背景 */
+  --color-btn-primary-text: #FFFFFF;  /* 主要按鈕文字色 */
+  --color-btn-primary-bg-hover: #3A9D93;
+
+  --color-btn-secondary-bg: #FF9999;  /* 次要按鈕 背景 */
+  --color-btn-secondary-text: #FFFFFF;/* 次要按鈕文字色 */
+  --color-btn-secondary-bg-hover: #E68989;
+
+  --color-btn-disabled-bg: #E0E0E0;   /* 禁用按鈕 */
+  --color-btn-disabled-text: #757575; /* 禁用按鈕文字色 */
+  
+  /* ----- 標題色 ----- */
+  --color-title: #4DB6AC;             /* section 標題色 */
+
+  /* ----- 邊框與分隔 ----- */
+  --color-border: #E0E0E0;            /* 邊框、分隔線 */
+
+  /* ----- 進度／步驟 ----- */
+  --color-step-circle-bg: #FF9999;    /* 步驟圓背景 */
+
+  /* ----- 狀態色 ----- */
+  --color-success: #4CAF50;           /* 成功提示 */
+  --color-warning: #FFC107;           /* 警告提示 */
+  --color-error: #E53935;             /* 錯誤提示 */
+  /* ===== 顏色區塊 結束 ===== */
+  
+
+  /* ===== 排版系統 開始 =====*/
+  /* ----- 字體 ----- */
+  --font-family-base: Arial, sans-serif;
+  --font-family-heading: "Poppins", sans-serif;
+
+  /* ----- 字體粗細 ----- */
   --font-weight-light: 300;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 700;
 
-  /* 字級尺度 */
-  --font-size-xs: 0.75rem; /* 12px */
-  --font-size-sm: 0.875rem; /* 14px */
-  --font-size-md: 1rem; /* 16px 主文字 */
-  --font-size-lg: 1.125rem; /* 18px 副標 */
-  --font-size-xl: 1.5rem; /* 24px 小標 */
-  --font-size-xxl: 2rem; /* 32px 大標 */
+  /* ----- 字體大小 ----- */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 2rem;
 
-  /* 行高 */
+  /* ----- 行高 ----- */
   --line-height-tight: 1.2;
-  --line-height-normal: 1.5;
+  --line-height-normal: 1.6;
   --line-height-relaxed: 1.75;
-}
-/* ----- 排版系統（Typography）結束 ----- */
 
-/* ----- 間距與尺寸（Spacing & Sizing）開始  ----- */
-:root {
-  /* 間距尺度—基於 4px 基準 */
-  --space-xxs: 0.25rem; /* 4px  */
-  --space-xs: 0.5rem; /* 8px  */
-  --space-sm: 0.75rem; /* 12px */
-  --space-md: 1rem; /* 16px */
-  --space-lg: 1.5rem; /* 24px */
-  --space-xl: 2rem; /* 32px */
-  --space-xxl: 3rem; /* 48px */
+  /* ----- 間距 ----- */
+  --space-xxs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-xxl: 3rem;
+  /* ===== 排版系統 結束 =====*/
+  
 
-  /* 尺寸基礎 */
-  --size-icon-sm: 1rem; /* 16px */
-  --size-icon-md: 1.5rem; /* 24px */
-  --size-icon-lg: 2rem; /* 32px */
-}
-/* ----- 間距與尺寸（Spacing & Sizing）結束  ----- */
-
-/* ----- 圓角與陰影（Radius & Elevation）開始 ----- */
-:root {
-  /* 邊角圓度 */
+  /* ===== 其他效果 開始 =====*/
+  /* ----- 圓角效果 ----- */
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 8px;
-  --radius-pill: 9999px; /* 膠囊狀 */
+  --radius-pill: 9999px;
 
-  /* 陰影層級 */
+  /* ----- 陰影效果 ----- */
   --shadow-none: none;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.2);
-}
-/* ----- 圓角與陰影（Radius & Elevation）結束 ----- */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.15);
+  --shadow-xl: 0 20px 25px rgba(0,0,0,0.2);
 
-/* ----- 斷點系統（Breakpoints）開始 ----- */
-:root {
-  --breakpoint-xs: 320px; /* 極小手機 */
-  --breakpoint-sm: 576px; /* 手機 */
-  --breakpoint-md: 768px; /* 平板 */
-  --breakpoint-lg: 992px; /* 桌面 */
-  --breakpoint-xl: 1200px; /* 大螢幕 */
-}
-
-/* 使用範例 */
-/* @media (min-width: var(--breakpoint-sm)) { ... } */
-/* @media (min-width: var(--breakpoint-md)) { ... } */
-
-/* ----- 斷點系統（Breakpoints）結束 ----- */
-
-/* ----- 動態過渡（Transitions & Animations）開始 ----- */
-:root {
+  /* ----- 動態過渡效果 ----- */
   --transition-fast: 150ms ease-in-out;
   --transition-medium: 300ms ease;
   --transition-slow: 500ms ease-out;
+
+  /* ----- Media Query(響應式網頁) ----- */
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  /* ===== 其他效果 結束 =====*/
 }
-/* ----- 動態過渡（Transitions & Animations）結束 ----- */

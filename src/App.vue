@@ -1,12 +1,10 @@
 <template>
   <!-- 頁首 開始 -->
   <!-- <header v-if="!isAdminRoute" class="header">
-    <div class="container d-flex justify-content-between align-items-center">
       <h1>Care+ 照護平台</h1>
-    </div>
   </header> -->
   <!-- 頁首 結束 -->
-  
+
   <!-- 導覽列 開始-->
   <nav v-if="!isAdminRoute">
     <Navigationbar />
@@ -43,48 +41,22 @@ const route = useRoute();
 const isAdminRoute = computed(() => route.path.startsWith("/admin"));
 </script>
 
-<style>
-.header {
+<style scoped>
+/* .header {
   background-color: var(--primary-color);
   color: white;
   padding: 1rem 0;
-}
-
-.nav-link {
-  color: white;
-  text-decoration: none;
-  margin-left: 1rem;
-}
-
-.footer {
-  background-color: var(--color-tertiary);
-  color: white;
-  padding: 1rem 0;
-}
-
-/* .main {
-  padding: 2rem 0;
-} */
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  background-color: #fff8f0;
-}
-
-#app {
-  position: relative;
-  background-color: transparent;
-  /* ✅ 不蓋掉背景圖片 */
-}
+  } */
 
 nav {
   position: sticky;
-  /* 混合 relative + fixed 行為 */
   top: 0;
-  /* 距離視窗頂端 0px 時開始黏住 */
   z-index: 1000;
-  /* 確保它在其他內容之上 */
 }
+
+/* .footer {
+  background-color: var(--color-tertiary);
+  color: white;
+  padding: 1rem 0;
+} */
 </style>
