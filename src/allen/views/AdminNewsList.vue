@@ -30,6 +30,19 @@
           <option value="month">這個月</option>
           <option value="year">今年</option>
         </select>
+
+        <!-- 新增篩選條件：發布/下架 -->
+        <select v-model="search.status" class="border border-gray-300 p-2 rounded-md w-full">
+          <option value="">-- 狀態篩選 --</option>
+          <option value="1">發布</option>
+          <option value="0">下架</option>
+        </select>
+
+        <!-- 搜尋按鈕 -->
+        <button @click="handleSearch" :disabled="loading" class="search-btn w-full">
+          🔍 搜尋
+        </button>
+
       </div>
 
     </div>
@@ -116,7 +129,7 @@ const defaultThumbnail = noImage;
 const hasSearched = ref(false);
 const searchSnapshot = ref({});
 
-const search = ref({ keyword: '', categoryId: '', dateRange: '' });
+const search = ref({ keyword: '', categoryId: '', dateRange: '', status: '' });
 
 const formatDate = (dateStr) => {
   if (!dateStr) return '';
@@ -195,12 +208,16 @@ const summaryText = computed(() => {
   if (snap.dateRange && map[snap.dateRange]) {
     parts.push(`時間為「${map[snap.dateRange]}」`);
   }
-
+  // ✅ 新增狀態篩選條件描述
+  if (snap.status !== '') {
+    const statusText = snap.status === "1" ? "發布" : "下架";
+    parts.push(`狀態為「${statusText}」`);
+  }
   return parts.length ? parts.join('、') : '';
 });
 
 const clearSearch = () => {
-  search.value = { keyword: '', categoryId: '', dateRange: '' };
+  search.value = { keyword: '', categoryId: '', dateRange: '' , status: ''};
   searchSnapshot.value = {}; // ✅ 清除摘要內容來源
   hasSearched.value = false;
   page.value = 0;
@@ -219,6 +236,7 @@ const loadNews = async () => {
   if (search.value.categoryId) params.categoryId = search.value.categoryId;
   if (dateFrom) params.dateFrom = dateFrom;
   if (dateTo) params.dateTo = dateTo;
+  if (search.value.status) params.status = search.value.status;
 
   try {
     const res = await myAxios.post(`/news/admin/search?page=${page.value}&size=${size.value}`, params);

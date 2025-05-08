@@ -31,6 +31,7 @@
           :src="getFullImageUrl(news.thumbnail)"
           alt="新聞縮圖"
           class="thumbnail object-cover w-full h-56 rounded-lg"
+          @error="handleImgError"
         />
       </div>
 
@@ -80,16 +81,17 @@
   import { useRoute, useRouter } from 'vue-router';
   import Swal from 'sweetalert2';
   import myAxios from '@/plugins/axios';
-  
+
   const route = useRoute();
   const router = useRouter();
   const news = ref(null);
   const loading = ref(false);
   const errorMessage = ref('');
   
-  const getFullImageUrl = (path) => {
-  return path ? `http://localhost:8082${path}` : require('@/assets/allen/no-image.jpg');
-};
+  import { getFullImageUrl } from '@/allen/utils/urlHelper';
+  const handleImgError = (event) => {
+    event.target.src = '/src/assets/allen/no-image.jpg';
+  };
 
   const loadNews = async () => {
     loading.value = true;
