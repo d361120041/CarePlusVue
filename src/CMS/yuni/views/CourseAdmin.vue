@@ -118,7 +118,10 @@
             </tr>
 
             <!-- 新增按鈕列 -->
-            <tr v-else class="row-add" @click="startCreate">
+            <!-- <tr v-else class="row-add" @click="startCreate">
+              <td colspan="7">➕ 新增課程</td>
+            </tr> -->
+            <tr v-if="!isCreating && !searchKeyword" class="row-add" @click="startCreate">
               <td colspan="7">➕ 新增課程</td>
             </tr>
           </tbody>
