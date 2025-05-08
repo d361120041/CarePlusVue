@@ -5,29 +5,18 @@
 
     <!-- 搜尋欄 -->
     <div class="mb-4">
-      <input
-        type="text"
-        v-model="searchKeyword"
-        @change="searchCourses"
-        placeholder="輸入關鍵字搜尋課程"
-        class="form-control mb-3 mx-auto search-input"
-      />
+      <input type="text" v-model="searchKeyword" @change="searchCourses" placeholder="輸入關鍵字搜尋課程"
+        class="form-control mb-3 mx-auto search-input" />
 
       <div class="d-flex justify-content-center align-items-center">
         <!-- 進階搜尋：分類按鈕 -->
         <div class="btn-group flex-wrap" role="group">
-          <button
-            v-for="category in categories"
-            :key="category"
-            @click="filterByCategory(category)"
-            :class="[
-              'btn',
-              selectedCategory === category
-                ? 'btn-primary'
-                : 'btn-outline-primary',
-            ]"
-            class="m-1"
-          >
+          <button v-for="category in categories" :key="category" @click="filterByCategory(category)" :class="[
+            'btn',
+            selectedCategory === category
+              ? 'btn-primary'
+              : 'btn-outline-primary',
+          ]" class="m-1">
             {{ getCategoryLabel(category) }}
           </button>
 
@@ -39,41 +28,24 @@
       </div>
     </div>
     <!-- 課程卡片清單 -->
-    <div
-      v-if="courses.length > 0"
-      :class="[
-        'd-flex flex-column gap-3 w-100',
-        courses.length > 1
-          ? 'justify-content-center align-items-center min-vh-100'
-          : 'align-items-center',
-      ]"
-    >
-      <router-link
-        v-for="course in paginatedCourses"
-        :key="course.courseId"
-        :to="`/courses/${course.courseId}`"
-        class="text-decoration-none w-100"
-      >
+    <div v-if="courses.length > 0" :class="[
+      'd-flex flex-column gap-3 w-100',
+      'align-items-center'
+    ]">
+      <router-link v-for="course in paginatedCourses" :key="course.courseId" :to="`/courses/${course.courseId}`"
+        class="text-decoration-none w-100">
         <div class="card course-card mx-auto">
           <div class="d-flex h-100">
             <!-- 課程圖片 -->
             <div class="p-3">
-              <img
-                :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`"
-                class="course-img rounded"
-                alt="課程封面"
-              />
+              <img :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`" class="course-img rounded" alt="課程封面" />
             </div>
 
             <!-- 課程內容 -->
-            <div
-              class="card-body d-flex flex-column justify-content-center text-dark"
-            >
+            <div class="card-body d-flex flex-column justify-content-center text-dark">
               <h5 class="card-title">{{ course.title }}</h5>
               <p class="card-text">
-                <small class="text-muted"
-                  >#{{ getCategoryLabel(course.category) }}</small
-                >
+                <small class="text-muted">#{{ getCategoryLabel(course.category) }}</small>
               </p>
               <p class="card-text">{{ course.description }}</p>
               <p class="card-text">
@@ -93,30 +65,17 @@
     <nav aria-label="Page navigation example">
       <ul class="pagination">
         <li class="page-item" :class="{ disabled: currentPage === 1 }">
-          <a
-            class="page-link"
-            href="#"
-            @click.prevent="goToPage(currentPage - 1)"
-          >
+          <a class="page-link" href="#" @click.prevent="goToPage(currentPage - 1)">
             &laquo;
           </a>
         </li>
-        <li
-          class="page-item"
-          v-for="page in totalPages"
-          :key="page"
-          :class="{ active: currentPage === page }"
-        >
+        <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: currentPage === page }">
           <a class="page-link" href="#" @click.prevent="goToPage(page)">
             {{ page }}
           </a>
         </li>
         <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-          <a
-            class="page-link"
-            href="#"
-            @click.prevent="goToPage(currentPage + 1)"
-          >
+          <a class="page-link" href="#" @click.prevent="goToPage(currentPage + 1)">
             &raquo;
           </a>
         </li>
