@@ -132,7 +132,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axios from '@/plugins/axios.js'
 import {
   getAllCourses,
@@ -322,6 +322,23 @@ const create = async () => {
     console.error('新增課程失敗', error)
   }
 }
+
+watch(searchKeyword, async (val, oldVal) => {
+  const trimmed = val.trim()
+
+  // 1. 字被清空 → 抓全部課程
+  if (trimmed.length === 0 && oldVal.trim().length !== 0) {
+    await fetchCourses()
+    isCreating.value = false          // 如需保留可留
+    editingId.value = null
+    return
+  }
+
+  // 2. 不是空字串但有輸入 → 及時查詢（想要按 Enter 再查就拿掉這行）
+  if (trimmed.length > 0) {
+    await search()                    // call 你原本的 search()
+  }
+})
 
 onMounted(async () => {
   await fetchCourses()
