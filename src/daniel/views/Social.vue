@@ -1,4 +1,7 @@
 <template>
+    <GlobalBanner :imgSrc="homeBannerImg">
+        <h1>討論區</h1>
+    </GlobalBanner>
     <div class="social-layout">
         <!-- 左側貼文篩選欄 -->
         <aside class="filter-sidebar">
@@ -22,6 +25,8 @@
 <script setup>
 import { useCategoryStore } from '@/daniel/stores/categories.js'
 import PostMain from '@/daniel/components/post/PostMain.vue'
+import GlobalBanner from '@/components/GlobalBanner.vue'
+import homeBannerImg from '@/assets/images/GlobalBanner/people-holding-rubber-heart.jpg'
 
 const categoryStore = useCategoryStore()
 </script>
