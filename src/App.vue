@@ -57,7 +57,7 @@ const isAdminRoute = computed(() => route.path.startsWith("/admin"));
 }
 
 .footer {
-  background-color: var(--primary-color);
+  background-color: var(--color-tertiary);
   color: white;
   padding: 1rem 0;
 }

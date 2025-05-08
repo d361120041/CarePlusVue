@@ -1,5 +1,5 @@
 // ================ style 開始 ================
-import "@/assets/css/main.css";
+import "@/assets/main.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 //allen 新增
 import "@fortawesome/fontawesome-free/css/all.min.css";

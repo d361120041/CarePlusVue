@@ -156,7 +156,7 @@ const caregiverLogout = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--primary-color);
+  background-color: var(--color-tertiary);
   padding: 0.5rem 1rem;
   position: relative;
 }
