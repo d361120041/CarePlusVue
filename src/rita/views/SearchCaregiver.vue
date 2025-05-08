@@ -160,11 +160,13 @@
         <div class="checkbox-group flex flex-wrap gap-2 mt-2">
           <label v-for="day in days" :key="day" class="flex items-center text-sm text-gray-700">
             <input
-              type="checkbox"
+             type="checkbox"
               :value="day"
-              v-model="form.multi.repeatDays"
+               :true-value="true"
+               :false-value="false"
+                v-model="form.multi.repeatDays[dayMap[day]]"
               class="mr-2"
-            />
+/>
             {{ day }}
           </label>
         </div>
@@ -269,14 +271,22 @@ import { ref, onMounted, computed } from 'vue'
 import myAxios from '@/plugins/axios'
 import { useRouter } from 'vue-router'
 import { useCaregiverStore } from '@/stores/caregiverStore'
+import { useAppointmentStore } from '@/stores/AppointmentStore'
+
 
 const router = useRouter()
 const store = useCaregiverStore()
+const appointmentStore = useAppointmentStore()
 
+//搜尋看護
 const searchCaregivers = async () => {
-  const { city, district, continuous, multi } = form.value
+  const { city, district, continuous, multi, timeType } = form.value
 
-  // 確保連續或多時段至少填寫一個
+  appointmentStore.setTime('continuous', continuous);
+  appointmentStore.setTime('multi', { multi });
+  appointmentStore.appointment.timeType = timeType;
+
+// 確保連續或多時段至少填寫一個
   const continuousFilled = continuous.startDate && continuous.startTime && continuous.endDate && continuous.endTime;
   const multiFilled = multi.startDate && multi.endDate && multi.startTime && multi.endTime;;
 
@@ -285,48 +295,65 @@ const searchCaregivers = async () => {
     return;
   }
 
-  const convertTo24Hour = (timeStr) => {
-  const [time, period] = timeStr.split(" ");
-  let [hour, minute] = time.split(":").map(Number);
-
-  if (period === "PM" && hour < 12) hour += 12;
-  if (period === "AM" && hour === 12) hour = 0;
-
-  return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-};
-
-
-// ✅ 不用 toISOString，直接組出 yyyy-MM-ddTHH:mm 格式（LocalDateTime）
-const toLocalDateTimeString = (dateStr, timeStr) => {
-  if (!dateStr || !timeStr) {
-    console.error("日期或時間格式錯誤", dateStr, timeStr);
-    return "";
-  }
-  // 處理 AM/PM
-  timeStr = convertTo24Hour(timeStr);
-  return `${dateStr}T${timeStr}`;
-};
+  // 新增多時段時間區間
+const addTimeSlot = () => {
+  form.value.multi.timeSlots.push({ startTime: '', endTime: '' })
+}
 
 // 轉換時間格式
-const start = toLocalDateTimeString(continuous.startDate, continuous.startTime);
-const end = toLocalDateTimeString(continuous.endDate, continuous.endTime);
+const toLocalDateTimeString = (dateStr, timeStr) => {
+  if (!dateStr || !timeStr) return ''
+  return `${dateStr}T${timeStr}`
+}
 
-// 處理多時段時間
-  let multiStart = null;
-  let multiEnd = null;
-  if (multi.startDate && multi.endDate && multi.timeSlots.length > 0) {
-    multiStart = toLocalDateTimeString(multi.startDate, multi.timeSlots[0].startTime);
-    multiEnd = toLocalDateTimeString(multi.endDate, multi.timeSlots[multi.timeSlots.length - 1].endTime);
+// 確認表單是否完整
+const isFormComplete = computed(() => {
+  const { continuous, multi } = form.value
+  const continuousFilled = continuous.startDate && continuous.startTime && continuous.endDate && continuous.endTime
+  const multiFilled = multi.startDate && multi.endDate && multi.timeSlots.length > 0
+  return (continuousFilled || multiFilled) && form.value.city && form.value.district
+})
+
+// 計算金額
+const calculateEstimateAmount = async () => {
+  try {
+    let amount = 0;
+    if (form.value.timeType === 'continuous') {
+      const continuous = form.value.continuous;
+      const res = await myAxios.get('/api/appointment/estimate/continuous', {
+        params: {
+          caregiverId: appointmentStore.appointment.caregiverId,
+          startTime: toLocalDateTimeString(continuous.startDate, continuous.startTime),
+          endTime: toLocalDateTimeString(continuous.endDate, continuous.endTime)
+        }
+      });
+      amount = res.data;
+    } else if (form.value.timeType === 'multi') {
+      const multi = form.value.multi;
+      const res = await myAxios.get('/api/appointment/estimate/multi', {
+        params: {
+          caregiverId: appointmentStore.appointment.caregiverId,
+          startDate: multi.startDate,
+          endDate: multi.endDate,
+          timeSlots: multi.timeSlots
+        }
+      });
+      amount = res.data;
+    }
+
+    appointmentStore.setTotalPrice(amount);
+    console.log('預估金額:', amount);
+  } catch (error) {
+    console.error('金額計算失敗:', error);
+    alert('無法計算金額，請稍後再試');
   }
-
-console.log("Start Time:", start);
-console.log("End Time:", end);
-
+}
+//組合篩選條件
   const filters = {
   serviceCity: city,
   serviceDistrict: form.value.district === '全部區域' || !form.value.district ? null : form.value.district,
-  desiredStartTime: start || multiStart,
-  desiredEndTime: end || multiEnd,
+  desiredStartTime: timeType === 'continuous' ? toLocalDateTimeString(continuous.startDate, continuous.startTime) : toLocalDateTimeString(multi.startDate, multi.timeSlots[0].startTime),
+  desiredEndTime: timeType === 'continuous' ? toLocalDateTimeString(continuous.endDate, continuous.endTime) : toLocalDateTimeString(multi.endDate, multi.timeSlots[multi.timeSlots.length - 1].endTime),
   gender: form.value.gender || null,
   nationality: form.value.nationality || null,
   languages: form.value.languages || null,
@@ -345,43 +372,48 @@ console.log("過濾條件:", filters);
 
   try {
     const res = await myAxios.get('/api/appointment/caregiver/available', { params: filters })
-
-    console.log("API 回應資料:", res.data); 
     
     store.setFilters(filters)
     store.setCaregivers(res.data)
-    router.push('/caregivers/list')
+
+    // 在導航到列表頁面前，儲存 appointmentStore 的時間相關狀態到 localStorage
+    localStorage.setItem('timeType', appointmentStore.appointment.timeType);
+    localStorage.setItem('continuousStartDate', appointmentStore.continuous.startDate);
+    localStorage.setItem('continuousStartTime', appointmentStore.continuous.startTime);
+    localStorage.setItem('continuousEndDate', appointmentStore.continuous.endDate);
+    localStorage.setItem('continuousEndTime', appointmentStore.continuous.endTime);
+    localStorage.setItem('multiStartDate', appointmentStore.multi.multi.startDate);
+    localStorage.setItem('multiEndDate', appointmentStore.multi.multi.endDate);
+    localStorage.setItem('multiTimeSlots', JSON.stringify(appointmentStore.multi.multi.timeSlots));
+
+    router.push('/caregivers/list');
+
   } catch (err) {
     console.error('搜尋失敗', err)
     alert('搜尋失敗，請稍後再試')
   }
 }
 
-// 表單是否完整
+// 確認表單是否完整
 const isFormComplete = computed(() => {
-  const continuousFilled = form.value.continuous.startDate && form.value.continuous.startTime && form.value.continuous.endDate && form.value.continuous.endTime;
-  const multiFilled = form.value.multi.startDate && form.value.multi.endDate;
-  
-  return (continuousFilled || multiFilled) && form.value.city && form.value.district;
-});
+  const { continuous, multi } = form.value
+  const continuousFilled = continuous.startDate && continuous.startTime && continuous.endDate && continuous.endTime
+  const multiFilled = multi.startDate && multi.endDate && multi.timeSlots.length > 0
+  return (continuousFilled || multiFilled) && form.value.city && form.value.district
+})
 
 
-//自動滑到填寫區域
+// 自動滑到填寫區域
 const scrollToRequestForm = () => {
-  const requestForm = document.querySelector('.request-form.card-section');
-  if (requestForm) {
-    requestForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    const firstInput = requestForm.querySelector('input, select, textarea');
-    if (firstInput) {
-      firstInput.focus();
-    }
-  }
-};
+  const requestForm = document.querySelector('.request-form.card-section')
+  if (requestForm) requestForm.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 
 const goToRequestTime = () => {
   router.push('/request/time');
 };
 
+//表單數據
 const form = ref({
   city: '',
   district: '',
@@ -395,15 +427,33 @@ const form = ref({
   multi: {
     startDate: '',
     endDate: '',
-    repeatDays: [],
+    repeatDays: { // 修改為物件
+      monday: false,
+      tuesday: false,
+      wednesday: false,
+      thursday: false,
+      friday: false,
+      saturday: false,
+      sunday: false
+    },
     timeSlots: [{ startTime: '', endTime: '' }]
   }
 })
 
 const days = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
+const dayMap = {
+  '星期一': 'monday',
+  '星期二': 'tuesday',
+  '星期三': 'wednesday',
+  '星期四': 'thursday',
+  '星期五': 'friday',
+  '星期六': 'saturday',
+  '星期日': 'sunday'
+};
 const cities = ref([])
 const districts = ref([])
 
+// 初始化城市和區域資料
 onMounted(async () => {
   try {
     const res = await fetch('/data/TwCities.json')
@@ -414,6 +464,7 @@ onMounted(async () => {
   form.value.timeType = 'continuous' // Ensure continuous is default
 })
 
+// 城市選擇變更
 const onCityChange = () => {
   const city = cities.value.find(c => c.name === form.value.city)
   if (city) {
@@ -424,10 +475,12 @@ const onCityChange = () => {
   form.value.district = ''
 }
 
+// 顯示時間選項
 const showTimeOptions = (type) => {
   form.value.timeType = type
 }
 
+// 新增多時段時間區間
 const addTimeSlot = () => {
   form.value.multi.timeSlots.push({ startTime: '', endTime: '' })
 }
@@ -495,10 +548,10 @@ h2, h3 {
 /* 背景圖片 */
 .background-image {
   position: absolute;
-  top: 75px;
+  top: 50px;
   left: 0;
   width: 100%;
-  height: 550px; /* 覆蓋預約流程和填寫需求區塊的高度 */
+  height: 570px; /* 覆蓋預約流程和填寫需求區塊的高度 */
   background-image: url('/images/young-asian-woman-taking-care.jpg');
   background-size: cover;
   background-position: center 52%;

@@ -24,12 +24,47 @@
       <div class="main-section">
         <div class="card-section">
           <h3>被照顧者資訊</h3>
-          <!-- 左邊內容暫時留空 -->
           <div class="form-item">
-            <p>（此處為被照顧者資訊表單，待填寫）</p>
+            <label>選擇病患</label>
+            <select v-model="form.patientId" required>
+              <option value="" disabled>請選擇病患</option>
+              <option v-for="patient in patients" :key="patient.patientId" :value="patient.patientId">
+                {{ patient.name }}
+              </option>
+            </select>
           </div>
-          <button class="submit-btn" @click="submitForm">
-            確認並繼續
+          <div class="form-item">
+            <label>疾病 (可複選)</label>
+            <div class="checkbox-group">
+              <label v-for="disease in diseases" :key="disease">
+                <input type="checkbox" :value="disease" v-model="form.diseases" />
+                {{ disease }}
+              </label>
+            </div>
+            <input type="text" v-model="form.diseaseOther" placeholder="其他疾病補充" />
+          </div>
+          <div class="form-item">
+            <label>身體狀況 (可複選)</label>
+            <div class="checkbox-group">
+              <label v-for="condition in physicalConditions" :key="condition">
+                <input type="checkbox" :value="condition" v-model="form.physicalConditions" />
+                {{ condition }}
+              </label>
+            </div>
+            <input type="text" v-model="form.physicalOther" placeholder="其他身體狀況補充" />
+          </div>
+          <div class="form-item">
+            <label>服務項目 (可複選)</label>
+            <div class="checkbox-group">
+              <label v-for="service in services" :key="service">
+                <input type="checkbox" :value="service" v-model="form.services" />
+                {{ service }}
+              </label>
+            </div>
+            <input type="text" v-model="form.serviceOther" placeholder="其他服務補充" />
+          </div>
+          <button class="submit-btn" @click="submitForm" :disabled="!form.patientId">
+            確認預約單
           </button>
         </div>
       </div>
@@ -50,6 +85,15 @@
               <p><strong>每日開始時間：</strong>{{ formatTime(appointmentStore.multi.dailyStartTime) }}</p>
               <p><strong>每日結束時間：</strong>{{ formatTime(appointmentStore.multi.dailyEndTime) }}</p>
             </div>
+            <div>
+              <p><strong>選擇的病患：</strong>{{ appointmentStore.appointment.patientInfo.name || '未選擇'  }}</p>
+              <p><strong>性別：</strong>{{ appointmentStore.appointment.patientInfo.gender || '未提供' }}</p>
+            </div>
+            <div>
+              <p><strong>疾病：</strong>{{ form.diseases.join('、') }} {{ form.diseaseOther }}</p>
+              <p><strong>身體狀況：</strong>{{ form.physicalConditions.join('、') }} {{ form.physicalOther }}</p>
+              <p><strong>服務項目：</strong>{{ form.services.join('、') }} {{ form.serviceOther }}</p>
+            </div>
           </div>
           <div v-else>
             <p style="color: gray;">尚未填寫時間資訊，請返回上一步完成填寫。</p>
@@ -61,11 +105,44 @@
 </template>
 
 <script setup>
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppointmentStore } from '@/stores/AppointmentStore';
+import { usePatientStore } from '@/stores/PatientStore';
+
 
 const appointmentStore = useAppointmentStore();
+const patientStore = usePatientStore();
 const router = useRouter();
+
+const form = ref({
+  patientId: '',
+  diseases: [],
+  diseaseOther: '',
+  physicalConditions: [],
+  physicalOther: '',
+  services: [],
+  serviceOther: ''
+});
+
+const diseases = ['中風', '肺炎', '骨折', '帕金森氏症', '手術照顧', '高血壓', '糖尿病', '洗腎', '癌症', '精神疾病', '失智症', '其他'];
+const physicalConditions = ['長期臥床', '使用輔具', '褥瘡', '管路', '腸造口/胃造口', '自殘傾向', '攻擊傾向', '情緒低落', '其他'];
+const services = ['協助進食', '陪同外出', '代購物品', '環境整理', '翻身拍背', '身體清潔', '大小便處理', '協助移位', '其他'];
+
+const patients = computed(() => patientStore.myPatients);
+
+onMounted(async () => {
+  try {
+    await patientStore.fetchMyPatients();
+    if (patientStore.myPatients.length > 0) {
+      console.log('回來的病患資料：', patientStore.myPatients);
+    }
+  } catch (error) {
+    console.error('載入病患資料錯誤：', error);
+  }
+});
+
+
 
 // 格式化日期和時間
 const formatDateTime = (dateTime) => {
@@ -101,8 +178,26 @@ const formatTime = (time) => {
 
 // 提交表單並跳轉到下一頁
 const submitForm = () => {
+  if (!form.value.patientId) return;
+
+  // 設定病患資訊
+  const selectedPatient = patients.value.find(p => p.patientId === Number(form.value.patientId));
+  if (selectedPatient) {
+    console.log('設定病患資訊：', selectedPatient);
+    appointmentStore.setPatientInfo({
+      ...selectedPatient,
+      diseases: form.value.diseases,
+      diseaseOther: form.value.diseaseOther,
+      physicalConditions: form.value.physicalConditions,
+      physicalOther: form.value.physicalOther,
+      services: form.value.services,
+      serviceOther: form.value.serviceOther
+    });
+  }
+
   router.push('/request/location'); // 跳轉到服務地點頁面
 };
+
 </script>
 
 <style scoped>

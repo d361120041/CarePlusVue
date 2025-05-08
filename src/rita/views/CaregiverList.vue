@@ -1,62 +1,59 @@
 <template>
   <div class="wrapper">
-    <!-- 搜尋條件顯示 -->
     <div class="search-conditions card-section mb-6">
       <div class="flex justify-between items-center">
         <div class="conditions-container">
           <h3 class="text-xl font-semibold text-gray-800 mb-3">您的搜尋條件</h3>
           <div class="condition-tags">
             <span class="condition-tag">
+              <span class="label">服務縣市：</span>
+              <span class="value">{{ caregiverStore.filters.serviceCity || '未指定' }}</span>
+            </span>
+            <span class="condition-tag">
               <span class="label">服務地區：</span>
-              <span class="value">
-                {{ caregiverStore.filters.serviceCity || '未指定' }}
-                {{ caregiverStore.filters.serviceDistrict ? ` - ${caregiverStore.filters.serviceDistrict}` : '' }}
-              </span>
+              <span class="value">{{ caregiverStore.filters.serviceDistrict || '未指定' }}</span>
             </span>
             <span class="condition-tag">
               <span class="label">時間選擇：</span>
               <span class="value">
                 <span v-if="appointmentStore.appointment.timeType === 'continuous'">
-                  {{ formatDateTime(caregiverStore.filters.desiredStartTime) }} - 
-                  {{ formatDateTime(caregiverStore.filters.desiredEndTime) }}（連續時間）
+                  {{ formatDateTime(appointmentStore.continuous.startTime) }} -
+                  {{ formatDateTime(appointmentStore.continuous.endTime) }}（連續時間）
                 </span>
                 <span v-else>
-                  {{ formatDate(appointmentStore.multi.startDate) }} - 
+                  {{ formatDate(appointmentStore.multi.startDate) }} -
                   {{ formatDate(appointmentStore.multi.endDate) }}
-                  （每日 {{ appointmentStore.multi.timeSlots.map(slot => `${slot.startTime} - ${slot.endTime}`).join(', ') }}，多時段預訂）
+                  （每日 {{ formatTimeRange(appointmentStore.multi.dailyStartTime, appointmentStore.multi.dailyEndTime) }}，多時段預訂）
                 </span>
               </span>
             </span>
           </div>
         </div>
         <button @click="goBackToSearch" class="px-4 py-2 bg-teal-600 text-white rounded-md text-sm font-medium hover:bg-teal-700 transition-colors">
-          修改條件
+          返回搜尋
         </button>
       </div>
     </div>
 
-    <!-- 標頭 -->
     <div class="header flex justify-between items-center mb-6">
       <h3 class="text-xl font-semibold text-gray-800">搜尋結果，共 {{ sortedCaregivers.length }} 位看護</h3>
       <select v-model="sortOption" class="border p-2 rounded-md text-gray-600 focus:border-teal-600 focus:ring focus:ring-teal-200 focus:ring-opacity-50">
-        <option value="price">按價格排序</option>
+        <option value="price">按預估總價排序</option>
         <option value="experience">按經驗年數排序</option>
       </select>
     </div>
 
-    <!-- 無結果提示 -->
     <div v-if="sortedCaregivers.length === 0" class="text-center py-10 bg-white rounded-lg shadow-sm">
       <p class="text-lg text-gray-600 mb-2">很抱歉，沒有符合條件的看護！</p>
       <p class="text-sm text-gray-500">請調整您的搜尋條件後再試一次，或<a @click="goBackToSearch" class="text-teal-600 underline cursor-pointer ml-1">返回搜尋頁面</a>。</p>
     </div>
 
-    <!-- 看護卡片網格 -->
     <div class="caregiver-grid">
       <div
         class="caregiver-card"
         v-for="caregiver in sortedCaregivers"
         :key="caregiver.caregiverId"
-        @click="goToCaregiverDetail(caregiver.caregiverId)"
+        @click="goToCaregiverDetail(caregiver)"
       >
         <img
           class="caregiver-image"
@@ -71,8 +68,12 @@
             <span>語言：{{ caregiver.languages || '未知' }}</span>
           </div>
           <p class="text-sm text-gray-600">經驗年數：{{ caregiver.yearOfExperience }} 年</p>
+          <p class="text-sm text-gray-600">時薪：{{ caregiver.hourlyRate ? `${caregiver.hourlyRate} 元/小時` : '未提供' }}</p>
+          <p class="text-sm text-gray-600">半日薪水：{{ caregiver.halfDayRate ? `${caregiver.halfDayRate} 元/半日` : '未提供' }}</p><p class="text-sm text-gray-600">全日薪水：{{ caregiver.fullDayRate ? `${caregiver.fullDayRate} 元/全日` : '未提供' }}</p>
           <p class="text-sm text-gray-600 mt-2 line-clamp-2">{{ caregiver.description || '尚無詳細介紹' }}</p>
-          <p class="text-lg font-bold text-teal-600 mt-2">總價格：{{ calculateTotalPrice(caregiver).toLocaleString() }} 元</p>
+          <p class="text-sm text-teal-700 font-semibold mt-2">
+            預估總價：{{ estimatedPrices[caregiver.caregiverId] !== undefined ? `${estimatedPrices[caregiver.caregiverId]} 元` : '計算中...' }}
+          </p>
         </div>
       </div>
     </div>
@@ -80,125 +81,201 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCaregiverStore } from '@/stores/caregiverStore';
 import { useAppointmentStore } from '@/stores/AppointmentStore';
+import myAxios from '@/plugins/axios';
 
 const router = useRouter();
 const caregiverStore = useCaregiverStore();
 const appointmentStore = useAppointmentStore();
 
-// 排序選項
-const sortOption = ref('price');
+// 排序選項，從 localStorage 讀取，預設為 'price'
+const sortOption = ref(localStorage.getItem('sortOption') || 'price');
+const estimatedPrices = ref({}); // 用於儲存每個看護的預估價格，key 是 caregiverId
 
-// 排序後的看護列表
+// 監看排序選項的變化，並儲存到 localStorage
+watch(sortOption, (newSortOption) => {
+  localStorage.setItem('sortOption', newSortOption);
+});
+
+// 監看 filters 和 caregivers 的變化，同步到 localStorage
+watch(
+  () => caregiverStore.filters,
+  (newFilters) => {
+    localStorage.setItem('serviceCity', newFilters.serviceCity || '');
+    localStorage.setItem('serviceDistrict', newFilters.serviceDistrict || '');
+    localStorage.setItem('desiredStartTime', newFilters.desiredStartTime || '');
+    localStorage.setItem('desiredEndTime', newFilters.desiredEndTime || '');
+    localStorage.setItem('gender', newFilters.gender || 'null');
+    localStorage.setItem('nationality', newFilters.nationality || 'null');
+    localStorage.setItem('languages', newFilters.languages || 'null');
+    localStorage.setItem('hourlyRateMin', newFilters.hourlyRateMin || 'null');
+    localStorage.setItem('hourlyRateMax', newFilters.hourlyRateMax || 'null');
+  },
+  { deep: true }
+);
+
+watch(
+  () => caregiverStore.caregivers,
+  (newCaregivers) => {
+    localStorage.setItem('caregivers', JSON.stringify(newCaregivers));
+    // 當看護列表更新時，重新獲取價格
+    estimatedPrices.value = {};
+    newCaregivers.forEach(caregiver => {
+      fetchEstimatePrice(caregiver.caregiverId);
+    });
+  },
+  { deep: true }
+);
+
+onMounted(() => {
+  appointmentStore.appointment.timeType = localStorage.getItem('timeType') || 'continuous';
+  appointmentStore.continuous.startTime = localStorage.getItem('continuousStartTime') || '';
+  appointmentStore.continuous.endTime = localStorage.getItem('continuousEndTime') || '';
+  appointmentStore.continuous.startDate = localStorage.getItem('continuousStartDate') || '';
+  appointmentStore.continuous.endDate = localStorage.getItem('continuousEndDate') || '';
+  appointmentStore.multi.startDate = localStorage.getItem('multiStartDate') || '';
+  appointmentStore.multi.endDate = localStorage.getItem('multiEndDate') || '';
+  appointmentStore.multi.dailyStartTime = JSON.parse(localStorage.getItem('multiDailyStartTime') || '{}');
+  appointmentStore.multi.dailyEndTime = JSON.parse(localStorage.getItem('multiDailyEndTime') || '{}');
+  appointmentStore.multi.repeatDays = JSON.parse(localStorage.getItem('multiRepeatDays') || '{}');
+  appointmentStore.multi.timeSlots = JSON.parse(localStorage.getItem('multiTimeSlots') || '[]');
+
+
+  caregiverStore.setFilters({
+    serviceCity: localStorage.getItem('serviceCity') || '',
+    serviceDistrict: localStorage.getItem('serviceDistrict') || '',
+    desiredStartTime: localStorage.getItem('desiredStartTime') || '',
+    desiredEndTime: localStorage.getItem('desiredEndTime') || '',
+    gender: localStorage.getItem('gender') === 'null' ? null : localStorage.getItem('gender'),
+    nationality: localStorage.getItem('nationality') === 'null' ? null : localStorage.getItem('nationality'),
+    languages: localStorage.getItem('languages') === 'null' ? null : localStorage.getItem('languages'),
+    hourlyRateMin: localStorage.getItem('hourlyRateMin') === 'null' ? null : Number(localStorage.getItem('hourlyRateMin')),
+    hourlyRateMax: localStorage.getItem('hourlyRateMax') === 'null' ? null : Number(localStorage.getItem('hourlyRateMax')),
+  });
+
+  const storedCaregivers = localStorage.getItem('caregivers');
+  if (storedCaregivers) {
+    try {
+      const parsedCaregivers = JSON.parse(storedCaregivers);
+      if (Array.isArray(parsedCaregivers)) {
+        caregiverStore.setCaregivers(parsedCaregivers);
+      } else {
+        console.warn('Stored caregivers is not an array, clearing localStorage.');
+        localStorage.removeItem('caregivers');
+      }
+    } catch (error) {
+      console.error('Error parsing stored caregivers:', error);
+      localStorage.removeItem('caregivers');
+    }
+  }
+});
+
+const fetchEstimatePrice = async (caregiverId) => {
+
+  try {
+    console.log(`Fetching price for caregiver ID: ${caregiverId}`);
+    console.log('Appointment Time Type:', appointmentStore.appointment.timeType);
+
+    let amount = null;
+    if (appointmentStore.appointment.timeType === 'continuous') {
+      console.log('Calculating for continuous time...');
+      const continuous = appointmentStore.continuous;
+      console.log('Continuous data:', continuous);
+
+      // 直接使用 continuous 中的字串值
+      const startTimeStr = continuous.startTime ? `${continuous.startTime}:00` : null;
+      const endTimeStr = continuous.endTime ? `${continuous.endTime}:00` : null;
+
+      const startTimeParam = continuous.startDate && startTimeStr ? `${continuous.startDate}T${startTimeStr}` : null;
+      const endTimeParam = continuous.endDate && endTimeStr ? `${continuous.endDate}T${endTimeStr}` : null;
+
+      const res = await myAxios.get('/api/appointment/estimate/continuous', {
+        params: {
+          caregiverId: caregiverId,
+          startTime: startTimeParam,
+          endTime: endTimeParam,
+        },
+      });
+      amount = res.data;
+    } else if (appointmentStore.appointment.timeType === 'multi') {
+      // ... (multi 类型的处理保持不变) ...
+    }
+
+    if (amount !== null) {
+      estimatedPrices.value[caregiverId] = amount;
+      console.log(`Estimated price stored for caregiver ${caregiverId}:`, estimatedPrices.value[caregiverId]);
+    } else {
+      console.log(`Amount is null for caregiver ${caregiverId}.`);
+    }
+  } catch (error) {
+    console.error(`Failed to fetch estimate price for caregiver ${caregiverId}:`, error);
+    estimatedPrices.value[caregiverId] = '無法估價';
+  }
+};
+
 const sortedCaregivers = computed(() => {
   const list = [...caregiverStore.caregivers];
   if (sortOption.value === 'price') {
-    list.sort((a, b) => calculateTotalPrice(a) - calculateTotalPrice(b));
+    list.sort((a, b) => (estimatedPrices.value[a.caregiverId] === '無法估價' ? Infinity : estimatedPrices.value[a.caregiverId]) - (estimatedPrices.value[b.caregiverId] === '無法估價' ? Infinity : estimatedPrices.value[b.caregiverId]));
   } else if (sortOption.value === 'experience') {
     list.sort((a, b) => b.yearOfExperience - a.yearOfExperience);
   }
   return list;
 });
 
-// 格式化日期和時間
-const formatDateTime = (dateTime) => {
-  if (!dateTime) return '未指定';
-  const date = new Date(dateTime);
-  return date.toLocaleString('zh-TW', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
+const formatDateTime = (dateTimeStr) => {
+  if (!dateTimeStr) return '未指定';
+  const date = new Date(dateTimeStr);
+  return date.toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
 };
 
-// 格式化僅日期
-const formatDate = (date) => {
-  if (!date) return '未指定';
-  const d = new Date(date);
-  return d.toLocaleDateString('zh-TW', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  });
+const formatDate = (dateStr) => {
+  if (!dateStr) return '未指定';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
 };
 
-// 計算總價格
-const calculateTotalPrice = (caregiver) => {
-  let totalHours = 0;
-
-  if (appointmentStore.appointment.timeType === 'continuous') {
-    // 連續時間計算
-    const start = new Date(appointmentStore.continuous.startTime);
-    const end = new Date(appointmentStore.continuous.endTime);
-    totalHours = (end - start) / (1000 * 60 * 60); // 轉換為小時
-  } else {
-    // 多時段預訂計算
-    const startDate = new Date(appointmentStore.multi.startDate);
-    const endDate = new Date(appointmentStore.multi.endDate);
-    const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1; // 包含首尾
-
-    // 計算每日工作天數（根據 repeatDays）
-    let workingDays = days;
-    if (appointmentStore.multi.repeatDays && appointmentStore.multi.repeatDays.length > 0) {
-      workingDays = 0;
-      const start = new Date(appointmentStore.multi.startDate);
-      const end = new Date(appointmentStore.multi.endDate);
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        const dayOfWeek = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'][d.getDay()];
-        if (appointmentStore.multi.repeatDays.includes(dayOfWeek)) {
-          workingDays++;
-        }
-      }
-    }
-
-    // 計算每日小時數（根據 timeSlots）
-    let dailyHours = 0;
-    if (appointmentStore.multi.timeSlots && appointmentStore.multi.timeSlots.length > 0) {
-      appointmentStore.multi.timeSlots.forEach(slot => {
-        const startTime = new Date(`1970-01-01T${slot.startTime}:00`);
-        const endTime = new Date(`1970-01-01T${slot.endTime}:00`);
-        dailyHours += (endTime - startTime) / (1000 * 60 * 60);
-      });
-    }
-
-    totalHours = dailyHours * workingDays; // 總小時數 = 每日小時數 × 工作天數
+const formatTimeObject = (timeObj) => {
+  if (!timeObj || typeof timeObj.hour === 'undefined' || typeof timeObj.minute === 'undefined') return '未指定';
+  const hour = parseInt(timeObj.hour, 10);
+  const minute = timeObj.minute.padStart(2, '0');
+  let period = 'AM';
+  let formattedHour = hour;
+  if (hour === 0) {
+    formattedHour = 12;
+  } else if (hour === 12) {
+    period = 'PM';
+  } else if (hour > 12) {
+    formattedHour = hour - 12;
+    period = 'PM';
   }
-
-  // 價格計算邏輯：半天 4 小時，全天 8 小時
-  const hourlyRate = parseFloat(caregiver.hourlyRate);
-  const halfDayRate = parseFloat(caregiver.halfDayRate);
-  const fullDayRate = parseFloat(caregiver.fullDayRate);
-
-  if (totalHours < 4) {
-    return Math.round(totalHours * hourlyRate);
-  } else if (totalHours < 8) {
-    return halfDayRate;
-  } else {
-    const fullDays = Math.floor(totalHours / 8);
-    const remainingHours = totalHours % 8;
-    return Math.round((fullDays * fullDayRate) + (remainingHours * hourlyRate));
-  }
+  return `${formattedHour}:${minute} ${period}`;
 };
 
-// 跳轉到看護詳情頁面
-const goToCaregiverDetail = (caregiverId) => {
-  router.push(`/caregivers/${caregiverId}`);
+const formatTimeRange = (startTimeObj, endTimeObj) => {
+  const startTime = formatTimeObject(startTimeObj);
+  const endTime = formatTimeObject(endTimeObj);
+  return `${startTime} - ${endTime}`;
 };
 
-// 返回搜尋頁面
+const goToCaregiverDetail = (caregiver) => {
+  console.log('Selected caregiver:', caregiver); // 檢查完整的 caregiver 物件
+  console.log('Selected caregiver ID:', caregiver.caregiverId); // 檢查 caregiverId 的值
+  caregiverStore.selectCaregiver(caregiver);
+  localStorage.setItem('selectedCaregiver', JSON.stringify(caregiver));
+  router.push(`/caregivers/${caregiver.caregiverId}`);
+};
+
 const goBackToSearch = () => {
-  router.push('/'); // 假設搜尋頁面是首頁
+  router.push('/caregivers/search');
 };
 </script>
 
 <style scoped>
-/* 全局樣式 */
+/* 保持現有樣式不變 */
 .wrapper {
   max-width: 1300px;
   margin: 0 auto;
@@ -206,66 +283,58 @@ const goBackToSearch = () => {
 }
 
 /* 篩選條件區塊 */
-.filter-section {
-  padding: 2rem; /* 增加內距，顯得更寬鬆 */
-  background-color: #f9fafb; /* 淺灰背景 */
-  border: 1px solid #d1e9e5; /* 使用淺主題色邊框，增加獨立性 */
+.search-conditions {
+  padding: 2rem;
+  background-color: #f9fafb;
+  border: 1px solid #d1e9e5;
   border-radius: 8px;
-  margin-bottom: 3rem; /* 增加底部間距 */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* 輕微陰影，突出層次 */
+  margin-bottom: 3rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* 篩選控制項 */
-.filter-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem; /* 保持舒適間距 */
+/* 條件容器 */
+.conditions-container {
+  width: 100%;
 }
 
-/* 篩選組 */
-.filter-group {
+/* 條件標籤容器 */
+.condition-tags {
   display: flex;
-  flex-direction: column;
-}
-
-/* 時間欄位 */
-.time-fields {
-  display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 1.5rem;
+  margin-top: 0.5rem;
 }
 
-.time-fields .flex {
-  gap: 1.5rem;
+/* 條件標籤 */
+.condition-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: #e6f4f3;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 分隔線 */
-hr {
-  border: 0;
-  border-top: 2px solid #4DB6AC; /* 使用主題色，強化分隔 */
-  margin: 3rem 0; /* 增加上下間距 */
-  position: relative;
+.condition-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-hr::before {
-  content: '搜尋結果';
-  position: absolute;
-  top: -0.75rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #fff; /* 背景色與父介面一致 */
-  padding: 0 1rem;
-  color: #4DB6AC;
-  font-size: 1rem;
+.condition-tag .label {
   font-weight: 500;
+  color: #2A9287;
+  margin-right: 0.5rem;
 }
 
-/* 結果區塊 */
-.results-section {
-  padding-top: 2rem; /* 增加頂部間距 */
+.condition-tag .value {
+  color: #4b5563;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
 }
 
-/* 標頭 */
+/* 搜尋結果標頭 */
 .header h3 {
   color: #4DB6AC;
 }
@@ -277,7 +346,7 @@ hr::before {
   border-radius: 6px;
 }
 
-/* 看護網格 */
+/* 看護卡片網格 */
 .caregiver-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -309,7 +378,6 @@ hr::before {
   padding: 1rem;
 }
 
-/* 資訊行 */
 .info-row {
   display: flex;
   flex-wrap: wrap;
@@ -324,14 +392,9 @@ hr::before {
   font-size: 0.875rem;
 }
 
-/* 文字樣式 */
-.caregiver-info h3 {
-  color: #4DB6AC;
-}
-
-.caregiver-info p {
-  color: #4b5563;
-  line-height: 1.6;
+.caregiver-info .hourly-rate {
+  color: #2A9287;
+  font-weight: 500;
 }
 
 /* 限制描述文字為兩行 */

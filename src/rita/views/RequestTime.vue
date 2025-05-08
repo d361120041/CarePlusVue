@@ -145,9 +145,26 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useAppointmentStore } from '@/stores/AppointmentStore';
+import { useCaregiverStore } from '@/stores/caregiverStore'; 
+
+const route = useRoute(); 
+const caregiverStore = useCaregiverStore();
+
+const caregiverId = ref(null);
+
+onMounted(() => {
+  caregiverId.value = route.query.caregiverId;
+  console.log('Caregiver ID from route query:', caregiverId.value);
+  // 在這裡，您可以選擇將 caregiverId 儲存到 appointmentStore 或 caregiverStore
+  if (caregiverId.value) {
+    appointmentStore.setCaregiverId(caregiverId.value);
+    // 或者，如果您希望在 caregiverStore 中也儲存，可以這樣做：
+    // caregiverStore.setSelectedCaregiverId(caregiverId.value);
+  }
+});
 
 const form = ref({
   timeType: 'continuous',
@@ -199,6 +216,8 @@ const addTimeSlot = () => {
 
 const submitForm = () => {
   if (!isFormComplete.value) return;
+
+  appointmentStore.setCaregiverId(caregiverId.value);
 
   if (form.value.timeType === 'continuous') {
     const start = `${form.value.continuous.startDate}T${form.value.continuous.startTime}`;

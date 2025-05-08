@@ -35,27 +35,37 @@
       </div>
 
       <!-- 右邊區塊 -->
-      <div class="sidebar">
-        <div class="card-section">
-          <h3>您的需求資訊</h3>
-          <div v-if="appointmentStore.appointment.timeType">
-            <p><strong>時間類型：</strong>{{ appointmentStore.appointment.timeType === 'continuous' ? '連續時間' : '多時段預訂' }}</p>
-            <div v-if="appointmentStore.appointment.timeType === 'continuous'">
-              <p><strong>服務開始：</strong>{{ formatDateTime(appointmentStore.continuous.startTime) }}</p>
-              <p><strong>服務結束：</strong>{{ formatDateTime(appointmentStore.continuous.endTime) }}</p>
-            </div>
-            <div v-else>
-              <p><strong>服務開始日期：</strong>{{ formatDate(appointmentStore.multi.startDate) }}</p>
-              <p><strong>服務結束日期：</strong>{{ formatDate(appointmentStore.multi.endDate) }}</p>
-              <p><strong>每日開始時間：</strong>{{ formatTime(appointmentStore.multi.dailyStartTime) }}</p>
-              <p><strong>每日結束時間：</strong>{{ formatTime(appointmentStore.multi.dailyEndTime) }}</p>
-            </div>
-          </div>
-          <div v-else>
-            <p style="color: gray;">尚未填寫時間資訊，請返回上一步完成填寫。</p>
-          </div>
-        </div>
+<div class="sidebar">
+  <div class="card-section">
+    <h3>您的需求資訊</h3>
+    <div v-if="appointmentStore.appointment.timeType">
+      <p><strong>時間類型：</strong>{{ appointmentStore.appointment.timeType === 'continuous' ? '連續時間' : '多時段預訂' }}</p>
+      
+      <div v-if="appointmentStore.appointment.timeType === 'continuous'">
+        <p><strong>服務開始：</strong>{{ formatDateTime(appointmentStore.continuous.startTime) }}</p>
+        <p><strong>服務結束：</strong>{{ formatDateTime(appointmentStore.continuous.endTime) }}</p>
       </div>
+      
+      <div v-else>
+        <p><strong>服務開始日期：</strong>{{ formatDate(appointmentStore.multi.startDate) }}</p>
+        <p><strong>服務結束日期：</strong>{{ formatDate(appointmentStore.multi.endDate) }}</p>
+        <p><strong>每日開始時間：</strong>{{ formatTime(appointmentStore.multi.timeSlots[0]?.startTime) }}</p>
+        <p><strong>每日結束時間：</strong>{{ formatTime(appointmentStore.multi.timeSlots[0]?.endTime) }}</p>
+      </div>
+
+      <div>
+        <p><strong>病患：</strong>{{ appointmentStore.appointment.patientInfo.name }}</p>
+        <p><strong>疾病：</strong>{{ appointmentStore.appointment.patientInfo.diseases.join('、') }} {{ appointmentStore.appointment.patientInfo.diseaseOther }}</p>
+        <p><strong>身體狀況：</strong>{{ appointmentStore.appointment.patientInfo.physicalConditions.join('、') }} {{ appointmentStore.appointment.patientInfo.physicalOther }}</p>
+        <p><strong>服務項目：</strong>{{ appointmentStore.appointment.patientInfo.services.join('、') }} {{ appointmentStore.appointment.patientInfo.serviceOther }}</p>
+      </div>
+    </div>
+    <div v-else>
+      <p style="color: gray;">尚未填寫時間資訊，請返回上一步完成填寫。</p>
+    </div>
+  </div>
+</div>
+
     </div>
   </div>
 </template>
