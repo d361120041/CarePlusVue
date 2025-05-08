@@ -62,16 +62,15 @@ const isAdminRoute = computed(() => route.path.startsWith("/admin"));
   padding: 1rem 0;
 }
 
-.main {
+/* .main {
   padding: 2rem 0;
-}
+} */
 
 body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
   background-color: #fff8f0;
-  /* ✅ 米白背景 */
 }
 
 #app {

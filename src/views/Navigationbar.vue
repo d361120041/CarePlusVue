@@ -1,7 +1,7 @@
 <template>
   <div class="navbar">
     <router-link to="/" class="logo">
-      <img src="@/assets/care+_logo.png" alt="網站 Logo" />
+      <img src="@/assets/logo_0508.png" alt="網站 Logo" />
     </router-link>
     <ul>
       <li>

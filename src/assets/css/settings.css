@@ -4,6 +4,7 @@
   --color-primary: #3e9bdc; /* 主色—藍 */ /* Logo 主色 */
   --color-secondary: #ffa07a; /* 次色—暖橙 */ /* 強調提醒 */
   --color-tertiary: #4db6ac; /* 三色—藍綠 */ /* 輔助配色 */
+  --background-color: #fff8f0;  /* ✅ 米白背景 */
 
   /* UI 狀態色 */
   --color-success: #4caf50; /* 成功 */
@@ -25,7 +26,7 @@
 /* ----- 排版系統（Typography）開始 ----- */
 :root {
   /* 字體家族 */
-  --font-family-base: "Noto Sans TC", "Arial", sans-serif; /* 繁中+拉丁字 */
+  --font-family-base: Arial, sans-serif; /* 繁中+拉丁字 */
   --font-family-heading: "Poppins", sans-serif; /* 標題專用 */
 
   /* 字重 */
