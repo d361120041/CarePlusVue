@@ -130,6 +130,18 @@ const caregiverLogout = () => {
 </script>
 
 <style scoped>
+/* ----- Navbar Container ----- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch; /* 項目撐滿高度 */
+  background-color: var(--color-bg-card);
+  padding: 0;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  height: 60px;
+}
+
 /* ----- Logo 開始 ----- */
 .logo {
   display: block;
@@ -155,32 +167,41 @@ const caregiverLogout = () => {
 }
 /* ----- User 結束 -----*/
 
-/* ----- Navbar 開始 ----- */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: var(--color-primary);
-  padding: 0.5rem 1rem;
-  position: relative;
-}
-
+/* ----- Menu Items ----- */
 .navbar ul {
   display: flex;
-  justify-content: center;
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .navbar li {
-  margin: 0 0.75rem;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1rem;
 }
 
-.navbar a {
-  color: #fff;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  transition: background 0.2s ease, color 0.2s ease;
+.navbar a,
+.navbar .dropdown-label {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  color: var(--color-text-primary);
   text-decoration: none;
+  padding: 0 0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.navbar a:hover,
+.navbar .dropdown-label:hover,
+.navbar li.active > a,
+.navbar li.active--exact > a {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 /* ----- Navbar 結束 ----- */
 
@@ -219,7 +240,7 @@ const caregiverLogout = () => {
 
 /* 調整 span 樣式與 router-link 一致 */
 .dropdown-label {
-  color: #fff;
+  color: var(--color-text-primary);
   padding: 0.5rem 0.75rem;
   cursor: pointer;
   transition: background 0.2s ease;

@@ -86,6 +86,7 @@ import ProgressAdmin from '@/CMS/yuni/views/ProgressAdmin.vue'
 // ================== 設定路徑 開始==================
 const routes = [
   { path: "/", component: HomeHero, name: "homeHero" },
+  { path: "/home", component: Home, name: "home" },
   { path: "/:pathMatch(.*)*", component: NotFound, name: "notfound" },
   { path: "/403", component: Forbidden, name: "forbidden" },
 

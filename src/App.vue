@@ -1,10 +1,5 @@
 <template>
-  <!-- 頁首 開始 -->
-  <!-- <header v-if="!isAdminRoute" class="header">
-      <h1>Care+ 照護平台</h1>
-  </header> -->
-  <!-- 頁首 結束 -->
-
+  
   <!-- 導覽列 開始-->
   <nav v-if="!isAdminRoute">
     <Navigationbar />
@@ -34,6 +29,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { RouterView, useRoute } from "vue-router";
 import { computed } from "vue";
+
 import Navigationbar from "@/views/Navigationbar.vue";
 
 const route = useRoute();
@@ -42,21 +38,9 @@ const isAdminRoute = computed(() => route.path.startsWith("/admin"));
 </script>
 
 <style scoped>
-/* .header {
-  background-color: var(--primary-color);
-  color: white;
-  padding: 1rem 0;
-  } */
-
 nav {
   position: sticky;
   top: 0;
   z-index: 1000;
 }
-
-/* .footer {
-  background-color: var(--color-tertiary);
-  color: white;
-  padding: 1rem 0;
-} */
 </style>
