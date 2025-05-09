@@ -39,37 +39,39 @@
     <NewsListSkeleton v-if="loading" />
 
     <!-- 新聞清單 -->
-
     <div v-if="newsList.length === 0" class="text-gray-500 text-center">暫無新聞資料</div>
-    <div v-else>
-      <div
-        v-for="news in newsList"
-        :key="news.newsId"
-        class="news-item flex items-start gap-4 mb-6 border-b pb-4"
-      >
-        <div class="flex-shrink-0">
-          <img
+      <div v-else>
+        <div
+          v-for="news in newsList"
+          :key="news.newsId"
+          class="news-item flex items-start gap-4 mb-6 border-b pb-4"
+        >
+          <router-link :to="`/news/${news.newsId}`" class="flex-shrink-0">
+            <img
             :src="getFullImageUrl(news.thumbnail) || defaultThumbnail"
             alt="縮圖"
-            class="thumbnail"
+            class="thumbnail w-20 h-20 object-cover rounded-lg shadow"
             @error="handleImgError"
-          />
-        </div>
+            />
+          </router-link>
 
-        <div class="flex-1">
-          <h2 class="text-lg font-semibold">{{ news.title }}</h2>
-          <p class="text-sm text-gray-600">📅 發布日期：{{ formatDate(news.publishAt) }}</p>
-          <p class="text-sm text-gray-600">🛠️ 最後修改：{{ news.modifyAt ? formatDate(news.modifyAt) : '尚未修改' }}</p>
-          <p class="text-sm text-gray-600">👁️ 瀏覽次數：{{ news.viewCount || 0 }}</p>
-        </div>
-      </div>
+          <div class="flex-1">
+            <router-link :to="`/news/${news.newsId}`" class="text-lg font-semibold hover:underline block mb-1"
+            >
+              {{ news.title }}
+            </router-link>
+            <p class="text-sm text-gray-600">📅 發布日期：{{ formatDate(news.publishAt) }}</p>
+            <p class="text-sm text-gray-600">🛠️ 最後修改：{{ news.modifyAt ? formatDate(news.modifyAt) : '尚未修改' }}</p>
+            <p class="text-sm text-gray-600">👁️ 瀏覽次數：{{ news.viewCount || 0 }}</p>
+          </div>  
+      </div> 
 
-      <!-- 分頁控制 -->
-      <div class="pagination mt-6">
-        <button @click="prevPage" :disabled="page === 0 || loading" class="page-btn">上一頁</button>
-        <span>第 {{ page + 1 }} 頁</span>
-        <button @click="nextPage" :disabled="!hasNextPage || loading" class="page-btn">下一頁</button>
-      </div>
+        <!-- 分頁控制 -->
+        <div class="pagination mt-6">
+          <button @click="prevPage" :disabled="page === 0 || loading" class="page-btn">上一頁</button>
+          <span>第 {{ page + 1 }} 頁</span>
+          <button @click="nextPage" :disabled="!hasNextPage || loading" class="page-btn">下一頁</button>
+        </div> 
     </div>
   </div>
 </template>
@@ -77,10 +79,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import myAxios from '@/plugins/axios';
-import { getFullImageUrl } from '@/allen/utils/urlHelper.js'; // 引入函數
-import noImage from '@/assets/allen/no-image.jpg';
 import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue';
-import GlobalBanner from '@/components/GlobalBanner.vue'
+import GlobalBanner from '@/components/GlobalBanner.vue';
+import noImage from '@/assets/allen/no-image.jpg';
+import { getFullImageUrl } from '@/allen/utils/urlHelper.js';
 
 const newsList = ref([]);
 const categories = ref([]);
@@ -91,11 +93,7 @@ const loading = ref(false);
 const defaultThumbnail = noImage;
 const hasSearched = ref(false);
 const searchSnapshot = ref({});
-const search = ref({
-  keyword: '',
-  categoryId: '',
-  dateRange: ''
-});
+const search = ref({keyword: '', categoryId: '', dateRange: '' });
 
 const formatDate = (dateStr) => {
   if (!dateStr) return '';
@@ -143,8 +141,8 @@ const buildDateRange = () => {
     case 'month': {
       const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
       return {
-        dateFrom: formatDateTime(firstDay),
-        dateTo: formatDateTime(now)
+        dateFrom: formatDate(firstDay),
+        dateTo: formatDate(now)
       };
     }
     case 'year': {
@@ -157,6 +155,32 @@ const buildDateRange = () => {
     default:
       return { dateFrom: null, dateTo: null };
   }
+};
+
+const summaryText = computed(() => {
+  const parts = [];
+  const snap = searchSnapshot.value;
+
+  if (snap.keyword) parts.push(`關鍵字為「${snap.keyword}」`);
+
+  if (snap.categoryId) {
+    const found = categories.value.find(c => c.categoryId === Number(snap.categoryId));
+    if (found) parts.push(`分類為「${found.categoryName}」`);
+  }
+
+  const map = { today: '今天', week: '這週', month: '這月', year: '今年' };
+  if (snap.dateRange && map[snap.dateRange]) {
+    parts.push(`時間為「${map[snap.dateRange]}」`);
+  }
+  return parts.length ? parts.join('、') : '';
+});
+
+const clearSearch = () => {
+  search.value = { keyword: '', categoryId: '', dateRange: '' , status: ''};
+  searchSnapshot.value = {}; // ✅ 清除摘要內容來源
+  hasSearched.value = false;
+  page.value = 0;
+  loadNews();
 };
 
 const loadNews = async () => {
@@ -185,15 +209,7 @@ const loadNews = async () => {
 const handleSearch = () => {
   hasSearched.value = true;
   page.value = 0;
-  searchSnapshot.value = { ...search.value }; // ✅ 固定當下搜尋條件
-  loadNews();
-};
-
-const clearSearch = () => {
-  search.value = { keyword: '', categoryId: '', dateRange: '' };
-  searchSnapshot.value = {}; // ✅ 清除摘要內容來源
-  hasSearched.value = false;
-  page.value = 0;
+  searchSnapshot.value = { ...search.value };
   loadNews();
 };
 
@@ -211,6 +227,8 @@ const nextPage = () => {
   }
 };
 
+const handleImgError = (e) => { if (e.target.src !== defaultThumbnail) e.target.src = defaultThumbnail; }; 
+
 const fetchCategories = async () => {
   try {
     const res = await myAxios.get('/news/category');
@@ -219,32 +237,6 @@ const fetchCategories = async () => {
     console.error('載入分類失敗', err);
   }
 };
-
-const handleImgError = (e) => {
-  if (e.target.src !== defaultThumbnail) {
-    e.target.src = defaultThumbnail;
-  }
-};
-
-const summaryText = computed(() => {
-  const parts = [];
-  const snap = searchSnapshot.value;
-
-  if (snap.keyword) parts.push(`關鍵字為「${snap.keyword}」`);
-
-  if (snap.categoryId) {
-    const found = categories.value.find(c => c.categoryId === Number(snap.categoryId));
-    if (found) parts.push(`分類為「${found.categoryName}」`);
-  }
-
-  const map = { today: '今天', week: '這週', month: '這月', year: '今年' };
-  if (snap.dateRange && map[snap.dateRange]) {
-    parts.push(`時間為「${map[snap.dateRange]}」`);
-  }
-
-  return parts.length ? parts.join('、') : '';
-});
-
 
 onMounted(() => {
   fetchCategories();

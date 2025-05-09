@@ -312,7 +312,7 @@ const unpublishNews = async (id) => {
 };
 const goToCreate = () => router.push('/admin/news/new');
 const goToEdit = (id) => router.push(`/admin/news/edit/${id}`);
-const handleImgError = (e) => { if (e.target.src !== defaultThumbnail) e.target.src = defaultThumbnail; };
+const handleImgError = (e) => { if (e.target.src !== defaultThumbnail) e.target.src = defaultThumbnail; }; 
 
 const fetchCategories = async () => {
   const res = await myAxios.get('/news/category');
