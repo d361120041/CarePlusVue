@@ -2,10 +2,10 @@
   <div class="container py-4" v-if="chapter">
     <div class="mt-3 text-end">
       <button class="btn btn-outline-secondary" @click="backToProgress">
-        🔙 回到課程進度總覽
+        回到{{ auth.userName }}的課程進度總覽
       </button>
     </div>
-    <h3 class="mb-3">{{ chapter.title }}</h3>
+    <h3 class="mb-3">{{ courseTitle }}：{{ chapter.title }}</h3>
 
     <!-- 顯示影片或文章 -->
     <div class="mb-4">
@@ -37,7 +37,7 @@
       <button class="btn btn-primary" :disabled="currentIndex <= 0" @click="goPrevious">上一章</button>
 
       <button class="btn btn-primary" @click="handleNextOrFinish">{{ currentIndex >= chapters.length - 1 ? '完成' : '下一章'
-      }}</button>
+        }}</button>
 
 
     </div>
@@ -51,17 +51,18 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from '@/plugins/axios.js'
-
-
+import { useAuthStore } from "@/stores/auth";
+const auth = useAuthStore();
 
 const route = useRoute()
 const router = useRouter()
 const courseId = Number(route.params.courseId)
-const userId = Number(localStorage.getItem('userId') || 3)
-
+// const userId = Number(localStorage.getItem('userId') || 3)
+const userId = ref(null)
 const chapters = ref([])
 const chapter = ref(null)
 const currentIndex = ref(0)
+const courseTitle = ref('')
 
 const embedUrl = computed(() => {
   if (!chapter.value?.contentUrl) return ''
@@ -82,7 +83,7 @@ const fetchChapters = async () => {
 
 const loadProgress = async () => {
   try {
-    const res = await axios.get(`/api/progress/user/${userId}/course/${courseId}`)
+    const res = await axios.get(`/api/progress/user/${userId.value}/course/${courseId}`)
     const progresses = res.data
     if (progresses.length > 0) {
       const last = progresses.sort((a, b) => b.lastWatched - a.lastWatched)[0]
@@ -101,7 +102,7 @@ const loadProgress = async () => {
 // }
 const ensureProgress = async () => {
   try {
-    const res = await axios.get(`/api/progress/user/${userId}/chapter/${chapter.value.chapterId}/with-create`)
+    const res = await axios.get(`/api/progress/user/${userId.value}/chapter/${chapter.value.chapterId}/with-create`)
     console.log('已建立或找到進度：', res.data)
   } catch (err) {
     console.error('建立或查詢進度失敗：', err)
@@ -151,62 +152,60 @@ watch(() => route.query.chapterId, async (newChapterId) => {
 
 
 
-//  const handleNextOrFinish = async () => {
-//    if (currentIndex.value = chapters.length - 1) {
-//      // 你可以改導向「我的課程」或「課程總覽」
-//      router.push('/my-courses')
-//    } else {
-//      await goNext()
-//    }
-//  }
 
 const handleNextOrFinish = async () => {
-  if (currentIndex.value === chapters.value.length - 1) {
-    router.push(`/done/${courseId}`)
-  } else {
-    await goNext()
+  if (!userId.value) {
+    alert("使用者尚未登入，userId 為空");
+    return;
   }
-}
 
-// const handleNextOrFinish = async () => {
-//   try {
-//     // 先標記當前章節為完成
-//     await axios.patch(`/api/progress/user/${userId}/chapter/${chapter.value.chapterId}/complete`)
+  const chapterId = chapter.value?.chapterId;
+  if (!chapterId) {
+    alert("目前章節無效");
+    return;
+  }
 
-//     // 如果是最後一章，再標記整門課為完成，並導向結束頁面
-//     if (currentIndex.value === chapters.value.length - 1) {
-//       await axios.patch(`/api/progress/user/${userId}/course/${courseId}/complete-all`)
-//       router.push(`/done/${courseId}`)
-//     } else {
-//       await goNext()
-//     }
+  try {
+    // 🧩 呼叫 complete 章節（需使用 params 傳 userId）
+    await axios.patch(`/api/progress/user/${userId.value}/chapter/${chapterId}/complete`, null, {
+      params: { userId: userId.value }
+    });
 
-//   } catch (err) {
-//     console.error('完成章節或課程失敗', err)
-//     alert('請稍後再試')
-//   }
-// }
+    const isLastChapter = currentIndex.value === chapters.value.length - 1;
+
+    if (isLastChapter) {
+      // ✅ 呼叫 complete-all 完成整門課
+      await axios.patch(`/api/progress/user/${userId.value}/course/${courseId}/complete-all`);
+      router.push(`/done/${courseId}`);
+    } else {
+      // 👉 移動到下一章
+      await goNext();
+    }
+
+  } catch (err) {
+    console.error('完成章節或課程失敗', err);
+    const msg = err.response?.data || '無法儲存完成狀態，請稍後再試';
+    alert(`錯誤：${msg}`);
+  }
+};
+
+
 
 const backToProgress = async () => {
   console.log("送出 PATCH 資料", {
-  userId,
-  chapterId: chapter.value.chapterId,
-  lastWatched: 1,
-  isCompleted: false,
-  status: 'in_progress'
-})
+    userId: userId.value,
+    chapterId: chapter.value.chapterId,
+    lastWatched: 1,
+    isCompleted: false,
+    status: 'in_progress'
+  })
   try {
     await axios.patch(`/api/progress/chapter/${chapter.value.chapterId}/progress`, {
-      userId,
+      userId: userId.value,
       lastWatched: 1,
       isCompleted: false,
       status: 'in_progress'
     })
-
-    // 若你想在離開前就標記目前章節為「完成」
-    // 可加上這行：
-    // await axios.patch(`/api/progress/user/${userId}/chapter/${chapter.value.chapterId}/complete`)
-
     // 返回進度總覽頁面
     router.push(`/course-progress/${courseId}`)
   } catch (err) {
@@ -216,12 +215,39 @@ const backToProgress = async () => {
 }
 
 
+const fetchCourseTitle = async () => {
+  try {
+    const res = await axios.get(`/api/courses/${courseId}`);
+    courseTitle.value = res.data.title;
+  } catch (err) {
+    console.error('取得課程標題失敗', err);
+    courseTitle.value = '(無標題)';
+  }
+};
+
+const fetchUserProfile = async () => {
+  try {
+    const res = await axios.get('/user/profile', { withCredentials: true })
+    userId.value = res.data.userId
+  } catch (err) {
+    console.error('無法取得使用者資訊', err)
+    router.push('/login')
+  }
+}
+// onMounted(async () => {
+//   const resCourse = await axios.get(`/api/courses/${courseId}`)
+//   courseTitle.value = resCourse.data.title
+//   await fetchUserProfile()
+//   await fetchChapters()
+//   await loadChapterFromQuery()
+// })
 
 onMounted(async () => {
+  await fetchUserProfile()
+  await fetchCourseTitle();
   await fetchChapters()
   await loadChapterFromQuery()
 })
-
 </script>
 
 <style scoped>

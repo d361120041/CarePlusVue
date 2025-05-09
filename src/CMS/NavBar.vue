@@ -1,21 +1,31 @@
 <template>
-  <header
-    style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
-    <div style="font-weight: bold; color:black">後台管理系統</div>
-    <div style="display: flex; align-items: center; gap: 1rem;">
-      <span style="color: black;">👤 Admin</span>
-      <button @click="handleLogout">登出</button>
+  <header class="navbar">
+    <!-- 可加入後台系統標題 -->
+    <div class="page-title">
+      {{ pageTitle }}
+    </div>
 
+    <!-- 使用者資訊與登出 -->
+
+    <div class="right navbar-user">
+      <span>👤 Admin </span>
+      <button class="logout-button" @click="handleLogout">登出</button>
     </div>
   </header>
 </template>
 
+
+
 <script setup>
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useCaregiverAuth } from '@/stores/useCaregiverAuth' // ✅ 加這行
+import { computed } from 'vue'
+
 
 const router = useRouter()
 const authStore = useCaregiverAuth() // ✅ 取得照顧者登入狀態
+const route = useRoute()
+
 
 const handleLogout = () => {
   // ✅ 呼叫 Pinia 裡的 logout（你要自己在 store 裡定義）
@@ -24,5 +34,78 @@ const handleLogout = () => {
   // ✅ 回首頁
   router.push('/')
 }
+
+
+const pageTitle = computed(() => {
+  const path = route.path
+  if (path.includes('/admin/cms/courses')) return '課程後台管理'
+  if (path.includes('/admin/cms/chapters')) return '章節後台管理'
+  if (path.includes('/admin/cms/progress')) return '進度後台管理'
+  if (path.includes('/admin/news')) return '新聞後台管理'
+  if (path === '/admin') return '後台首頁'
+  return 'Care+ 後台'
+})
+
+
 </script>
 
+<style scoped>
+/* .navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  height: 64px;
+}
+
+.navbar-title {
+  font-weight: bold;
+  font-size: 1.125rem;
+  color: #2d3748;
+} */
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #2d3748;
+}
+
+.logout-button {
+  background-color: #df4949;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.logout-button:hover {
+  background-color: #dc1a1a;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2d3748;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+</style>

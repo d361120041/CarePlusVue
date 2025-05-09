@@ -18,7 +18,7 @@
         <span class="dropdown-label">線上課程</span>
         <ul class="dropdown-menu">
           <li><router-link to="/course">課程列表</router-link></li>
-          <li><router-link to="/my-courses">我的課程</router-link></li>
+          <li v-if="isUserLogin"><router-link to="/my-courses">我的課程</router-link></li>
         </ul>
       </li>
     </ul>

@@ -32,12 +32,24 @@
     </div>
   </div>
   <!-- allen -->
+
+  <!-- yuni -->
+  <div style="background-color: bisque;">
+    <div>
+      <CourseFeat />
+    </div>
+    
+  </div>
+  <!-- yuni -->
+
 </template>
     
 <script setup>
+// ------yuni start
+import CourseFeat from '@/yuni/components/CourseFeat.vue';
+// ------yuni end
 
 // ------allen start
-
 import { ref, onMounted } from 'vue';
 import myAxios from '@/plugins/axios';
 import { getFullImageUrl } from '@/allen/utils/urlHelper';
@@ -73,13 +85,11 @@ const fetchNews = async () => {
 onMounted(() => {
     fetchNews();
 });
-
 // ------allen end
 
 </script>
     
-<style>
-
+<style scoped>
 /* allen start*/
 .news-header {
   display: flex;
@@ -163,5 +173,4 @@ onMounted(() => {
   margin-bottom: 4px;
 }
 /* allen end*/
-
 </style>

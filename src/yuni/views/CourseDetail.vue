@@ -4,35 +4,24 @@
     <p class="text-muted">＃{{ getCategoryLabel(course.category) }}</p>
     <p>{{ course.description }}</p>
     <p>時長：{{ course.duration }}</p>
-    <p>價格：{{ course.price }} 元</p>
+    <!-- <p>價格：{{ course.price }} 元</p> -->
 
     <h4 class="mt-4">章節列表</h4>
     <ul v-if="chapters.length > 0" class="list-group">
-      <li
-        v-for="chapter in chapters"
-        :key="chapter.chapterId"
-        class="list-group-item"
-      >
+      <li v-for="chapter in chapters" :key="chapter.chapterId" class="list-group-item">
         {{ chapter.position }}. {{ chapter.title }}
       </li>
     </ul>
     <p v-else class="text-muted">此課程目前無章節。</p>
 
     <!-- 單一切換按鈕 -->
-    <button
-      class="btn btn-outline enroll-btn mt-4"
-      :class="enrolled ? 'btn-danger' : ''"
-      @click="toggleEnrollment"
-    >
-      {{ enrolled ? "取消加入課程" : "加入我的課程" }}
+    <button class="btn btn-outline enroll-btn mt-4" :class="enrolled ? 'btn-danger' : ''" @click="toggleEnrollment">
+      {{ enrolled ? '取消加入' : '加入課程' }}
     </button>
 
     <!-- ✅ 收藏按鈕（登入後才顯示） -->
     <div class="mt-2" v-if="authStore.isAuthenticated">
-      <button
-        :class="['btn', isFavorited ? 'btn-secondary' : 'btn-outline-danger']"
-        @click="toggleFavorite"
-      >
+      <button :class="['btn', isFavorited ? 'btn-secondary' : 'btn-outline-danger']" @click="toggleFavorite">
         {{ isFavorited ? "取消收藏" : "加入收藏" }}
       </button>
     </div>
@@ -40,9 +29,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import axios from "@/plugins/axios.js";
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import axios from '@/plugins/axios.js'
 // favButton// favButton// favButton// favButton// favButton// favButton
 import { useAuthStore } from "@/stores/auth";
 // favButton// favButton// favButton// favButton// favButton// favButton
@@ -77,14 +66,14 @@ const toggleFavorite = async () => {
 };
 // favButton// favButton// favButton// favButton// favButton// favButton
 
-const route = useRoute();
-const router = useRouter();
-const courseId = Number(route.params.id);
+const route = useRoute()
+const router = useRouter()
+const courseId = Number(route.params.id)
 // const userId = 3  //先寫死！！
-const userId = ref(null);
-const course = ref(null);
-const chapters = ref([]);
-const enrolled = ref(false);
+const userId = ref(null)
+const course = ref(null)
+const chapters = ref([])
+const enrolled = ref(false)
 
 const getCategoryLabel = (key) => {
   const map = {
@@ -104,30 +93,23 @@ const getCategoryLabel = (key) => {
 // 檢查是否已加入課程
 const checkEnrolled = async () => {
   try {
-    const res = await axios.get(
-      `/api/progress/user/${userId.value}/course/${courseId}`
-    );
+    const res = await axios.get(`/api/progress/user/${userId.value}/course/${courseId}`)
 
     enrolled.value = res.data.length > 0;
   } catch (err) {
     enrolled.value = false;
   }
-};
+}
 
 // 切換加入/取消
 const toggleEnrollment = async () => {
   try {
     if (!enrolled.value) {
-      await axios.post("/api/progress/enroll", {
-        userId: userId.value,
-        courseId,
-      });
-      enrolled.value = true;
+      await axios.post('/api/progress/enroll', { userId: userId.value, courseId })
+      enrolled.value = true
     } else {
-      await axios.delete(
-        `/api/progress/user/${userId.value}/course/${courseId}`
-      );
-      enrolled.value = false;
+      await axios.delete(`/api/progress/user/${userId.value}/course/${courseId}`)
+      enrolled.value = false
     }
   } catch (err) {
     console.error(err);
@@ -135,41 +117,65 @@ const toggleEnrollment = async () => {
   }
 };
 
+// onMounted(async () => {
+//   try {
+//     const resProfile = await axios.get('/user/profile', { withCredentials: true })
+//     userId.value = resProfile.data.userId
+
+//     const resCourse = await axios.get(`/api/courses/${courseId}`)
+//     course.value = resCourse.data
+
+//     const resChapters = await axios.get(`/api/chapters/chapters/course/${courseId}`)
+//     chapters.value = resChapters.data
+
+//     await checkEnrolled()
+//     await checkFavorite()
+//   } catch (err) {
+//     console.error('使用者未登入或載入失敗', err)
+//     alert('請先登入')
+//     router.push('/login')
+//   }
+// })
+
+
 onMounted(async () => {
   try {
-    const resProfile = await axios.get("/user/profile", {
-      withCredentials: true,
-    });
-    userId.value = resProfile.data.userId;
+    // 嘗試取得登入資訊（不強制成功）
+    const resProfile = await axios.get('/user/profile', { withCredentials: true })
+    userId.value = resProfile.data.userId
 
-    const resCourse = await axios.get(`/api/courses/${courseId}`);
-    course.value = resCourse.data;
-
-    const resChapters = await axios.get(
-      `/api/chapters/chapters/course/${courseId}`
-    );
-    chapters.value = resChapters.data;
-
-    await checkEnrolled();
-    await checkFavorite();
+    await checkEnrolled()
+    await checkFavorite()
   } catch (err) {
-    console.error("使用者未登入或載入失敗", err);
-    alert("請先登入");
-    router.push("/login");
+    // 若失敗就當沒登入，不跳 login、不顯示錯誤
+    userId.value = null
   }
-});
+
+  try {
+    const resCourse = await axios.get(`/api/courses/${courseId}`)
+    course.value = resCourse.data
+
+    const resChapters = await axios.get(`/api/chapters/chapters/course/${courseId}`)
+    chapters.value = resChapters.data
+  } catch (err) {
+    console.error('課程或章節載入失敗：', err)
+  }
+})
+
+
+
 </script>
 
 <style scoped>
 .enroll-btn {
-  border: 2px solid #4db6ac;
-  color: #4db6ac;
+  border: 2px solid #4DB6AC;
+  color: #4DB6AC;
   background-color: transparent;
   transition: all 0.2s ease-in-out;
 }
 
 .enroll-btn:hover {
-  background-color: #4db6ac;
+  background-color: #4DB6AC;
   color: white;
 }
 </style>
