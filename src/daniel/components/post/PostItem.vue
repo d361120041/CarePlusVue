@@ -4,7 +4,9 @@
             <!-- 使用者資訊區塊 -->
             <UserAvatar :imageUrl="imageUrl" />
             <div class="user-info">
-                <div class="user-name">{{ post.user.userName }}</div>
+                <div class="user-name">{{ post.user.userName }}
+                    <span v-if="post.createdAt !== post.modifiedAt" class="edited-marker">已編輯</span>
+                </div>
                 <div class="post-time">{{ formattedTime }}</div>
             </div>
             <div class="post-categories">
@@ -195,6 +197,11 @@ onMounted(async () => {
 .post-time {
     font-size: 0.8rem;
     color: #666;
+}
+
+.edited-marker {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
 }
 
 .post-categories {
