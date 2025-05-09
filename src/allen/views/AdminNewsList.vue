@@ -113,7 +113,9 @@ import myAxios from '@/plugins/axios';
 import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue';
 import noImage from '@/assets/allen/no-image.jpg';
 import { getFullImageUrl } from '@/allen/utils/urlHelper';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const newsList = ref([]);
 const categories = ref([]);
 const page = ref(0);
