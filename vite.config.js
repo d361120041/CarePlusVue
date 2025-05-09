@@ -15,5 +15,15 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    proxy: {
+      '/patient': {
+        target: 'http://localhost:8082', 
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/patient/, '/patient'),
+      },
+    },
+  },
 })
 
