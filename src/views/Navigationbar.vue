@@ -21,7 +21,9 @@
         <span class="dropdown-label">線上課程</span>
         <ul class="dropdown-menu">
           <li><router-link to="/course">課程列表</router-link></li>
-          <li v-if="isUserLogin"><router-link to="/my-courses">我的課程</router-link></li>
+          <li v-if="isUserLogin">
+            <router-link to="/my-courses">我的課程</router-link>
+          </li>
         </ul>
       </li>
     </ul>
@@ -31,25 +33,36 @@
       <template v-if="isUserLogin">
         <div class="user-info">
           <!-- ✅ 純文字歡迎語 -->
-          <span class="welcome-text" v-if="auth.user">歡迎：{{ auth.user.userName }}</span>
+          <span class="welcome-text" v-if="auth.user" style="color: black"
+            >歡迎：{{ auth.user.userName }}</span
+          >
 
           <!-- ✅ 點擊頭像導向個人資料頁 -->
           <router-link to="/user-center/profile" class="user-icon-wrapper">
-            <img v-if="imageUrl" :src="imageUrl" alt="使用者頭像" class="user-icon" title="編輯個人資料" />
+            <img
+              v-if="imageUrl"
+              :src="imageUrl"
+              alt="使用者頭像"
+              class="user-icon"
+              title="編輯個人資料"
+            />
           </router-link>
 
           <button @click="userLogout" class="logout-button">登出</button>
         </div>
       </template>
 
-
       <!-- ✅ 照顧者登入後 -->
       <!-- Navbar.vue -->
       <template v-else-if="isCaregiverLogin">
         <div class="user-info">
           <router-link to="/caregiver" class="user-icon-wrapper">
-            <img v-if="photoPreviewUrl !== undefined && photoPreviewUrl !== ''" :src="photoPreviewUrl" class="avatar"
-              @click.stop="triggerFileInput" />
+            <img
+              v-if="photoPreviewUrl !== undefined && photoPreviewUrl !== ''"
+              :src="photoPreviewUrl"
+              class="avatar"
+              @click.stop="triggerFileInput"
+            />
           </router-link>
           <span class="welcome">歡迎，{{ caregiver.email }}</span>
           <button @click="caregiverLogout" class="logout-button">登出</button>
@@ -61,9 +74,9 @@
         <div class="dropdown-login">
           <button class="login-dropdown-btn">登入/註冊</button>
           <div class="dropdown-login-menu">
-            <button @click="goUserLogin"> 一般用戶登入</button>
-            <button @click="goCaregiverLogin"> 照服人員登入</button>
-            <button @click="goAdminLogin"> 系統管理員登入</button>
+            <button @click="goUserLogin">一般用戶登入</button>
+            <button @click="goCaregiverLogin">照服人員登入</button>
+            <button @click="goAdminLogin">系統管理員登入</button>
           </div>
         </div>
       </template>
@@ -95,19 +108,13 @@ const fetchImage = async () => {
   }
 };
 const goToCaregiverPage = () => {
-  router.push('/caregiver') // ⬅️ 改成你想導向的網址
-}
-
-
-
-
+  router.push("/caregiver"); // ⬅️ 改成你想導向的網址
+};
 
 // ✅ 照顧者：JWT-based 登入狀態
 import { useCaregiverAuth } from "@/stores/useCaregiverAuth";
 const caregiver = useCaregiverAuth();
 const isCaregiverLogin = computed(() => !!caregiver.token);
-
-
 
 const router = useRouter();
 const route = useRoute();
@@ -120,7 +127,7 @@ onMounted(() => {
   }
 
   caregiver.restoreLogin(); // ✅ 用 Pinia 的方法處理登入狀態與頭貼
-})
+});
 
 // const fetchCaregiverPhoto = async () => {
 //   try {
@@ -139,10 +146,6 @@ onMounted(() => {
 //     console.error('載入大頭貼失敗', err)
 //   }
 // }
-
-
-
-
 
 // 登入／登出事件
 //使用者登入按鈕
@@ -171,7 +174,7 @@ const caregiverLogout = () => {
   background-color: var(--color-bg-card);
   padding: 0;
   position: relative;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: 60px;
 }
 
@@ -190,7 +193,6 @@ const caregiverLogout = () => {
 .user-info {
   display: flex;
   align-items: center;
-
 }
 
 .user-icon {
@@ -235,7 +237,7 @@ const caregiverLogout = () => {
   background-color: rgba(0, 0, 0, 0.05);
   color: var(--color-primary);
   transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 /* ----- Navbar 結束 ----- */
 
@@ -408,7 +410,6 @@ const caregiverLogout = () => {
   background-color: transparent;
   border: none;
 }
-
 
 .user-icon-wrapper:focus {
   outline: none;
