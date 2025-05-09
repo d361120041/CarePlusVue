@@ -5,7 +5,19 @@
         回到{{ auth.userName }}的課程進度總覽
       </button>
     </div>
-    <h3 class="mb-3">{{ courseTitle }}：{{ chapter.title }}</h3>
+    <!-- 麵包屑導航 -->
+<nav aria-label="breadcrumb" class="mt-2 mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <router-link :to="`/courses/${courseId}`">{{ courseTitle || '課程' }}</router-link>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+      {{ chapter?.title || '章節' }}
+    </li>
+  </ol>
+</nav>
+
+    <!-- <h3 class="mb-3">{{ courseTitle }}｜{{ chapter.title }}</h3> -->
 
     <!-- 顯示影片或文章 -->
     <div class="mb-4">

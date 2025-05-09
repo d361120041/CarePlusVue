@@ -1,7 +1,7 @@
 <template>
   <div class="container py-4">
     <div id="course-top"></div>
-    <h2 class="mb-4" style="text-align: center;">課程列表</h2>
+    <!-- <h2 class="mb-4" style="text-align: center;">課程列表</h2> -->
 
     <!-- 關鍵字搜尋 -->
     <div class="mb-4">
@@ -23,6 +23,21 @@
         </div>
       </div>
     </div>
+
+<!-- 排序按鈕 -->
+    <div class="dropdown mb-3">
+  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+    排序方式
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-asc'">依課程編號 小 → 大</a></li>
+    <li><a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-desc'">依課程編號 大 → 小</a></li>
+  </ul>
+</div>
+
+
+
+
     <!-- 課程卡片清單 -->
     <div v-if="courses.length > 0" :class="[
       'd-flex flex-column gap-3 w-100',
@@ -80,6 +95,16 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import axios from "@/plugins/axios.js";
+
+const sortOption = ref('id-asc')
+
+const sortedCourses = computed(() => {
+  return [...courses.value].sort((a, b) => {
+    if (sortOption.value === 'id-asc') return a.courseId - b.courseId
+    if (sortOption.value === 'id-desc') return b.courseId - a.courseId
+    return 0
+  })
+})
 
 const courses = ref([]);
 const searchKeyword = ref("");
@@ -165,10 +190,15 @@ const filterByCategory = async (category) => {
 };
 
 const currentPage = ref(1); // 當前頁數
-const pageSize = 3; // 每頁幾筆（固定為 3）
+const pageSize = 5; // 每頁幾筆（固定為 3）
+// const paginatedCourses = computed(() => {
+//   const start = (currentPage.value - 1) * pageSize;
+//   return courses.value.slice(start, start + pageSize);
+// });
+
 const paginatedCourses = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
-  return courses.value.slice(start, start + pageSize);
+  return sortedCourses.value.slice(start, start + pageSize); // ✅ 改成從 sortedCourses
 });
 
 const totalPages = computed(() => {
@@ -212,5 +242,9 @@ onMounted(fetchCourses);
 .search-input {
   width: 90%;
   max-width: 1100px;
+}
+.form-select-sm {
+  font-size: 0.875rem;
+  padding: 0.25rem 1rem;
 }
 </style>
