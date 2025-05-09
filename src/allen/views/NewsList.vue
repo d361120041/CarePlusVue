@@ -1,77 +1,70 @@
 <template>
-    <GlobalBanner :imgSrc="bannerImg">
-        <h1>新聞列表</h1>
-    </GlobalBanner>  
-    <div class="news-list">
+  <GlobalBanner :imgSrc="bannerImg">
+    <h1>新聞列表</h1>
+  </GlobalBanner>  
+
+  <div class="news-list">
     <!-- 搜尋欄 -->
-    <div class="search-bar mx-auto max-w-4xl p-6 mb-10 bg-white rounded-xl shadow-lg border border-gray-300">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <input
-          v-model="search.keyword"
-          type="text"
-          placeholder="🔍 請輸入關鍵字"
-          class="border border-gray-300 p-2 rounded-md w-full"
-          @keyup.enter="handleSearch"
-        />
-
-        <select v-model="search.categoryId" class="border border-gray-300 p-2 rounded-md w-full">
-          <option value="">-- 所有分類 --</option>
-          <option v-for="cat in categories" :key="cat.categoryId" :value="cat.categoryId">
-            {{ cat.categoryName }}
-          </option>
-        </select>
-
-        <select v-model="search.dateRange" class="border border-gray-300 p-2 rounded-md w-full">
-          <option value="">-- 不限制時間 --</option>
-          <option value="today">今天</option>
-          <option value="week">這週</option>
-          <option value="month">這個月</option>
-          <option value="year">今年</option>
-        </select>
-
-        <button @click="handleSearch" :disabled="loading" class="search-btn w-full">
-          🔍 搜尋
-        </button>
-      </div>
-
-      <!-- 搜尋摘要 -->
-      <div v-if="hasSearched && summaryText" class="text-gray-700 mt-4 text-sm">
-        🔎 以下是 {{ summaryText }} 的搜尋結果
-        <button @click="clearSearch" class="ml-4 text-blue-600 underline hover:text-blue-800">
-          取消篩選
-        </button>
-      </div>
+    <div class="search-bar mb-4 flex gap-2">
+      <input 
+        v-model="search.keyword" 
+        type="text" 
+        placeholder="輸入關鍵字"
+        class="border p-2 rounded w-1/3"
+      />
+      <select v-model="search.categoryId" class="border p-2 rounded w-1/4">
+        <option value="">選擇分類</option>
+        <option v-for="cat in categories" :key="cat.categoryId" :value="cat.categoryId">
+          {{ cat.categoryName }}
+        </option>
+      </select>
+      <select v-model="search.dateRange" class="border p-2 rounded w-1/4">
+        <option value="">選擇時間範圍</option>
+        <option value="today">今天</option>
+        <option value="week">這週</option>
+        <option value="month">這月</option>
+        <option value="year">今年</option>
+      </select>
+      <button @click="handleSearch" class="search-btn w-full">🔍 搜尋</button>
     </div>
 
-    <h1 class="text-2xl font-bold mb-6 text-center">最新新聞列表</h1>
+    <!-- 搜尋摘要 -->
+    <div v-if="hasSearched && summaryText" class="text-gray-700 mt-4 text-sm">
+      🔎 以下是 {{ summaryText }} 的搜尋結果
+      <button @click="clearSearch" class="ml-4 text-blue-600 underline hover:text-blue-800">
+        取消篩選
+      </button>
+    </div>
 
     <NewsListSkeleton v-if="loading" />
 
+    <!-- 新聞清單 -->
+
+    <div v-if="newsList.length === 0" class="text-gray-500 text-center">暫無新聞資料</div>
     <div v-else>
       <div
         v-for="news in newsList"
         :key="news.newsId"
         class="news-item flex items-start gap-4 mb-6 border-b pb-4"
       >
-        <router-link :to="`/news/${news.newsId}`" class="flex-shrink-0">
+        <div class="flex-shrink-0">
           <img
             :src="getFullImageUrl(news.thumbnail) || defaultThumbnail"
             alt="縮圖"
             class="thumbnail"
             @error="handleImgError"
           />
-        </router-link>
+        </div>
 
-        <div class="flex-1 pt-2">
-          <router-link :to="`/news/${news.newsId}`" class="text-lg font-semibold hover:underline">
-            {{ news.title }}
-          </router-link>
-          <p class="text-sm text-gray-600 mt-1">📅 發布日期：{{ formatDate(news.publishAt) }}</p>
+        <div class="flex-1">
+          <h2 class="text-lg font-semibold">{{ news.title }}</h2>
+          <p class="text-sm text-gray-600">📅 發布日期：{{ formatDate(news.publishAt) }}</p>
           <p class="text-sm text-gray-600">🛠️ 最後修改：{{ news.modifyAt ? formatDate(news.modifyAt) : '尚未修改' }}</p>
           <p class="text-sm text-gray-600">👁️ 瀏覽次數：{{ news.viewCount || 0 }}</p>
         </div>
       </div>
 
+      <!-- 分頁控制 -->
       <div class="pagination mt-6">
         <button @click="prevPage" :disabled="page === 0 || loading" class="page-btn">上一頁</button>
         <span>第 {{ page + 1 }} 頁</span>
@@ -82,24 +75,27 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import myAxios from '@/plugins/axios';
-import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue';
+import { getFullImageUrl } from '@/allen/utils/urlHelper.js'; // 引入函數
 import noImage from '@/assets/allen/no-image.jpg';
-import { getFullImageUrl } from '@/allen/utils/urlHelper';
+import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue';
 import GlobalBanner from '@/components/GlobalBanner.vue'
-import bannerImg from '@/assets/images/GlobalBanner/people-holding-rubber-heart.jpg'
+
 const newsList = ref([]);
+const categories = ref([]);
 const page = ref(0);
 const size = ref(5);
-const loading = ref(false);
 const hasNextPage = ref(true);
+const loading = ref(false);
 const defaultThumbnail = noImage;
 const hasSearched = ref(false);
 const searchSnapshot = ref({});
-
-const categories = ref([]);
-const search = ref({ keyword: '', categoryId: '', dateRange: '' });
+const search = ref({
+  keyword: '',
+  categoryId: '',
+  dateRange: ''
+});
 
 const formatDate = (dateStr) => {
   if (!dateStr) return '';
@@ -119,12 +115,13 @@ const formatDateTime = (date) => {
   const hh = String(date.getHours()).padStart(2, '0');
   const mi = String(date.getMinutes()).padStart(2, '0');
   const ss = String(date.getSeconds()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`; // ✅ 中間是空格
 };
 
 const buildDateRange = () => {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
   switch (search.value.dateRange) {
     case 'today':
       return {
@@ -162,44 +159,24 @@ const buildDateRange = () => {
   }
 };
 
-const summaryText = computed(() => {
-  const parts = [];
-  const snap = searchSnapshot.value;
-  if (snap.keyword) parts.push(`關鍵字為「${snap.keyword}」`);
-  if (snap.categoryId) {
-    const found = categories.value.find(c => c.categoryId === Number(snap.categoryId));
-    if (found) parts.push(`分類為「${found.categoryName}」`);
-  }
-  const map = { today: '今天', week: '這週', month: '這月', year: '今年' };
-  if (snap.dateRange && map[snap.dateRange]) {
-    parts.push(`時間為「${map[snap.dateRange]}」`);
-  }
-  return parts.length ? parts.join('、') : '';
-});
-
-const clearSearch = () => {
-  search.value = { keyword: '', categoryId: '', dateRange: '' };
-  searchSnapshot.value = {};
-  hasSearched.value = false;
-  page.value = 0;
-  loadNews();
-};
-
 const loadNews = async () => {
   loading.value = true;
   const { dateFrom, dateTo } = buildDateRange();
-  const params = {
-    keyword: search.value.keyword.trim() || null,
+
+  const requestBody = {
+    keyword: search.value.keyword || null,
     categoryId: search.value.categoryId || null,
-    dateFrom,
-    dateTo
+    dateFrom: dateFrom || null,
+    dateTo: dateTo || null
   };
+
   try {
-    const response = await myAxios.post(`/news/public/search?page=${page.value}&size=${size.value}`, params);
-    newsList.value = response.data.content;
-    hasNextPage.value = !response.data.last;
-  } catch (error) {
-    console.error('載入新聞失敗', error);
+    const res = await myAxios.post(`/news/public/search?page=${page.value}&size=${size.value}`, requestBody);
+    newsList.value = res.data.content;
+    hasNextPage.value = !res.data.last;
+    hasSearched.value = true;
+  } catch (err) {
+    console.error('載入新聞失敗', err);
   } finally {
     loading.value = false;
   }
@@ -208,12 +185,15 @@ const loadNews = async () => {
 const handleSearch = () => {
   hasSearched.value = true;
   page.value = 0;
-  searchSnapshot.value = { ...search.value };
+  searchSnapshot.value = { ...search.value }; // ✅ 固定當下搜尋條件
   loadNews();
 };
 
-const nextPage = () => {
-  page.value++;
+const clearSearch = () => {
+  search.value = { keyword: '', categoryId: '', dateRange: '' };
+  searchSnapshot.value = {}; // ✅ 清除摘要內容來源
+  hasSearched.value = false;
+  page.value = 0;
   loadNews();
 };
 
@@ -224,9 +204,10 @@ const prevPage = () => {
   }
 };
 
-const handleImgError = (event) => {
-  if (event.target.src !== defaultThumbnail) {
-    event.target.src = defaultThumbnail;
+const nextPage = () => {
+  if (hasNextPage.value) {
+    page.value++;
+    loadNews();
   }
 };
 
@@ -238,6 +219,32 @@ const fetchCategories = async () => {
     console.error('載入分類失敗', err);
   }
 };
+
+const handleImgError = (e) => {
+  if (e.target.src !== defaultThumbnail) {
+    e.target.src = defaultThumbnail;
+  }
+};
+
+const summaryText = computed(() => {
+  const parts = [];
+  const snap = searchSnapshot.value;
+
+  if (snap.keyword) parts.push(`關鍵字為「${snap.keyword}」`);
+
+  if (snap.categoryId) {
+    const found = categories.value.find(c => c.categoryId === Number(snap.categoryId));
+    if (found) parts.push(`分類為「${found.categoryName}」`);
+  }
+
+  const map = { today: '今天', week: '這週', month: '這月', year: '今年' };
+  if (snap.dateRange && map[snap.dateRange]) {
+    parts.push(`時間為「${map[snap.dateRange]}」`);
+  }
+
+  return parts.length ? parts.join('、') : '';
+});
+
 
 onMounted(() => {
   fetchCategories();

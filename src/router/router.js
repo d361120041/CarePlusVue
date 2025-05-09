@@ -268,7 +268,14 @@ const routes = [
       { path: "cms/courses", component: CourseAdmin, name: "cmsCourses" },
       { path: "cms/chapters", component: ChapterAdmin, name: "cmsChapters" },
       { path: "cms/progress", component: ProgressAdmin, name: "cmsProgress" },
-    ],
+
+      // ✅ 新聞模組路由整合
+      { path: "news", component: AdminNewsList, name: "adminNewsList" },
+      { path: "news/new", component: AdminEditNews, name: "adminNewsNew" },
+      { path: "news/edit/:id", component: AdminEditNews, name: "adminNewsEdit" },
+      { path: "news/:id", component: AdminNewsDetail, name: "adminNewsDetail" },
+      { path: "news/preview/:id", component: AdminNewsPreview, name: "AdminNewsPreview" },
+      ],
   },
 ];
 // ================== 設定路徑 結束==================

@@ -47,19 +47,6 @@
           </div>
         </div>
 
-        <div class="mt-4">
-          <!-- 標籤區塊 -->
-          <div class="text-sm text-gray-600 mb-2">
-            🏷️ 標籤：
-            <span v-if="news.tags && news.tags.length">
-              <span v-for="(tag, index) in news.tags" :key="index" class="inline-block bg-gray-200 text-gray-700 px-2 py-1 mr-1 mb-1 rounded">
-                {{ tag }}
-              </span>
-            </span>
-            <span v-else class="text-gray-400">無標籤</span>
-          </div>
-        </div>
-
         <div class="mt-2">
           <p class="text-sm text-gray-600">👁️ 瀏覽次數：{{ news.viewCount || 0 }}</p>
         </div>

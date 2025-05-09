@@ -12,14 +12,20 @@
       <!-- 分類 -->
       <div class="mb-4">
         <label class="block font-semibold mb-1">分類</label>
-        <select v-model="news.category.categoryId" class="w-full border p-2 rounded">
+        <select v-model="news.category.categoryId" class="w-full border p-2 rounded" @change="handleCategoryChange">
           <option disabled value="">請選擇分類</option>
           <option v-for="cat in categories" :key="cat.categoryId" :value="cat.categoryId">
             {{ cat.categoryName }}
           </option>
+          <option value="add">新增分類...</option>
         </select>
-      </div>
 
+        <!-- 刪除分類按鈕 -->
+        <button @click.prevent="handleDeleteCategory"  class="text-red-500 hover:text-red-700">
+          🗑️
+        </button>
+      </div>
+  
 
       <!-- 縮圖 -->
       <div class="mb-4">
@@ -80,9 +86,123 @@ const previewUrl = ref(null);
 const isDirty = ref(false);
 const quillRef = ref(null);
 
+//新增分類
+const handleCategoryChange = async (e) => {
+  const selectedValue = e.target.value;
+
+  // 如果選擇的是 "新增分類"
+  if (selectedValue === "add") {
+    await addCategory();
+    // 重設下拉選單
+    news.value.category.categoryId = '';
+  }
+};
+
+//刪除分類
+const handleDeleteCategory = async () => {
+  if (!news.value.category.categoryId) {
+    Swal.fire({
+      icon: 'warning',
+      title: '請先選擇要刪除的分類！',
+      confirmButtonText: '確定'
+    });
+    return;
+  }
+
+  const selectedCategory = categories.value.find(cat => cat.categoryId === news.value.category.categoryId);
+
+  if (!selectedCategory) {
+    Swal.fire({
+      icon: 'warning',
+      title: '無法找到選擇的分類！',
+      confirmButtonText: '確定'
+    });
+    return;
+  }
+
+  const { isConfirmed } = await Swal.fire({
+    title: `確定要刪除分類「${selectedCategory.categoryName}」嗎？`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: '刪除',
+    cancelButtonText: '取消',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6'
+  });
+
+  if (isConfirmed) {
+    try {
+      await myAxios.delete(`/news/category/${selectedCategory.categoryId}`);
+
+      Swal.fire({
+        icon: 'success',
+        title: `分類「${selectedCategory.categoryName}」已刪除！`,
+        confirmButtonText: '確定'
+      });
+
+      // 重新加載分類列表
+      await fetchCategories();
+      // 重置分類選擇
+      news.value.category.categoryId = '';
+    } catch (err) {
+      console.error('刪除分類失敗：', err);
+      Swal.fire({
+        icon: 'error',
+        title: '刪除分類失敗，請稍後再試',
+        confirmButtonText: '確定'
+      });
+    }
+  }
+};
+
 const fetchCategories = async () => {
-  const res = await myAxios.get('/news/category');
-  categories.value = res.data;
+  try {
+    const res = await myAxios.get('/news/category');
+    categories.value = res.data;
+  } catch (err) {
+    console.error('載入分類失敗：', err);
+  }
+};
+
+const addCategory = async () => {
+  try {
+    const { value: categoryName } = await Swal.fire({
+      title: '新增分類',
+      input: 'text',
+      inputLabel: '輸入分類名稱',
+      inputPlaceholder: '請輸入分類名稱',
+      confirmButtonText: '新增',
+      showCancelButton: true,
+      cancelButtonText: '取消',
+      inputValidator: (value) => {
+        if (!value.trim()) {
+          return '分類名稱不得為空！';
+        }
+      }
+    });
+
+    if (categoryName) {
+      // 發送新增分類請求
+      const res = await myAxios.post('/news/category', { categoryName: categoryName.trim() });
+
+      // 提示成功訊息
+      Swal.fire({
+        icon: 'success',
+        title: `分類「${res.data.categoryName}」新增成功！`,
+        confirmButtonText: '確定'
+      });
+
+      // 重新加載分類列表
+      await fetchCategories();
+    }
+  } catch (err) {
+    console.error('新增分類失敗：', err);
+    Swal.fire({
+      icon: 'error',
+      title: '新增分類失敗，請稍後再試',
+      confirmButtonText: '確定'
+    });
+  }
 };
 
 const fetchNews = async () => {
@@ -101,6 +221,7 @@ const fetchNews = async () => {
   }
 };
 
+//刪除圖片
 const removeImage = () => {
   news.value.thumbnail = '';
   previewUrl.value = '/src/assets/allen/no-image.jpg';
