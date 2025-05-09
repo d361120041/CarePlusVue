@@ -2,6 +2,19 @@
   <div class="register-container">
     <h2>註冊成為照顧者</h2>
     <form @submit.prevent="handleRegister">
+      <!-- ✅ 大頭貼預覽區塊 -->
+      <div class="avatar-section" >
+        <div class="avatar-wrapper"@click="triggerFileInput">
+          <img :src="photoPreviewUrl || defaultAvatar"  class="avatar" @click.stop="triggerFileInput" />
+          <div class="avatar-overlay" v-if="!photoPreviewUrl">+</div>
+        </div>
+        <input type="file" ref="fileInput" @change="handlePhotoChange" accept="image/*" style="display:none" />
+        <div class="upload-button" @click.stop>
+          <button @click="triggerFileInput" type="button">選擇大頭貼</button>
+        </div>
+      </div>
+      <br>
+
       <div>
         <label><span class="required">*</span> Email</label>
         <input v-model="email" type="email" required />
@@ -124,6 +137,63 @@ const cityDistricts = {
 const currentDistricts = computed(() => cityDistricts[serviceCity.value] || [])
 const onCityChange = () => (serviceDistrict.value = '')
 
+//大頭貼
+const photoFile = ref(null)
+const photoPreviewUrl = ref(null)
+
+const MAX_WIDTH = 1680
+const MAX_HEIGHT = 1680
+
+const fileInput = ref(null);  // ✅ 確保有綁定 ref
+
+const triggerFileInput = () => {
+  if (fileInput.value) {
+    fileInput.value.click();
+  }
+};
+
+
+const handlePhotoChange = (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  const image = new Image()
+  const objectUrl = URL.createObjectURL(file)
+
+  image.onload = () => {
+    if (image.width > MAX_WIDTH || image.height > MAX_HEIGHT) {
+      message.value = `❌ 上傳失敗：圖片尺寸不能超過 ${MAX_WIDTH}x${MAX_HEIGHT}px`
+      photoFile.value = null
+      photoPreviewUrl.value = null
+      URL.revokeObjectURL(objectUrl)
+      return
+    }
+
+    photoFile.value = file
+    photoPreviewUrl.value = objectUrl
+  }
+
+  image.src = objectUrl
+}
+
+
+
+const base64Photo = ref('')
+
+const handleImageUpload = async (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = () => {
+    const result = reader.result
+    base64Photo.value = result.split(',')[1]
+  }
+  reader.readAsDataURL(file)
+}
+//大頭貼
+
+
 // ✅ 即時檢查信箱是否存在
 watch(email, async (newEmail) => {
   emailExists.value = false
@@ -143,6 +213,21 @@ const handleRegister = async () => {
     return
   }
 
+  // ✅ 如果有上傳大頭貼才轉 base64
+  if (photoFile.value) {
+    const reader = new FileReader()
+    reader.onload = async () => {
+      base64Photo.value = reader.result.split(',')[1] // 去掉開頭 data:image/jpeg;base64,
+      await submitForm()
+    }
+    reader.readAsDataURL(photoFile.value)
+  } else {
+    // 沒選圖片 → 直接送出表單
+    await submitForm()
+  }
+}
+
+const submitForm = async () => {
   try {
     await auth.register({
       email: email.value,
@@ -160,7 +245,8 @@ const handleRegister = async () => {
       photoPath: '/images/default.png',
       hourlyRate: hourlyRate.value,
       halfDayRate: halfDayRate.value,
-      fullDayRate: fullDayRate.value
+      fullDayRate: fullDayRate.value,
+      base64Photo: base64Photo.value
     })
 
     message.value = '註冊成功！請到信箱完成驗證 ✅'
@@ -171,6 +257,7 @@ const handleRegister = async () => {
     message.value = error.response?.data || '註冊失敗！'
   }
 }
+
 </script>
 
 <style scoped>
@@ -179,19 +266,117 @@ const handleRegister = async () => {
   margin: 0 auto;
   padding: 20px;
 }
+
 .register-container div {
   margin-bottom: 10px;
 }
+
 .required {
   color: red;
   margin-right: 4px;
 }
+
 .error {
   color: red;
   font-size: 0.9rem;
 }
+
 .message {
   margin-top: 10px;
   color: green;
+}
+
+.avatar-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  /* ✅ 重點：等比例裁切填滿不變形 */
+  border-radius: 50%;
+  /* ✅ 加圓形（可選） */
+  border: 2px solid #ccc;
+}
+
+.avatar-section {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  
+}
+
+.avatar-wrapper {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  /* ✅ 預設背景避免破圖 */
+}
+
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 40px;
+  font-weight: bold;
+  border-radius: 50%;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.avatar-wrapper:hover .avatar-overlay {
+  opacity: 0.9;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.upload-button {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  background-color: #007bff;
+  color: #fff;
+  padding: 5px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.upload-button button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
+}
+
+.upload-button button:hover {
+  text-decoration: underline;
 }
 </style>

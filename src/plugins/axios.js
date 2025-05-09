@@ -2,8 +2,8 @@ import axios from "axios";
 
 const myAxios = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  withCredentials: true,
 });
+
 
 // 攔截從後端傳回的所有403狀態
 myAxios.interceptors.response.use(
@@ -26,10 +26,16 @@ myAxios.interceptors.response.use(
 //yuuhou的新增
 myAxios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // 你自己的 JWT 儲存位置
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // 如果是取得照顧者照片
+    if (config.url === "/api/caregivers/photo") {
+      config.responseType = "blob";
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
