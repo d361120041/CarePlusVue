@@ -1,18 +1,13 @@
 <template>
   <div class="p-6 bg-white shadow rounded overflow-y-auto h-full">
-    <h2 class="text-xl font-bold mb-4">新增患者</h2>
+    <h2 class="text-xl font-bold mb-4">編輯患者</h2>
     <form @submit.prevent="onSubmit" class="space-y-4">
-      <p v-if="patientCount >= 5" class="text-red-500 mb-2">
-        已達上限，最多只能新增五位病患。
-      </p>
-
       <div>
         <label class="block font-medium mb-1">姓名</label>
         <input
           v-model="form.name"
           type="text"
           class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
           required
         />
       </div>
@@ -20,33 +15,21 @@
       <div>
         <label class="block font-medium mb-1">生日</label>
         <div class="flex gap-2">
-          <select
-            v-model="selectedYear"
-            class="border rounded p-2"
-            :disabled="patientCount >= 5"
-          >
+          <select v-model="selectedYear" class="border rounded p-2">
             <option value="">年</option>
             <option v-for="year in years" :key="year" :value="year">
               {{ year }}
             </option>
           </select>
 
-          <select
-            v-model="selectedMonth"
-            class="border rounded p-2"
-            :disabled="patientCount >= 5"
-          >
+          <select v-model="selectedMonth" class="border rounded p-2">
             <option value="">月</option>
             <option v-for="month in 12" :key="month" :value="month">
               {{ month }}
             </option>
           </select>
 
-          <select
-            v-model="selectedDay"
-            class="border rounded p-2"
-            :disabled="patientCount >= 5"
-          >
+          <select v-model="selectedDay" class="border rounded p-2">
             <option value="">日</option>
             <option v-for="day in availableDays" :key="day" :value="day">
               {{ day }}
@@ -60,7 +43,6 @@
         <select
           v-model="form.gender"
           class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
           required
         >
           <option value="">請選擇</option>
@@ -75,7 +57,6 @@
           v-model="form.emergencyContact"
           type="text"
           class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
         />
       </div>
 
@@ -85,7 +66,6 @@
           v-model="form.address"
           type="text"
           class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
         />
       </div>
 
@@ -95,8 +75,7 @@
           v-model="form.patientDetail"
           rows="3"
           class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
-        ></textarea>
+        />
       </div>
 
       <div>
@@ -105,8 +84,7 @@
           v-model="form.allergies"
           rows="3"
           class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
-        ></textarea>
+        />
       </div>
 
       <div>
@@ -115,8 +93,7 @@
           v-model="form.familyHistory"
           rows="3"
           class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
-        ></textarea>
+        />
       </div>
 
       <div>
@@ -125,17 +102,15 @@
           v-model="form.currentMedications"
           rows="3"
           class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
-        ></textarea>
+        />
       </div>
 
       <div class="flex space-x-4">
         <button
           type="submit"
           class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          :disabled="patientCount >= 5"
         >
-          提交
+          儲存修改
         </button>
         <button
           type="button"
@@ -150,11 +125,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import axios from "@/plugins/axios";
 
+const route = useRoute();
 const router = useRouter();
+const patientId = route.params.id;
+
 const form = ref({
   name: "",
   birthday: "",
@@ -166,8 +144,6 @@ const form = ref({
   familyHistory: "",
   currentMedications: "",
 });
-
-const patientCount = ref(0);
 
 // 年月日選單
 const currentYear = new Date().getFullYear();
@@ -186,22 +162,23 @@ const availableDays = computed(() => {
   return Array.from({ length: daysInMonth }, (_, i) => i + 1);
 });
 
-// 取得目前病患數量
-onMounted(async () => {
+const loadPatient = async () => {
   try {
-    const res = await axios.get("/patient/my");
-    patientCount.value = res.data.length;
+    const res = await axios.get(`/patient/${patientId}`);
+    form.value = res.data;
+
+    // 分解生日為 年月日
+    const birth = new Date(form.value.birthday);
+    selectedYear.value = birth.getFullYear();
+    selectedMonth.value = birth.getMonth() + 1;
+    selectedDay.value = birth.getDate();
   } catch {
-    patientCount.value = 0;
+    alert("讀取失敗");
+    router.push("/user-center/patients");
   }
-});
+};
 
 const onSubmit = async () => {
-  if (patientCount.value >= 5) {
-    alert("已達上限，無法新增更多病患");
-    return;
-  }
-
   // 組合生日
   if (!selectedYear.value || !selectedMonth.value || !selectedDay.value) {
     alert("請完整選擇生日");
@@ -212,7 +189,7 @@ const onSubmit = async () => {
   const dayStr = String(selectedDay.value).padStart(2, "0");
   form.value.birthday = `${selectedYear.value}-${monthStr}-${dayStr}`;
 
-  // 檢查年齡是否 >= 18
+  // 年齡驗證
   const birthdayDate = new Date(form.value.birthday);
   const today = new Date();
   const age =
@@ -232,18 +209,19 @@ const onSubmit = async () => {
   }
 
   try {
-    await axios.post("/patient/add", form.value);
-    alert("新增患者成功");
+    await axios.put(`/patient/update/${patientId}`, form.value);
+    alert("更新成功");
     router.push("/user-center/patients");
   } catch (err) {
-    console.error(err);
-    alert(err.response?.data || "新增失敗");
+    alert(err.response?.data || "更新失敗");
   }
 };
 
 const cancel = () => {
   router.push("/user-center/patients");
 };
+
+onMounted(loadPatient);
 </script>
 
 <style scoped>

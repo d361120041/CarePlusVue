@@ -27,17 +27,24 @@ const auth = useAuthStore();
 
 const login = async () => {
   try {
-    //把使用者輸入的帳密丟給後端
+    // 把使用者輸入的帳密丟給後端
     await axios.post("/user/login", {
       userAccount: userAccount.value,
       userPassword: password.value,
     });
-    alert("登入成功");
-    // 更新全域認證狀態
-    //呼叫Pinia auth store 裡的 checkAuth() 方法
+
+    // 呼叫 Pinia auth store 裡的 checkAuth() 方法（可保留）
     await auth.checkAuth();
-    // 返回首頁
-    router.push("/");
+
+    // 導向首頁並強制刷新頁面
+    // 登入成功後自動跳轉到先前想去的頁面（若有）
+    const redirectPath = sessionStorage.getItem("redirectAfterLogin");
+    sessionStorage.removeItem("redirectAfterLogin");
+
+    const target = redirectPath || "/";
+    router.push(target).then(() => {
+      window.location.reload();
+    });
   } catch (error) {
     if (error.response && error.response.data) {
       alert("登入失敗：" + error.response.data);

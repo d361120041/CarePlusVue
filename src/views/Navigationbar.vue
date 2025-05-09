@@ -5,7 +5,7 @@
         <router-link to="/">首頁</router-link>
       </li>
       <li>
-        <router-link to="/caregivers/search">找看護？</router-link>
+        <router-link to="/caregivers/search">找看護</router-link>
       </li>
       <li>
         <router-link to="/news">新聞列表</router-link>
@@ -28,7 +28,9 @@
       <template v-if="isUserLogin">
         <div class="user-info">
           <!-- ✅ 純文字歡迎語 -->
-          <span class="welcome-text">歡迎：{{ auth.userName }}</span>
+          <span class="welcome-text" v-if="auth.user"
+            >歡迎：{{ auth.user.userName }}</span
+          >
 
           <!-- ✅ 點擊頭像導向個人資料頁 -->
           <router-link to="/user-center/profile" class="user-icon-wrapper">
