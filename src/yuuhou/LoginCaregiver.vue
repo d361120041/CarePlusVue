@@ -90,7 +90,7 @@ const login = async () => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-image: url('@/assets/caregiver-bg.jpg'); /* ✅ 自訂圖片 */
+  background-image: url('@/assets/yuuhou/caregiver-bg.jpg'); /* ✅ 自訂圖片 */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

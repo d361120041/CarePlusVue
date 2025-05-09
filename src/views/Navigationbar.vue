@@ -1,7 +1,7 @@
 <template>
   <div class="navbar">
     <router-link to="/" class="logo">
-      <img src="@/assets/logo_0508.png" alt="網站 Logo" />
+      <img src="@/assets/logo/logo_0508.png" alt="網站 Logo" />
     </router-link>
     <ul>
       <li>
@@ -98,16 +98,10 @@ const goToCaregiverPage = () => {
   router.push('/caregiver') // ⬅️ 改成你想導向的網址
 }
 
-
-
-
-
 // ✅ 照顧者：JWT-based 登入狀態
 import { useCaregiverAuth } from "@/stores/useCaregiverAuth";
 const caregiver = useCaregiverAuth();
 const isCaregiverLogin = computed(() => !!caregiver.token);
-
-
 
 const router = useRouter();
 const route = useRoute();
@@ -139,10 +133,6 @@ onMounted(() => {
 //     console.error('載入大頭貼失敗', err)
 //   }
 // }
-
-
-
-
 
 // 登入／登出事件
 //使用者登入按鈕
@@ -391,7 +381,7 @@ const caregiverLogout = () => {
 }
 
 .welcome-text {
-  color: #fff;
+  color: var(--color-text-primary);
   font-weight: bold;
 }
 

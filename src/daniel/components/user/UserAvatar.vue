@@ -11,11 +11,11 @@ import { computed } from 'vue'
 const props = defineProps({
     imageUrl: {
         type: String,
-        default: '/default-avatar.png'
+        default: '@/assets/daniel/circle-user-solid.svg'
     }
 })
 
-const src = computed(() => props.imageUrl || '/default-avatar.png')
+const src = computed(() => props.imageUrl || '@/assets/daniel/circle-user-solid.svg')
 </script>
 
 <style scoped>

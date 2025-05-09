@@ -98,10 +98,10 @@ const goToAdminLogin = () => {
 
 /* 背景圖 */
 .caregiver {
-  background-image: url('@/assets/caregiver-bg.jpg');
+  background-image: url('@/assets/yuuhou/caregiver-bg.jpg');
 }
 
 .admin {
-  background-image: url('@/assets/admin-bg.jpg');
+  background-image: url('@/assets/yuuhou/admin-bg.jpg');
 }
 </style>

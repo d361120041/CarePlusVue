@@ -76,7 +76,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-image: url('@/assets/admin-bg.jpg'); /* 換成你自己的管理者圖片 */
+    background-image: url('@/assets/yuuhou/admin-bg.jpg'); /* 換成你自己的管理者圖片 */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
