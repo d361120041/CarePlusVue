@@ -2,25 +2,28 @@
     <article class="post-item">
         <div class="post-header">
             <!-- 使用者資訊區塊 -->
-            <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
-            <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
+            <UserAvatar :imageUrl="imageUrl" />
             <div class="user-info">
                 <div class="user-name">{{ post.user.userName }}</div>
                 <div class="post-time">{{ formattedTime }}</div>
             </div>
+            <div class="post-categories">
+                <span v-for="cat in post.postCategoryClassifiers" :key="cat.postCategoryClassifierId"
+                    class="post-category-tag">
+                    {{ cat.postCategory.postCategory }}
+                </span>
+            </div>
 
             <!-- 漢堡選單 -->
             <div class="menu-wrapper">
-                <button class="hamburger-btn" @click.stop="toggleMenu">⋯</button>
+                <button class="hamburger-btn" @click.stop="toggleMenu" v-if="post.user.userId === currentUser.userId">⋯
+                </button>
                 <ul v-if="menuOpen" class="post-dropdown">
-                    <li @click="openEdit">編輯貼文</li>
-                    <li @click="confirmDelete">刪除貼文</li>
+                    <li @click="() => postStore.edit(post)">編輯貼文</li>
+                    <li @click="onDelete">刪除貼文</li>
                 </ul>
             </div>
         </div>
-
-        <!-- PostFormModal 編輯/檢視模式 -->
-        <PostFormModal :visible="isFormModalOpen" :post="post" @close="closeEdit" @saved="handleSaved" />
 
         <!-- 貼文內容 -->
         <h2>{{ post.title }}</h2>
@@ -36,178 +39,130 @@
         </div>
 
         <!-- 圖片列表 -->
-        <div class="post-images" v-if="post.images && post.images.length">
-            <img v-for="(img, idx) in post.images" :key="img.imageId" :src="`data:image/jpeg;base64,${img.imageData}`"
-                alt="Post Image" @click="showImage(idx)" class="clickable-img" />
+        <div class="post-images" v-if="imgList.length">
+            <img v-for="(src, idx) in imgList" :key="idx" :src="src" alt="Post Image" @click="openLightbox(idx)"
+                class="clickable-img" />
         </div>
 
         <!-- vue-easy-lightbox -->
-        <vue-easy-lightbox :visible="lightboxVisible" :imgs="imgs" :index="currentIndex" @hide="hideLightbox" />
+        <vue-easy-lightbox :visible="lightboxVisible" :imgs="imgList" :index="currentIndex"
+            @hide="lightboxVisible = false" />
 
         <!-- 觀看次數 -->
         <div style="text-align: right;">
-            <small>觀看次數{{ post.views }}次</small>
+            <small>觀看次數{{ formatCount(post.views) }}次</small>
         </div>
 
         <!-- 貼文動作列 -->
         <div class="post-actions">
             <button class="action-btn" @click="likePost">
-                👍 按讚({{ likeCount }})
+                👍 按讚({{ formatCount(post.reactions.length ?? 0) }})
             </button>
-            <button class="action-btn" @click="isDetailOpen = true"> 💬 留言</button>
+            <button class="action-btn" @click="() => postStore.openDetailModal(post)"> 💬 留言</button>
             <button class="action-btn" @click="sharePost">
-                🔗 分享 ({{ shareCount }})
+                🔗 分享 ({{ post.share }})
             </button>
         </div>
-
-        <!-- 詳細 Modal -->
-        <PostDetailModal :visible="isDetailOpen" :post="post" @close="isDetailOpen = false" @refresh="emit('refresh')" />
     </article>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import myAxios from '@/plugins/axios.js'
-import VueEasyLightbox from 'vue-easy-lightbox'
-
-import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
-import PostDetailModal from '@/daniel/components/post/PostDetailModal.vue'
-
-const props = defineProps({ post: Object })
-const emit = defineEmits(['refresh']) // 父層 PostList.vue 會用到
-
 import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+import { useToggle } from '@/daniel/composables/useToggle'
+import { formatCount } from '@/daniel/composables/number.js'
+import { usePostStore } from '@/daniel/stores/posts'
+import { useAuthStore } from '@/stores/auth'
+
+import VueEasyLightbox from 'vue-easy-lightbox'
+import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
+
+const props = defineProps({
+    post: Object, required: true
+})
+const emit = defineEmits(['refresh'])
+
+// 時間格式化
 const { formattedTime } = useTimeFormat(props.post.createdAt)
 
-import { useToggle } from '@/daniel/composables/useToggle'
+// 漢堡選單
 const [menuOpen, toggleMenu] = useToggle(false)
 
-//================= ref, computed 開始 =================
-// 使用者資訊區塊
-const currentUser = ref({
-    // avatarUrl: '/circle-user-regular.svg'
-    avatarUrl: '/circle-user-solid.svg'
-    // avatarUrl: '/user-regular.svg'
-    // avatarUrl: '/user-solid.svg'
-})
-// PostFormModal 編輯/檢視模式
-const isFormModalOpen = ref(false)
-// 貼文內容
+const postStore = usePostStore()
+const authStore = useAuthStore()
+
+// 使用者頭貼
+const currentUser = authStore.user
+const imageUrl = ref(null)
+imageUrl.value = `data:image/png;base64,${props.post.user.profilePicture}`
+
+// 內容「顯示更多/較少」
 const contentRef = ref(null)
 const isExpanded = ref(false)
 const needsToggle = ref(false)
-// 貼文動作列
-const isDetailOpen = ref(false)
-const likeCount = ref(props.post.reactions?.length || 0)
-const shareCount = ref(props.post.share || 0)
 
-//================= ref, computed 結束 =================
+// Lightbox
+const lightboxVisible = ref(false)
+const currentIndex = ref(0)
+const imgList = computed(() => props.post.images.map(img => `data:image/jpeg;base64,${img.imageData}`))
 
-//================= 漢堡選單 開始 =================
-function closeMenu() {
-    menuOpen.value = false
-}
-//================= 漢堡選單 結束 =================
-
-//================= 編輯貼文 開始 =================
-// PostFormModal 狀態
-function openEdit() {
-    toggleMenu()
-    isFormModalOpen.value = true
-}
-function closeEdit() {
-    isFormModalOpen.value = false
-}
-// 編輯或新增完成後
-function handleSaved(updatedPost) {
-    isFormModalOpen.value = false
-    // 刷新當前貼文資料（包含標題、內容、images）
-    props.post.title = updatedPost.title
-    props.post.content = updatedPost.content
-    if (updatedPost.images) props.post.images = updatedPost.images
-    // 通知列表重載整體列表
-    emit('refresh')
-}
-//================= 編輯貼文 結束 =================
-
-//================= 刪除貼文 開始 =================
 // 刪除貼文
-async function confirmDelete() {
-    menuOpen.value = false
-    if (!window.confirm('確定要刪除此貼文？此操作無法復原')) return
+async function onDelete() {
+    toggleMenu()
+    if (!confirm('確定要刪除此貼文？此操作無法復原')) return
     try {
-        await myAxios.delete(`/api/posts/${props.post.postId}`)
+        await postStore.deletePost(props.post.postId)
         emit('refresh')
-    } catch (err) {
-        console.error('刪除貼文失敗', err)
+    } catch {
         alert('刪除失敗，請稍後再試')
     }
 }
-//================= 刪除貼文 結束 =================
 
-// ================= Lightbox 開始 =================
-// Lightbox 狀態：visible 控制顯示，imgs 是圖片陣列，index 是預設開啟的那張
-const lightboxVisible = ref(false)
-const imgs = computed(() => props.post.images.map(img => `data:image/jpeg;base64,${img.imageData}`))
-const currentIndex = ref(0)
-
-// 開啟 Lightbox
-function showImage(idx) {
+// lightbox
+function openLightbox(idx) {
     currentIndex.value = idx
     lightboxVisible.value = true
 }
 
-// 關閉 Lightbox
-function hideLightbox() {
-    lightboxVisible.value = false
-}
-// ================= Lightbox 結束 =================
-
-//================= 按讚 開始=================
+// 按讚貼文
 async function likePost() {
     try {
-        const res = await myAxios.post(`/api/reactions/posts/${props.post.postId}?userId=${props.post.user.userId}&type=1`)
-        likeCount.value = res.data
-    } catch (error) {
-        console.error('貼文按讚失敗', error);
+        await postStore.like(
+            props.post.postId,
+            props.post.user.userId
+        )
+    } catch {
+        console.error('貼文按讚失敗');
     }
 }
-//================= 按讚 結束=================
 
-//================= 分享次數 開始 =================
 // 更新分享次數
 async function sharePost() {
     try {
+        // 呼叫原生分享介面
         await navigator.share({
             title: props.post.title,
             text: props.post.content,
             url: window.location.href
         })
-        await myAxios.post(`/api/posts/${props.post.postId}/share`)
-        shareCount.value++
+        // 統一呼叫 store 裡更新並同步的 action
+        await postStore.sharePost(props.post.postId)
+        // 通知父元件重新抓最新資料，讓 UI 跟著更新
+        emit('refresh')
     } catch (e) {
-        console.error('分享失敗或使用者取消', e)
+        console.error('分享失敗或取消', e)
     }
 }
-//================= 分享次數 結束 =================
 
 onMounted(async () => {
     // 更新觀看次數
-    try {
-        await myAxios.post(`/api/posts/${props.post.postId}/view`)
-    } catch (e) {
-        console.error('更新觀看次數失敗', e)
-    }
+    postStore.view(props.post.postId)
 
     // 顯示更多、顯示更少
     const el = contentRef.value
     // 取得實際內容高度與單行高度
     const lineHeight = parseFloat(getComputedStyle(el).lineHeight)   /* 行高 */
-    if (el.scrollHeight > lineHeight * 5) {                        /* scrollHeight 為內容總高度 */
-        needsToggle.value = true                                     /* 超過 5 行才顯示按鈕 */
-    }
-
-    likeCount.value = props.post.reactions?.length || 0;
+    needsToggle.value = el.scrollHeight > lineHeight * 5
 })
 </script>
 
@@ -227,13 +182,6 @@ onMounted(async () => {
     margin-bottom: 1rem;
 }
 
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 0.75rem;
-}
-
 .user-info {
     display: flex;
     flex-direction: column;
@@ -247,6 +195,22 @@ onMounted(async () => {
 .post-time {
     font-size: 0.8rem;
     color: #666;
+}
+
+.post-categories {
+    margin-top: 0.25rem;
+    margin-left: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.post-category-tag {
+    font-size: 0.75rem;
+    background: #eef;
+    color: #336;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
 }
 
 .menu-wrapper {

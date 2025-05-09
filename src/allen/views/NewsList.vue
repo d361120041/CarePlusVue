@@ -1,5 +1,8 @@
 <template>
-  <div class="news-list">
+    <GlobalBanner :imgSrc="bannerImg">
+        <h1>新聞列表</h1>
+    </GlobalBanner>  
+    <div class="news-list">
     <!-- 搜尋欄 -->
     <div class="search-bar mx-auto max-w-4xl p-6 mb-10 bg-white rounded-xl shadow-lg border border-gray-300">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -84,7 +87,8 @@ import myAxios from '@/plugins/axios';
 import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue';
 import noImage from '@/assets/allen/no-image.jpg';
 import { getFullImageUrl } from '@/allen/utils/urlHelper';
-
+import GlobalBanner from '@/components/GlobalBanner.vue'
+import bannerImg from '@/assets/images/GlobalBanner/people-holding-rubber-heart.jpg'
 const newsList = ref([]);
 const page = ref(0);
 const size = ref(5);

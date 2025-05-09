@@ -6,9 +6,11 @@ import { useAuthStore } from "@/stores/auth"; // 加上這行
 import Home from "@/views/Home.vue";
 import NotFound from "@/views/NotFound.vue";
 import Forbidden from "@/views/Forbidden.vue";
+import HomeHero from "@/views/HomeHero.vue";
 
 // ------------------ daniel ------------------
-import Social from "@/daniel/views/Social.vue";
+import Social from '@/daniel/views/Social.vue'
+import MyPost from '@/daniel/views/MyPost.vue'
 // ------------------ daniel ------------------
 
 // ------------------ yuni ------------------
@@ -81,7 +83,8 @@ import ProgressAdmin from '@/CMS/yuni/views/ProgressAdmin.vue'
 
 // ================== 設定路徑 開始==================
 const routes = [
-  { path: "/", component: Home, name: "home" },
+  { path: "/", component: HomeHero, name: "homeHero" },
+  { path: "/home", component: Home, name: "home" },
   { path: "/:pathMatch(.*)*", component: NotFound, name: "notfound" },
   { path: "/403", component: Forbidden, name: "forbidden" },
 
@@ -252,6 +255,7 @@ const routes = [
         component: () => import("@/steve/views/EditPatient.vue"),
       },
       { path: "favorites", component: FavoritesView },
+      { path: "myPost", component: MyPost },
     ],
   },
   // { path: "/user-center", component: UserCenter, name: "userCenter" }

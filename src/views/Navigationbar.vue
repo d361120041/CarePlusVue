@@ -1,8 +1,11 @@
 <template>
   <div class="navbar">
+    <router-link to="/" class="logo">
+      <img src="@/assets/logo_0508.png" alt="網站 Logo" />
+    </router-link>
     <ul>
       <li>
-        <router-link to="/">首頁</router-link>
+        <router-link to="/">Care+</router-link>
       </li>
       <li>
         <router-link to="/caregivers/search">找看護</router-link>
@@ -160,6 +163,30 @@ const caregiverLogout = () => {
 </script>
 
 <style scoped>
+/* ----- Navbar Container ----- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch; /* 項目撐滿高度 */
+  background-color: var(--color-bg-card);
+  padding: 0;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  height: 60px;
+}
+
+/* ----- Logo 開始 ----- */
+.logo {
+  display: block;
+  margin-right: 1rem;
+}
+.logo img {
+  height: 40px;
+  display: block;
+}
+/* ----- Logo 結束 ----- */
+
+/* ----- User 開始 -----*/
 .user-info {
   display: flex;
   align-items: center;
@@ -172,33 +199,47 @@ const caregiverLogout = () => {
   border-radius: 50%;
   margin-right: 8px;
 }
+/* ----- User 結束 -----*/
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #4db6ac;
-  padding: 0.5rem 1rem;
-}
-
+/* ----- Menu Items ----- */
 .navbar ul {
   display: flex;
-  justify-content: center;
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .navbar li {
-  margin: 0 0.75rem;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1rem;
 }
 
-.navbar a {
-  color: #fff;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  transition: background 0.2s ease, color 0.2s ease;
+.navbar a,
+.navbar .dropdown-label {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  color: var(--color-text-primary);
   text-decoration: none;
+  padding: 0 0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
 }
 
+.navbar a:hover,
+.navbar .dropdown-label:hover,
+.navbar li.active > a,
+.navbar li.active--exact > a {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+/* ----- Navbar 結束 ----- */
+
+/* ----- yuni 開始 -----
 /* 讓 dropdown 定位正確 */
 .dropdown {
   position: relative;
@@ -233,7 +274,7 @@ const caregiverLogout = () => {
 
 /* 調整 span 樣式與 router-link 一致 */
 .dropdown-label {
-  color: #fff;
+  color: var(--color-text-primary);
   padding: 0.5rem 0.75rem;
   cursor: pointer;
   transition: background 0.2s ease;
@@ -269,6 +310,7 @@ const caregiverLogout = () => {
   /* hover 時的淺灰底色 */
   color: #000;
 }
+/* ----- yuni 結束 -----
 
 /* 當前路由（包含子路由）被點擊時套用 */
 .active {
@@ -286,6 +328,7 @@ const caregiverLogout = () => {
   color: #000 !important;
 }
 
+/* ----- 登入 開始 ----- */
 /* 登入區域 */
 .login-button {
   display: flex;
@@ -311,7 +354,9 @@ const caregiverLogout = () => {
   margin-right: 0.5rem;
   /* 強制文字變黑，與底色對比 */
 }
+/* ----- 登入 結束 ----- */
 
+/* ===== RWD 開始 ===== */
 /* 手機垂直版 */
 @media (max-width: 600px) {
   .navbar {
@@ -329,6 +374,7 @@ const caregiverLogout = () => {
   }
 }
 
+/* ----- user ----- */
 .logout-button {
   margin-left: 0.5rem;
   background: transparent;
@@ -379,6 +425,7 @@ const caregiverLogout = () => {
   border: 2px solid #ccc;
 }
 
+/* ----- login ----- */
 .dropdown-login {
   position: relative;
   display: inline-block;
@@ -425,4 +472,5 @@ const caregiverLogout = () => {
 .dropdown-login:hover .dropdown-login-menu {
   display: block;
 }
+/* ===== RWD 結束 ===== */
 </style>

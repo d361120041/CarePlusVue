@@ -1,8 +1,8 @@
 // ================ style 開始 ================
-import "@/assets/css/main.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 //allen 新增
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import "@/assets/main.css";
 // ================ style 結束 ================
 
 // ================ 匯入套件 開始 ================

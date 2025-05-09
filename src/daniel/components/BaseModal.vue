@@ -1,5 +1,4 @@
 <template>
-
     <!-- 利用 Teleport 將 Modal 結構渲染到 body 下 -->
     <Teleport to="body">
         <div v-if="visible" class="modal-backdrop">

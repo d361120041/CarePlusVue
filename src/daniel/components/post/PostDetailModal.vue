@@ -1,10 +1,9 @@
 <template>
-    <BaseModal :visible="visible" :title="`${post.user.userName}的貼文`" @close="$emit('close')">
+    <BaseModal v-if="post" :visible="visible" :title="`${post.user.userName}的貼文`" @close="$emit('close')">
         <div class="post-detail">
             <div class="post-header">
                 <!-- 使用者資訊區塊 -->
-                <img class="user-avatar" :src="currentUser.avatarUrl" alt="User Avatar" />
-                <!-- <img class="user-avatar" :src="post.user.profilePicture" alt="User Avatar" /> -->
+                <UserAvatar :imageUrl="imageUrl" />
                 <div class="user-info">
                     <div class="user-name">{{ post.user.userName }}</div>
                     <div class="post-time">{{ formattedTime }}</div>
@@ -12,16 +11,14 @@
 
                 <!-- 漢堡選單 -->
                 <div class="menu-wrapper">
-                    <button class="hamburger-btn" @click.stop="toggleMenu">⋯</button>
+                    <button class="hamburger-btn" @click.stop="toggleMenu"
+                        v-if="post.user.userId === currentUser.userId">⋯</button>
                     <ul v-if="menuOpen" class="post-dropdown">
-                        <li @click="openEdit">編輯貼文</li>
-                        <li @click="confirmDelete">刪除貼文</li>
+                        <li @click="() => postStore.edit(post)">編輯貼文</li>
+                        <li @click="onDelete">刪除貼文</li>
                     </ul>
                 </div>
             </div>
-
-            <!-- PostFormModal 編輯/檢視模式 -->
-            <PostFormModal :visible="isFormModalOpen" :post="post" @close="closeEdit" @saved="handleSaved" />
 
             <!-- 貼文內容 -->
             <h2>{{ post.title }}</h2>
@@ -41,24 +38,22 @@
 
             <!-- 觀看次數 -->
             <div style="text-align: right;">
-                <small>觀看次數{{ post.views }}次</small>
+                <small>觀看次數{{ formatCount(post.views) }}次</small>
             </div>
 
             <!-- 貼文動作列 -->
             <div class="post-actions">
-                <button class="action-btn"> <!-- @click="likePost" -->
-                    👍 按讚<!-- ({{ likeCount }}) -->
+                <button class="action-btn" @click="likePost">
+                    👍 按讚({{ formatCount(likeCount) }})
                 </button>
                 <button class="action-btn"> 💬 留言</button>
                 <button class="action-btn" @click="sharePost">
-                    🔗 分享 ({{ shareCount }})
+                    🔗 分享 ({{ shareCount  }})
                 </button>
             </div>
 
             <!-- 留言列表 -->
-            <div v-if="post.comments && post.comments.length">
-                <CommentList ref="commentList" :postId="post.postId" class="comment-list" />
-            </div>
+            <CommentList ref="commentList" :postId="post.postId" class="comment-list" />
 
             <!-- 留言表單 -->
             <div class="comment-form-wrapper">
@@ -70,13 +65,17 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import myAxios from '@/plugins/axios.js'
+import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+import { useToggle } from '@/daniel/composables/useToggle'
+import { formatCount } from '@/daniel/composables/number.js'
+import { usePostStore } from '@/daniel/stores/posts'
+import { useAuthStore } from '@/stores/auth'
 import VueEasyLightbox from 'vue-easy-lightbox'
 
 import BaseModal from '@/daniel/components/BaseModal.vue'
-import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
 import CommentList from '@/daniel/components/comment/CommentList.vue'
 import CommentForm from '@/daniel/components/comment/CommentForm.vue'
+import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
 
 const props = defineProps({
     visible: Boolean,
@@ -84,71 +83,39 @@ const props = defineProps({
 })
 const emit = defineEmits(['close', 'refresh'])
 
-import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+// 時間格式化
 const { formattedTime } = useTimeFormat(props.post.createdAt)
 
-import { useToggle } from '@/daniel/composables/useToggle'
+// 漢堡選單
 const [menuOpen, toggleMenu] = useToggle(false)
 
-//================= ref, computed 開始 =================
-// 使用者資訊區塊
-const currentUser = ref({
-    // avatarUrl: '/circle-user-regular.svg'
-    avatarUrl: '/circle-user-solid.svg'
-    // avatarUrl: '/user-regular.svg'
-    // avatarUrl: '/user-solid.svg'
-})
-// PostFormModal 編輯/檢視模式
-const isFormModalOpen = ref(false)
+const postStore = usePostStore()
+const authStore = useAuthStore()
+
+// 使用者頭貼
+const currentUser = authStore.user
+const imageUrl = ref(null)
+imageUrl.value = `data:image/png;base64,${props.post.user.profilePicture}`
+
 // 貼文動作列
-const isDetailOpen = ref(false)
+const likeCount = computed(() => props.post.reactions?.length || 0)
 const shareCount = ref(props.post.share || 0)
+
 // 評論清單
 const commentList = ref(null)
-//================= ref, computed 結束 =================
 
-//================= 漢堡選單 開始 =================
-// 下拉選單狀態
-function closeMenu() {
-    menuOpen.value = false
-}
-//================= 漢堡選單 結束 =================
-
-//================= 編輯貼文 開始 =================
-// PostFormModal 狀態
-function openEdit() {
-    toggleMenu()
-    isFormModalOpen.value = true
-}
-function closeEdit() {
-    isFormModalOpen.value = false
-}
-// 編輯或新增完成後
-function handleSaved(updatedPost) {
-    isFormModalOpen.value = false
-    // 刷新當前貼文資料（包含標題、內容、images）
-    props.post.title = updatedPost.title
-    props.post.content = updatedPost.content
-    if (updatedPost.images) props.post.images = updatedPost.images
-    // 通知列表重載整體列表
-    emit('refresh')
-}
-//================= 編輯貼文 結束 =================
-
-//================= 刪除貼文 開始 =================
 // 刪除貼文
-async function confirmDelete() {
-    menuOpen.value = false
-    if (!window.confirm('確定要刪除此貼文？此操作無法復原')) return
+async function onDelete() {
+    toggleMenu()
+    if (!confirm('確定要刪除此貼文？此操作無法復原')) return
     try {
-        await myAxios.delete(`/api/posts/${props.post.postId}`)
+        await postStore.deletePost(props.post.postId)
         emit('refresh')
-    } catch (err) {
-        console.error('刪除貼文失敗', err)
+        postStore.closeDetailModal()
+    } catch {
         alert('刪除失敗，請稍後再試')
     }
 }
-//================= 刪除貼文 結束 =================
 
 // ================= Lightbox 開始 =================
 // Lightbox 狀態：visible 控制顯示，imgs 是圖片陣列，index 是預設開啟的那張
@@ -169,18 +136,21 @@ function hideLightbox() {
 }
 // ================= Lightbox 結束 =================
 
-//================= 觀看次數 開始 =================
+// 按讚貼文
+async function likePost() {
+    try {
+        await postStore.like(props.post.postId, authStore.user.userId)
+    } catch {
+        console.error('貼文按讚失敗');
+    }
+}
+
 // 更新觀看次數
 onMounted(async () => {
-    try {
-        await myAxios.post(`/api/posts/${props.post.postId}/view`)
-    } catch (e) {
-        console.error('更新觀看次數失敗', e)
-    }
+    postStore.view(props.post.postId)
+    // likeCount.value = props.post.reactions?.length || 0;
 })
-//================= 觀看次數 結束 =================
 
-//================= 分享次數 開始 =================
 // 更新分享次數
 async function sharePost() {
     try {
@@ -189,13 +159,12 @@ async function sharePost() {
             text: props.post.content,
             url: window.location.href
         })
-        await myAxios.post(`/api/posts/${props.post.postId}/share`)
-        shareCount.value++
-    } catch (e) {
-        console.error('分享失敗或使用者取消', e)
+        const newCount = await postStore.sharePost(props.post.postId)
+        shareCount.value = newCount
+    } catch {
+        console.error('分享失敗或使用者取消')
     }
 }
-//================= 分享次數 結束 =================
 
 function onCommentAdded() {
     // 當表單送出後，刷新留言清單

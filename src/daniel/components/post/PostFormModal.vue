@@ -1,18 +1,37 @@
 <template>
-    <BaseModal :visible="visible" :title="title" @close="handleClose">
-        <form @submit.prevent="submitAll" class="form-container">
+    <BaseModal :visible="visible" :title="modalTitle" @close="$emit('close')">
+        <form @submit.prevent="onSubmit" class="form-container">
+
+            <!-- 使用者資訊區塊 -->
+            <div class="user-header">
+                <UserAvatar :imageUrl="imageUrl" />
+                <div class="user-info">
+                    <div class="user-name">{{ authStore.user.userName }}</div>
+                </div>
+            </div>
+
+            <!-- 分類選擇 -->
+            <div class="form-group categories">
+                <label>貼文種類：</label>
+                <div class="category-buttons">
+                    <button v-for="cat in allCategories" :key="cat.id" type="button" @click="toggleCategory(cat.id)"
+                        :class="['category-btn', { active: form.categoryIds.includes(cat.id) }]">
+                        {{ cat.name }}
+                    </button>
+                </div>
+            </div>
 
             <!-- 文字欄位 -->
-            <div>
+            <div class="form-group">
                 <label>標題：</label>
                 <input v-model="form.title" required />
             </div>
-            <div>
+            <div class="form-group">
                 <label>內容：</label>
                 <textarea v-model="form.content" required></textarea>
             </div>
 
-            <!-- 統一圖片預覽與刪除 -->
+            <!-- 圖片縮圖列表 -->
             <div v-if="thumbnails.length" class="form-images">
                 <p>已選圖片：</p>
                 <div class="thumb-wrapper" v-for="(thumb, idx) in thumbnails" :key="thumb.key">
@@ -21,7 +40,7 @@
                 </div>
             </div>
 
-            <!-- 圖片選擇 -->
+            <!-- 選擇圖片 -->
             <div class="upload-form">
                 <input ref="fileInput" type="file" multiple @change="onFileChange" accept="image/*" />
                 <p v-if="files.length">{{ files.length }} 個新檔案已選</p>
@@ -29,8 +48,8 @@
 
             <!-- 提交表單 -->
             <div class="modal-actions">
-                <button type="submit" :disabled="isSubmitting">
-                    {{ isEdit ? '更新貼文' : '送出貼文' }}
+                <button type="submit" :disabled="postStore.isLoading">
+                    {{ submitText }}
                 </button>
             </div>
         </form>
@@ -39,172 +58,159 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import myAxios from '@/plugins/axios.js'
+import { usePostStore } from '@/daniel/stores/posts'
+import { useCategoryStore } from '@/daniel/stores/categories'
+import { useAuthStore } from '@/stores/auth'
+
+import myAxios from '@/plugins/axios'
 import BaseModal from '@/daniel/components/BaseModal.vue'
+import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
 
 const props = defineProps({
     visible: Boolean,
-    post: { type: Object, default: null }
+    post: { type: Object }
 })
 const emit = defineEmits(['close', 'saved'])
 
-const isEdit = computed(() => !!props.post?.postId)
-const title = computed(() => (isEdit.value ? '編輯貼文' : '新增貼文'))
+const postStore = usePostStore()
+const categoryStore = useCategoryStore()
+const authStore = useAuthStore()
 
-// 表單欄位
-const form = ref({ title: '', content: '' })
-// 已選檔案與對應縮圖預覽
+// 使用者頭貼
+const currentUser = authStore.user
+
+const imageUrl = ref(null)
+imageUrl.value = `data:image/png;base64,${authStore.user.profilePicture}`
+
+// form data
+const form = ref({
+    postId: null,
+    title: '',
+    content: '',
+    categoryIds: [],
+    topicIds: [],
+    tagIds: [],
+    visibility: 0,
+    status: 0,
+    userId: authStore.user.userId
+})
 const files = ref([])
 const previews = ref([])
-// 編輯模式的現有圖片
-const images = ref([])
-const isSubmitting = ref(false)
-// 檔案輸入欄位
 const fileInput = ref(null)
+const existingImages = ref([])
 
-// 初始化文字欄位
-watch(
-    () => props.visible,
-    async v => {
-        if (v) {
-            form.value.title = props.post?.title || ''
-            form.value.content = props.post?.content || ''
-            // 一定要先清空暫存檔與縮圖
-            files.value = []
-            previews.value = []
-            if (isEdit.value) {
-                await loadImages()
-            } else {
-                images.value = []
-            }
-        }
+const isEdit = computed(() => !!form.value.postId)
+const modalTitle = computed(() => isEdit.value ? '編輯貼文' : '新增貼文')
+const submitText = computed(() => isEdit.value ? '更新貼文' : '送出貼文')
+const allCategories = computed(() => categoryStore.categories)
+
+watch(() => props.visible, async open => {
+    if (!open) return
+
+    // 重置
+    files.value = []
+    previews.value = []
+    existingImages.value = []
+    if (fileInput.value) fileInput.value.value = ''
+
+    if (props.post?.postId) {
+        // 載入舊圖
+        await loadImages(props.post.postId)
+
+        // 將後端的已選分類取出 ID
+        const selectedCatIds = props.post.postCategoryClassifiers
+            .map(pcc => pcc.postCategory.postCategoryId)
+
+        Object.assign(form.value, {
+            postId: props.post.postId,
+            title: props.post.title,
+            content: props.post.content,
+            categoryIds: [...selectedCatIds],
+            topicIds: [...(props.post.topicIds || [])],
+            tagIds: [...(props.post.tagIds || [])],
+            visibility: props.post.visibility,
+            status: props.post.status,
+            userId: props.post.user.userId,
+        })
+    } else {
+        Object.assign(form.value, {
+            postId: null,
+            title: '',
+            content: '',
+            categoryIds: [],
+            topicIds: [],
+            tagIds: [],
+            visibility: 0,
+            status: 0,
+            userId: currentUser.userId,
+        })
+        existingImages.value = []
     }
-)
+})
 
-// 讀取現有後端圖片
-async function loadImages() {
-    try {
-        const res = await myAxios.get(
-            `/api/posts/${props.post.postId}/images`
-        )
-        images.value = res.data
-    } catch (err) {
-        console.error('載入圖片失敗', err)
+function toggleCategory(id) {
+    const idx = form.value.categoryIds.indexOf(id)
+    if (idx >= 0) {
+        form.value.categoryIds.splice(idx, 1)
+    }
+    else form.value.categoryIds.push(id)
+}
+
+async function loadImages(postId) {
+    if (!postId) return
+    const res = await myAxios.get(`/api/posts/${postId}/images`)
+    existingImages.value = res.data.map(img => ({
+        id: img.imageId,
+        src: `data:image/jpeg;base64,${img.imageData}`
+    }))
+}
+
+const thumbnails = computed(() => [
+    // 既有圖片：保留 id, src, 並標記 type
+    ...existingImages.value.map(img => ({
+        id: img.id,
+        src: img.src,
+        type: 'existing'
+    })),
+    // 新選檔案
+    ...previews.value.map((src, i) => ({
+        src,
+        type: 'new',
+        index: i
+    }))
+])
+
+async function removeThumbnail(thumb) {
+    if (thumb.type === 'existing') {
+        await postStore.deleteImage(props.post.postId, thumb.id)
+        existingImages.value = existingImages.value.filter(img => img.id !== thumb.id)
+    } else {
+        files.value.splice(thumb.index, 1)
+        previews.value.splice(thumb.index, 1)
     }
 }
 
-// 處理檔案選取與預覽
 function onFileChange(e) {
     const selected = Array.from(e.target.files)
-    selected.forEach((file, idx) => {
+    selected.forEach(file => {
         files.value.push(file)
         const reader = new FileReader()
         reader.onload = ev => previews.value.push(ev.target.result)
         reader.readAsDataURL(file)
     })
-    // 清空 input 預備下次同檔案可重新選
     if (fileInput.value) fileInput.value.value = ''
 }
 
-// 統一縮圖資料
-const thumbnails = computed(() => {
-    const exist = images.value.map(img => ({
-        type: 'existing',
-        key: `e-${img.imageId}`,
-        id: img.imageId,
-        src: `data:image/jpeg;base64,${img.imageData}`
-    }))
-    const newly = previews.value.map((src, idx) => ({
-        type: 'new',
-        key: `n-${idx}`,
-        index: idx,
-        src
-    }))
-    return [...exist, ...newly]
-})
-
-// 刪除已存在的圖片
-async function deleteImage(id) {
+async function onSubmit() {
     try {
-        await myAxios.delete(`/api/posts/${props.post.postId}/images/${id}`)
-        await loadImages()
-    } catch (err) {
-        console.error('刪除圖片失敗', err)
-        alert('刪除圖片失敗')
-    }
-}
-
-// 移除新選檔案
-function removeFile(idx) {
-    files.value.splice(idx, 1)
-    previews.value.splice(idx, 1)
-}
-
-// 根據縮圖類型刪除
-function removeThumbnail(thumb, idx) {
-    if (thumb.type === 'existing') {
-        deleteImage(thumb.id)
-    } else {
-        removeFile(thumb.index)
-    }
-}
-
-// 提交資料：文字 + 新檔案上傳
-async function submitAll() {
-    if (!form.value.title || !form.value.content) return
-    isSubmitting.value = true
-    try {
-        let res
-        // 1. 文字貼文：POST 或 PUT
-        if (isEdit.value) {
-            res = await myAxios.put(
-                `/api/posts/${props.post.postId}`,
-                { 
-                    title: form.value.title, 
-                    content: form.value.content, 
-                    user: { userId: 3 } 
-                }
-            )
-        } else {
-            res = await myAxios.post(
-                '/api/posts',
-                { 
-                    title: form.value.title, 
-                    content: form.value.content, 
-                    user: { userId: 3 } 
-                }
-            )
-        }
-        const postId = res.data.postId
-
-        // 2. 上傳新檔案
-        if (files.value.length) {
-            const formData = new FormData()
-            files.value.forEach(f => formData.append('files', f))
-            await myAxios.post(`/api/posts/${postId}/images`, formData)
-        }
-
-        // 3. 重新載入所有後端圖片，保留未刪除並包含新上傳
-        if (isEdit.value) await loadImages()
-
-        // 4. 清空暫存檔案與預覽
-        files.value = []
-        previews.value = []
-        if (fileInput.value) fileInput.value.value = ''
-
-        // 5. 通知父層並傳回更新後的貼文與圖片列表
-        emit('saved', { ...res.data, images: images.value })
-        handleClose()
-    } catch (err) {
-        console.error('送出失敗', err)
+        const saved = await postStore.savePost({
+            form: form.value,
+            files: files.value
+        })
+        emit('saved', saved)
+    } catch (error) {
         alert('送出失敗，請稍後重試')
-    } finally {
-        isSubmitting.value = false
     }
-}
-
-function handleClose() {
-    emit('close')
 }
 </script>
 
@@ -213,6 +219,58 @@ function handleClose() {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem
+}
+
+.user-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.user-name {
+    font-weight: bold;
+}
+
+.categories {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap
+}
+
+.category-buttons button {
+    margin-right: 0.5rem
+}
+
+.category-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #f0f0f0;
+    transition: all .2s;
+}
+
+.category-btn:hover {
+    background: #e0e0e0
+}
+
+.category-btn.active {
+    background: #007bff;
+    color: #fff;
+    border-color: #0056b3;
+    transform: scale(1.05)
 }
 
 .form-container input,

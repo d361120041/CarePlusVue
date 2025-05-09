@@ -1,32 +1,20 @@
 <template>
   <nav class="flex flex-col space-y-4">
-    <router-link
-      to="/user-center/profile"
-      class="sidebar-button"
-      active-class="active"
-    >
+    <router-link to="/user-center/profile" class="sidebar-button" active-class="active">
       個人資料
     </router-link>
-    <router-link
-      to="/user-center/patients"
-      class="sidebar-button"
-      active-class="active"
-    >
+    <router-link to="/user-center/patients" class="sidebar-button" active-class="active">
       管理患者
     </router-link>
-    <router-link
-      to="/user-center/favorites"
-      class="sidebar-button"
-      active-class="active"
-    >
+    <router-link to="/user-center/favorites" class="sidebar-button" active-class="active">
       收藏庫
     </router-link>
-    <router-link
-      to="/user-center/support"
-      class="sidebar-button"
-      active-class="active"
-    >
+    <router-link to="/user-center/support" class="sidebar-button" active-class="active">
       聯絡客服
+    </router-link>
+    <router-link to="/user-center/myPost" class="px-4 py-2 rounded hover:bg-gray-200"
+      active-class="bg-gray-200 font-semibold"><br />
+      我的貼文
     </router-link>
   </nav>
 </template>
@@ -39,9 +27,11 @@ import { RouterLink } from "vue-router";
 nav {
   padding-top: 2rem;
 }
+
 .sidebar-button {
   text-decoration: none;
-  margin-bottom: 6px; /* 增加每個按鈕的分隔感 */
+  margin-bottom: 6px;
+  /* 增加每個按鈕的分隔感 */
   width: 100%;
   display: block;
   text-align: center;
@@ -54,7 +44,8 @@ nav {
 }
 
 .sidebar-button:hover {
-  box-shadow: 0 0 8px rgba(0, 132, 255, 0.4); /* 藍色光暈 */
+  box-shadow: 0 0 8px rgba(0, 132, 255, 0.4);
+  /* 藍色光暈 */
   background-color: #f0f8ff;
 }
 
