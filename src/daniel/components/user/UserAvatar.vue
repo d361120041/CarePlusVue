@@ -1,21 +1,27 @@
 <template>
     <!-- <router-link to="/user-center/myPost"> -->
-        <img class="user-avatar" :src="src" alt="User Avatar" />
+    <img class="user-avatar" :src="src" alt="User Avatar" />
     <!-- </router-link> -->
 
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import defaultAvatar from '@/assets/daniel/circle-user-solid.svg'
 
 const props = defineProps({
     imageUrl: {
         type: String,
-        default: '@/assets/daniel/circle-user-solid.svg'
+        default: ''
     }
 })
 
-const src = computed(() => props.imageUrl || '@/assets/daniel/circle-user-solid.svg')
+const src = computed(() => {
+    if (props.imageUrl === 'data:image/png;base64,null') {
+        return defaultAvatar
+    }
+    return props.imageUrl
+})
 </script>
 
 <style scoped>
