@@ -1,19 +1,38 @@
 <template>
   <nav class="flex flex-col space-y-4">
-    <router-link to="/user-center/profile" class="sidebar-button" active-class="active">
+    <router-link
+      to="/user-center/profile"
+      class="sidebar-button"
+      active-class="active"
+    >
       個人資料
     </router-link>
-    <router-link to="/user-center/patients" class="sidebar-button" active-class="active">
+    <router-link
+      to="/user-center/patients"
+      class="sidebar-button"
+      active-class="active"
+    >
       管理患者
     </router-link>
-    <router-link to="/user-center/favorites" class="sidebar-button" active-class="active">
+    <router-link
+      to="/user-center/favorites"
+      class="sidebar-button"
+      active-class="active"
+    >
       收藏庫
     </router-link>
-    <router-link to="/user-center/support" class="sidebar-button" active-class="active">
+    <router-link
+      to="/user-center/support"
+      class="sidebar-button"
+      active-class="active"
+    >
       聯絡客服
     </router-link>
-    <router-link to="/user-center/myPost" class="px-4 py-2 rounded hover:bg-gray-200"
-      active-class="bg-gray-200 font-semibold"><br />
+    <router-link
+      to="/user-center/myPost"
+      class="sidebar-button"
+      active-class="active"
+    >
       我的貼文
     </router-link>
   </nav>
