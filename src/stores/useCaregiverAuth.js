@@ -27,12 +27,18 @@ export const useCaregiverAuth = defineStore("caregiverAuth", () => {
 
     localStorage.setItem("role", decoded.role);
     localStorage.setItem("email", decoded.sub);
+
+    const savedPhoto = localStorage.getItem("photo");
+    if (savedPhoto) {
+      photo.value = savedPhoto;
+    }
   };
 
   const logout = () => {
     token.value = null;
     role.value = null;
     email.value = null;
+    photo.value = null; 
     localStorage.clear();
   };
 
@@ -40,12 +46,19 @@ export const useCaregiverAuth = defineStore("caregiverAuth", () => {
     const savedToken = localStorage.getItem("token");
     const savedRole = localStorage.getItem("role");
     const savedEmail = localStorage.getItem("email");
+    const savedPhoto = localStorage.getItem("photo"); 
 
     if (savedToken && savedRole && savedEmail) {
       token.value = savedToken;
       role.value = savedRole;
       email.value = savedEmail;
+
+      if (savedPhoto) {
+        photo.value = savedPhoto;
+      }
     }
+
+    
   };
 
   return { token, role, email, photo,login, setToken, logout, restoreLogin };

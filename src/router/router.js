@@ -37,6 +37,8 @@ import AdminNewsPreview from "@/allen/views/AdminNewsPreview.vue";
 import CaregiverLogin from "@/yuuhou/LoginCaregiver.vue";
 import CaregiverProfileView from "@/yuuhou/CaregiverProfileView.vue";
 import CaregiverPricing from "@/yuuhou/EditService.vue";
+import ResetPassword from "@/yuuhou/ResetPassword.vue";
+import UserForgotPwd from "@/yuuhou/UserForgotPwd.vue";
 // import Navigationbar from "@/views/Navigationbar.vue";
 
 // import CaregiverSchedule from '@/yuuhou/Schedule.vue'
@@ -45,7 +47,7 @@ import CaregiverPricing from "@/yuuhou/EditService.vue";
 
 import LoginView from "@/yuuhou/LoginView.vue";
 import RegisterView from "@/yuuhou/RegisterView.vue";
-import UserForgotPwd from "@/yuuhou/UserForgotPwd.vue";
+
 // import AdminLogin          from '@/yuuhou/AdminLogin.vue'
 import AdminDashboard from "@/yuuhou/AdminDashboard.vue";
 import UserDashboard from "@/yuuhou/UserDashboard.vue";
@@ -127,6 +129,8 @@ const routes = [
   { path: "/login", component: LoginView, name: "login" },
   { path: "/register", component: RegisterView, name: "register" },
   { path: "/forgot", component: UserForgotPwd, name: "forgotPwd" },
+  { path: "/reset" , component: ResetPassword, name: "resetPassword" },
+
   // { path: "/navigationbar" , component: Navigationbar, name: "navigationBar" },
   {
     path: "/admin/dashboard",

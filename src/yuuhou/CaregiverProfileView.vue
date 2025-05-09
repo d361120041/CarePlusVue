@@ -62,7 +62,7 @@ const caregiverAuth = useCaregiverAuth();
 
 const form = ref({
   caregiverName: '', gender: '男', birthday: '', phone: '',
-  nationality: '中華民國', customNationality: '',
+  nationality: '中華民國', customNationality: '',languages: '',
   languages: '中文', yearOfExperience: 0, description: ''
 })
 
