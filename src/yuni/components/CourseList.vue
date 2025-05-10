@@ -17,7 +17,7 @@
             'btn',
             selectedCategory === category
               ? 'btn-primary'
-              : 'btn-outline-primary',
+              : 'btn-outline-green',
           ]" class="m-1">
             {{ getCategoryLabel(category) }}
           </button>
@@ -30,7 +30,7 @@
 
         <!-- 右側：排序下拉選單 -->
         <div class="dropdown m-1">
-          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          <button class="btn btn-outline-green dropdown-toggle" type="button" data-bs-toggle="dropdown">
             排序方式
           </button>
           <ul class="dropdown-menu">
@@ -84,17 +84,17 @@
     <nav aria-label="Page navigation example">
       <ul class="pagination">
         <li class="page-item" :class="{ disabled: currentPage === 1 }">
-          <a class="page-link" href="#" @click.prevent="goToPage(currentPage - 1)">
+          <a class="page-link page-link-green" href="#" @click.prevent="goToPage(currentPage - 1)">
             &laquo;
           </a>
         </li>
         <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: currentPage === page }">
-          <a class="page-link" href="#" @click.prevent="goToPage(page)">
+          <a class="page-link page-link-green" href="#" @click.prevent="goToPage(page)">
             {{ page }}
           </a>
         </li>
         <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-          <a class="page-link" href="#" @click.prevent="goToPage(currentPage + 1)">
+          <a class="page-link page-link-green" href="#" @click.prevent="goToPage(currentPage + 1)">
             &raquo;
           </a>
         </li>
@@ -268,4 +268,37 @@ onMounted(fetchCourses);
   width: 90%;
   max-width: 1100px;
 }
+
+.btn-outline-green {
+  color: var(--color-btn-primary-bg);
+  border: 1px solid var(--color-btn-primary-bg);
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-green:hover,
+.btn-outline-green:focus {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+}
+
+.page-link-green {
+  color: var(--color-btn-primary-bg);
+  border: 1px solid var(--color-btn-primary-bg);
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.page-link-green:hover,
+.page-link-green:focus {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+}
+
+.page-item.active .page-link-green {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  border-color: var(--color-btn-primary-bg);
+}
+
 </style>

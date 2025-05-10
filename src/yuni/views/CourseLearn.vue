@@ -74,9 +74,9 @@
 
     <!-- 上一章 + 下一章 -->
     <div class="d-flex justify-content-between">
-      <button class="btn btn-primary" :disabled="currentIndex <= 0" @click="goPrevious">上一章</button>
+      <button class="button-green" :disabled="currentIndex <= 0" @click="goPrevious">上一章</button>
 
-      <button class="btn btn-primary" @click="handleNextOrFinish">{{ currentIndex >= chapters.length - 1 ? '完成' : '下一章'
+      <button class="button-green" @click="handleNextOrFinish">{{ currentIndex >= chapters.length - 1 ? '完成' : '下一章'
         }}</button>
 
 
