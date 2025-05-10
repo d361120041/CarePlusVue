@@ -48,6 +48,7 @@ nav {
 }
 
 .sidebar-button {
+  color: #00332e;
   text-decoration: none;
   margin-bottom: 6px;
   /* 增加每個按鈕的分隔感 */
@@ -56,21 +57,21 @@ nav {
   text-align: center;
   padding: 0.75rem;
   border-radius: 12px;
-  background-color: #f9f9f9;
+  background-color: #80ccc3;
   transition: box-shadow 0.3s, background-color 0.3s;
   font-weight: 500;
-  border: 1px solid #ddd;
+  border: 1px solid #4db6ac;
 }
 
 .sidebar-button:hover {
-  box-shadow: 0 0 8px rgba(0, 132, 255, 0.4);
+  box-shadow: 0 0 8px #66cfc4;
   /* 藍色光暈 */
-  background-color: #f0f8ff;
+  background-color: #b3e2da;
 }
 
 .active {
-  background-color: #e6f2ff;
+  background-color: #3ca094;
   font-weight: 600;
-  border: 1px solid #3399ff;
+  border: 1px solid #66cfc4;
 }
 </style>
