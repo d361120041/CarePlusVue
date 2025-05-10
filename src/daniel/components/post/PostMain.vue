@@ -10,7 +10,7 @@
         <PostList :filterCategoryIds="categoryStore.selectedIds" :filterUserId="onlyMine ? authStore.user.userId : null"  @refresh="reloadPosts" />
 
         <!-- 新增與編輯 Modal -->
-        <PostFormModal v-if="postStore.isModalOpen" :visible="postStore.isModalOpen" :post="postStore.currentPost"
+        <PostFormModal :visible="postStore.isModalOpen" :post="postStore.currentPost"
             @close="postStore.closeModal" @saved="reloadPosts" />
 
         <!-- 貼文詳情 Modal -->
