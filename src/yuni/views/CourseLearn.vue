@@ -21,14 +21,26 @@
 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
   <!-- 麵包屑 -->
   <nav aria-label="breadcrumb" class="m-0">
-    <ol class="breadcrumb mb-0">
+    <!-- <ol class="breadcrumb mb-0">
       <li class="breadcrumb-item">
         <router-link :to="`/course-progress/${courseId}`">{{ courseTitle || '課程' }}</router-link>
       </li>
       <li class="breadcrumb-item active" aria-current="page">
         {{ chapter?.title || '章節' }}
       </li>
-    </ol>
+    </ol> -->
+
+
+    <ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item">
+    <router-link :to="`/course-progress/${courseId}`" class="breadcrumb-dynamic">
+      我的「{{ courseTitle || '課程' }}」
+    </router-link>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">
+    {{ chapter?.title || '章節' }}
+  </li>
+</ol>
   </nav>
 
 </div>
@@ -319,4 +331,29 @@ onMounted(async () => {
   /* 輕微發光效果 */
   transition: all 0.2s ease-in-out;
 }
+
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  color: #6c757d;
+}
+
+.breadcrumb-dynamic {
+  color: #6c757d;
+  font-weight: normal;
+  display: inline-block;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.breadcrumb-dynamic:hover {
+  transform: scale(1.05);
+  color: #007bff;
+  text-decoration: none;
+}
+
 </style>

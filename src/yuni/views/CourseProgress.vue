@@ -1,44 +1,85 @@
 <template>
   <div class="container py-4" v-if="course">
-    <h2 class="mt-3 mb-3">我的學習進度</h2>
-    <!-- <h2>{{ course.title }}</h2>
-    <p class="text-muted">#{{ getCategoryLabel(course.category) }}</p>
+    <!-- 頁面標題 -->
+    <!-- <h2 class="mt-3 mb-2 fw-bold text-primary">我的學習進度</h2> -->
 
-    <h4 class="mt-4">章節學習進度</h4> -->
-<!-- 麵包屑導覽 -->
+    <!-- 麵包屑 -->
+    <!-- <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item text-muted">{{ getCategoryLabel(course.category) }}</li>
+        <li class="breadcrumb-item text-muted">{{ course.title }}</li>
+        <li class="breadcrumb-item active" aria-current="page">我的章節學習進度</li>
+      </ol>
+    </nav> -->
+
+    <!-- 麵包屑樣式 -->
 <nav aria-label="breadcrumb" class="mb-3">
   <ol class="breadcrumb mb-0">
-    <li class="breadcrumb-item">{{ course.title }}</li>
-    <li class="breadcrumb-item active" aria-current="page">章節學習進度</li>
+    <li class="breadcrumb-item">
+      <router-link to="/course" class="breadcrumb-dynamic">
+        線上課程
+      </router-link>
+    </li>
+    <li class="breadcrumb-item">
+      <router-link to="/my-courses" class="breadcrumb-dynamic">
+        我的課程
+      </router-link>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+      我的章節學習進度
+    </li>
   </ol>
 </nav>
 
-<p class="text-muted mb-3">#{{ getCategoryLabel(course.category) }}</p>
 
 
 
-    <ul v-if="progressList.length > 0" class="list-group">
-      <li v-for="progress in progressList" :key="progress.progressId"
-        class="list-group-item d-flex justify-content-between align-items-center">
+    <!-- 類別標籤 -->
+    <!-- <p class="text-muted mb-4">#{{ getCategoryLabel(course.category) }}</p> -->
 
-        <router-link :to="`/learn/${courseId}?chapterId=${progress.chapterId.chapterId}`"
-          class="text-decoration-none flex-grow-1">
-          {{ progress.chapterId.position }}. {{ progress.chapterId.title }}
-        </router-link>
+    <!-- 卡片容器 -->
+    <div class="card shadow-sm p-4">
+      <!-- 標題＋分類ㄉ -->
+      <h3 class="fw-bold mb-4">{{ course.title }} </h3>
+      <p class="course-category text-muted">#{{ getCategoryLabel(course.category) }}</p>
+      <!-- 章節進度清單 -->
+      <ul v-if="progressList.length > 0" class="list-group list-group-flush">
+        <li
+          v-for="progress in progressList"
+          :key="progress.progressId"
+          class="list-group-item d-flex justify-content-between align-items-center px-0"
+        >
+          <router-link
+            :to="`/learn/${courseId}?chapterId=${progress.chapterId.chapterId}`"
+            class="text-decoration-none text-dark fw-medium"
+          >
+            {{ progress.chapterId.position }}. {{ progress.chapterId.title }}
+          </router-link>
 
-        <span>
-          <span v-if="progress.status === 'completed'" class="badge bg-success">完成</span>
-          <span v-else-if="progress.status === 'in_progress'" class="badge bg-warning text-dark">進行中</span>
-          <span v-else class="badge bg-secondary">未開始</span>
+          <span>
+            <span v-if="progress.status === 'completed'" class="badge bg-success">
+              完成
+            </span>
+            <span v-else-if="progress.status === 'in_progress'" class="badge bg-warning text-dark">
+              進行中
+            </span>
+            <span v-else class="badge bg-secondary">
+              未開始
+            </span>
+          </span>
+        </li>
+      </ul>
+      <p v-else class="text-muted">尚無進度紀錄</p>
 
-        </span>
-      </li>
-    </ul>
-    <p v-else class="text-muted">尚無進度紀錄。</p>
-
-    <button class="btn btn-primary mt-3" @click="goLearn">📖 開始上課</button>
+      <!-- 開始上課按鈕 -->
+      <div class="text-end mt-4">
+        <button class="button-green" @click="goLearn">開始上課</button>
+      </div>
+    </div>
   </div>
 </template>
+
+
 
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -141,11 +182,41 @@ onMounted(async () => {
 </script>
 
 
+
+
 <style scoped>
-/* .badge {
-        font-size: 0.9rem;
-        padding: 0.4em 0.75em;
-      } */
+.progress-card-wrapper {
+  background-color: #fdfdfd;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  max-width: 1000px;
+  min-height: 65vh;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  padding: 3rem;
+}
+
+/* 章節背景與排版 */
+.chapter-section {
+  background-color: #fff8e1;
+  min-height: 269px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* 統一字體行距與間距 */
+.course-info p,
+.course-info h2 {
+  line-height: 1.8;
+}
+
+/* 自定義分類標籤排版 */
+.course-category {
+  padding-left: 35px;
+  color: #666;
+}
 
 .badge {
   font-size: 0.85rem;
@@ -161,4 +232,40 @@ onMounted(async () => {
 .badge.bg-secondary {
   background-color: #6c757d !important;
 }
+
+.card {
+  background-color: var(--color-bg-card, #fff);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.list-group-item {
+  border: none;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.list-group-item:last-child {
+  border-bottom: none;
+}
+
+.breadcrumb-dynamic {
+  color: #6c757d; /* Bootstrap 的 text-muted */
+  font-weight: normal;
+  display: inline-block;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.breadcrumb-dynamic:hover {
+  transform: scale(1.05);
+  color: #007bff; /* Hover 時變藍 */
+  text-decoration: none;
+}
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  color: #6c757d;
+}
+
+
 </style>
