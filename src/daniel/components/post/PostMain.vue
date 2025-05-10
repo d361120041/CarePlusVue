@@ -7,7 +7,7 @@
         </article>
 
         <!-- 貼文列表 -->
-        <PostList :filterCategoryIds="categoryStore.selectedIds" :filterUserId="onlyMine ? authStore.user.userId : null"  @refresh="reloadPosts" />
+        <PostList :filterCategoryIds="categoryStore.selectedIds" :filter-topic-ids="topicStore.selectedIds" :filterUserId="onlyMine ? authStore.user.userId : null"  @refresh="reloadPosts" />
 
         <!-- 新增與編輯 Modal -->
         <PostFormModal :visible="postStore.isModalOpen" :post="postStore.currentPost"
@@ -23,6 +23,7 @@
 import { ref, watch, onMounted } from 'vue'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useCategoryStore } from '@/daniel/stores/categories.js'
+import { useTopicStore } from '@/daniel/stores/topics.js'
 import { useAuthStore } from '@/stores/auth'
 
 import PostList from '@/daniel/components/post/PostList.vue'
@@ -40,6 +41,7 @@ const props = defineProps({
 // 直接在元件內使用 Pinia store（或你也可以把它們當 props 傳進來）
 const postStore = usePostStore()
 const categoryStore = useCategoryStore()
+const topicStore = useTopicStore()
 const authStore = useAuthStore()
 
 // 使用者大頭貼
@@ -50,6 +52,7 @@ imageUrl.value = `data:image/png;base64,${authStore.user.profilePicture}`
 async function reloadPosts() {
     await postStore.loadPosts({
         postCategoryIds: categoryStore.selectedIds,
+        postTopicIds: topicStore.selectedIds,
         userId: props.onlyMine ? authStore.user.userId : null
     })
 }
@@ -62,9 +65,17 @@ watch(
     { deep: true }
 )
 
+watch(
+    () => topicStore.selectedIds.slice(),
+    () => {
+        reloadPosts()
+    },    { deep: true }
+)
+
 // 初始載入分類與貼文
 onMounted(async () => {
     await categoryStore.loadCategories()
+    await topicStore.loadTopics()
     await reloadPosts()
 })
 </script>

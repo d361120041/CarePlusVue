@@ -19,9 +19,9 @@
 
             <!-- 起始／結束：年 + 月 下拉 -->
             <div class="flex space-x-2">
-                <div class="flex-1">
-                    <div class="mb-1 font-medium">建立時間 起</div>
-                    <div class="flex space-x-1">
+                <span class="flex-1">
+                    <span class="mb-1 font-medium">建立時間 起</span>
+                    <span class="flex space-x-1">
                         <select v-model.number="local.startYear" class="flex-1 border rounded px-2 py-1">
                             <option :value="null">-- 年</option>
                             <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
@@ -30,11 +30,11 @@
                             <option :value="null">-- 月</option>
                             <option v-for="m in months" :key="m" :value="m">{{ m }}</option>
                         </select>
-                    </div>
-                </div>
+                    </span>
+                </span>
                 <div class="flex-1">
-                    <div class="mb-1 font-medium">建立時間 訖</div>
-                    <div class="flex space-x-1">
+                    <span class="mb-1 font-medium">建立時間 訖</span>
+                    <span class="flex space-x-1">
                         <select v-model.number="local.endYear" class="flex-1 border rounded px-2 py-1">
                             <option :value="null">-- 年</option>
                             <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
@@ -43,7 +43,7 @@
                             <option :value="null">-- 月</option>
                             <option v-for="m in months" :key="m" :value="m">{{ m }}</option>
                         </select>
-                    </div>
+                    </span>
                 </div>
             </div>
 
@@ -58,6 +58,21 @@
                             : 'bg-gray-100 hover:bg-gray-200'
                     ]">
                         {{ cat.name }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- 主題按鈕 -->
+            <div>
+                <div class="mb-1 font-medium">主題</div>
+                <div class="flex flex-wrap gap-2">
+                    <button v-for="topic in topics" :key="topic.id" type="button" @click="toggleTopic(topic.id)" :class="[
+                        'px-3 py-1 border rounded',
+                        local.postTopicIds.includes(topic.id)
+                            ? 'bg-green-500 text-white'
+                            : 'bg-gray-100 hover:bg-gray-200'
+                    ]">
+                        {{ topic.name }}
                     </button>
                 </div>
             </div>
@@ -96,7 +111,8 @@ import BaseModal from '@/daniel/components/BaseModal.vue'
 const props = defineProps({
     visible: Boolean,
     initial: Object,
-    categories: Array
+    categories: Array,
+    topics: Array
 })
 const emit = defineEmits(['apply', 'clear', 'close'])
 
@@ -109,6 +125,7 @@ const local = reactive({
     endYear: props.initial.endYear ?? null,
     endMonth: props.initial.endMonth ?? null,
     postCategoryIds: [...(props.initial.postCategoryIds || [])],
+    postTopicIds: [...(props.initial.postTopicIds || [])],
     sortDir: `${props.initial.sort},${props.initial.dir}`
 })
 
@@ -123,6 +140,7 @@ watch(
         local.endYear = newInit.endYear ?? null
         local.endMonth = newInit.endMonth ?? null
         local.postCategoryIds = [...(newInit.postCategoryIds || [])]
+        local.postTopicIds = [...(newInit.postTopicIds || [])]
         local.sortDir = `${newInit.sort},${newInit.dir}`
     }
 )
@@ -136,6 +154,12 @@ function toggleCat(id) {
     const i = local.postCategoryIds.indexOf(id)
     if (i === -1) local.postCategoryIds.push(id)
     else local.postCategoryIds.splice(i, 1)
+}
+
+function toggleTopic(id) {
+    const i = local.postTopicIds.indexOf(id)
+    if (i === -1) local.postTopicIds.push(id)
+    else local.postTopicIds.splice(i, 1)
 }
 
 function onApply() {
@@ -154,6 +178,7 @@ function onApply() {
         startTime: s ? s.toISOString() : null,
         endTime: e ? e.toISOString() : null,
         postCategoryIds: local.postCategoryIds.length ? local.postCategoryIds : null,
+        postTopicIds: local.postTopicIds.length ? local.postTopicIds : null,
         sort,
         dir
     })
@@ -168,6 +193,7 @@ function onClear() {
     local.endYear = null
     local.endMonth = null
     local.postCategoryIds = []
+    local.postTopicIds = []
     local.sortDir = 'createdAt,asc'
     emit('clear')
 }
@@ -176,3 +202,26 @@ function onClose() {
     emit('close')
 }
 </script>
+
+<style scoped>
+form input,
+form select {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.5rem
+}
+
+form hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 1rem 0
+}
+
+button {
+    transition: background 0.2s
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+</style>

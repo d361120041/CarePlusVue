@@ -29,7 +29,7 @@ const src = computed(() => {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    /* margin-right: 0.5rem; */
+    margin-right: 0.5rem;
     transition: transform 0.2s, box-shadow 0.2s;
     /* cursor: pointer; */
     /* box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.15); */

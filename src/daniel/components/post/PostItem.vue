@@ -9,10 +9,19 @@
                 </div>
                 <div class="post-time">{{ formattedTime }}</div>
             </div>
+
+            <!-- 分類標籤 -->
             <div class="post-categories">
                 <span v-for="cat in post.postCategoryClassifiers" :key="cat.postCategoryClassifierId"
                     class="post-category-tag">
                     {{ cat.postCategory.postCategory }}
+                </span>
+            </div>
+
+            <!-- 主題標籤 -->
+            <div class="post-topics">
+                <span v-for="top in post.postTopicClassifiers" :key="top.postTopicClassifierId" class="post-topic-tag">
+                    {{ top.postTopic.topic }}
                 </span>
             </div>
 
@@ -216,6 +225,22 @@ onMounted(async () => {
     font-size: 0.75rem;
     background: #eef;
     color: #336;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    margin-right: 0.25rem;
+}
+
+.post-topics {
+    margin-top: 0.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.post-topic-tag {
+    font-size: 0.75rem;
+    background: #fee;
+    color: #633;
     padding: 0.15rem 0.5rem;
     border-radius: 3px;
 }

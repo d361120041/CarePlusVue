@@ -1,20 +1,37 @@
 <template>
+
     <GlobalBanner :imgSrc="homeBannerImg">
         <h1>討論區</h1>
     </GlobalBanner>
+
     <div class="social-layout">
         <!-- 左側貼文篩選欄 -->
         <aside class="filter-sidebar">
             <h3 class="sidebar-title">你想找什麼？</h3>
-            <div class="categories">
-                <button v-for="cat in categoryStore.categories" :key="cat.id"
-                    @click="categoryStore.toggleCategory(cat.id)" :class="{
-                        'category-btn': true,
-                        active: categoryStore.selectedIds.includes(cat.id),
-                    }">
-                    {{ cat.name }}
-                </button>
-            </div>
+            <!-- 類別篩選 -->
+            <section class="filter-section">
+                <h4>貼文分類</h4>
+                <div class="categories">
+                    <button v-for="cat in categoryStore.categories" :key="cat.id"
+                        @click="categoryStore.toggleCategory(cat.id)" :class="{
+                            'category-btn': true,
+                            active: categoryStore.selectedIds.includes(cat.id),
+                        }">
+                        {{ cat.name }}
+                    </button>
+                </div>
+            </section>
+
+            <!-- 主題篩選 -->
+            <section class=" filter-section">
+                <h4>貼文主題</h4>
+                <div class="topics">
+                    <button v-for="top in topicStore.topics" :key="top.id" @click="topicStore.toggleTopic(top.id)"
+                        :class="['category-btn', { active: topicStore.selectedIds.includes(top.id) }]">
+                        {{ top.name }}
+                    </button>
+                </div>
+            </section>
         </aside>
 
         <!-- 主要貼文區塊 -->
@@ -23,12 +40,20 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import { useCategoryStore } from '@/daniel/stores/categories.js'
+import { useTopicStore } from '@/daniel/stores/topics.js'
 import PostMain from '@/daniel/components/post/PostMain.vue'
 import GlobalBanner from '@/components/GlobalBanner.vue'
 import homeBannerImg from '@/assets/images/GlobalBanner/people-holding-rubber-heart.jpg'
 
 const categoryStore = useCategoryStore()
+const topicStore = useTopicStore()
+
+onMounted(() => {
+    categoryStore.loadCategories()
+    topicStore.loadTopics()
+})
 </script>
 
 <style scoped>
@@ -50,20 +75,33 @@ const categoryStore = useCategoryStore()
 }
 
 .sidebar-title {
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
     font-weight: bold;
     text-align: center;
 }
 
-.categories {
-    display: inline-box;
-    /* text-align: center; */
+.filter-section {
+    margin-bottom: 1rem;
+}
+
+.filter-section h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.categories, 
+.topics {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .category-btn {
     padding: 0.2rem 0.5rem;
-    margin: 0.2rem 0.5rem;
+    margin: 0.2rem;
     border: 2px solid transparent;
     border-radius: 4px;
     cursor: pointer;

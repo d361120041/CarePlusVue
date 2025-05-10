@@ -10,47 +10,75 @@
                 </div>
             </div>
 
-            <!-- 分類選擇 -->
-            <div class="form-group categories">
-                <label>貼文種類：</label>
-                <div class="category-buttons">
-                    <button v-for="cat in allCategories" :key="cat.id" type="button" @click="toggleCategory(cat.id)"
-                        :class="['category-btn', { active: form.categoryIds.includes(cat.id) }]">
-                        {{ cat.name }}
+            <!-- 步驟切換 -->
+            <!-- <div class="step-indicator">
+                <button type="button" :class="{ active: step === 1 }">1. 種類與主題</button>
+                <button type="button" :class="{ active: step === 2 }">2. 內容與圖片</button>
+            </div> -->
+
+            <!-- 第一部分：分類與主題 -->
+            <div v-if="step === 1">
+                <!-- 貼文種類 -->
+                <div class="form-group categories">
+                    <label>貼文種類：</label>
+                    <div class="category-buttons">
+                        <button v-for="cat in allCategories" :key="cat.id" type="button" @click="toggleCategory(cat.id)"
+                            :class="['category-btn', { active: form.categoryIds.includes(cat.id) }]">
+                            {{ cat.name }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 貼文主題 -->
+                <div class="form-group topics">
+                    <label>貼文主題：</label>
+                    <div class="topic-buttons">
+                        <button v-for="top in allTopics" :key="top.id" type="button" @click="toggleTopic(top.id)"
+                            :class="['category-btn', { active: form.topicIds.includes(top.id) }]">
+                            {{ top.name }}
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" @click="nextStep" :disabled="!canProceedToContent">下一步</button>
+                </div>
+            </div>
+
+            <!-- 第二部分：文字與圖片 -->
+            <div v-else>
+
+                <!-- 文字欄位 -->
+                <div class="form-group">
+                    <label>標題：</label>
+                    <input v-model="form.title" required />
+                </div>
+                <div class="form-group">
+                    <label>內容：</label>
+                    <textarea v-model="form.content" required></textarea>
+                </div>
+
+                <!-- 圖片縮圖列表 -->
+                <div v-if="thumbnails.length" class="form-images">
+                    <p>已選圖片：</p>
+                    <div class="thumb-wrapper" v-for="(thumb, idx) in thumbnails" :key="thumb.key">
+                        <img class="thumb" :src="thumb.src" />
+                        <button type="button" class="delete-btn" @click="removeThumbnail(thumb, idx)">✕</button>
+                    </div>
+                </div>
+
+                <!-- 選擇圖片 -->
+                <div class="upload-form">
+                    <input ref="fileInput" type="file" multiple @change="onFileChange" accept="image/*" />
+                    <p v-if="files.length">{{ files.length }} 個新檔案已選</p>
+                </div>
+
+                <!-- 提交表單 -->
+                <div class="modal-actions">
+                    <button type="button" @click="prevStep">上一步</button>
+                    <button type="submit" :disabled="postStore.isLoading">
+                        {{ submitText }}
                     </button>
                 </div>
-            </div>
-
-            <!-- 文字欄位 -->
-            <div class="form-group">
-                <label>標題：</label>
-                <input v-model="form.title" required />
-            </div>
-            <div class="form-group">
-                <label>內容：</label>
-                <textarea v-model="form.content" required></textarea>
-            </div>
-
-            <!-- 圖片縮圖列表 -->
-            <div v-if="thumbnails.length" class="form-images">
-                <p>已選圖片：</p>
-                <div class="thumb-wrapper" v-for="(thumb, idx) in thumbnails" :key="thumb.key">
-                    <img class="thumb" :src="thumb.src" />
-                    <button type="button" class="delete-btn" @click="removeThumbnail(thumb, idx)">✕</button>
-                </div>
-            </div>
-
-            <!-- 選擇圖片 -->
-            <div class="upload-form">
-                <input ref="fileInput" type="file" multiple @change="onFileChange" accept="image/*" />
-                <p v-if="files.length">{{ files.length }} 個新檔案已選</p>
-            </div>
-
-            <!-- 提交表單 -->
-            <div class="modal-actions">
-                <button type="submit" :disabled="postStore.isLoading">
-                    {{ submitText }}
-                </button>
             </div>
         </form>
     </BaseModal>
@@ -60,6 +88,7 @@
 import { ref, watch, computed } from 'vue'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useCategoryStore } from '@/daniel/stores/categories'
+import { useTopicStore } from '@/daniel/stores/topics'
 import { useAuthStore } from '@/stores/auth'
 
 import myAxios from '@/plugins/axios'
@@ -74,7 +103,16 @@ const emit = defineEmits(['close', 'saved'])
 
 const postStore = usePostStore()
 const categoryStore = useCategoryStore()
+const topicStore = useTopicStore()
 const authStore = useAuthStore()
+
+// 控制是否可進入第二步：至少選一類別或主題
+const step = ref(1)
+const canProceedToContent = computed(() => form.value.categoryIds.length || form.value.topicIds.length)
+
+// 步驟控制
+function nextStep() { step.value = 2 }
+function prevStep() { step.value = 1 }
 
 // 使用者頭貼
 const currentUser = authStore.user
@@ -103,14 +141,18 @@ const isEdit = computed(() => !!form.value.postId)
 const modalTitle = computed(() => isEdit.value ? '編輯貼文' : '新增貼文')
 const submitText = computed(() => isEdit.value ? '更新貼文' : '送出貼文')
 const allCategories = computed(() => categoryStore.categories)
+const allTopics = computed(() => topicStore.topics)
 
 watch(() => props.visible, async open => {
     if (!open) return
 
     // 重置
+    step.value = 1
     files.value = []
     previews.value = []
     existingImages.value = []
+    categoryStore.loadCategories()
+    topicStore.loadTopics()
     if (fileInput.value) fileInput.value.value = ''
 
     if (props.post?.postId) {
@@ -120,13 +162,15 @@ watch(() => props.visible, async open => {
         // 將後端的已選分類取出 ID
         const selectedCatIds = props.post.postCategoryClassifiers
             .map(pcc => pcc.postCategory.postCategoryId)
+        const selectedTopIds = props.post.postTopicClassifiers
+            .map(ptc => ptc.postTopic.postTopicId)
 
         Object.assign(form.value, {
             postId: props.post.postId,
             title: props.post.title,
             content: props.post.content,
             categoryIds: [...selectedCatIds],
-            topicIds: [...(props.post.topicIds || [])],
+            topicIds: [...selectedTopIds],
             tagIds: [...(props.post.tagIds || [])],
             visibility: props.post.visibility,
             status: props.post.status,
@@ -154,6 +198,12 @@ function toggleCategory(id) {
         form.value.categoryIds.splice(idx, 1)
     }
     else form.value.categoryIds.push(id)
+}
+
+function toggleTopic(id) {
+    const idx = form.value.topicIds.indexOf(id)
+    if (idx >= 0) form.value.topicIds.splice(idx, 1)
+    else form.value.topicIds.push(id)
 }
 
 async function loadImages(postId) {
@@ -243,6 +293,26 @@ async function onSubmit() {
     font-weight: bold;
 }
 
+.step-indicator {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem
+}
+
+.step-indicator button {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    background: #f0f0f0;
+    cursor: pointer;
+}
+
+.step-indicator button.active {
+    background: #007bff;
+    color: #fff
+}
+
+
 .categories {
     display: flex;
     gap: 0.5rem;
@@ -318,7 +388,10 @@ async function onSubmit() {
 }
 
 .modal-actions {
-    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem
 }
 
 .modal-actions button[disabled] {

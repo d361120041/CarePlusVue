@@ -20,11 +20,10 @@
                 </button>
             </h3>
 
-
             <PostMain :only-mine="true" />
 
             <!-- 抽出的 FilterModal -->
-            <FilterModal :visible="filterModalVisible" :initial="initialFilter" :categories="categoryStore.categories"
+            <FilterModal :visible="filterModalVisible" :initial="initialFilter" :categories="categoryStore.categories" :topics="topicStore.topics" 
                 @apply="onFilterApply" @clear="onFilterClear" @close="filterModalVisible = false" />
         </main>
     </div>
@@ -34,7 +33,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useCategoryStore } from '@/daniel/stores/categories'
-// import { useTopicStore } from '@/daniel/stores/topics'
+import { useTopicStore } from '@/daniel/stores/topics'
 // import { useTagStore } from '@/daniel/stores/tags'
 import { useAuthStore } from '@/stores/auth';
 
@@ -44,7 +43,7 @@ import filterImg from '@/assets/daniel/sliders-solid.svg'
 
 const postStore = usePostStore()
 const categoryStore = useCategoryStore()
-// const topicStore = useTopicStore()
+const topicStore = useTopicStore()
 // const tagStore = useTagStore()
 const authStore = useAuthStore()
 // const filterImg = ref()
@@ -65,13 +64,14 @@ const initialFilter = reactive({
     endYear: null,
     endMonth: null,
     postCategoryIds: [],
+    postTopicIds: [],
     sort: 'createdAt',
     dir: 'asc'
 })
 
 // 當 Modal 按「套用」回來
 async function onFilterApply(payload) {
-    // payload={ titleKeyword, contentKeyword, startTime, endTime, postCategoryIds, sort, dir }
+    // payload={ titleKeyword, contentKeyword, startTime, endTime, postCategoryIds, postTopicIds, sort, dir }
     await postStore.loadPosts({
         ...payload,
         userId: authStore.user.userId
@@ -88,6 +88,7 @@ async function onFilterClear() {
         endYear: null,
         endMonth: null,
         postCategoryIds: [],
+        postTopicIds: [],
         sort: 'createdAt',
         dir: 'asc'
     })
@@ -98,6 +99,7 @@ async function onFilterClear() {
 // 初始抓分類＋載貼文
 onMounted(async () => {
     await categoryStore.loadCategories()
+    await topicStore.loadTopics()
     await onFilterClear()
 })
 </script>
@@ -185,6 +187,6 @@ button {
 }
 
 button:hover {
-    background: #005bb5
+    transform: translateY(-2px);
 }
 </style>
