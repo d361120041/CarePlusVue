@@ -8,32 +8,45 @@
       <input type="text" v-model="searchKeyword" @change="searchCourses" placeholder="輸入關鍵字搜尋課程"
         class="form-control mb-3 mx-auto search-input" />
 
-      <div class="d-flex justify-content-center align-items-center">
-        <!-- 分類搜尋 -->
+      <!-- <div class="d-flex justify-content-between flex-wrap align-items-center mb-3"> -->
+        <div class="filter-row mx-auto d-flex justify-content-between flex-wrap align-items-center mb-3">
+
+        <!-- 左側：分類搜尋按鈕群組 -->
         <div class="btn-group flex-wrap" role="group">
           <button v-for="category in categories" :key="category" @click="filterByCategory(category)" :class="[
             'btn',
             selectedCategory === category
               ? 'btn-primary'
               : 'btn-outline-primary',
-          ]" class="m-1">{{ getCategoryLabel(category) }}</button>
+          ]" class="m-1">
+            {{ getCategoryLabel(category) }}
+          </button>
 
           <!-- 清空搜尋 -->
-          <button @click="resetFilters" class="btn btn-outline-secondary m-1">&#88;</button>
+          <button @click="resetFilters" class="btn btn-outline-secondary m-1">
+            &#88;
+          </button>
+        </div>
+
+        <!-- 右側：排序下拉選單 -->
+        <div class="dropdown m-1">
+          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            排序方式
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-asc'">依課程編號 小 → 大</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-desc'">依課程編號 大 → 小</a>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
 
-<!-- 排序按鈕 -->
-    <div class="dropdown mb-3">
-  <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-    排序方式
-  </button>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-asc'">依課程編號 小 → 大</a></li>
-    <li><a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-desc'">依課程編號 大 → 小</a></li>
-  </ul>
-</div>
+
+
+    </div>
 
 
 
@@ -152,7 +165,7 @@ const fetchCourses = async () => {
 // 關鍵字搜尋課程
 const searchCourses = async () => {
   const keyword = searchKeyword.value.trim();
-  selectedCategory.value = null; 
+  selectedCategory.value = null;
   currentPage.value = 1;
   if (keyword === "") {
     await fetchCourses();
@@ -243,8 +256,16 @@ onMounted(fetchCourses);
   width: 90%;
   max-width: 1100px;
 }
+
 .form-select-sm {
   font-size: 0.875rem;
   padding: 0.25rem 1rem;
+}
+
+.filter-row,
+.search-input,
+.course-card {
+  width: 90%;
+  max-width: 1100px;
 }
 </style>

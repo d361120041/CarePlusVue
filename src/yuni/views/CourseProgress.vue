@@ -1,9 +1,22 @@
 <template>
   <div class="container py-4" v-if="course">
-    <h2>{{ course.title }}</h2>
+    <h2 class="mt-3 mb-3">我的學習進度</h2>
+    <!-- <h2>{{ course.title }}</h2>
     <p class="text-muted">#{{ getCategoryLabel(course.category) }}</p>
 
-    <h4 class="mt-4">{{ auth.userName }}的學習進度</h4>
+    <h4 class="mt-4">章節學習進度</h4> -->
+<!-- 麵包屑導覽 -->
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item">{{ course.title }}</li>
+    <li class="breadcrumb-item active" aria-current="page">章節學習進度</li>
+  </ol>
+</nav>
+
+<p class="text-muted mb-3">#{{ getCategoryLabel(course.category) }}</p>
+
+
+
     <ul v-if="progressList.length > 0" class="list-group">
       <li v-for="progress in progressList" :key="progress.progressId"
         class="list-group-item d-flex justify-content-between align-items-center">

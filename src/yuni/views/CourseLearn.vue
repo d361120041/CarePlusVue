@@ -1,11 +1,11 @@
 <template>
   <div class="container py-4" v-if="chapter">
-    <div class="mt-3 text-end">
+    <!-- <div class="mt-3 text-end">
       <button class="btn btn-outline-secondary" @click="backToProgress">
         回到{{ auth.userName }}的課程進度總覽
       </button>
     </div>
-    <!-- 麵包屑導航 -->
+   
 <nav aria-label="breadcrumb" class="mt-2 mb-4">
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
@@ -15,7 +15,23 @@
       {{ chapter?.title || '章節' }}
     </li>
   </ol>
-</nav>
+</nav> -->
+
+<!-- ⬇️ 同行排列：左側麵包屑，右側按鈕 -->
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <!-- 麵包屑 -->
+  <nav aria-label="breadcrumb" class="m-0">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item">
+        <router-link :to="`/course-progress/${courseId}`">{{ courseTitle || '課程' }}</router-link>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ chapter?.title || '章節' }}
+      </li>
+    </ol>
+  </nav>
+
+</div>
 
     <!-- <h3 class="mb-3">{{ courseTitle }}｜{{ chapter.title }}</h3> -->
 

@@ -23,8 +23,10 @@
 
           <div class="row g-0 h-100">
             <div class="col-md-4">
+              <router-link :to="`/course-progress/${course.courseId}`">
+
               <img :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`"
-                class="img-fluid rounded-start h-100 object-fit-cover" alt="封面" />
+                class="img-fluid rounded-start h-100 object-fit-cover" alt="封面" /></router-link>
             </div>
             <div class="col-md-8">
               <router-link :to="`/course-progress/${course.courseId}`" class="text-decoration-none text-dark">
