@@ -13,67 +13,19 @@
 
         <!-- 右欄：我的貼文列表 -->
         <main class="mypost-main">
-            <h3 class="mypost-header">我的貼文</h3>
-
-            <!-- 多條件查詢 -->
-            <!-- 查詢表單 -->
-            <form @submit.prevent="applyFilters" class="w-full space-y-3">
-                <label>
-                    標題關鍵字
-                    <input v-model="filter.titleKeyword" type="text" placeholder="輸入標題..." class="w-full" />
-                </label>
-                <label>
-                    內容關鍵字
-                    <input v-model="filter.contentKeyword" type="text" placeholder="輸入內容..." class="w-full" />
-                </label>
-                <label>
-                    建立時間 起
-                    <input v-model="filter.startTime" type="datetime-local" class="w-full" />
-                </label>
-                <label>
-                    建立時間 訖
-                    <input v-model="filter.endTime" type="datetime-local" class="w-full" />
-                </label>
-                <label>
-                    分類 (多選)
-                    <select v-model="filter.postCategoryIds" multiple class="w-full">
-                        <option v-for="c in categoryStore.categories" :key="c.id" :value="c.id">
-                            {{ c.name }}
-                        </option>
-                    </select>
-                </label>
-                <!-- <label>
-                    主題 (多選)
-                    <select v-model="filter.postTopicIds" multiple class="w-full">
-                        <option v-for="t in topicStore.topics" :key="t.id" :value="t.id">
-                            {{ t.name }}
-                        </option>
-                    </select>
-                </label>
-                <label>
-                    標籤 (多選)
-                    <select v-model="filter.postTagIds" multiple class="w-full">
-                        <option v-for="t in tagStore.tags" :key="t.id" :value="t.id">
-                            {{ t.name }}
-                        </option>
-                    </select>
-                </label> -->
-                <label class="flex space-x-2">
-                    <div>排序欄位</div>
-                    <select v-model="filter.sort">
-                        <option value="createdAt">建立時間</option>
-                        <option value="modifiedAt">修改時間</option>
-                    </select>
-                    <select v-model="filter.dir">
-                        <option value="asc">⯅ 升冪</option>
-                        <option value="desc">⯆ 降冪</option>
-                    </select>
-                </label>
-                <button type="submit" class="w-full py-2 rounded bg-blue-500 text-white">
-                    查詢
+            <h3 class="mypost-header">我的貼文
+                <!-- 篩選按鈕 -->
+                <button @click="filterModalVisible = true" class="filter-icon-btn" aria-label="開啟篩選">
+                    <img :src="filterImg" alt="篩選圖示" />
                 </button>
-            </form>
+            </h3>
+
+
             <PostMain :only-mine="true" />
+
+            <!-- 抽出的 FilterModal -->
+            <FilterModal :visible="filterModalVisible" :initial="initialFilter" :categories="categoryStore.categories"
+                @apply="onFilterApply" @clear="onFilterClear" @close="filterModalVisible = false" />
         </main>
     </div>
 </template>
@@ -87,54 +39,66 @@ import { useCategoryStore } from '@/daniel/stores/categories'
 import { useAuthStore } from '@/stores/auth';
 
 import PostMain from '@/daniel/components/post/PostMain.vue'
+import FilterModal from '@/daniel/components/modal/FilterModal.vue'
+import filterImg from '@/assets/daniel/sliders-solid.svg'
 
 const postStore = usePostStore()
 const categoryStore = useCategoryStore()
 // const topicStore = useTopicStore()
 // const tagStore = useTagStore()
 const authStore = useAuthStore()
+// const filterImg = ref()
 
 // 使用者大頭貼
 const imageUrl = ref(null)
 imageUrl.value = `data:image/png;base64,${authStore.user.profilePicture}`
 
-// filter 物件對應後端 API
-const filter = reactive({
-    postId: null,
+// 控制 Modal
+const filterModalVisible = ref(false)
+
+// 我們的「原始」filter state
+const initialFilter = reactive({
     titleKeyword: null,
     contentKeyword: null,
-    startTime: null,
-    endTime: null,
-    userId: authStore.user.userId,   // 只查自己的
+    startYear: null,
+    startMonth: null,
+    endYear: null,
+    endMonth: null,
     postCategoryIds: [],
-    postTopicIds: [],
-    postTagIds: [],
-    start: null,
-    rows: null,
     sort: 'createdAt',
     dir: 'asc'
 })
 
-// 送出查詢
-async function applyFilters() {
+// 當 Modal 按「套用」回來
+async function onFilterApply(payload) {
+    // payload={ titleKeyword, contentKeyword, startTime, endTime, postCategoryIds, sort, dir }
     await postStore.loadPosts({
-        ...filter,
-        // 如果陣列空就傳 null 給後端
-        postCategoryIds: filter.postCategoryIds.length ? filter.postCategoryIds : null,
-        postTopicIds: filter.postTopicIds.length ? filter.postTopicIds : null,
-        postTagIds: filter.postTagIds.length ? filter.postTagIds : null
+        ...payload,
+        userId: authStore.user.userId
     })
 }
 
-// 初始載入分類／主題／標籤
+// 當 Modal 按「清除」時
+async function onFilterClear() {
+    Object.assign(initialFilter, {
+        titleKeyword: null,
+        contentKeyword: null,
+        startYear: null,
+        startMonth: null,
+        endYear: null,
+        endMonth: null,
+        postCategoryIds: [],
+        sort: 'createdAt',
+        dir: 'asc'
+    })
+    // 重載「只看自己」所有貼文
+    await postStore.loadPosts({ userId: authStore.user.userId })
+}
+
+// 初始抓分類＋載貼文
 onMounted(async () => {
-    await Promise.all([
-        categoryStore.loadCategories(),
-        // topicStore.loadTopics(),
-        // tagStore.loadTags()
-    ])
-    // 一進來就載自己的貼文
-    applyFilters()
+    await categoryStore.loadCategories()
+    await onFilterClear()
 })
 </script>
 
@@ -192,17 +156,28 @@ onMounted(async () => {
     text-align: center;
 }
 
-form input,
-form select {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 0.5rem
+.filter-icon-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+
+    /* 一定要撐開 */
+    display: inline-flex;
+    /* 或 inline-block */
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    /* 固定按鈕寬度 */
+    height: 1.5rem;
+    /* 固定按鈕高度 */
 }
 
-form hr {
-    border: none;
-    border-top: 1px solid #eee;
-    margin: 1rem 0
+/* 確保 img 撐滿按鈕 */
+.filter-icon-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 button {
