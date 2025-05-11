@@ -23,8 +23,9 @@
             <PostMain :only-mine="true" />
 
             <!-- 抽出的 FilterModal -->
-            <FilterModal :visible="filterModalVisible" :initial="initialFilter" :categories="categoryStore.categories" :topics="topicStore.topics" 
-                @apply="onFilterApply" @clear="onFilterClear" @close="filterModalVisible = false" />
+            <FilterModal :visible="filterModalVisible" :initial="initialFilter" :categories="categoryStore.categories"
+                :topics="topicStore.topics" @apply="onFilterApply" @clear="onFilterClear"
+                @close="filterModalVisible = false" />
         </main>
     </div>
 </template>
@@ -46,7 +47,6 @@ const categoryStore = useCategoryStore()
 const topicStore = useTopicStore()
 // const tagStore = useTagStore()
 const authStore = useAuthStore()
-// const filterImg = ref()
 
 // 使用者大頭貼
 const imageUrl = ref(null)
@@ -180,13 +180,13 @@ onMounted(async () => {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    /* 初始先轉灰階，讓它呈現單色 */
+    filter: grayscale(100%) brightness(60%);
+    transition: filter var(--transition-medium);
 }
 
-button {
-    transition: background 0.2s
-}
-
-button:hover {
-    transform: translateY(-2px);
+.filter-icon-btn:hover img {
+    filter:
+        grayscale(0%) invert(61%) sepia(25%) saturate(495%) hue-rotate(140deg) brightness(95%) contrast(90%);
 }
 </style>
