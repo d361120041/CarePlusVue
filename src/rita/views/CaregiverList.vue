@@ -13,9 +13,7 @@
             </span>
             <span class="condition-tag">
               <span class="label">服務地區：</span>
-              <span class="value">{{
-                caregiverStore.filters.serviceDistrict || "未指定"
-              }}</span>
+              <span class="value">{{ caregiverStore.filters.serviceDistrict || '全部區域' }}</span>
             </span>
             <span class="condition-tag">
               <span class="label">時間選擇：</span>
@@ -43,25 +41,20 @@
             </span>
           </div>
         </div>
-        <button
-          @click="goBackToSearch"
-          class="px-4 py-2 bg-teal-600 text-white rounded-md text-sm font-medium hover:bg-teal-700 transition-colors"
-        >
-          返回搜尋
-        </button>
+        <button 
+  @click="goBackToSearch" 
+  class=" goBackToSearch px-4 py-2 bg-teal-600 text-white rounded-md text-sm font-medium hover:bg-teal-700 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 focus:ring-opacity-50">
+  返回搜尋
+</button>
+
       </div>
     </div>
 
     <div class="header flex justify-between items-center mb-6">
-      <h3 class="text-xl font-semibold text-gray-800">
-        搜尋結果，共 {{ sortedCaregivers.length }} 位看護
-      </h3>
-      <select
-        v-model="sortOption"
-        class="border p-2 rounded-md text-gray-600 focus:border-teal-600 focus:ring focus:ring-teal-200 focus:ring-opacity-50"
-      >
-        <option value="price">按預估總價排序</option>
-        <option value="experience">按經驗年數排序</option>
+      <h3 class="text-xl font-semibold text-gray-800">搜尋結果：共 {{ sortedCaregivers.length }} 位照服員</h3>
+      <select v-model="sortOption" class="border p-2 rounded-md text-gray-600 focus:border-teal-600 focus:ring focus:ring-teal-200 focus:ring-opacity-50">
+        <option value="price">按總價排序</option>
+        <option value="experience">按年資排序</option>
       </select>
     </div>
 
@@ -88,16 +81,17 @@
         :key="caregiver.caregiverId"
         @click="goToCaregiverDetail(caregiver)"
       >
-        <img
-          class="caregiver-image"
-          :src="
-            caregiver.photoPath ||
-            'https://finalimagesbucket.s3.amazonaws.com/default-placeholder.jpg'
-          "
-          :alt="`看護 ${caregiver.caregiverName}`"
-        />
+      <img
+    class="caregiver-image"
+    :src="caregiver.photoPath"
+    :alt="`看護 ${caregiver.caregiverName}`"
+/>
+
+
+
+
         <div class="flex justify-between items-center mb-2">
-          <h3 class="text-lg font-semibold text-teal-600">
+          <h3 class=" caregiver-name text-lg font-semibold text-teal-600">
             {{ caregiver.caregiverName }}
           </h3>
           <button
@@ -106,7 +100,7 @@
           >
             <span v-if="isFavorited(caregiver.caregiverId)">♥</span>
             <span v-else>♡</span>
-          </button>
+          </button> 
         </div>
         <div class="caregiver-info">
           <div class="info-row text-sm text-gray-600">
@@ -114,39 +108,12 @@
             <span>國籍：{{ caregiver.nationality || "未知" }}</span>
             <span>語言：{{ caregiver.languages || "未知" }}</span>
           </div>
-          <p class="text-sm text-gray-600">
-            經驗年數：{{ caregiver.yearOfExperience }} 年
-          </p>
-          <p class="text-sm text-gray-600">
-            時薪：{{
-              caregiver.hourlyRate
-                ? `${caregiver.hourlyRate} 元/小時`
-                : "未提供"
-            }}
-          </p>
-          <p class="text-sm text-gray-600">
-            半日薪水：{{
-              caregiver.halfDayRate
-                ? `${caregiver.halfDayRate} 元/半日`
-                : "未提供"
-            }}
-          </p>
-          <p class="text-sm text-gray-600">
-            全日薪水：{{
-              caregiver.fullDayRate
-                ? `${caregiver.fullDayRate} 元/全日`
-                : "未提供"
-            }}
-          </p>
-          <p class="text-sm text-gray-600 mt-2 line-clamp-2">
-            {{ caregiver.description || "尚無詳細介紹" }}
-          </p>
+          <p class="text-sm text-gray-600">年資：{{ caregiver.yearOfExperience }} 年</p>
+         <!--  <p class="text-sm text-gray-600">時薪：{{ caregiver.hourlyRate ? `${caregiver.hourlyRate} 元/小時` : '未提供' }}</p>
+          <p class="text-sm text-gray-600">半日薪水：{{ caregiver.halfDayRate ? `${caregiver.halfDayRate} 元/半日` : '未提供' }}</p><p class="text-sm text-gray-600">全日薪水：{{ caregiver.fullDayRate ? `${caregiver.fullDayRate} 元/全日` : '未提供' }}</p>  -->
+          <p class="text-sm text-gray-600 mt-2 line-clamp-2">{{ caregiver.description || '尚無詳細介紹' }}</p>
           <p class="text-sm text-teal-700 font-semibold mt-2">
-            預估總價：{{
-              estimatedPrices[caregiver.caregiverId] !== undefined
-                ? `${estimatedPrices[caregiver.caregiverId]} 元`
-                : "計算中..."
-            }}
+            總價：{{ caregiver.totalPrice ? `${caregiver.totalPrice} 元`  : '計算中...' }}
           </p>
         </div>
       </div>
@@ -192,19 +159,6 @@ watch(
     localStorage.setItem("languages", newFilters.languages || "null");
     localStorage.setItem("hourlyRateMin", newFilters.hourlyRateMin || "null");
     localStorage.setItem("hourlyRateMax", newFilters.hourlyRateMax || "null");
-  },
-  { deep: true }
-);
-
-watch(
-  () => caregiverStore.caregivers,
-  (newCaregivers) => {
-    localStorage.setItem("caregivers", JSON.stringify(newCaregivers));
-    // 當看護列表更新時，重新獲取價格
-    estimatedPrices.value = {};
-    newCaregivers.forEach((caregiver) => {
-      fetchEstimatePrice(caregiver.caregiverId);
-    });
   },
   { deep: true }
 );
@@ -282,65 +236,6 @@ onMounted(() => {
   }
 });
 
-const fetchEstimatePrice = async (caregiverId) => {
-  try {
-    console.log(`Fetching price for caregiver ID: ${caregiverId}`);
-    console.log(
-      "Appointment Time Type:",
-      appointmentStore.appointment.timeType
-    );
-
-    let amount = null;
-    if (appointmentStore.appointment.timeType === "continuous") {
-      console.log("Calculating for continuous time...");
-      const continuous = appointmentStore.continuous;
-      console.log("Continuous data:", continuous);
-
-      // 直接使用 continuous 中的字串值
-      const startTimeStr = continuous.startTime
-        ? `${continuous.startTime}:00`
-        : null;
-      const endTimeStr = continuous.endTime ? `${continuous.endTime}:00` : null;
-
-      const startTimeParam =
-        continuous.startDate && startTimeStr
-          ? `${continuous.startDate}T${startTimeStr}`
-          : null;
-      const endTimeParam =
-        continuous.endDate && endTimeStr
-          ? `${continuous.endDate}T${endTimeStr}`
-          : null;
-
-      const res = await myAxios.get("/api/appointment/estimate/continuous", {
-        params: {
-          caregiverId: caregiverId,
-          startTime: startTimeParam,
-          endTime: endTimeParam,
-        },
-      });
-      amount = res.data;
-    } else if (appointmentStore.appointment.timeType === "multi") {
-      // ... (multi 类型的处理保持不变) ...
-    }
-
-    if (amount !== null) {
-      estimatedPrices.value[caregiverId] = amount;
-      console.log(
-        `Estimated price stored for caregiver ${caregiverId}:`,
-        estimatedPrices.value[caregiverId]
-      );
-    } else {
-      console.log(`Amount is null for caregiver ${caregiverId}.`);
-    }
-  } catch (error) {
-    console.error(
-      `Failed to fetch estimate price for caregiver ${caregiverId}:`,
-      error
-    );
-    estimatedPrices.value[caregiverId] = "無法估價";
-  }
-};
-
 const sortedCaregivers = computed(() => {
   const list = [...caregiverStore.caregivers];
   if (sortOption.value === "price") {
@@ -360,7 +255,8 @@ const sortedCaregivers = computed(() => {
 });
 
 const formatDateTime = (dateTimeStr) => {
-  if (!dateTimeStr) return "未指定";
+  console.log("收到的日期時間字串：", dateTimeStr);
+  if (!dateTimeStr || isNaN(Date.parse(dateTimeStr))) return '未指定';
   const date = new Date(dateTimeStr);
   return date.toLocaleString("zh-TW", {
     year: "numeric",
@@ -469,21 +365,22 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* 保持現有樣式不變 */
+/* 全局容器 */
 .wrapper {
   max-width: 1300px;
   margin: 0 auto;
   padding: 2rem;
+  font-family: 'Inter', sans-serif; /* 使用現代無襯線字體 */
 }
 
 /* 篩選條件區塊 */
 .search-conditions {
   padding: 2rem;
   background-color: #f9fafb;
-  border: 1px solid #d1e9e5;
-  border-radius: 8px;
-  margin-bottom: 3rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 /* 條件容器 */
@@ -496,7 +393,7 @@ onMounted(async () => {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
 }
 
 /* 條件標籤 */
@@ -504,24 +401,27 @@ onMounted(async () => {
   display: inline-flex;
   align-items: center;
   background-color: #e6f4f3;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  cursor: pointer;
 }
 
-.condition-tag:hover {
+.condition-tag:hover, .condition-tag:focus {
   transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #d1e9e5;
+  outline: none;
 }
 
 .condition-tag .label {
-  font-weight: 500;
-  color: #2a9287;
+  font-weight: 600;
+  color: #2A9287;
   margin-right: 0.5rem;
 }
 
 .condition-tag .value {
-  color: #4b5563;
+  color: #374151;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -529,66 +429,88 @@ onMounted(async () => {
 }
 
 /* 搜尋結果標頭 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
 .header h3 {
-  color: #4db6ac;
+  color: #2A9287;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .header select {
   border: 1px solid #d1d5db;
   background-color: #fff;
-  transition: border-color 0.2s ease;
-  border-radius: 6px;
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.header select:focus {
+  border-color: #4DB6AC;
+  box-shadow: 0 0 0 3px rgba(77, 182, 172, 0.2);
+  outline: none;
 }
 
 /* 看護卡片網格 */
 .caregiver-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 2rem;
 }
 
 /* 看護卡片 */
 .caregiver-card {
   background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
 }
 
-.caregiver-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+.caregiver-card:hover, .caregiver-card:focus {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  outline: none;
 }
 
 .caregiver-image {
   width: 100%;
-  height: 150px;
+  height: 180px;
   object-fit: cover;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .caregiver-info {
-  padding: 1rem;
+  padding: 1.5rem;
 }
 
 .info-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .info-row span {
-  padding: 0.25rem 0.5rem;
+  padding: 0.5rem 0.75rem;
   background-color: #f1f5f9;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 0.875rem;
+  color: #374151;
 }
 
 .caregiver-info .hourly-rate {
-  color: #2a9287;
-  font-weight: 500;
+  color: #2A9287;
+  font-weight: 600;
+  font-size: 1.125rem;
 }
 
 /* 限制描述文字為兩行 */
@@ -597,5 +519,117 @@ onMounted(async () => {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #4b5563;
+}
+
+/* 姓名區塊樣式 */
+.caregiver-name {
+  font-size: 1.725rem; /* 保持字體大小 */
+  font-weight: 600; /* 加粗字體 */
+  color: #2A9287; /* 與卡片主色調一致 */
+  background-color: #E6F4F3; /* 柔和背景色 */
+  padding: 0.5rem 1rem; /* 適當內邊距 */
+  border-radius: 12px; /* 與卡片圓角（12px）統一 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* 與卡片陰影風格一致 */
+  display: inline-block; /* 保持內聯塊級元素 */
+  margin-bottom: 0.75rem; /* 增加與下方內容的間距 */
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease; /* 平滑過渡 */
+}
+
+/* 懸停和聚焦效果 */
+.caregiver-name:hover,
+.caregiver-name:focus {
+  transform: translateY(-2px); /* 與卡片懸停效果（translateY）統一 */
+  background-color: #d1e9e5; /* 略深的背景色，與 .condition-tag:hover 一致 */
+  color: #2A9287; /* 保持文字顏色，避免突兀變化 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); /* 略強的陰影 */
+  outline: none; /* 移除默認聚焦框 */
+}
+
+/* 確保可訪問性 */
+.caregiver-name:focus {
+  box-shadow: 0 0 0 3px rgba(77, 182, 172, 0.2); /* 與其他聚焦效果一致 */
+}
+
+
+/* 返回按鈕 */
+.goBackToSearch {
+  padding: 0.75rem 1.5rem;
+  background-color: #4DB6AC;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.goBackToSearch:hover, .goBackToSearch:focus {
+  background-color: #3d9c93;
+  transform: translateY(-2px);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(77, 182, 172, 0.2);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 1rem;
+  }
+
+  .caregiver-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .caregiver-image {
+    height: 150px;
+  }
+
+  .caregiver-info {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header select {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .condition-tags {
+    gap: 1rem;
+  }
+
+  .condition-tag {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .caregiver-card {
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .caregiver-name {
+    font-size: 1rem; /* 縮小字體以適配平板 */
+    padding: 0.4rem 0.8rem; /* 減小內邊距 */
+    border-radius: 10px; /* 與卡片響應式圓角一致 */
+  }
+}
+
+@media (max-width: 480px) {
+  .caregiver-name {
+    font-size: 0.9375rem; /* 進一步縮小字體以適配手機 */
+    padding: 0.3rem 0.7rem;
+    margin-bottom: 0.5rem;
+  }
 }
 </style>

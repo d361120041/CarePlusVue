@@ -11,6 +11,8 @@ import { createApp } from "vue";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import { createPinia } from "pinia";
 import router from "@/router/router.js";
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 // ---------------- daniel ----------------
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -40,6 +42,7 @@ pinia.use(piniaPluginPersistedstate);
 
 app.use(pinia);
 app.use(router);
+app.use(VueSweetalert2);
 
 // ---------------- daniel ----------------
 app.component("font-awesome-icon", FontAwesomeIcon);

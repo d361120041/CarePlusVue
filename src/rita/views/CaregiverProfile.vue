@@ -76,16 +76,16 @@
 
         <!-- 右側：使用者輸入資訊 -->
         <div class="flex-1 space-y-6">
-          <h3 class="section-title">您的需求</h3>
+          <!-- <h3 class="section-title">您的需求</h3> -->
           <div class="info-grid">
-            <div class="info-item">
+            <!-- <div class="info-item">
               <span class="label">服務縣市</span>
               <span class="value">{{ appointmentStore.appointment.city || '未選擇' }}</span>
             </div>
             <div class="info-item">
               <span class="label">時間需求</span>
               <span class="value">{{ appointmentStore.appointment.timeRequirements || '未提供' }}</span>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -93,7 +93,7 @@
       <div class="mt-4">
           <h4 class="section-title">預估總價</h4>
           <p class="text-xl font-semibold text-teal-700">
-            {{ appointmentStore.appointment.totalPrice !== null ? `${appointmentStore.appointment.totalPrice} 元` : '計算中...' }}
+            {{  caregiver.totalPrice ? `${caregiver.totalPrice} 元`  : '計算中...' }}
           </p>
         </div>
 
@@ -104,7 +104,7 @@
           class="booking-button w-full flex justify-center items-center py-3 bg-teal-600 text-white rounded-full font-medium hover:bg-teal-700 transition-all duration-200 transform hover:scale-105"
           aria-label="確認預約"
         >
-          立即預約
+          預約此照服員
         </button>
       </div>
     </div>
@@ -131,58 +131,11 @@ const appointmentStore = useAppointmentStore();
 
 const caregiver = ref(null);
 
-// 計算預估總價
-const estimatedTotalPrice = computed(async () => { // 將 computed 改為 async
-  if (caregiver.value && caregiver.value.caregiverId) {
-    console.log('Appointment Time Type in estimate:', appointmentStore.appointment.timeType);
-    console.log('Continuous data in estimate:', appointmentStore.continuous);
-    try {
-      console.log('Fetching estimate price...');
-      let amount = null;
-      if (appointmentStore.appointment.timeType === 'continuous') {
-        const continuous = appointmentStore.continuous;
-        const startTimeStr = continuous.startTime ? `${continuous.startTime}:00` : null;
-        const endTimeStr = continuous.endTime ? `${continuous.endTime}:00` : null;
-        const startTimeParam = continuous.startDate && startTimeStr ? `${continuous.startDate}T${startTimeStr}` : null;
-        const endTimeParam = continuous.endDate && endTimeStr ? `${continuous.endDate}T${endTimeStr}` : null;
-
-        const res = await myAxios.get('/api/appointment/estimate/continuous', {
-          params: {
-            caregiverId: caregiver.value.caregiverId,
-            startTime: startTimeParam,
-            endTime: endTimeParam,
-          },
-        });
-        amount = res.data;
-      } else if (appointmentStore.appointment.timeType === 'multi') {
-        const multi = appointmentStore.multi.multi;
-        const timeSlots = multi.timeSlots.map(slot => ({
-          startTime: slot.startTime ? `${slot.startTime}:00` : null,
-          endTime: slot.endTime ? `${slot.endTime}:00` : null,
-        }));
-
-        const res = await myAxios.get('/api/appointment/estimate/multi', {
-          params: {
-            caregiverId: caregiver.value.caregiverId,
-            startDate: multi.startDate,
-            endDate: multi.endDate,
-            repeatDays: multi.repeatDays,
-            timeSlots: timeSlots,
-          },
-        });
-        amount = res.data;
-      }
-      console.log('Estimate price fetched:', amount);
-      appointmentStore.appointment.totalPrice = amount; // 更新 store 中的總價
-      return amount !== null ? `${amount} 元` : '無法估價';
-    } catch (error) {
-      console.error('Failed to fetch estimate price in CaregiverProfile:', error);
-      appointmentStore.appointment.totalPrice = null;
-      return '無法估價';
-    }
-  }
-  return '計算中...';
-});
+// 🔄 當使用者選擇看護時儲存 ID
+const selectCaregiver = (caregiverId) => {
+  localStorage.setItem('caregiverId', caregiverId);
+  appointmentStore.setCaregiverId(caregiverId);
+};
 
 onMounted(async () => {
   const caregiverId = route.params.id;
@@ -258,7 +211,8 @@ const goBack = () => {
 
 const confirmBooking = () => {
   if (caregiver.value && caregiver.value.caregiverId) {
-    appointmentStore.appointment.caregiverId = caregiver.value.caregiverId;
+    selectCaregiver(caregiver.value.caregiverId);
+    appointmentStore.appointment.totalPrice = caregiver.value.totalPrice;
     router.push(`/request/time?caregiverId=${caregiver.value.caregiverId}`);
   } else {
     console.warn('無法確認預約，看護資料未載入。');
@@ -379,26 +333,46 @@ const confirmBooking = () => {
   color: #1f2937;
 }
 
+/* 預約按鈕 */
 .booking-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem; /* 增加內邊距，提升點擊區域 */
   font-size: 1.125rem;
   font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%); /* 微妙漸變，與配色協調 */
+  border: none;
+  border-radius: 8px; /* 與 .back-button 圓角一致 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, opacity 0.2s ease;
 }
 
 .booking-button:hover {
-  background-color: #115e59;
+  background: linear-gradient(135deg, #0d615a 0%, #0f4d47 100%); /* 懸停時略暗的漸變 */
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0.95; /* 微妙透明度變化 */
 }
 
 .booking-button:active {
   transform: scale(0.98);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 點擊時陰影減弱 */
 }
 
 .booking-button:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.3); /* 增強聚焦環，與 .back-button 協調 */
+}
+
+.booking-button:disabled {
+  background: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 .divider {
@@ -437,6 +411,21 @@ const confirmBooking = () => {
 
   .booking-button {
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .booking-button {
+    padding: 0.65rem 1.25rem;
+    font-size: 1rem; /* 略縮小字體 */
+    border-radius: 6px; /* 縮小圓角以適配小螢幕 */
+  }
+}
+
+@media (max-width: 480px) {
+  .booking-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9375rem; /* 進一步縮小字體 */
   }
 }
 </style>

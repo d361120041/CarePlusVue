@@ -196,6 +196,11 @@ const routes = [
     component: () => import("@/rita/views/RequestLocation.vue"),
     name: "requestLocation",
   },
+  {
+    path: "/request/confirm",
+    component: () => import("@/rita/views/Confirm.vue"),
+    name: "requestConfirm",
+  },
 
   // 看護確認預約
   {

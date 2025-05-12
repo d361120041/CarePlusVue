@@ -267,19 +267,75 @@
 
 
 <script setup>
+import Swal from 'sweetalert2';
 import { ref, onMounted, computed } from 'vue'
 import myAxios from '@/plugins/axios'
 import { useRouter } from 'vue-router'
 import { useCaregiverStore } from '@/stores/caregiverStore'
 import { useAppointmentStore } from '@/stores/AppointmentStore'
 
-
 const router = useRouter()
 const store = useCaregiverStore()
 const appointmentStore = useAppointmentStore()
 
+// 🛠️ 改善後的 validateTime 函數
+const validateTime = () => {
+  // 取出連續時間表單數據
+  const { startDate, startTime, endDate, endTime } = form.value.continuous;
+
+  // 確保所有欄位都有值
+  if (!startDate || !startTime || !endDate || !endTime) {
+    Swal.fire({
+      icon: 'warning',
+      title: '時間不完整',
+      text: '請完整填寫開始和結束時間',
+      confirmButtonText: '確定',
+      confirmButtonColor: '#3085d6'
+    });
+    return false;
+  }
+
+  // 將日期與時間組合為 Date 物件
+  const start = new Date(`${startDate}T${startTime}`);
+  const end = new Date(`${endDate}T${endTime}`);
+
+  // 確認開始時間在結束時間之前
+  if (end <= start) {
+    Swal.fire({
+      icon: 'error',
+      title: '時間錯誤',
+      text: '結束時間必須晚於開始時間',
+      confirmButtonText: '確定',
+      confirmButtonColor: '#3085d6'
+    });
+    return false;
+  }
+
+  // 計算總分鐘數
+  const diffInMinutes = (end - start) / 60000;
+  
+  // 確認時間至少 1 小時
+  if (diffInMinutes < 60) {
+    Swal.fire({
+      icon: 'warning',
+      title: '時間過短',
+      text: '預約至少要 1 小時',
+      confirmButtonText: '確定',
+      confirmButtonColor: '#3085d6'
+    });
+    return false;
+  }
+
+  // 通過驗證
+  return true;
+};
+
+
+
 //搜尋看護
 const searchCaregivers = async () => {
+  // ✅ 先檢查時間是否有效
+  if (!validateTime()) return;
   const { city, district, continuous, multi, timeType } = form.value
 
   appointmentStore.setTime('continuous', continuous);
@@ -291,10 +347,26 @@ const searchCaregivers = async () => {
   const multiFilled = multi.startDate && multi.endDate && multi.startTime && multi.endTime;;
 
   if (!(continuousFilled || multiFilled)) {
-    alert('請填寫連續時間或多時段的預約條件');
+    Swal.fire({
+      icon: 'warning',
+      title: '缺少時間資訊',
+      text: '請填寫連續時間或多時段的預約條件',
+      confirmButtonText: '確定',
+      confirmButtonColor: '#3085d6'
+    });
     return;
   }
-
+  // 確保城市和區域已選擇
+  if (!city || !district) {
+    Swal.fire({
+      icon: 'warning',
+      title: '缺少地區資訊',
+      text: '請選擇服務城市和區域',
+      confirmButtonText: '確定',
+      confirmButtonColor: '#3085d6'
+    });
+    return;
+  }
   // 新增多時段時間區間
 const addTimeSlot = () => {
   form.value.multi.timeSlots.push({ startTime: '', endTime: '' })
@@ -314,40 +386,6 @@ const isFormComplete = computed(() => {
   return (continuousFilled || multiFilled) && form.value.city && form.value.district
 })
 
-// 計算金額
-const calculateEstimateAmount = async () => {
-  try {
-    let amount = 0;
-    if (form.value.timeType === 'continuous') {
-      const continuous = form.value.continuous;
-      const res = await myAxios.get('/api/appointment/estimate/continuous', {
-        params: {
-          caregiverId: appointmentStore.appointment.caregiverId,
-          startTime: toLocalDateTimeString(continuous.startDate, continuous.startTime),
-          endTime: toLocalDateTimeString(continuous.endDate, continuous.endTime)
-        }
-      });
-      amount = res.data;
-    } else if (form.value.timeType === 'multi') {
-      const multi = form.value.multi;
-      const res = await myAxios.get('/api/appointment/estimate/multi', {
-        params: {
-          caregiverId: appointmentStore.appointment.caregiverId,
-          startDate: multi.startDate,
-          endDate: multi.endDate,
-          timeSlots: multi.timeSlots
-        }
-      });
-      amount = res.data;
-    }
-
-    appointmentStore.setTotalPrice(amount);
-    console.log('預估金額:', amount);
-  } catch (error) {
-    console.error('金額計算失敗:', error);
-    alert('無法計算金額，請稍後再試');
-  }
-}
 //組合篩選條件
   const filters = {
   serviceCity: city,
@@ -372,7 +410,13 @@ console.log("過濾條件:", filters);
 
   try {
     const res = await myAxios.get('/api/appointment/caregiver/available', { params: filters })
-    
+    console.log("看護列表:", res.data)
+
+    // `totalPrice`更新到 appointmentStore
+  res.data.forEach(caregiver => {
+    appointmentStore.setTotalPrice(caregiver.totalPrice);
+  });
+
     store.setFilters(filters)
     store.setCaregivers(res.data)
 
