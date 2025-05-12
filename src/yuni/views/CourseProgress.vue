@@ -242,19 +242,26 @@ onMounted(async () => {
   color: #6c757d;
 }
 
-/* 保證外層容器撐滿頁面高度 */
 .page-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 120px); /* 120px 為 navbar + footer 預估高度，可微調 */
+  min-height: 60vh;
 }
 
-/* 撐開內容區域 */
+
 .page-content {
   flex: 1;
   display: flex;
-  justify-content: center; /* 讓卡片置中 */
+  justify-content: center;
   align-items: flex-start;
-  padding-bottom: 2rem;
+  padding-bottom: 2rem; /* 試著移除或減少 */
 }
+
+.card {
+  background-color: var(--color-bg-card, #fff);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
 </style>

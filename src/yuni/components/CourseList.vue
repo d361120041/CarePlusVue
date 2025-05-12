@@ -203,7 +203,7 @@ const filterByCategory = async (category) => {
 };
 
 const currentPage = ref(1); // 當前頁數
-const pageSize = 5; // 每頁幾筆（固定為 3）
+const pageSize = 4; // 每頁幾筆（固定為 3）
 // const paginatedCourses = computed(() => {
 //   const start = (currentPage.value - 1) * pageSize;
 //   return courses.value.slice(start, start + pageSize);
