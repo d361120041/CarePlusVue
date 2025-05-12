@@ -33,11 +33,6 @@
       <template v-if="isUserLogin">
         <div class="user-info">
           <!-- ✅ 純文字歡迎語 -->
-          <span class="welcome-text" v-if="auth.user"
-            >歡迎：{{ auth.user.userName }}</span
-          >
-
-          <!-- ✅ 點擊頭像導向個人資料頁 -->
           <router-link to="/user-center/profile" class="user-icon-wrapper">
             <img
               v-if="imageUrl"
@@ -47,6 +42,10 @@
               title="編輯個人資料"
             />
           </router-link>
+
+          <span class="welcome-text" v-if="auth.user">
+            歡迎：{{ auth.user.userName }}
+          </span>
 
           <button @click="userLogout" class="logout-button">登出</button>
         </div>
@@ -421,11 +420,11 @@ const caregiverLogout = () => {
 }
 
 .user-icon {
-  width: 150%; /* ✅ 修改：原本寫死 50px，改為容器撐滿 */
+  width: 120%; /* ✅ 剛好填滿容器 */
   height: 100%;
   object-fit: cover;
-  border-radius: 100%;
-  border: 1px solid #ccc; /* ✅ 新增：細邊框讓頭像更清晰 */
+  border-radius: 50%;
+  border: 1px solid #ccc;
 }
 
 /* ----- login ----- */

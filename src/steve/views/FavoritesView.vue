@@ -6,18 +6,14 @@
     <div class="btn-group mb-3">
       <button
         class="btn"
-        :class="
-          currentTab === 'courses' ? 'btn-primary' : 'btn-outline-primary'
-        "
+        :class="currentTab === 'courses' ? 'btn-fav' : 'btn-outline-fav'"
         @click="currentTab = 'courses'"
       >
         課程
       </button>
       <button
         class="btn"
-        :class="
-          currentTab === 'employees' ? 'btn-primary' : 'btn-outline-primary'
-        "
+        :class="currentTab === 'employees' ? 'btn-fav' : 'btn-outline-fav'"
         @click="currentTab = 'employees'"
       >
         照護者
@@ -207,9 +203,46 @@ onMounted(fetchFavorites);
 </script>
 
 <style scoped>
+.btn-fav {
+  background-color: #4db6ac;
+  color: #fff;
+  border: 1px solid #4db6ac;
+}
+
+.btn-fav:hover {
+  background-color: #3ba99e;
+  border-color: #3ba99e;
+}
+
+.btn-outline-fav {
+  background-color: transparent;
+  color: #4db6ac;
+  border: 1px solid #4db6ac;
+}
+
+.btn-outline-fav:hover {
+  background-color: #e6f5f3;
+}
+
 .course-card,
 .caregiver-card {
   border: 1px solid #ddd;
   border-radius: 8px;
+}
+
+.favButton {
+  color: #ffffff;
+  text-decoration: none;
+  margin-bottom: 6px;
+  /* 增加每個按鈕的分隔感 */
+  width: 100%;
+  display: block;
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background-color: #80ccc3;
+  transition: box-shadow 0.3s, background-color 0.3s;
+  font-weight: 500;
+  border: 1px solid #4db6ac;
 }
 </style>

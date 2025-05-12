@@ -4,16 +4,32 @@
 
     <!-- 公版按鈕 -->
     <div class="flex flex-wrap gap-2 mb-4">
-      <button class="px-3 py-1 bg-gray-200 rounded" @click="fillTemplate(1)">
+      <button
+        class="template-btn"
+        :class="{ active: selectedTemplate === 1 }"
+        @click="fillTemplate(1)"
+      >
         諮詢照護者
       </button>
-      <button class="px-3 py-1 bg-gray-200 rounded" @click="fillTemplate(2)">
+      <button
+        class="template-btn"
+        :class="{ active: selectedTemplate === 2 }"
+        @click="fillTemplate(2)"
+      >
         諮詢課程
       </button>
-      <button class="px-3 py-1 bg-gray-200 rounded" @click="fillTemplate(3)">
+      <button
+        class="template-btn"
+        :class="{ active: selectedTemplate === 3 }"
+        @click="fillTemplate(3)"
+      >
         申訴
       </button>
-      <button class="px-3 py-1 bg-gray-200 rounded" @click="fillTemplate(4)">
+      <button
+        class="template-btn"
+        :class="{ active: selectedTemplate === 4 }"
+        @click="fillTemplate(4)"
+      >
         其他
       </button>
     </div>
@@ -43,11 +59,7 @@
         ></textarea>
       </div>
 
-      <button
-        type="submit"
-        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        :disabled="loading"
-      >
+      <button type="submit" class="btn-fav" :disabled="loading">
         {{ loading ? "送出中…" : "送出" }}
       </button>
     </form>
@@ -65,6 +77,8 @@ const inquiry = ref({
   email: "",
   inquiryText: "",
 });
+
+const selectedTemplate = ref(null);
 
 onMounted(async () => {
   try {
@@ -84,6 +98,7 @@ const fillTemplate = (type) => {
     4: "您好，我有一些其他問題或建議如下：",
   };
   inquiry.value.inquiryText = templates[type];
+  selectedTemplate.value = type;
 };
 
 const submitInquiry = async () => {
@@ -95,6 +110,7 @@ const submitInquiry = async () => {
     });
     alert("已成功送出，感謝您的反饋");
     inquiry.value.inquiryText = "";
+    selectedTemplate.value = null;
   } catch (err) {
     alert(err.response?.data || "送出失敗，請稍後再試");
   } finally {
@@ -104,5 +120,43 @@ const submitInquiry = async () => {
 </script>
 
 <style scoped>
-/* 你可以再調整間距、字級 */
+.template-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 2px solid #4db6ac;
+  background-color: #b3e2da;
+  color: #333;
+  transition: background-color 0.3s, color 0.3s;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.template-btn.active {
+  background-color: #4db6ac;
+  color: white;
+}
+
+.btn-fav {
+  background-color: #4db6ac;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: 2px solid #4db6ac;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.btn-fav:hover {
+  background-color: #3ba99e;
+  border-color: #3ba99e;
+}
+
+.btn-fav:disabled {
+  background-color: #a8dad4;
+  border-color: #a8dad4;
+  cursor: not-allowed;
+}
 </style>

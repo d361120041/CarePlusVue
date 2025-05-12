@@ -48,7 +48,7 @@ nav {
 }
 
 .sidebar-button {
-  color: #00332e;
+  color: #ffffff;
   text-decoration: none;
   margin-bottom: 6px;
   /* 增加每個按鈕的分隔感 */

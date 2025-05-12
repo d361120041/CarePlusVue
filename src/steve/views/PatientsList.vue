@@ -37,16 +37,8 @@
             </td>
             <td class="px-4 py-2 border">{{ p.emergencyContact }}</td>
             <td class="px-4 py-2 border space-x-2">
-              <button
-                @click="goEdit(p.patientId)"
-                class="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-              >
-                編輯
-              </button>
-              <button
-                @click="deletePatient(p.patientId)"
-                class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-              >
+              <button @click="goEdit(p.patientId)" class="edit">編輯</button>
+              <button @click="deletePatient(p.patientId)" class="delete">
                 刪除
               </button>
             </td>
@@ -116,7 +108,7 @@ onMounted(fetchPatients);
   gap: 1.5rem;
 }
 .addPatient {
-  color: #00332e;
+  color: white;
   text-decoration: none;
   margin-bottom: 6px;
   /* 增加每個按鈕的分隔感 */
@@ -134,5 +126,34 @@ onMounted(fetchPatients);
   border-radius: 16px; /* ✅ 比較明顯的圓角，可以自行調整為 8px、24px 等 */
   padding: 5rem;
   background-color: #ffffffe6;
+}
+
+.edit,
+.delete {
+  padding: 0.5rem 1rem;
+  color: white;
+  border-radius: 8px; /* ✅ 圓角 */
+  font-weight: 500;
+  cursor: pointer;
+  border: 2px solid transparent; /* 先設一個預設值，hover 時會覆蓋 */
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.edit {
+  background-color: #3e9bdc;
+  border-color: #3e9bdc;
+}
+.edit:hover {
+  background-color: #2c82c9;
+  border-color: #2c82c9;
+}
+
+.delete {
+  background-color: #ff9999;
+  border-color: #ff9999;
+}
+.delete:hover {
+  background-color: #ff6666;
+  border-color: #ff6666;
 }
 </style>
