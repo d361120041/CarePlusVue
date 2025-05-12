@@ -16,27 +16,31 @@
 
     <!-- allen: 新聞預覽區塊 -->
     <!-- 最新消息標籤 -->
-    <br>
-    <div class="news-header" @click="goToNews">
-        <span class="news-icon">📢</span>
-        <span class="news-title">最新消息</span>
-    </div>
+    <div class="news-list-container">
+        <br>
+        <div class="news-header" @click="goToNews">
+            <span class="news-icon">📢</span>
+            <span class="title">最新消息</span>
+        </div>
 
-    <div class="news-preview-container">
-        <div v-for="news in previewNews" :key="news.newsId" class="news-preview-card">
-            <router-link :to="`/news/${news.newsId}`" class="news-link">
-                <img :src="getFullImageUrl(news.thumbnail) || defaultThumbnail" alt="新聞圖片" class="news-image"
-                    @error="handleImgError" />
-            </router-link>
+        <div class="news-preview-container">
+            <div v-for="news in previewNews" :key="news.newsId" class="news-preview-card">
+                <router-link :to="`/news/${news.newsId}`" class="news-link">
+                    <img :src="getFullImageUrl(news.thumbnail) || defaultThumbnail" alt="新聞圖片" class="news-image"
+                        @error="handleImgError" />
+                </router-link>
 
-            <div class="news-content">
-                <h3 class="news-title">{{ news.title }}</h3>
-                <p class="news-date">發布日期：{{ news.publishAt }}</p>
-                <p class="news-views">瀏覽次數：{{ news.viewCount }}</p>
+                <div class="news-content">
+                    <h3 class="news-title">{{ news.title }}</h3>
+                    <p class="news-date">發布日期：{{ news.publishAt }}</p>
+                    <p class="news-views">瀏覽次數：{{ news.viewCount }}</p>
+                </div>
             </div>
         </div>
+
     </div>
-    <!-- allen -->
+    <!-- allen end-->
+
 
     <!-- rita -->
     <div >
@@ -113,6 +117,7 @@ onMounted(() => {
     fetchNews();
 });
 // ------allen end
+
 </script>
 
 <style scoped>
@@ -132,6 +137,19 @@ onMounted(() => {
 }
 
 /* allen start*/
+
+.news-content {
+    text-align: center;
+    padding: 8px 0;
+    height: 100px;  /* 限制內容區域的高度 */
+    overflow: hidden;  /* 防止內容溢出 */
+}
+
+
+.news-list-container{
+    background-color: var(--color-bg-page);
+}
+
 .news-header {
     display: flex;
     align-items: center;
@@ -170,12 +188,12 @@ onMounted(() => {
     /* 間距縮小 */
     padding: 24px 48px;
     /* 上下留白加大 */
-    background-color: #f9f9f9;
 }
 
 .news-preview-card {
-    flex: 0 0 320px;
-    /* 卡片寬度固定 */
+    flex: 0 0 380px; /* 固定寬度 */
+    max-width: 380px; /* 限制最大寬度 */
+    height: 380px; /* 固定高度 */
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
@@ -185,8 +203,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 400px;
-    /* 高度調整 */
+    justify-content: space-between; /* 將內容均勻分布 */
 }
 
 .news-preview-card:hover {
@@ -195,13 +212,24 @@ onMounted(() => {
 
 .news-image {
     width: 100%;
-    max-width: 280px;
-    /* 放大圖片 */
-    height: 180px;
-    /* 調整圖片高度 */
+    max-width: 240px;  /* 限制圖片寬度 */
+    height: 160px;     /* 限制圖片高度 */
     object-fit: cover;
     border-radius: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
+}
+
+.news-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;  /* 限制顯示最多兩行 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    line-height: 1.4;
+    max-height: calc(1.4em * 2); /* 控制高度 */
+    font-size: var(--font-size-lg);
+    margin-bottom: 8px;
 }
 
 .news-content {
@@ -218,4 +246,5 @@ onMounted(() => {
 }
 
 /* allen end*/
+
 </style>
