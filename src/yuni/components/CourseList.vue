@@ -1,28 +1,56 @@
 <template>
   <div class="container py-4">
     <div id="course-top"></div>
-    <h2 class="mb-4" style="text-align: center;">課程列表</h2>
+    <!-- <h2 class="mb-4" style="text-align: center;">課程列表</h2> -->
 
     <!-- 關鍵字搜尋 -->
     <div class="mb-4">
       <input type="text" v-model="searchKeyword" @change="searchCourses" placeholder="輸入關鍵字搜尋課程"
         class="form-control mb-3 mx-auto search-input" />
 
-      <div class="d-flex justify-content-center align-items-center">
-        <!-- 分類搜尋 -->
+      <!-- <div class="d-flex justify-content-between flex-wrap align-items-center mb-3"> -->
+        <div class="filter-row mx-auto d-flex justify-content-between flex-wrap align-items-center mb-3">
+
+        <!-- 左側：分類搜尋按鈕群組 -->
         <div class="btn-group flex-wrap" role="group">
           <button v-for="category in categories" :key="category" @click="filterByCategory(category)" :class="[
             'btn',
             selectedCategory === category
               ? 'btn-primary'
-              : 'btn-outline-primary',
-          ]" class="m-1">{{ getCategoryLabel(category) }}</button>
+              : 'btn-outline-green',
+          ]" class="m-1">
+            {{ getCategoryLabel(category) }}
+          </button>
 
           <!-- 清空搜尋 -->
-          <button @click="resetFilters" class="btn btn-outline-secondary m-1">&#88;</button>
+          <button @click="resetFilters" class="btn btn-outline-secondary m-1">
+            &#88;
+          </button>
+        </div>
+
+        <!-- 右側：排序下拉選單 -->
+        <div class="dropdown m-1">
+          <button class="btn btn-outline-green dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            排序方式
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-asc'">依課程編號 小 → 大</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-desc'">依課程編號 大 → 小</a>
+            </li>
+          </ul>
         </div>
       </div>
+
+
+
     </div>
+
+
+
+
     <!-- 課程卡片清單 -->
     <div v-if="courses.length > 0" :class="[
       'd-flex flex-column gap-3 w-100',
@@ -56,17 +84,17 @@
     <nav aria-label="Page navigation example">
       <ul class="pagination">
         <li class="page-item" :class="{ disabled: currentPage === 1 }">
-          <a class="page-link" href="#" @click.prevent="goToPage(currentPage - 1)">
+          <a class="page-link page-link-green" href="#" @click.prevent="goToPage(currentPage - 1)">
             &laquo;
           </a>
         </li>
         <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: currentPage === page }">
-          <a class="page-link" href="#" @click.prevent="goToPage(page)">
+          <a class="page-link page-link-green" href="#" @click.prevent="goToPage(page)">
             {{ page }}
           </a>
         </li>
         <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-          <a class="page-link" href="#" @click.prevent="goToPage(currentPage + 1)">
+          <a class="page-link page-link-green" href="#" @click.prevent="goToPage(currentPage + 1)">
             &raquo;
           </a>
         </li>
@@ -80,6 +108,16 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import axios from "@/plugins/axios.js";
+
+const sortOption = ref('id-asc')
+
+const sortedCourses = computed(() => {
+  return [...courses.value].sort((a, b) => {
+    if (sortOption.value === 'id-asc') return a.courseId - b.courseId
+    if (sortOption.value === 'id-desc') return b.courseId - a.courseId
+    return 0
+  })
+})
 
 const courses = ref([]);
 const searchKeyword = ref("");
@@ -127,7 +165,7 @@ const fetchCourses = async () => {
 // 關鍵字搜尋課程
 const searchCourses = async () => {
   const keyword = searchKeyword.value.trim();
-  selectedCategory.value = null; 
+  selectedCategory.value = null;
   currentPage.value = 1;
   if (keyword === "") {
     await fetchCourses();
@@ -165,10 +203,15 @@ const filterByCategory = async (category) => {
 };
 
 const currentPage = ref(1); // 當前頁數
-const pageSize = 3; // 每頁幾筆（固定為 3）
+const pageSize = 5; // 每頁幾筆（固定為 3）
+// const paginatedCourses = computed(() => {
+//   const start = (currentPage.value - 1) * pageSize;
+//   return courses.value.slice(start, start + pageSize);
+// });
+
 const paginatedCourses = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
-  return courses.value.slice(start, start + pageSize);
+  return sortedCourses.value.slice(start, start + pageSize); // ✅ 改成從 sortedCourses
 });
 
 const totalPages = computed(() => {
@@ -213,4 +256,49 @@ onMounted(fetchCourses);
   width: 90%;
   max-width: 1100px;
 }
+
+.form-select-sm {
+  font-size: 0.875rem;
+  padding: 0.25rem 1rem;
+}
+
+.filter-row,
+.search-input,
+.course-card {
+  width: 90%;
+  max-width: 1100px;
+}
+
+.btn-outline-green {
+  color: var(--color-btn-primary-bg);
+  border: 1px solid var(--color-btn-primary-bg);
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-green:hover,
+.btn-outline-green:focus {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+}
+
+.page-link-green {
+  color: var(--color-btn-primary-bg);
+  border: 1px solid var(--color-btn-primary-bg);
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.page-link-green:hover,
+.page-link-green:focus {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+}
+
+.page-item.active .page-link-green {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  border-color: var(--color-btn-primary-bg);
+}
+
 </style>

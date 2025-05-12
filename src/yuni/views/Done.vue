@@ -7,7 +7,7 @@
     </p>
 
     <div class="btn-group mt-4">
-      <router-link to="/my-courses" class="btn btn-outline-primary">回到我的課程</router-link>
+      <router-link to="/my-courses" class="button-green">回到我的課程</router-link>
       <!-- <router-link to="/" class="btn btn-outline-secondary">回首頁</router-link> -->
       <!-- <button class="btn btn-success">📄 下載證書</button> -->
     </div>

@@ -17,11 +17,13 @@
 
   <!-- 頁尾 開始-->
   <footer v-if="!isAdminRoute" class="footer">
-    <div class="container text-center">
+    <!-- <div class="container text-center">
       <h1>&copy; 2025 Care+ 照護平台</h1>
-    </div>
+    </div> -->
+      <Footer />
   </footer>
   <!-- 頁尾 結束-->
+   
 </template>
 
 <script setup>
@@ -31,6 +33,7 @@ import { RouterView, useRoute } from "vue-router";
 import { computed } from "vue";
 
 import Navigationbar from "@/views/Navigationbar.vue";
+import Footer from "@/views/Footer.vue";
 
 const route = useRoute();
 // ✅ 檢查是否為 admin 開頭的頁面

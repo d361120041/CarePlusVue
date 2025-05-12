@@ -1,18 +1,57 @@
-<template>
-  <div class="container py-4">
-    <h2 class="mb-4">我的課程</h2>
 
-    <div class="d-flex justify-content-end mb-3">
+
+<template>
+
+<GlobalBanner :imgSrc="bannerImg">
+    <h1>我的課程</h1>
+  </GlobalBanner>
+  <div class="container py-4">
+    <!-- 麵包屑 -->
+    <!-- <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+          <router-link to="/course" class="text-decoration-none">線上課程</router-link>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">我的課程</li>
+      </ol>
+    </nav> -->
+
+    <!-- 排序 -->
+    <!-- <div class="d-flex justify-content-end mb-3">
       <select v-model="sortOption" class="form-select w-auto">
         <option value="id-asc">依課程編號（小 → 大）</option>
         <option value="id-desc">依課程編號（大 → 小）</option>
       </select>
-    </div>
+    </div> -->
 
+    <!-- 麵包屑 + 排序按鈕 同排 -->
+<!-- 麵包屑 + 排序按鈕 同排 -->
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-3 gap-2">
+  <!-- 麵包屑 -->
+  <nav aria-label="breadcrumb">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item">
+      <router-link to="/course" class="breadcrumb-dynamic">
+        線上課程
+      </router-link>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">我的課程</li>
+  </ol>
+</nav>
+
+  <!-- 排序選單 -->
+  <select v-model="sortOption" class="form-select w-auto">
+    <option value="id-asc">依課程編號（小 → 大）</option>
+    <option value="id-desc">依課程編號（大 → 小）</option>
+  </select>
+</div>
+
+
+    <!-- 課程列表 -->
     <div v-if="courses.length > 0" class="row row-cols-1 row-cols-md-2 g-4">
       <div v-for="course in sortedCourses" :key="course.courseId" class="col">
         <div class="card h-100 position-relative">
-          <!-- ✅ Ribbon 放在這裡 -->
+          <!-- Ribbon -->
           <div class="ribbon" v-if="completedCourseIds.includes(course.courseId)">已完成</div>
 
           <!-- 移除按鈕 -->
@@ -23,8 +62,10 @@
 
           <div class="row g-0 h-100">
             <div class="col-md-4">
-              <img :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`"
-                class="img-fluid rounded-start h-100 object-fit-cover" alt="封面" />
+              <router-link :to="`/course-progress/${course.courseId}`">
+                <img :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`"
+                  class="img-fluid rounded-start h-100 object-fit-cover" alt="封面" />
+              </router-link>
             </div>
             <div class="col-md-8">
               <router-link :to="`/course-progress/${course.courseId}`" class="text-decoration-none text-dark">
@@ -38,20 +79,22 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
+    <!-- 空狀態 -->
     <div v-else class="text-muted text-center mt-4">
       尚未加入任何課程。
     </div>
   </div>
 </template>
 
+
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from '@/plugins/axios'
+import GlobalBanner from '@/components/GlobalBanner.vue'
 
 const router = useRouter()
 const userId = ref(null) // 改為 ref，從後端 session 取得
@@ -158,4 +201,48 @@ onMounted(async () => {
   font-weight: bold;
   border-bottom-right-radius: 8px;
 }
+
+
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  color: #6c757d;
+}
+
+.breadcrumb-link {
+  color: #212529; /* 與 text-dark 一致 */
+  font-weight: bold;
+  transition: transform 0.2s ease, color 0.2s ease;
+  display: inline-block;
+}
+
+.breadcrumb-link:hover {
+  transform: scale(1.05);
+  color: var(--color-primary, #007bff); /* 也可用你自定義的主色 */
+  text-decoration: none;
+}
+.breadcrumb-dynamic {
+  color: #6c757d; /* Bootstrap 的 text-muted 顏色 */
+  font-weight: normal;
+  display: inline-block;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.breadcrumb-dynamic:hover {
+  transform: scale(1.05);
+  color: #007bff; 
+  text-decoration: none;
+}
+
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+  font-size: 0.9rem; 
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  color: #6c757d;
+}
+
 </style>
