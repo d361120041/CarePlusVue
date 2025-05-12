@@ -62,42 +62,29 @@
     <!-- 📜 合約內容區塊 -->
     <div class="card-section mb-8">
       <h2 class="section-title">照護服務接受須知</h2>
-      <div class="contract-content bg-gray-50 p-6 rounded-lg max-h-96 overflow-y-auto">
+      <div
+        class="contract-content bg-gray-50 p-6 rounded-lg max-h-96 overflow-y-auto"
+      >
         <p class="text-gray-700 leading-relaxed whitespace-pre-wrap">
-          照護服務接受須知
-
-          一、服務內容
+          照護服務接受須知 一、服務內容
           照護員需根據顧客提供的需求單，提供個人衛生協助、日常生活照護、健康監測等相關服務。
           照護員需熟悉顧客的身體狀況、疾病史及特殊需求，並確保服務質量。
-
-          二、服務準備
-          確保服務開始前已充分了解顧客需求並準備必要的護理工具。
-          確認服務地點是否安全並符合衛生標準。
-
-          三、服務態度
+          二、服務準備 確保服務開始前已充分了解顧客需求並準備必要的護理工具。
+          確認服務地點是否安全並符合衛生標準。 三、服務態度
           始終保持專業、耐心和關愛的態度，尊重顧客隱私。
           嚴禁透露顧客的個人資訊或健康狀況給第三方。
-          如顧客有特別指示，需盡量滿足並耐心解釋服務內容。
-
-          四、服務期間
+          如顧客有特別指示，需盡量滿足並耐心解釋服務內容。 四、服務期間
           準時抵達服務地點，按時提供服務，並避免無故遲到或早退。
           若發現顧客身體異常，應立即通知其家屬或負責醫療單位。
           禁止在服務期間進行任何與服務無關的活動，包括私人通話或觀看影片。
-
           五、服務變更與取消
           若需更改或取消服務，應至少提前24小時通知平台或顧客。
-          未經顧客同意，不得提前結束服務或擅自改變服務內容。
-
-          六、安全與責任
+          未經顧客同意，不得提前結束服務或擅自改變服務內容。 六、安全與責任
           照護員應對服務期間顧客的安全負責，避免發生意外或人身傷害。
           禁止進行任何可能危害顧客健康或安全的行為。
-          若發生意外，需立即向平台報告並協助處理相關事宜。
-
-          七、費用與付款
+          若發生意外，需立即向平台報告並協助處理相關事宜。 七、費用與付款
           服務費用將根據平台設定標準計算，並在顧客付款後統一結算。
-          禁止向顧客私下收取額外費用或要求額外報酬。
-
-          八、違規處理
+          禁止向顧客私下收取額外費用或要求額外報酬。 八、違規處理
           若發現服務態度不佳、違反平台規定或涉及違法行為，平台有權終止合作。
           嚴重違規者將被列入平台黑名單，並視情況採取法律行動。
         </p>
@@ -188,41 +175,42 @@ onMounted(async () => {
 const confirmContract = async () => {
   if (!isContractConfirmed.value) {
     Swal.fire({
-      title: '提示',
-      text: '請勾選同意合約內容！',
-      icon: 'warning',
-      confirmButtonText: '確定',
+      title: "提示",
+      text: "請勾選同意合約內容！",
+      icon: "warning",
+      confirmButtonText: "確定",
     });
     return;
   }
 
   try {
     const appointmentId = appointment.value.id;
-    const response = await myAxios.put(`/api/appointment/${appointmentId}/contract`);
+    const response = await myAxios.put(
+      `/api/appointment/${appointmentId}/contract`
+    );
     appointment.value = response.data; // 更新本地預約資料
     appointmentStore.setAppointment(response.data); // 更新 Pinia Store
     Swal.fire({
-      title: '成功',
-      text: '合約已確認！',
-      icon: 'success',
-      confirmButtonText: '確定',
+      title: "成功",
+      text: "合約已確認！",
+      icon: "success",
+      confirmButtonText: "確定",
     });
   } catch (error) {
-    console.error('Failed to confirm contract:', error);
+    console.error("Failed to confirm contract:", error);
     Swal.fire({
-      title: '錯誤',
-      text: '合約確認失敗，請稍後再試！',
-      icon: 'error',
-      confirmButtonText: '確定',
+      title: "錯誤",
+      text: "合約確認失敗，請稍後再試！",
+      icon: "error",
+      confirmButtonText: "確定",
     });
   }
 };
 
-
 const proceedToPayment = async () => {
   try {
     // ✅ 確保已從 localStorage 取得 appointmentId
-    const appointmentId = appointment.value?.appointmentId || localStorage.getItem("appointmentId");
+    const appointmentId = localStorage.getItem("appointmentId");
 
     if (!appointmentId) {
       Swal.fire({
@@ -235,13 +223,26 @@ const proceedToPayment = async () => {
       return;
     }
 
-    // 發送支付請求
-    const response = await myAxios.get(`/payment/ecpay`, {
-      params: { appointmentId },
-    });
+    // 使用 URLSearchParams 將資料格式化為 x-www-form-urlencoded 格式
+    const params = new URLSearchParams();
+    params.append('appointmentId', appointmentId);
 
-    // 直接將回傳的表單注入頁面
-    document.write(response.data);
+    console.log("Request URL: /payment/ecpay?" + params.toString());  // 打印最終的請求 URL
+
+   // 發送 GET 請求，並將 appointmentId 作為查詢參數傳遞
+   const response = await myAxios.get(
+      `/payment/ecpay?${params.toString()}`,
+    );
+    console.log(response.data);
+
+    // 將返回的表單 HTML 插入到頁面並提交
+    const form = document.createElement("form");
+    form.innerHTML = response.data;  // 假設返回的內容是 HTML 表單
+    document.body.appendChild(form);
+    form.submit();  // 直接提交該表單
+
+    // 跳轉到支付成功頁面（在當前頁面，非新分頁）
+    router.push("/payment/success");
 
     // ✅ 清空 localStorage
     localStorage.removeItem("appointmentData");
@@ -252,10 +253,8 @@ const proceedToPayment = async () => {
     localStorage.removeItem("continuousStartDate");
     localStorage.removeItem("continuousStartTime");
     localStorage.removeItem("timeType");
-    
 
     console.log("LocalStorage 清空完成");
-
   } catch (error) {
     console.error("Failed to proceed to payment:", error);
     Swal.fire({
