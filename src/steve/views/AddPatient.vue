@@ -9,6 +9,7 @@
       <div>
         <label class="block font-medium mb-1">姓名</label>
         <input
+          style="margin-left: 96px"
           v-model="form.name"
           type="text"
           class="w-full border rounded p-2"
@@ -17,47 +18,48 @@
         />
       </div>
 
-      <div>
-        <label class="block font-medium mb-1">生日</label>
-        <div class="flex gap-2">
-          <select
-            v-model="selectedYear"
-            class="border rounded p-2"
-            :disabled="patientCount >= 5"
-          >
-            <option value="">年</option>
-            <option v-for="year in years" :key="year" :value="year">
-              {{ year }}
-            </option>
-          </select>
-
-          <select
-            v-model="selectedMonth"
-            class="border rounded p-2"
-            :disabled="patientCount >= 5"
-          >
-            <option value="">月</option>
-            <option v-for="month in 12" :key="month" :value="month">
-              {{ month }}
-            </option>
-          </select>
-
-          <select
-            v-model="selectedDay"
-            class="border rounded p-2"
-            :disabled="patientCount >= 5"
-          >
-            <option value="">日</option>
-            <option v-for="day in availableDays" :key="day" :value="day">
-              {{ day }}
-            </option>
-          </select>
-        </div>
+      <div
+        class="birth-row"
+        style="display: flex; align-items: center; gap: 12px"
+      >
+        <label style="width: 80px">生日</label>
+        <select
+          style="margin-left: 35px"
+          v-model="selectedYear"
+          class="birth-select"
+          :disabled="patientCount >= 5"
+        >
+          <option value="">年</option>
+          <option v-for="year in years" :key="year" :value="year">
+            {{ year }}
+          </option>
+        </select>
+        <select
+          v-model="selectedMonth"
+          class="birth-select"
+          :disabled="patientCount >= 5"
+        >
+          <option value="">月</option>
+          <option v-for="month in 12" :key="month" :value="month">
+            {{ month }}
+          </option>
+        </select>
+        <select
+          v-model="selectedDay"
+          class="birth-select"
+          :disabled="patientCount >= 5"
+        >
+          <option value="">日</option>
+          <option v-for="day in availableDays" :key="day" :value="day">
+            {{ day }}
+          </option>
+        </select>
       </div>
 
       <div>
         <label class="block font-medium mb-1">性別</label>
         <select
+          style="margin-left: 96px"
           v-model="form.gender"
           class="w-full border rounded p-2"
           :disabled="patientCount >= 5"
@@ -70,8 +72,9 @@
       </div>
 
       <div>
-        <label class="block font-medium mb-1">緊急聯絡</label>
+        <label class="block font-medium mb-1">緊急聯絡人電話</label>
         <input
+          style="margin-left: 17px"
           v-model="form.emergencyContact"
           type="text"
           class="w-full border rounded p-2"
@@ -83,6 +86,7 @@
         <label class="block font-medium mb-1">地址</label>
         <input
           v-model="form.address"
+          style="margin-left: 96px"
           type="text"
           class="w-full border rounded p-2"
           :disabled="patientCount >= 5"
@@ -91,7 +95,9 @@
 
       <div>
         <label class="block font-medium mb-1">病患詳情</label>
+        <br />
         <textarea
+          style="width: 70%; height: 100px"
           v-model="form.patientDetail"
           rows="3"
           class="w-full border rounded p-2"
@@ -101,7 +107,9 @@
 
       <div>
         <label class="block font-medium mb-1">過敏史</label>
+        <br />
         <textarea
+          style="width: 70%; height: 100px"
           v-model="form.allergies"
           rows="3"
           class="w-full border rounded p-2"
@@ -111,7 +119,9 @@
 
       <div>
         <label class="block font-medium mb-1">家族病史</label>
+        <br />
         <textarea
+          style="width: 70%; height: 100px"
           v-model="form.familyHistory"
           rows="3"
           class="w-full border rounded p-2"
@@ -120,8 +130,11 @@
       </div>
 
       <div>
-        <label class="block font-medium mb-1">目前用藥</label>
+        <label class="block font-medium mb-1">用藥紀錄</label>
+        <br />
+
         <textarea
+          style="width: 70%; height: 100px"
           v-model="form.currentMedications"
           rows="3"
           class="w-full border rounded p-2"

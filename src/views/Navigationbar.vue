@@ -21,7 +21,9 @@
         <span class="dropdown-label">線上課程 &#9662;</span>
         <ul class="dropdown-menu">
           <li><router-link to="/course">課程列表</router-link></li>
-          <li v-if="isUserLogin"><router-link to="/my-courses">我的課程</router-link></li>
+          <li v-if="isUserLogin">
+            <router-link to="/my-courses">我的課程</router-link>
+          </li>
         </ul>
       </li>
     </ul>
@@ -31,25 +33,36 @@
       <template v-if="isUserLogin">
         <div class="user-info">
           <!-- ✅ 純文字歡迎語 -->
-          <span class="welcome-text" v-if="auth.user">歡迎：{{ auth.user.userName }}</span>
+          <span class="welcome-text" v-if="auth.user"
+            >歡迎：{{ auth.user.userName }}</span
+          >
 
           <!-- ✅ 點擊頭像導向個人資料頁 -->
           <router-link to="/user-center/profile" class="user-icon-wrapper">
-            <img v-if="imageUrl" :src="imageUrl" alt="使用者頭像" class="user-icon" title="編輯個人資料" />
+            <img
+              v-if="imageUrl"
+              :src="imageUrl"
+              alt="使用者頭像"
+              class="user-icon"
+              title="編輯個人資料"
+            />
           </router-link>
 
           <button @click="userLogout" class="logout-button">登出</button>
         </div>
       </template>
 
-
       <!-- ✅ 照顧者登入後 -->
       <!-- Navbar.vue -->
       <template v-else-if="isCaregiverLogin">
         <div class="user-info">
           <router-link to="/caregiver" class="user-icon-wrapper">
-            <img v-if="photoPreviewUrl !== undefined && photoPreviewUrl !== ''" :src="photoPreviewUrl" class="avatar"
-              @click.stop="triggerFileInput" />
+            <img
+              v-if="photoPreviewUrl !== undefined && photoPreviewUrl !== ''"
+              :src="photoPreviewUrl"
+              class="avatar"
+              @click.stop="triggerFileInput"
+            />
           </router-link>
           <span class="welcome">歡迎，{{ caregiver.email }}</span>
           <button @click="caregiverLogout" class="logout-button">登出</button>
@@ -61,9 +74,9 @@
         <div class="dropdown-login">
           <button class="login-dropdown-btn">登入/註冊</button>
           <div class="dropdown-login-menu">
-            <button @click="goUserLogin"> 一般用戶登入</button>
-            <button @click="goCaregiverLogin"> 照服人員登入</button>
-            <button @click="goAdminLogin"> 系統管理員登入</button>
+            <button @click="goUserLogin">一般用戶登入</button>
+            <button @click="goCaregiverLogin">照服人員登入</button>
+            <button @click="goAdminLogin">系統管理員登入</button>
           </div>
         </div>
       </template>
@@ -95,8 +108,8 @@ const fetchImage = async () => {
   }
 };
 const goToCaregiverPage = () => {
-  router.push('/caregiver') // ⬅️ 改成你想導向的網址
-}
+  router.push("/caregiver"); // ⬅️ 改成你想導向的網址
+};
 
 // ✅ 照顧者：JWT-based 登入狀態
 import { useCaregiverAuth } from "@/stores/useCaregiverAuth";
@@ -114,7 +127,7 @@ onMounted(() => {
   }
 
   caregiver.restoreLogin(); // ✅ 用 Pinia 的方法處理登入狀態與頭貼
-})
+});
 
 // const fetchCaregiverPhoto = async () => {
 //   try {
@@ -157,11 +170,11 @@ const caregiverLogout = () => {
 .navbar {
   display: flex;
   justify-content: space-between;
-  align-items: stretch; /* 項目撐滿高度 */
+  align-items: center; /* ✅ 修改：原本是 align-items: stretch，改成 center 讓內容垂直置中 */
   background-color: var(--color-bg-card);
   padding: 0;
   position: relative;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: 60px;
 }
 
@@ -180,14 +193,19 @@ const caregiverLogout = () => {
 .user-info {
   display: flex;
   align-items: center;
-
+  gap: 0.5rem; /* ✅ 新增：加入項目間距避免黏在一起 */
+  flex-wrap: nowrap; /* ✅ 新增：避免元素換行擠到下一層 */
+  position: relative; /* ✅ 新增：防止 logout button 意外蓋住其他元素 */
 }
 
 .user-icon {
-  width: 30px;
-  height: 30px;
+  width: 36px; /* ✅ 修改：原本是 32px */
+  height: 36px; /* ✅ 修改：原本是 32px */
   border-radius: 50%;
-  margin-right: 8px;
+  overflow: hidden;
+  background-color: transparent;
+  border: none;
+  flex-shrink: 0; /* ✅ 新增：防止太小畫面被擠爆 */
 }
 /* ----- User 結束 -----*/
 
@@ -225,7 +243,7 @@ const caregiverLogout = () => {
   background-color: rgba(0, 0, 0, 0.05);
   color: var(--color-primary);
   transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 /* ----- Navbar 結束 ----- */
 
@@ -323,11 +341,12 @@ const caregiverLogout = () => {
 .login-button {
   display: flex;
   align-items: center;
+  margin-right: 1rem;
 }
 
 .login-button button {
   margin-left: 1rem;
-  background-color: #28a745;
+  background-color: #4db6ac;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -366,18 +385,18 @@ const caregiverLogout = () => {
 
 /* ----- user ----- */
 .logout-button {
-  margin-left: 0.5rem;
-  background: transparent;
-  border: 1px solid #fff;
-  color: #fff;
-  padding: 0.3rem 0.8rem;
-  border-radius: 4px;
+  background-color: #dc3545; /* ✅ 修改：原本是 transparent，改為明確紅色背景 */
+  color: white;
+  border: none; /* ✅ 修改：原本有白框，改為無邊框更簡潔 */
+  padding: 6px 12px; /* ✅ 修改：調整 padding 更好看 */
+  border-radius: 6px;
+  font-size: 14px; /* ✅ 新增：統一文字大小 */
+  white-space: nowrap; /* ✅ 新增：防止文字換行 */
   cursor: pointer;
-  transition: background 0.2s ease;
+  flex-shrink: 0; /* ✅ 新增：防止被壓縮過窄 */
 }
-
 .logout-button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background-color: #c82333; /* ✅ 新增：hover 效果更明顯 */
 }
 
 .welcome-text {
@@ -385,20 +404,16 @@ const caregiverLogout = () => {
   font-weight: bold;
 }
 
+/* 頭像容器 */
 .user-icon-wrapper {
-  display: inline-block;
-  width: 32px;
-  /* ⬅️ 原本是 48px */
-  height: 32px;
-  /* ⬅️ 原本是 48px */
+  width: 36px; /* ✅ 修改：原本是 32px */
+  height: 36px; /* ✅ 修改：原本是 32px */
   border-radius: 50%;
   overflow: hidden;
-  margin-left: 0.5rem;
-  vertical-align: middle;
   background-color: transparent;
   border: none;
+  flex-shrink: 0; /* ✅ 新增：防止太小畫面被擠爆 */
 }
-
 
 .user-icon-wrapper:focus {
   outline: none;
@@ -406,13 +421,11 @@ const caregiverLogout = () => {
 }
 
 .user-icon {
-  width: 50px;
-  height: 50px;
+  width: 150%; /* ✅ 修改：原本寫死 50px，改為容器撐滿 */
+  height: 100%;
   object-fit: cover;
-  /* ✅ 重點：等比例裁切填滿不變形 */
-  border-radius: 50%;
-  /* ✅ 加圓形（可選） */
-  border: 2px solid #ccc;
+  border-radius: 100%;
+  border: 1px solid #ccc; /* ✅ 新增：細邊框讓頭像更清晰 */
 }
 
 /* ----- login ----- */
@@ -433,7 +446,7 @@ const caregiverLogout = () => {
 .dropdown-login-menu {
   display: none;
   position: absolute;
-  background-color: #40d462;
+  background-color: #4db6ac;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   min-width: 160px;
@@ -444,9 +457,9 @@ const caregiverLogout = () => {
 }
 
 .dropdown-login-menu button {
-  background-color: #40d462;
+  background-color: #4db6ac;
   border: none;
-  color: #333;
+  color: #ffffff;
   padding: 10px 16px;
   text-align: left;
   width: 100%;

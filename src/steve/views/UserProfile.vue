@@ -4,7 +4,7 @@
 
     <!-- 頭像 -->
     <div class="mb-4">
-      <label class="block font-medium mb-2">目前頭像</label>
+      <label class="block font-medium mb-2"></label>
       <div
         style="
           width: 128px;
@@ -38,12 +38,6 @@
         class="hidden"
         ref="fileInput"
       />
-      <div
-        @click="fileInput?.click()"
-        class="mt-2 text-blue-500 cursor-pointer hover:underline"
-      >
-        點擊更換頭像
-      </div>
     </div>
 
     <!-- 使用者資訊 -->
@@ -144,11 +138,7 @@
         />
       </div>
 
-      <button
-        @click="updateUser"
-        :disabled="loading"
-        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-      >
+      <button @click="updateUser" :disabled="loading" class="save-button">
         {{ loading ? "儲存中..." : "儲存變更" }}
       </button>
     </div>
@@ -296,3 +286,26 @@ onMounted(() => {
   fetchImage();
 });
 </script>
+
+<style scoped>
+.save-button {
+  color: #00332e;
+  text-decoration: none;
+  margin-bottom: 6px;
+  /* 增加每個按鈕的分隔感 */
+  width: 10%;
+  display: block;
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background-color: #80ccc3;
+  transition: box-shadow 0.3s, background-color 0.3s;
+  font-weight: 500;
+  border: 1px solid #4db6ac;
+}
+.save-button:hover {
+  box-shadow: 0 0 8px #66cfc4;
+  /* 藍色光暈 */
+  background-color: #b3e2da;
+}
+</style>

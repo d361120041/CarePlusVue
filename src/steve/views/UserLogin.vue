@@ -80,8 +80,8 @@ const goForgot = () => {
 button {
   width: 100%;
   padding: 0.6rem;
-  background-color: #28a745;
-  color: white;
+  background-color: #4db6ac;
+  color: #ffffff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -90,13 +90,16 @@ button {
 
 /* 額外功能按鈕 */
 .extra-buttons {
+  gap: 1rem;
   display: flex;
   justify-content: space-between;
 }
 .extra-buttons .register {
+  gap: 1rem;
   background-color: #007bff;
 }
 .extra-buttons .forgot {
-  background-color: #6c757d;
+  gap: 1rem;
+  background-color: #ff9999;
 }
 </style>
