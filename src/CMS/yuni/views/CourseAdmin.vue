@@ -11,7 +11,7 @@
         <button class="btn btn-secondary" @click="resetFilters">✕</button>
  
         <div class="add-button-wrapper">
-  <button class="btn btn-add" @click="startCreate">
+  <button class="btn btn-add" style="border: solid 1px;" @click="startCreate">
     <span class="icon">➕</span> 新增課程
   </button>
 </div>
@@ -147,18 +147,34 @@
           </tbody>
         </table>
         <!-- 分頁控制列 -->
-<div class="pagination">
+<!-- <div class="pagination">
   <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">« 上一頁</button>
   <span>第 {{ currentPage }} / {{ totalPages }} 頁</span>
   <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">下一頁 »</button>
+</div> -->
+
+
+<div class="pagination">
+  <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">«</button>
+  
+  <button
+    v-for="page in totalPages"
+    :key="page"
+    :class="{ 'active-page': page === currentPage }"
+    @click="goToPage(page)">
+    {{ page }}
+  </button>
+
+  <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">»</button>
 </div>
+
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import axios from '@/plugins/axios.js'
 import {
   getAllCourses,
@@ -243,7 +259,101 @@ const deleteOne = async id => {
 }
 
 /* ---------- 新增 ---------- */
-const startCreate = () => { isCreating.value = true; editingCourse.value = emptyCourse() }
+// const startCreate = () => { isCreating.value = true; editingCourse.value = emptyCourse() }
+
+import Swal from 'sweetalert2'
+
+const startCreate = async () => {
+  const { value: formValues } = await Swal.fire({
+  title: '新增課程',
+  html: `
+    <input id="swal-title" class="swal2-input" placeholder="標題">
+    <textarea id="swal-desc" class="swal2-textarea" placeholder="介紹"></textarea>
+    <input id="swal-duration" type="number" class="swal2-input" placeholder="時數">
+    <select id="swal-category" class="swal2-select">
+      ${categories.map(c => `<option value="${c}">${getCategoryLabel(c)}</option>`).join('')}
+    </select>
+    <div class="swal2-file-wrapper">
+      <label class="file-label">
+        上傳圖片
+        <input id="swal-image" type="file" class="swal2-file" />
+      </label>
+      <span id="file-name" class="file-name"></span>
+    </div>
+  `,
+  showCancelButton: true,
+  confirmButtonText: '送出',
+  focusConfirm: false,
+  didOpen: () => {
+    const imageInput = Swal.getPopup().querySelector('#swal-image')
+    const fileNameSpan = Swal.getPopup().querySelector('#file-name')
+
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0]
+      fileNameSpan.textContent = file ? file.name : '尚未選擇檔案'
+    })
+  },
+  preConfirm: () => {
+    const title = document.getElementById('swal-title').value
+    const description = document.getElementById('swal-desc').value
+    const duration = Number(document.getElementById('swal-duration').value)
+    const category = document.getElementById('swal-category').value
+    const image = document.getElementById('swal-image').files[0]
+
+    if (!title || !description || !duration || !category) {
+      Swal.showValidationMessage('請填寫所有欄位')
+      return
+    }
+
+    return { title, description, duration, category, image }
+  }
+})
+
+
+  if (formValues) {
+    const payload = {
+      title: formValues.title,
+      description: formValues.description,
+      duration: formValues.duration,
+      category: formValues.category,
+      price: 0,
+      isProgressLimited: false
+    }
+
+    const formData = new FormData()
+    formData.append('course', new Blob([JSON.stringify(payload)], { type: 'application/json' }))
+    if (formValues.image) formData.append('image', formValues.image)
+
+    // try {
+    //   await axios.post(`${apiBaseUrl.value}/api/courses/admin`, formData, {
+    //     headers: { 'Content-Type': 'multipart/form-data' }
+    //   })
+    //   await fetchCourses()
+    //   Swal.fire('新增成功', '', 'success')
+    // } catch (err) {
+    //   Swal.fire('新增失敗', err?.response?.data || err.message, 'error')
+    // }
+    try {
+  await axios.post(`${apiBaseUrl.value}/api/courses/admin`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+  await fetchCourses()
+  currentPage.value = totalPages.value
+  // Swal.fire('新增成功', '', 'success')
+
+  nextTick(() => {
+    const lastRow = document.querySelector('tbody tr:last-child')
+    if (lastRow) {
+      lastRow.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }
+  })
+} catch (err) {
+  Swal.fire('新增失敗', err?.response?.data || err.message, 'error')
+}
+  }
+}
+
+
 
 const cancelCreate = () => { isCreating.value = false; editingCourse.value = emptyCourse(); selectedImage.value = null }
 const create = async () => {
@@ -509,6 +619,76 @@ watch(filteredCourses, () => {
 .pagination button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+/* .swal2-select, .swal2-file, .swal2-textarea {
+  width: 100%;
+  font-size: 15px;
+  padding: 8px;
+  margin: 4px 0;
+} */
+
+/* SweetAlert2 表單統一寬度與字體大小 */
+/* .swal2-input,
+.swal2-textarea,
+.swal2-select,
+.swal2-file {
+  width: 100% !important;
+  max-width: 100% !important;
+  font-size: 14px;
+  box-sizing: border-box;
+  margin: 6px 0;
+}
+
+.swal2-popup {
+  width: 480px !important;
+} */.swal2-popup {
+  width: 480px !important;
+}
+
+.swal2-input,
+.swal2-textarea,
+.swal2-select {
+  width: 100%;
+  font-size: 14px;
+  box-sizing: border-box;
+  margin: 6px 0;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.swal2-file-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  margin: 6px 0;
+}
+
+.file-label {
+  display: inline-block;
+  background-color: #2563eb;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.file-label:hover {
+  background-color: #1d4ed8;
+}
+
+.swal2-file {
+  display: none;
+}
+
+.file-name {
+  flex-grow: 1;
+  font-size: 14px;
+  color: #555;
 }
 
 
