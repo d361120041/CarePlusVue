@@ -12,6 +12,11 @@ export const usePostStore = defineStore('posts', () => {
     const isDetailModalOpen = ref(false)
     const detailPost = ref(null)
 
+    // 分頁相關
+    const currentPage = ref(1)
+    const pageSize = ref(5)
+    const hasMore = ref(true)
+
     // —— actions —— 
     // 開啟新增/編輯 modal
     function openModal(post = null) {
@@ -30,26 +35,45 @@ export const usePostStore = defineStore('posts', () => {
     }
 
     // 多條件查詢貼文
-    async function loadPosts(filter = {}) {
+    async function loadPosts(filter = {}, { page = 1, append = false } = {}) {
+        if (append && !hasMore.value) return  // 沒有更多就別再叫了
+
         isLoading.value = true
         error.value = null
+
+        // 計算 start & rows
+        const start = (page - 1) * pageSize.value
+        const rows = pageSize.value
+
         try {
-            const res = await myAxios.post('/api/posts/search', filter)
-            posts.value = res.data.map(p => ({
+
+            const payload = {
+                ...filter,
+                start,
+                rows,
+            }
+
+            const res = await myAxios.post('/api/posts/search', payload)
+            // normalize 後端回來的資料
+            const items = res.data.map(p => ({
                 ...p,
-                user: p.user || {                 // 如果後端沒回 user，就給個空殼
-                    userId: null,
-                    userName: '匿名',
-                    profilePicture: ''
-                },
-                postCategoryClassifiers: Array.isArray(p.postCategoryClassifiers)
-                    ? p.postCategoryClassifiers
-                    : [],
+                user: p.user || { userId: null, userName: '匿名', profilePicture: '' },
+                postCategoryClassifiers: Array.isArray(p.postCategoryClassifiers) ? p.postCategoryClassifiers : [],
                 reactions: Array.isArray(p.reactions) ? p.reactions : [],
                 images: Array.isArray(p.images) ? p.images : [],
                 views: typeof p.views === 'number' ? p.views : 0,
                 share: typeof p.share === 'number' ? p.share : 0,
             }))
+
+            if (append) {
+                posts.value = posts.value.concat(items)
+            } else {
+                posts.value = items
+            }
+
+            currentPage.value = page
+            hasMore.value = items.length === pageSize.value
+
         } catch (error) {
             error.value = error
         } finally {
@@ -234,6 +258,7 @@ export const usePostStore = defineStore('posts', () => {
         deleteImage,
         like, view, sharePost,
         isDetailModalOpen, detailPost,
-        openDetailModal, closeDetailModal
+        openDetailModal, closeDetailModal,
+        currentPage, pageSize, hasMore
     }
 })
