@@ -13,7 +13,7 @@
               ? 'bg-blue-500 hover:bg-blue-600'
               : 'bg-gray-400 cursor-not-allowed'
           "
-          class="text-white px-4 py-2 rounded"
+          class="addPatient"
         >
           {{ patientCount < 5 ? "新增患者" : "已達到登記上線" }}
         </button>
@@ -114,5 +114,25 @@ onMounted(fetchPatients);
   height: 100%;
   display: flex;
   gap: 1.5rem;
+}
+.addPatient {
+  color: #00332e;
+  text-decoration: none;
+  margin-bottom: 6px;
+  /* 增加每個按鈕的分隔感 */
+  width: 25%;
+  display: block;
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background-color: #80ccc3;
+  transition: box-shadow 0.3s, background-color 0.3s;
+  font-weight: 500;
+  border: 1px solid #4db6ac;
+}
+.list-section {
+  border-radius: 16px; /* ✅ 比較明顯的圓角，可以自行調整為 8px、24px 等 */
+  padding: 5rem;
+  background-color: #ffffffe6;
 }
 </style>
