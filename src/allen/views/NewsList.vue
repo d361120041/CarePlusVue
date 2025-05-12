@@ -21,19 +21,17 @@
       <select v-model="search.dateRange" class="border p-2 rounded w-1/4">
         <option value="">選擇時間範圍</option>
         <option value="today">今天</option>
-        <option value="week">這週</option>
-        <option value="month">這月</option>
-        <option value="year">今年</option>
+        <option value="week">7天內</option>
+        <option value="month">30天內</option>
+        <option value="year">365天內</option>
       </select>
       <button @click="handleSearch" class="search-btn w-full">🔍 搜尋</button>
     </div>
 
     <!-- 搜尋摘要 -->
-    <div v-if="hasSearched && summaryText" class="text-gray-700 mt-4 text-sm">
+    <div v-if="hasSearched && summaryText" class="search-summary text-gray-700 mt-4">
       🔎 以下是 {{ summaryText }} 的搜尋結果
-      <button @click="clearSearch" class="ml-4 text-blue-600 underline hover:text-blue-800">
-        取消篩選
-      </button>
+      <button @click="clearSearch" class="clear-btn">取消篩選</button>
     </div>
 
     <NewsListSkeleton v-if="loading" />
@@ -60,8 +58,8 @@
             >
               {{ news.title }}
             </router-link>
-            <p class="text-sm text-gray-600">📅 發布日期：{{ formatDate(news.publishAt) }}</p>
-            <p class="text-sm text-gray-600">🛠️ 最後修改：{{ news.modifyAt ? formatDate(news.modifyAt) : '尚未修改' }}</p>
+            <p class="text-sm text-gray-600">📅 發布日期：{{ formatDate (news.publishAt) }}</p>
+            <p class="text-sm text-gray-600">🛠️ 最後修改：{{ news.modifyAt ? formatDate (news.modifyAt) : '尚未修改' }}</p>
             <p class="text-sm text-gray-600">👁️ 瀏覽次數：{{ news.viewCount || 0 }}</p>
           </div>  
       </div> 
@@ -95,88 +93,116 @@ const hasSearched = ref(false);
 const searchSnapshot = ref({});
 const search = ref({keyword: '', categoryId: '', dateRange: '' });
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
+const formatDate = (date) => {
+  if (typeof date === 'string') {
+    date = new Date(date);
+  }
+
+  if (!(date instanceof Date) || isNaN(date)) {
+    console.warn("Invalid date passed to formatDate:", date);
+    return '';
+  }
+
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
   const hh = String(date.getHours()).padStart(2, '0');
   const mi = String(date.getMinutes()).padStart(2, '0');
+
   return `${yyyy}/${mm}/${dd} ${hh}:${mi}`;
 };
 
 const formatDateTime = (date) => {
+  if (!(date instanceof Date) || isNaN(date)) {
+    console.warn("Invalid date passed to formatDateTime:", date);
+    return '';
+  }
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
   const hh = String(date.getHours()).padStart(2, '0');
   const mi = String(date.getMinutes()).padStart(2, '0');
   const ss = String(date.getSeconds()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`; // ✅ 中間是空格
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
 };
 
 const buildDateRange = () => {
   const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+  const todayEnd = new Date(todayStart);
+  todayEnd.setDate(todayStart.getDate() + 1);
+  todayEnd.setMilliseconds(-1);
+
+  let dateFrom = null;
+  let dateTo = formatDateTime(now);
 
   switch (search.value.dateRange) {
     case 'today':
-      return {
-        dateFrom: formatDateTime(today),
-        dateTo: formatDateTime(new Date(today.getTime() + 86400000))
-      };
+      dateFrom = formatDateTime(todayStart);
+      dateTo = formatDateTime(todayEnd);
+      break;
+
     case 'week': {
-      const day = today.getDay();
-      const diffToMonday = day === 0 ? -6 : 1 - day;
-      const monday = new Date(today);
-      monday.setDate(today.getDate() + diffToMonday);
-      const endOfToday = new Date(today);
-      endOfToday.setHours(23, 59, 59, 999);
-      return {
-        dateFrom: formatDateTime(monday),
-        dateTo: formatDateTime(endOfToday)
-      };
+      const startOfWeek = new Date(todayStart);
+      startOfWeek.setDate(todayStart.getDate() - 6);
+      dateFrom = formatDateTime(startOfWeek);
+      dateTo = formatDateTime(todayEnd); // ✅ 修復：增加 `dateTo`
+      break;
     }
+
     case 'month': {
-      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-      return {
-        dateFrom: formatDate(firstDay),
-        dateTo: formatDate(now)
-      };
+      const startOfMonth = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+      dateFrom = formatDateTime(startOfMonth);
+      dateTo = formatDateTime(todayEnd); // ✅ 修復：增加 `dateTo`
+      break;
     }
+
     case 'year': {
-      const firstDay = new Date(today.getFullYear(), 0, 1);
-      return {
-        dateFrom: formatDateTime(firstDay),
-        dateTo: formatDateTime(now)
-      };
+      const startOfYear = new Date(todayStart.getFullYear(), 0, 1);
+      dateFrom = formatDateTime(startOfYear);
+      dateTo = formatDateTime(todayEnd); // ✅ 修復：增加 `dateTo`
+      break;
     }
+
     default:
-      return { dateFrom: null, dateTo: null };
+      dateFrom = null;
+      dateTo = null;
+      break;
   }
+
+  return { dateFrom, dateTo };
 };
 
 const summaryText = computed(() => {
   const parts = [];
   const snap = searchSnapshot.value;
 
-  if (snap.keyword) parts.push(`關鍵字為「${snap.keyword}」`);
+  if (snap.keyword) {
+    parts.push(`關鍵字為「${snap.keyword}」`);
+  }
 
   if (snap.categoryId) {
     const found = categories.value.find(c => c.categoryId === Number(snap.categoryId));
     if (found) parts.push(`分類為「${found.categoryName}」`);
   }
 
-  const map = { today: '今天', week: '這週', month: '這月', year: '今年' };
-  if (snap.dateRange && map[snap.dateRange]) {
-    parts.push(`時間為「${map[snap.dateRange]}」`);
+  const rangeMap = {
+    today: '今天',
+    week: '7天內',
+    month: '30天內',
+    year: '365天內',
+  };
+
+  // ✅ 若 `dateRange` 為空，顯示 "不限時間"
+  if (snap.dateRange && rangeMap[snap.dateRange]) {
+    parts.push(`時間為「${rangeMap[snap.dateRange]}」`);
   }
   return parts.length ? parts.join('、') : '';
 });
 
 const clearSearch = () => {
-  search.value = { keyword: '', categoryId: '', dateRange: '' , status: ''};
+  // ✅ 清空篩選條件
+  search.value = { keyword: '', categoryId: '', dateRange: '', status: '' };
   searchSnapshot.value = {}; // ✅ 清除摘要內容來源
   hasSearched.value = false;
   page.value = 0;
@@ -209,6 +235,8 @@ const loadNews = async () => {
 const handleSearch = () => {
   hasSearched.value = true;
   page.value = 0;
+
+  // ✅ 直接覆蓋 searchSnapshot，避免累積
   searchSnapshot.value = { ...search.value };
   loadNews();
 };
@@ -267,36 +295,148 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-sm);
 }
+
 .page-btn {
-  padding: 0.5rem 1.25rem;
-  background-color: #e5e7eb;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-}
-.page-btn:hover {
-  background-color: #d1d5db;
-}
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.search-btn {
-  background-color: #e5e7eb;
-  color: black;
-  font-weight: 600;
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.375rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: var(--space-xs) var(--space-md);
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
   border: none;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm); /* 初始陰影 */
 }
-.search-btn:hover {
-  background-color: #d1d5db;
+
+.page-btn:hover:not(:disabled) {
+  background-color: var(--color-btn-primary-bg-hover);
+  box-shadow: var(--shadow-md); /* 加深陰影 */
+  transform: translateY(-1px);
 }
-.search-btn:disabled {
-  opacity: 0.5;
+
+.page-btn:active:not(:disabled) {
+  background-color: var(--color-btn-primary-bg-hover);
+  box-shadow: var(--shadow-lg); /* 按下時再加深 */
+  transform: translateY(0);
+}
+
+.page-btn:disabled {
+  background-color: var(--color-btn-disabled-bg);
+  color: var(--color-btn-disabled-text);
   cursor: not-allowed;
+  box-shadow: var(--shadow-none);
+  transform: none;
 }
+
+.page-btn:disabled:hover {
+  background-color: var(--color-btn-disabled-bg); 
+  color: var(--color-btn-disabled-text);
+  box-shadow: var(--shadow-none); /* 禁用狀態無陰影 */
+  transform: none;
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm); /* 控制欄位間距 */
+  padding: var(--space-xs);
+  flex-wrap: nowrap; /* 禁止換行 */
+  background-color: var(--color-bg-surface);
+}
+
+.search-bar input {
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  height: 38px;
+  width: 20%;  /* 調整寬度 */
+  min-width: 150px;  /* 最小寬度 */
+}
+
+.search-bar select {
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  height: 38px;
+  width: 20%;  /* 調整寬度 */
+  min-width: 120px;  /* 最小寬度 */
+}
+
+.search-summary {
+  display: flex;
+  align-items: center; /* 垂直置中對齊 */
+  gap: var(--space-sm); /* 控制左右間距 */
+  font-size: var(--font-size-lg); /* 調整字體大小 */
+  margin-bottom: var(--space-sm); /* 調整與底部搜尋欄的距離 */
+}
+
+.search-btn {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  width: 100px; /* 根據視覺比例調整 */
+  height: 38px; /* 與左側輸入欄位高度一致 */
+  cursor: pointer;
+  transition: background-color var(--transition-medium), box-shadow var(--transition-fast), transform var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-btn:hover {
+  background-color: var(--color-btn-primary-bg-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.search-btn:active {
+  background-color: var(--color-btn-primary-bg-hover);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(0);
+}
+
+.search-btn:disabled {
+  background-color: var(--color-btn-disabled-bg);
+  color: var(--color-btn-disabled-text);
+  cursor: not-allowed;
+  box-shadow: var(--shadow-none);
+  transform: none;
+}
+
+.clear-btn {
+  background-color: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+  border: none;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clear-btn:hover {
+  background-color: var(--color-btn-secondary-bg-hover);
+  transform: translateY(-2px);
+}
+
+.clear-btn:active {
+  background-color: var(--color-btn-secondary-bg-hover);
+  transform: translateY(0);
+}
+
 </style>
