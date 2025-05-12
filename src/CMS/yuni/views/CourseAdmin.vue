@@ -10,6 +10,12 @@
         <button class="btn btn-primary" @click="$event.target.blur()">搜尋</button>
         <button class="btn btn-secondary" @click="resetFilters">✕</button>
  
+        <div class="add-button-wrapper">
+  <button class="btn btn-add" @click="startCreate">
+    <span class="icon">➕</span> 新增課程
+  </button>
+</div>
+
       <div class="table-wrapper">
       <table class="course-table">
         <thead>
@@ -36,10 +42,10 @@
               </td>
             </tr>
 
-            <!-- 新增按鈕列（只有沒在搜尋且非新增模式才顯示） -->
+            <!-- 新增按鈕列（只有沒在搜尋且非新增模式才顯示）
             <tr v-if="!isCreating && !searchKeyword" class="row-add" @click="startCreate">
               <td style="text-align: center;" colspan="7">➕ 新增課程</td>
-            </tr>
+            </tr> -->
         </thead>
       </table>
       </div>
@@ -504,5 +510,7 @@ watch(filteredCourses, () => {
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+
 
 </style>
