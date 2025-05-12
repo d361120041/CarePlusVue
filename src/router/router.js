@@ -20,6 +20,7 @@ import MyCourse from "@/yuni/views/MyCourse.vue";
 import CourseLearn from "@/yuni/views/CourseLearn.vue";
 import CourseProgress from "@/yuni/views/CourseProgress.vue";
 import Done from "@/yuni/views/Done.vue";
+import RitaOrder from "@/yuni/views/RitaOrder.vue";
 // ------------------ yuni ------------------
 
 // ------------------ allen ------------------
@@ -256,6 +257,11 @@ const routes = [
       },
       { path: "favorites", component: FavoritesView },
       { path: "myPost", component: MyPost },
+      {
+        path: "orders",
+        component: () => import("@/yuni/views/RitaOrder.vue"),
+        name: "ritaOrder",
+      },
     ],
   },
   // { path: "/user-center", component: UserCenter, name: "userCenter" }

@@ -118,7 +118,7 @@
 
             <!-- 新增按鈕列（只有沒在搜尋且非新增模式才顯示） -->
             <tr v-if="!isCreating && !searchKeyword" class="row-add" @click="startCreate">
-              <td colspan="7">➕ 新增課程</td>
+              <td style="text-align: center;" colspan="7">➕ 新增課程</td>
             </tr>
           </tbody>
 

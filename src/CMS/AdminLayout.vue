@@ -3,7 +3,9 @@
   <div class="admin-root">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <h1 class="sidebar-title">後台管理系統</h1>
+      <!-- <h1 class="sidebar-title">後台管理系統</h1> -->
+      <h1 class="sidebar-title"> </h1>
+
       <nav class="sidebar-nav">
         <router-link to="/admin" class="sidebar-link">首頁</router-link>
         <router-link to="/admin/cms/courses" class="sidebar-link">課程管理</router-link>
