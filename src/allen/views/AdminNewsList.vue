@@ -1,10 +1,6 @@
 <template>
   <div class="news-list">
-    <!-- 返回首頁按鈕 -->
-    <div class="fixed top-4 right-4 z-10">
-      <router-link to="/admin" class="btn-gray">🏠 返回後台首頁</router-link>
-    </div>
-
+    
     <!-- 搜尋欄 -->
     <div class="search-bar mx-auto max-w-4xl p-6 mb-6 bg-white rounded-xl shadow-lg border border-gray-300 flex justify-between items-center">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
@@ -66,6 +62,7 @@
     <NewsListSkeleton v-if="loading" />
 
     <!-- 新聞清單 -->
+     
     <div v-else>
       <div v-for="news in newsList" :key="news.newsId" class="news-item flex items-start gap-4 mb-6 border-b pb-4">
         <router-link :to="`/admin/news/${news.newsId}`" class="flex-shrink-0">
@@ -111,12 +108,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
 import myAxios from '@/plugins/axios';
 import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue';
 import noImage from '@/assets/allen/no-image.jpg';
 import { getFullImageUrl } from '@/allen/utils/urlHelper';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const newsList = ref([]);
@@ -315,7 +312,7 @@ const unpublishNews = async (id) => {
 };
 const goToCreate = () => router.push('/admin/news/new');
 const goToEdit = (id) => router.push(`/admin/news/edit/${id}`);
-const handleImgError = (e) => { if (e.target.src !== defaultThumbnail) e.target.src = defaultThumbnail; };
+const handleImgError = (e) => { if (e.target.src !== defaultThumbnail) e.target.src = defaultThumbnail; }; 
 
 const fetchCategories = async () => {
   const res = await myAxios.get('/news/category');
