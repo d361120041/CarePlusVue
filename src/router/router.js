@@ -37,7 +37,7 @@ import AdminNewsPreview from "@/allen/views/AdminNewsPreview.vue";
 import CaregiverLogin from "@/yuuhou/LoginCaregiver.vue";
 import CaregiverProfileView from "@/yuuhou/CaregiverProfileView.vue";
 import CaregiverPricing from "@/yuuhou/EditService.vue";
-import ResetPassword from "@/yuuhou/ResetPassword.vue";
+
 import UserForgotPwd from "@/yuuhou/UserForgotPwd.vue";
 // import Navigationbar from "@/views/Navigationbar.vue";
 
@@ -121,6 +121,7 @@ const routes = [
   // ------------------ allen ------------------
 
   // ------------------ yuuhou ------------------
+  
   {
     path: "/caregiverLogin",
     component: CaregiverLogin,
@@ -129,8 +130,7 @@ const routes = [
   { path: "/login", component: LoginView, name: "login" },
   { path: "/register", component: RegisterView, name: "register" },
   { path: "/forgot", component: UserForgotPwd, name: "forgotPwd" },
-  { path: "/reset" , component: ResetPassword, name: "resetPassword" },
-
+  
   // { path: "/navigationbar" , component: Navigationbar, name: "navigationBar" },
   {
     path: "/admin/dashboard",

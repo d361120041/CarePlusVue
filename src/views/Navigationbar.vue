@@ -348,7 +348,7 @@ const caregiverLogout = () => {
 }
 
 .welcome {
-  color: white;
+  color: rgb(7, 7, 7);
   margin-right: 0.5rem;
   /* 強制文字變黑，與底色對比 */
 }

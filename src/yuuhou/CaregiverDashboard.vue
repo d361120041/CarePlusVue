@@ -7,7 +7,6 @@
       <button @click="go('/caregiver/pricing')">💰 2. 可服務區域與收費設定</button>
       <button @click="go('/caregiver/schedule')">📅 3. 我的排班表</button>
       <button @click="go('/caregiver/orders')">📦 4. 我的訂單紀錄</button>
-      <button @click="go('/caregiver/reviews')">⭐ 5. 我的評價</button>
     </div>
   </div>
 </template>
