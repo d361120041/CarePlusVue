@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-2xl mx-auto p-4">
+  <div class="max-w-2xl mx-auto p-4" style="background-color: #fff8f0">
     <h2 class="text-xl font-bold mb-4">編輯使用者資料</h2>
 
     <!-- 頭像 -->
