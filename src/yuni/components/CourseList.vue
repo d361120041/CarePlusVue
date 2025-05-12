@@ -211,7 +211,7 @@ const pageSize = 4; // 每頁幾筆（固定為 3）
 
 const paginatedCourses = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
-  return sortedCourses.value.slice(start, start + pageSize); // ✅ 改成從 sortedCourses
+  return sortedCourses.value.slice(start, start + pageSize);
 });
 
 const totalPages = computed(() => {

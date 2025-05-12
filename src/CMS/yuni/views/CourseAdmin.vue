@@ -9,8 +9,41 @@
         <!-- 這顆只讓使用者點擊後失去焦點，不再呼叫 API -->
         <button class="btn btn-primary" @click="$event.target.blur()">搜尋</button>
         <button class="btn btn-secondary" @click="resetFilters">✕</button>
-      </div>
+ 
+      <div class="table-wrapper">
+      <table class="course-table">
+        <thead>
+          <!-- 新增模式 -->
+          <tr v-if="isCreating" class="row-creating">
+              <td>{{ filteredCourses.length + 1 }}</td>
+              <!-- <td>{{ (currentPage - 1) * pageSize + paginatedCourses.length + 1 }}</td> -->
 
+              <td><input type="file" @change="handleFileUpload" /></td>
+              <td><input v-model="editingCourse.title" class="input-create" placeholder="請輸入標題" /></td>
+              <td><input v-model="editingCourse.description" class="input-create" placeholder="請輸入介紹" /></td>
+              <td>
+                <select v-model="editingCourse.category" class="input-create">
+                  <option disabled value="">請選擇分類</option>
+                  <option v-for="cat in categories" :key="cat" :value="cat">
+                    {{ getCategoryLabel(cat) }}
+                  </option>
+                </select>
+              </td>
+              <td><input v-model="editingCourse.duration" type="number" class="input-create" placeholder="時數" /></td>
+              <td class="action-cell">
+                <button @click="create" class="link green">送出</button>
+                <button @click="cancelCreate" class="link gray">取消</button>
+              </td>
+            </tr>
+
+            <!-- 新增按鈕列（只有沒在搜尋且非新增模式才顯示） -->
+            <tr v-if="!isCreating && !searchKeyword" class="row-add" @click="startCreate">
+              <td style="text-align: center;" colspan="7">➕ 新增課程</td>
+            </tr>
+        </thead>
+      </table>
+      </div>
+    </div>
       <!-- ────────── 課程表格 ────────── -->
       <div class="table-wrapper">
         <table class="course-table">
@@ -28,7 +61,7 @@
 
           <!-- ── 有資料 ── -->
           <tbody v-if="filteredCourses.length">
-            <tr v-for="course in filteredCourses" :key="course.courseId"
+            <tr v-for="course in paginatedCourses" :key="course.courseId"
               :class="{ 'row-hover': editingId !== course.courseId }">
               <!-- 編輯模式 -->
               <template v-if="editingId === course.courseId">
@@ -95,31 +128,7 @@
               </template>
             </tr>
 
-            <!-- 新增模式 -->
-            <tr v-if="isCreating" class="row-creating">
-              <td>{{ filteredCourses.length + 1 }}</td>
-              <td><input type="file" @change="handleFileUpload" /></td>
-              <td><input v-model="editingCourse.title" class="input-create" placeholder="請輸入標題" /></td>
-              <td><input v-model="editingCourse.description" class="input-create" placeholder="請輸入介紹" /></td>
-              <td>
-                <select v-model="editingCourse.category" class="input-create">
-                  <option disabled value="">請選擇分類</option>
-                  <option v-for="cat in categories" :key="cat" :value="cat">
-                    {{ getCategoryLabel(cat) }}
-                  </option>
-                </select>
-              </td>
-              <td><input v-model="editingCourse.duration" type="number" class="input-create" placeholder="時數" /></td>
-              <td class="action-cell">
-                <button @click="create" class="link green">送出</button>
-                <button @click="cancelCreate" class="link gray">取消</button>
-              </td>
-            </tr>
-
-            <!-- 新增按鈕列（只有沒在搜尋且非新增模式才顯示） -->
-            <tr v-if="!isCreating && !searchKeyword" class="row-add" @click="startCreate">
-              <td style="text-align: center;" colspan="7">➕ 新增課程</td>
-            </tr>
+            
           </tbody>
 
           <!-- ── 查無資料 ── -->
@@ -131,13 +140,19 @@
             </tr>
           </tbody>
         </table>
+        <!-- 分頁控制列 -->
+<div class="pagination">
+  <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">« 上一頁</button>
+  <span>第 {{ currentPage }} / {{ totalPages }} 頁</span>
+  <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">下一頁 »</button>
+</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import axios from '@/plugins/axios.js'
 import {
   getAllCourses,
@@ -174,9 +189,19 @@ const getCategoryLabel = k => ({
 })[k] || k
 
 /* ---------- 取得 / 過濾課程 ---------- */
+// const fetchCourses = async () => {
+//   const { data } = await getAllCourses()
+//   courses.value = data
+// }
+
 const fetchCourses = async () => {
   const { data } = await getAllCourses()
   courses.value = data
+
+  // 如果目前頁碼 > 總頁數，則自動退回到最後一頁或第 1 頁
+  if (currentPage.value > totalPages.value) {
+    currentPage.value = totalPages.value || 1
+  }
 }
 const filteredCourses = computed(() => {
   const kw = searchKeyword.value.trim().toLowerCase()
@@ -213,6 +238,7 @@ const deleteOne = async id => {
 
 /* ---------- 新增 ---------- */
 const startCreate = () => { isCreating.value = true; editingCourse.value = emptyCourse() }
+
 const cancelCreate = () => { isCreating.value = false; editingCourse.value = emptyCourse(); selectedImage.value = null }
 const create = async () => {
   const payload = { ...editingCourse.value, duration: toNumber(editingCourse.value.duration) }
@@ -224,10 +250,34 @@ const create = async () => {
   cancelCreate()
 }
 
+
+/* ---------- 分頁 ---------- */
+const pageSize = 10
+const currentPage = ref(1)
+
+const paginatedCourses = computed(() => {
+  const start = (currentPage.value - 1) * pageSize
+  const end = start + pageSize
+  return filteredCourses.value.slice(start, end)
+})
+
+const totalPages = computed(() => Math.ceil(filteredCourses.value.length / pageSize))
+
+const goToPage = page => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+  }
+}
+
+
 /* ---------- 其他 ---------- */
 const resetFilters = () => { searchKeyword.value = '' }   // 清空即可，computed 會自動回全列表
 
 onMounted(fetchCourses)
+
+watch(filteredCourses, () => {
+  currentPage.value = 1
+})
 </script>
 
 <style scoped>
@@ -370,7 +420,7 @@ onMounted(fetchCourses)
 
 .row-add:hover {
   background: #e0f2fe;
-  text-decoration: underline
+  text-decoration: none
 }
 
 .link {
@@ -433,4 +483,26 @@ onMounted(fetchCourses)
 .link-title:hover {
   font-weight: 500
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 </style>
