@@ -420,7 +420,7 @@ const caregiverLogout = () => {
 }
 
 .user-icon {
-  width: 120%; /* ✅ 剛好填滿容器 */
+  width: 130%; /* ✅ 剛好填滿容器 */
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
@@ -467,7 +467,7 @@ const caregiverLogout = () => {
 }
 
 .dropdown-login-menu button:hover {
-  background-color: #28a745;
+  background-color: #46b6ab;
 }
 
 /* 顯示下拉選單 */

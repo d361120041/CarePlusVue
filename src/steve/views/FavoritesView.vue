@@ -1,5 +1,5 @@
 <template>
-  <div class="container py-4">
+  <div class="favorites-container py-4">
     <h2 class="mb-4">我的收藏庫</h2>
 
     <!-- 分類切換 Tabs -->
@@ -203,6 +203,13 @@ onMounted(fetchFavorites);
 </script>
 
 <style scoped>
+.favorites-container {
+  max-width: 100%;
+  margin-left: 0;
+  padding-left: 1rem; /* 可選：讓左側有內距 */
+  padding-right: 2rem;
+}
+
 .btn-fav {
   background-color: #4db6ac;
   color: #fff;

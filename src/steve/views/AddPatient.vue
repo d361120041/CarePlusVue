@@ -1,164 +1,165 @@
 <template>
-  <div class="p-6 bg-white shadow rounded overflow-y-auto h-full">
-    <h2 class="text-xl font-bold mb-4">新增患者</h2>
-    <form @submit.prevent="onSubmit" class="space-y-4">
-      <p v-if="patientCount >= 5" class="text-red-500 mb-2">
-        已達上限，最多只能新增五位病患。
-      </p>
+  <div class="patients-content">
+    <div class="form-card">
+      <h2 class="text-xl font-bold mb-4">新增患者</h2>
+      <form @submit.prevent="onSubmit" class="space-y-4">
+        <p v-if="patientCount >= 5" class="text-red-500 mb-2">
+          已達上限，最多只能新增五位病患。
+        </p>
 
-      <div>
-        <label class="block font-medium mb-1">姓名</label>
-        <input
-          style="margin-left: 96px"
-          v-model="form.name"
-          type="text"
-          class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
-          required
-        />
-      </div>
+        <!-- 姓名 -->
+        <div style="margin-bottom: 1rem">
+          <label class="block font-medium mb-1">姓名</label>
+          <input
+            style="margin-left: 96px"
+            v-model="form.name"
+            type="text"
+            class="w-full border rounded p-2"
+            :disabled="patientCount >= 5"
+            required
+          />
+        </div>
 
-      <div
-        class="birth-row"
-        style="display: flex; align-items: center; gap: 12px"
-      >
-        <label style="width: 80px">生日</label>
-        <select
-          style="margin-left: 35px"
-          v-model="selectedYear"
-          class="birth-select"
-          :disabled="patientCount >= 5"
+        <!-- 生日 -->
+        <div
+          style="
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          "
         >
-          <option value="">年</option>
-          <option v-for="year in years" :key="year" :value="year">
-            {{ year }}
-          </option>
-        </select>
-        <select
-          v-model="selectedMonth"
-          class="birth-select"
-          :disabled="patientCount >= 5"
-        >
-          <option value="">月</option>
-          <option v-for="month in 12" :key="month" :value="month">
-            {{ month }}
-          </option>
-        </select>
-        <select
-          v-model="selectedDay"
-          class="birth-select"
-          :disabled="patientCount >= 5"
-        >
-          <option value="">日</option>
-          <option v-for="day in availableDays" :key="day" :value="day">
-            {{ day }}
-          </option>
-        </select>
-      </div>
+          <label style="width: 80px">生日</label>
+          <select
+            style="margin-left: 35px"
+            v-model="selectedYear"
+            class="birth-select"
+            :disabled="patientCount >= 5"
+          >
+            <option value="">年</option>
+            <option v-for="year in years" :key="year" :value="year">
+              {{ year }}
+            </option>
+          </select>
+          <select
+            v-model="selectedMonth"
+            class="birth-select"
+            :disabled="patientCount >= 5"
+          >
+            <option value="">月</option>
+            <option v-for="month in 12" :key="month" :value="month">
+              {{ month }}
+            </option>
+          </select>
+          <select
+            v-model="selectedDay"
+            class="birth-select"
+            :disabled="patientCount >= 5"
+          >
+            <option value="">日</option>
+            <option v-for="day in availableDays" :key="day" :value="day">
+              {{ day }}
+            </option>
+          </select>
+        </div>
 
-      <div>
-        <label class="block font-medium mb-1">性別</label>
-        <select
-          style="margin-left: 96px"
-          v-model="form.gender"
-          class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
-          required
-        >
-          <option value="">請選擇</option>
-          <option :value="0">女性</option>
-          <option :value="1">男性</option>
-        </select>
-      </div>
+        <!-- 性別 -->
+        <div style="margin-bottom: 1rem">
+          <label class="block font-medium mb-1">性別</label>
+          <select
+            style="margin-left: 96px"
+            v-model="form.gender"
+            class="w-full border rounded p-2"
+            :disabled="patientCount >= 5"
+            required
+          >
+            <option value="">請選擇</option>
+            <option :value="0">女性</option>
+            <option :value="1">男性</option>
+          </select>
+        </div>
 
-      <div>
-        <label class="block font-medium mb-1">緊急聯絡人電話</label>
-        <input
-          style="margin-left: 17px"
-          v-model="form.emergencyContact"
-          type="text"
-          class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
-        />
-      </div>
+        <!-- 緊急聯絡人 -->
+        <div style="margin-bottom: 1rem">
+          <label class="block font-medium mb-1">緊急聯絡人電話</label>
+          <input
+            style="margin-left: 17px"
+            v-model="form.emergencyContact"
+            type="text"
+            class="w-full border rounded p-2"
+            :disabled="patientCount >= 5"
+          />
+        </div>
 
-      <div>
-        <label class="block font-medium mb-1">地址</label>
-        <input
-          v-model="form.address"
-          style="margin-left: 96px"
-          type="text"
-          class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
-        />
-      </div>
+        <!-- 地址 -->
+        <div style="margin-bottom: 1rem">
+          <label class="block font-medium mb-1">地址</label>
+          <input
+            v-model="form.address"
+            style="margin-left: 96px"
+            type="text"
+            class="w-full border rounded p-2"
+            :disabled="patientCount >= 5"
+          />
+        </div>
 
-      <div>
-        <label class="block font-medium mb-1">病患詳情</label>
-        <br />
-        <textarea
-          style="width: 70%; height: 100px"
-          v-model="form.patientDetail"
-          rows="3"
-          class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
-        ></textarea>
-      </div>
+        <div>
+          <label class="block font-medium mb-1">病患詳情</label>
+          <br />
+          <textarea
+            style="width: 70%; height: 100px"
+            v-model="form.patientDetail"
+            rows="3"
+            class="w-full border rounded p-2"
+            :disabled="patientCount >= 5"
+          ></textarea>
+        </div>
 
-      <div>
-        <label class="block font-medium mb-1">過敏史</label>
-        <br />
-        <textarea
-          style="width: 70%; height: 100px"
-          v-model="form.allergies"
-          rows="3"
-          class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
-        ></textarea>
-      </div>
+        <div>
+          <label class="block font-medium mb-1">過敏史</label>
+          <br />
+          <textarea
+            style="width: 70%; height: 100px"
+            v-model="form.allergies"
+            rows="3"
+            class="w-full border rounded p-2"
+            :disabled="patientCount >= 5"
+          ></textarea>
+        </div>
 
-      <div>
-        <label class="block font-medium mb-1">家族病史</label>
-        <br />
-        <textarea
-          style="width: 70%; height: 100px"
-          v-model="form.familyHistory"
-          rows="3"
-          class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
-        ></textarea>
-      </div>
+        <div>
+          <label class="block font-medium mb-1">家族病史</label>
+          <br />
+          <textarea
+            style="width: 70%; height: 100px"
+            v-model="form.familyHistory"
+            rows="3"
+            class="w-full border rounded p-2"
+            :disabled="patientCount >= 5"
+          ></textarea>
+        </div>
 
-      <div>
-        <label class="block font-medium mb-1">用藥紀錄</label>
-        <br />
+        <div>
+          <label class="block font-medium mb-1">用藥紀錄</label>
+          <br />
 
-        <textarea
-          style="width: 70%; height: 100px"
-          v-model="form.currentMedications"
-          rows="3"
-          class="w-full border rounded p-2"
-          :disabled="patientCount >= 5"
-        ></textarea>
-      </div>
+          <textarea
+            style="width: 70%; height: 100px"
+            v-model="form.currentMedications"
+            rows="3"
+            class="w-full border rounded p-2"
+            :disabled="patientCount >= 5"
+          ></textarea>
+        </div>
 
-      <div class="flex space-x-4">
-        <button
-          type="submit"
-          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          :disabled="patientCount >= 5"
-        >
-          提交
-        </button>
-        <button
-          type="button"
-          @click="cancel"
-          class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-        >
-          取消
-        </button>
-      </div>
-    </form>
+        <div class="flex space-x-4">
+          <button type="submit" class="btn-fav" :disabled="patientCount >= 5">
+            提交
+          </button>
+          <button type="button" @click="cancel" class="btn-cancel">取消</button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -261,6 +262,53 @@ const cancel = () => {
 
 <style scoped>
 .patients-content {
-  height: 100%;
+  min-height: 100vh;
+  background-color: #fff8f0;
+  padding: 1rem; /* 保留內距，不擠邊 */
+}
+
+.form-card {
+  background-color: #fff7ed; /* ✅ 柔和米白卡片 */
+  padding: 0.5rem;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.btn-fav {
+  background-color: #4db6ac;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border: 2px solid #4db6ac;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.btn-fav:hover {
+  background-color: #3ba99e;
+  border-color: #3ba99e;
+}
+
+.btn-fav:disabled {
+  background-color: #a8dad4;
+  border-color: #a8dad4;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  background-color: #ccc;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-cancel:hover {
+  background-color: #aaa;
 }
 </style>

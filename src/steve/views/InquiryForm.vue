@@ -1,5 +1,8 @@
 <template>
-  <div class="max-w-2xl mx-auto p-6">
+  <div
+    class="max-w-2xl mx-auto p-6"
+    style="margin-left: 3rem; margin-top: 2rem"
+  >
     <h2 class="text-2xl font-bold mb-4">客服信件</h2>
 
     <!-- 公版按鈕 -->
@@ -121,7 +124,7 @@ const submitInquiry = async () => {
 
 <style scoped>
 .template-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.5rem;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;

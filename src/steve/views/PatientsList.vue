@@ -1,8 +1,12 @@
 <template>
-  <div class="patients-content flex h-full gap-6">
+  <div
+    class="patients-content flex h-full gap-6"
+    style="background-color: #fff8f0"
+  >
     <!-- 右側內容：患者列表 -->
     <section
-      class="list-section flex-1 p-6 bg-white shadow rounded overflow-y-auto"
+      class="list-section p-6 rounded overflow-y-auto h-full"
+      style="background-color: #fff7ed"
     >
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold">病患管理</h2>
@@ -18,7 +22,7 @@
           {{ patientCount < 5 ? "新增患者" : "已達到登記上線" }}
         </button>
       </div>
-      <table class="min-w-full bg-white border">
+      <table class="min-w-full bg-transparent border">
         <thead>
           <tr>
             <th class="px-4 py-2 border">姓名</th>
@@ -124,8 +128,8 @@ onMounted(fetchPatients);
 }
 .list-section {
   border-radius: 16px; /* ✅ 比較明顯的圓角，可以自行調整為 8px、24px 等 */
-  padding: 5rem;
-  background-color: #ffffffe6;
+  padding: 1rem;
+  background-color: blue;
 }
 
 .edit,
@@ -155,5 +159,11 @@ onMounted(fetchPatients);
 .delete:hover {
   background-color: #ff6666;
   border-color: #ff6666;
+}
+.patients-content {
+  height: 100%;
+  display: flex;
+  gap: 1.5rem;
+  background-color: #fff8f0; /* ✅ 米色背景 */
 }
 </style>
