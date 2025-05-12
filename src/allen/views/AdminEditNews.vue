@@ -35,7 +35,7 @@
           <button type="button" class="btn-remove-image" @click="removeImage">不使用圖片</button>
         </div>
         <div class="mt-2 flex items-center gap-4">
-          <img :src="previewUrl" alt="預覽縮圖" class="h-32 object-cover rounded" />
+          <img :src="previewUrl" alt="預覽縮圖" class="h-32 object-cover rounded" @error="handleImageError" />
         </div>
       </div>
 
@@ -79,7 +79,8 @@ const news = ref({
   title: '',
   content: '',
   category: { categoryId: '' },
-  thumbnail: ''
+  thumbnail: '',
+  status: 0 // 預設為 0 (草稿狀態)
 });
 const categories = ref([]);
 const previewUrl = ref(null);
@@ -212,23 +213,31 @@ const addCategory = async () => {
 const fetchNews = async () => {
   try {
     const res = await myAxios.get(`/news/admin/${newsId}`);
-    news.value = {
-      title: res.data.title,
-      content: res.data.content,
-      thumbnail: res.data.thumbnail || '',
-      category: res.data.category || { categoryId: '' }
-    };
-    previewUrl.value = news.value.thumbnail ? `http://localhost:8082${res.data.thumbnail}` : '/src/assets/allen/no-image.jpg';
+    news.value = res.data;
+
+    const thumbnailPath = res.data.thumbnail;
+
+     // 檢查是否為完整 URL 或相對路徑
+    previewUrl.value = thumbnailPath 
+      ? thumbnailPath.startsWith('http')
+        ? thumbnailPath 
+        : `http://localhost:8082${thumbnailPath}`
+      : NO_IMAGE_URL;
+
   } catch (error) {
     alert('載入新聞失敗，可能不存在該筆資料');
     router.push('/admin/news');
   }
 };
 
+//圖片相關控制
+
+const NO_IMAGE_URL = 'http://localhost:8082/uploads/news_thumbnails/no-image.jpg';
+
 //刪除圖片
 const removeImage = () => {
   news.value.thumbnail = '';
-  previewUrl.value = '/src/assets/allen/no-image.jpg';
+  previewUrl.value = NO_IMAGE_URL;
   isDirty.value = true;
 };
 
@@ -286,10 +295,16 @@ const handleSubmit = async () => {
       return;
     }
 
-    // 如果沒有縮圖，使用預設圖片
-    if (!news.value.thumbnail) {
-      news.value.thumbnail = '/assets/allen/no-image.jpg';
-    }
+    // ✅ 確保 `status` 為 0 (草稿狀態)
+    news.value.status = 0;
+
+    // 如果沒有縮圖，設置為 NO_IMAGE_URL
+    news.value.thumbnail = news.value.thumbnail ? news.value.thumbnail : NO_IMAGE_URL;
+
+  // 圖片加載錯誤處理
+  const handleImageError = (event) => {
+    event.target.src = NO_IMAGE_URL;
+  };
 
     // 儲存新聞
     if (isEditMode) {
