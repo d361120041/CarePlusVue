@@ -37,18 +37,31 @@
     </div>
     <!-- allen -->
 
+    <!-- rita -->
+    <div >
+        <div>
+            <Rita />
+        </div>
+    </div>
+
+
     <!-- yuni -->
-    <div style="background-color: bisque;">
+    <div>
         <div>
             <CourseFeat />
         </div>
     </div>
     <!-- yuni -->
+
+
 </template>
 
 <script setup>
 import GlobalBanner from '@/components/GlobalBanner.vue'
 import homeBannerImg from '@/assets/images/GlobalBanner/mediums-hot-smiley-people-indoors.jpg'
+
+// -----Rita start
+import Rita from '@/yuni/components/Rita.vue';
 
 // ------yuni start
 import CourseFeat from '@/yuni/components/CourseFeat.vue';
@@ -58,6 +71,7 @@ import CourseFeat from '@/yuni/components/CourseFeat.vue';
 import { ref, onMounted } from 'vue';
 import myAxios from '@/plugins/axios';
 import { getFullImageUrl } from '@/allen/utils/urlHelper';
+import Footer from './footer.vue';
 const previewNews = ref([]);
 const defaultThumbnail = '/src/assets/allen/no-image.jpg';
 const loading = ref(false);

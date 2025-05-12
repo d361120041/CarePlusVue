@@ -1,11 +1,51 @@
 <template>
   <div class="container py-4" v-if="chapter">
-    <div class="mt-3 text-end">
+    <!-- <div class="mt-3 text-end">
       <button class="btn btn-outline-secondary" @click="backToProgress">
         回到{{ auth.userName }}的課程進度總覽
       </button>
     </div>
-    <h3 class="mb-3">{{ courseTitle }}：{{ chapter.title }}</h3>
+   
+<nav aria-label="breadcrumb" class="mt-2 mb-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <router-link :to="`/courses/${courseId}`">{{ courseTitle || '課程' }}</router-link>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+      {{ chapter?.title || '章節' }}
+    </li>
+  </ol>
+</nav> -->
+
+<!-- ⬇️ 同行排列：左側麵包屑，右側按鈕 -->
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <!-- 麵包屑 -->
+  <nav aria-label="breadcrumb" class="m-0">
+    <!-- <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item">
+        <router-link :to="`/course-progress/${courseId}`">{{ courseTitle || '課程' }}</router-link>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ chapter?.title || '章節' }}
+      </li>
+    </ol> -->
+
+
+    <ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item">
+    <router-link :to="`/course-progress/${courseId}`" class="breadcrumb-dynamic">
+      我的「{{ courseTitle || '課程' }}」
+    </router-link>
+  </li>
+  <li class="breadcrumb-item active" aria-current="page">
+    {{ chapter?.title || '章節' }}
+  </li>
+</ol>
+  </nav>
+
+</div>
+
+    <!-- <h3 class="mb-3">{{ courseTitle }}｜{{ chapter.title }}</h3> -->
 
     <!-- 顯示影片或文章 -->
     <div class="mb-4">
@@ -34,9 +74,9 @@
 
     <!-- 上一章 + 下一章 -->
     <div class="d-flex justify-content-between">
-      <button class="btn btn-primary" :disabled="currentIndex <= 0" @click="goPrevious">上一章</button>
+      <button class="button-green" :disabled="currentIndex <= 0" @click="goPrevious">上一章</button>
 
-      <button class="btn btn-primary" @click="handleNextOrFinish">{{ currentIndex >= chapters.length - 1 ? '完成' : '下一章'
+      <button class="button-green" @click="handleNextOrFinish">{{ currentIndex >= chapters.length - 1 ? '完成' : '下一章'
         }}</button>
 
 
@@ -291,4 +331,29 @@ onMounted(async () => {
   /* 輕微發光效果 */
   transition: all 0.2s ease-in-out;
 }
+
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  color: #6c757d;
+}
+
+.breadcrumb-dynamic {
+  color: #6c757d;
+  font-weight: normal;
+  display: inline-block;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.breadcrumb-dynamic:hover {
+  transform: scale(1.05);
+  color: #007bff;
+  text-decoration: none;
+}
+
 </style>
