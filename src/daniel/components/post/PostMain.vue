@@ -8,8 +8,15 @@
         </article>
 
         <!-- 貼文列表 -->
-        <PostList :filterCategoryIds="categoryStore.selectedIds" :filter-topic-ids="topicStore.selectedIds"
-            :filterUserId="onlyMine ? authStore.user.userId : null" @refresh="reloadPosts" />
+        <!-- 第一次載入時顯示骨架 -->
+        <div v-if="postStore.isLoading && postStore.posts.length === 0">
+            <SkeletonPostCard v-for="n in postStore.pageSize" :key="`skeleton-${n}`" />
+        </div>
+        <!-- 有貼文或後續載入就顯示真實列表 -->
+        <div v-else>
+            <PostList :filterCategoryIds="categoryStore.selectedIds" :filter-topic-ids="topicStore.selectedIds"
+                :filterUserId="onlyMine ? authStore.user.userId : null" @refresh="reloadPosts" />
+        </div>
 
         <!-- 無限捲動偵測器 -->
         <div ref="sentinel" class="sentinel"></div>
@@ -33,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useCategoryStore } from '@/daniel/stores/categories.js'
 import { useTopicStore } from '@/daniel/stores/topics.js'
@@ -43,6 +50,7 @@ import PostList from '@/daniel/components/post/PostList.vue'
 import PostFormModal from '@/daniel/components/post/PostFormModal.vue'
 import PostDetailModal from '@/daniel/components/post/PostDetailModal.vue'
 import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
+import SkeletonPostCard from '@/daniel/components/post/SkeletonPostCard.vue'
 
 const props = defineProps({
     onlyMine: {
@@ -86,7 +94,7 @@ function setupObserver() {
         }
     }, {
         root: null,
-        rootMargin: '200px',
+        rootMargin: '600px',
         threshold: 0.1
     })
     observer.observe(sentinel.value)
