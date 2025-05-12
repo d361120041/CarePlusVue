@@ -1,79 +1,54 @@
+
+
 <template>
-  <div class="container py-4" v-if="course">
-    <!-- 頁面標題 -->
-    <!-- <h2 class="mt-3 mb-2 fw-bold text-primary">我的學習進度</h2> -->
+  <div class="page-wrapper">
+    <!-- ✅ 麵包屑仍在頂部 -->
+    <div class="container py-4" v-if="course">
+      <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item">
+            <router-link to="/course" class="breadcrumb-dynamic">線上課程</router-link>
+          </li>
+          <li class="breadcrumb-item">
+            <router-link to="/my-courses" class="breadcrumb-dynamic">我的課程</router-link>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">我的章節學習進度</li>
+        </ol>
+      </nav>
+    </div>
 
-    <!-- 麵包屑 -->
-    <!-- <nav aria-label="breadcrumb" class="mb-3">
-      <ol class="breadcrumb mb-0">
-        <li class="breadcrumb-item text-muted">{{ getCategoryLabel(course.category) }}</li>
-        <li class="breadcrumb-item text-muted">{{ course.title }}</li>
-        <li class="breadcrumb-item active" aria-current="page">我的章節學習進度</li>
-      </ol>
-    </nav> -->
+    <!-- ✅ 主要卡片區域 -->
+    <div class="page-content">
+      <div class="card shadow-sm p-4" v-if="course" style="width: 100%; max-width: 1000px;">
+        <h3 class="fw-bold mb-4">{{ course.title }}</h3>
+        <p class="course-category text-muted">#{{ getCategoryLabel(course.category) }}</p>
 
-    <!-- 麵包屑樣式 -->
-<nav aria-label="breadcrumb" class="mb-3">
-  <ol class="breadcrumb mb-0">
-    <li class="breadcrumb-item">
-      <router-link to="/course" class="breadcrumb-dynamic">
-        線上課程
-      </router-link>
-    </li>
-    <li class="breadcrumb-item">
-      <router-link to="/my-courses" class="breadcrumb-dynamic">
-        我的課程
-      </router-link>
-    </li>
-    <li class="breadcrumb-item active" aria-current="page">
-      我的章節學習進度
-    </li>
-  </ol>
-</nav>
-
-
-
-
-    <!-- 類別標籤 -->
-    <!-- <p class="text-muted mb-4">#{{ getCategoryLabel(course.category) }}</p> -->
-
-    <!-- 卡片容器 -->
-    <div class="card shadow-sm p-4">
-      <!-- 標題＋分類ㄉ -->
-      <h3 class="fw-bold mb-4">{{ course.title }} </h3>
-      <p class="course-category text-muted">#{{ getCategoryLabel(course.category) }}</p>
-      <!-- 章節進度清單 -->
-      <ul v-if="progressList.length > 0" class="list-group list-group-flush">
-        <li
-          v-for="progress in progressList"
-          :key="progress.progressId"
-          class="list-group-item d-flex justify-content-between align-items-center px-0"
-        >
-          <router-link
-            :to="`/learn/${courseId}?chapterId=${progress.chapterId.chapterId}`"
-            class="text-decoration-none text-dark fw-medium"
+        <ul v-if="progressList.length > 0" class="list-group list-group-flush">
+          <li
+            v-for="progress in progressList"
+            :key="progress.progressId"
+            class="list-group-item d-flex justify-content-between align-items-center px-0"
           >
-            {{ progress.chapterId.position }}. {{ progress.chapterId.title }}
-          </router-link>
+            <router-link
+              :to="`/learn/${courseId}?chapterId=${progress.chapterId.chapterId}`"
+              class="text-decoration-none text-dark fw-medium"
+            >
+              {{ progress.chapterId.position }}. {{ progress.chapterId.title }}
+            </router-link>
 
-          <span>
-            <span v-if="progress.status === 'completed'" class="badge bg-success">
-              完成
+            <span>
+              <span v-if="progress.status === 'completed'" class="badge bg-success">完成</span>
+              <span v-else-if="progress.status === 'in_progress'" class="badge bg-warning text-dark">進行中</span>
+              <span v-else class="badge bg-secondary">未開始</span>
             </span>
-            <span v-else-if="progress.status === 'in_progress'" class="badge bg-warning text-dark">
-              進行中
-            </span>
-            <span v-else class="badge bg-secondary">
-              未開始
-            </span>
-          </span>
-        </li>
-      </ul>
-      <p v-else class="text-muted">尚無進度紀錄</p>
+          </li>
+        </ul>
 
-      <!-- 開始上課按鈕 -->
-      <div class="text-end mt-4">
-        <button class="button-green" @click="goLearn">開始上課</button>
+        <p v-else class="text-muted">尚無進度紀錄</p>
+
+        <div class="text-end mt-4">
+          <button class="button-green" @click="goLearn">開始上課</button>
+        </div>
       </div>
     </div>
   </div>
@@ -267,5 +242,19 @@ onMounted(async () => {
   color: #6c757d;
 }
 
+/* 保證外層容器撐滿頁面高度 */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 120px); /* 120px 為 navbar + footer 預估高度，可微調 */
+}
 
+/* 撐開內容區域 */
+.page-content {
+  flex: 1;
+  display: flex;
+  justify-content: center; /* 讓卡片置中 */
+  align-items: flex-start;
+  padding-bottom: 2rem;
+}
 </style>

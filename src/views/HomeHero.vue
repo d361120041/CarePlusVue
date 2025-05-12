@@ -44,6 +44,8 @@
         </div>
     </div>
     <!-- yuni -->
+
+
 </template>
 
 <script setup>
@@ -58,6 +60,7 @@ import CourseFeat from '@/yuni/components/CourseFeat.vue';
 import { ref, onMounted } from 'vue';
 import myAxios from '@/plugins/axios';
 import { getFullImageUrl } from '@/allen/utils/urlHelper';
+import Footer from './footer.vue';
 const previewNews = ref([]);
 const defaultThumbnail = '/src/assets/allen/no-image.jpg';
 const loading = ref(false);

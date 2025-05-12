@@ -5,7 +5,8 @@
         <p>
           簡單易懂的線上課程，溫暖支持您照顧家人的每一步，從容應對日常挑戰。
         </p>
-        <RouterLink to="/course" class="btn">點我探索課程去</RouterLink>
+                <!-- <RouterLink to="/course" class="btn ">點我探索課程去</RouterLink> -->
+        <RouterLink to="/course" class="button-green ">點我探索課程去</RouterLink>
       </div>
   
       <div class="right-section">
