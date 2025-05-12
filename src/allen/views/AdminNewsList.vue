@@ -495,8 +495,6 @@ onMounted(() => {
   transform: translateY(0);
 }
 
-
-
 .pagination {
   display: flex;
   justify-content: center;
