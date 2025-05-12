@@ -10,20 +10,14 @@
                 </div>
             </div>
 
-            <!-- 步驟切換 -->
-            <!-- <div class="step-indicator">
-                <button type="button" :class="{ active: step === 1 }">1. 種類與主題</button>
-                <button type="button" :class="{ active: step === 2 }">2. 內容與圖片</button>
-            </div> -->
-
             <!-- 第一部分：分類與主題 -->
             <div v-if="step === 1">
                 <!-- 貼文種類 -->
                 <div class="form-group categories">
                     <label>貼文種類：</label>
-                    <div class="category-buttons">
+                    <div class="toggle-buttons">
                         <button v-for="cat in allCategories" :key="cat.id" type="button" @click="toggleCategory(cat.id)"
-                            :class="['category-btn', { active: form.categoryIds.includes(cat.id) }]">
+                            :class="['toggle-btn', { active: form.categoryIds.includes(cat.id) }]">
                             {{ cat.name }}
                         </button>
                     </div>
@@ -32,15 +26,16 @@
                 <!-- 貼文主題 -->
                 <div class="form-group topics">
                     <label>貼文主題：</label>
-                    <div class="topic-buttons">
+                    <div class="toggle-buttons">
                         <button v-for="top in allTopics" :key="top.id" type="button" @click="toggleTopic(top.id)"
-                            :class="['category-btn', { active: form.topicIds.includes(top.id) }]">
+                            :class="['toggle-btn', { active: form.topicIds.includes(top.id) }]">
                             {{ top.name }}
                         </button>
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" @click="nextStep" :disabled="!canProceedToContent">下一步</button>
+                    <button type="button" @click="nextStep" :disabled="!canProceedToContent"
+                        class="btn-tertiary btn">下一步</button>
                 </div>
             </div>
 
@@ -74,8 +69,8 @@
 
                 <!-- 提交表單 -->
                 <div class="modal-actions">
-                    <button type="button" @click="prevStep">上一步</button>
-                    <button type="submit" :disabled="postStore.isLoading">
+                    <button type="button" @click="prevStep" class="btn-tertiary btn">上一步</button>
+                    <button type="submit" :disabled="postStore.isLoading" class="btn-primary btn">
                         {{ submitText }}
                     </button>
                 </div>
@@ -108,8 +103,9 @@ const authStore = useAuthStore()
 
 // 控制是否可進入第二步：至少選一類別或主題
 const step = ref(1)
-const canProceedToContent = computed(() => form.value.categoryIds.length || form.value.topicIds.length)
-
+const canProceedToContent = computed(
+    () => form.value.categoryIds.length > 0 && form.value.topicIds.length > 0
+)
 // 步驟控制
 function nextStep() { step.value = 2 }
 function prevStep() { step.value = 1 }
@@ -293,27 +289,71 @@ async function onSubmit() {
     font-weight: bold;
 }
 
-.step-indicator {
+.toggle-buttons {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
-.step-indicator button {
-    flex: 1;
-    padding: 0.5rem;
-    border: none;
-    background: #f0f0f0;
+.toggle-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+    background: #f9f9f9;
+    transition: all 0.2s;
     cursor: pointer;
 }
 
-.step-indicator button.active {
-    background: #007bff;
-    color: #fff
+.toggle-btn:hover {
+    transform: scale(1.05);
+    background: var(--color-primary);
+    color: #fff;
 }
 
+.toggle-btn.active {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+}
 
-.categories {
+/* 通用按鈕樣式 */
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    color: #fff;
+}
+
+.btn-primary {
+    background: var(--color-primary);
+}
+
+.btn-primary:hover {
+    background: #45a499;
+    /* 主色深版 */
+}
+
+.btn-secondary {
+    background: var(--color-secondary);
+}
+
+.btn-secondary:hover {
+    background: #e68a8a;
+    /* 次色深版 */
+}
+
+.btn-tertiary {
+    background: var(--color-tertiary);
+}
+
+.btn-tertiary:hover {
+    background: #378bc6;
+    /* 輔助色深版 */
+}
+
+/* .categories {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap
@@ -341,19 +381,21 @@ async function onSubmit() {
     color: #fff;
     border-color: #0056b3;
     transform: scale(1.05)
-}
+} */
 
 .form-container input,
 .form-container textarea {
     width: 100%;
     padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .form-images {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin: 0.5rem 0;
+    /* margin: 0.5rem 0; */
 }
 
 .thumb-wrapper {
@@ -369,6 +411,7 @@ async function onSubmit() {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
 
 .delete-btn {
     position: absolute;

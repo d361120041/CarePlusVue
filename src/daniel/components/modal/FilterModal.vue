@@ -1,27 +1,25 @@
 <!-- src/daniel/components/FilterModal.vue -->
 <template>
     <BaseModal :visible="visible" title="篩選我的貼文" @close="onClose">
-        <form @submit.prevent="onApply" class="space-y-4">
+        <form @submit.prevent="onApply" class="filter-form">
 
-            <!-- 標題關鍵字 -->
-            <label class="block">
-                標題關鍵字
-                <input v-model="local.titleKeyword" type="text" placeholder="輸入標題…"
-                    class="w-full border rounded px-2 py-1" />
-            </label>
+            <!-- 關鍵字輸入區 -->
+            <div class="field-group">
+                <label>標題關鍵字</label>
+                <input v-model="local.titleKeyword" type="text" placeholder="輸入標題…" class="filter-input" />
+            </div>
 
             <!-- 內容關鍵字 -->
-            <label class="block">
-                內容關鍵字
-                <input v-model="local.contentKeyword" type="text" placeholder="輸入內容…"
-                    class="w-full border rounded px-2 py-1" />
-            </label>
+            <div class="field-group">
+                <label>內容關鍵字</label>
+                <input v-model="local.contentKeyword" type="text" placeholder="輸入內容…" class="filter-input" />
+            </div>
 
-            <!-- 起始／結束：年 + 月 下拉 -->
-            <div class="flex space-x-2">
-                <span class="flex-1">
-                    <span class="mb-1 font-medium">建立時間 起</span>
-                    <span class="flex space-x-1">
+            <!-- 日期篩選：格線布局 -->
+            <div class="date-range">
+                <div class="date-field">
+                    <span>建立時間 起</span>
+                    <div class="select-group">
                         <select v-model.number="local.startYear" class="flex-1 border rounded px-2 py-1">
                             <option :value="null">-- 年</option>
                             <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
@@ -30,11 +28,11 @@
                             <option :value="null">-- 月</option>
                             <option v-for="m in months" :key="m" :value="m">{{ m }}</option>
                         </select>
-                    </span>
-                </span>
-                <div class="flex-1">
-                    <span class="mb-1 font-medium">建立時間 訖</span>
-                    <span class="flex space-x-1">
+                    </div>
+                </div>
+                <div class="date-field">
+                    <span>建立時間 訖</span>
+                    <div class="select-group">
                         <select v-model.number="local.endYear" class="flex-1 border rounded px-2 py-1">
                             <option :value="null">-- 年</option>
                             <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
@@ -43,62 +41,43 @@
                             <option :value="null">-- 月</option>
                             <option v-for="m in months" :key="m" :value="m">{{ m }}</option>
                         </select>
-                    </span>
+                    </div>
                 </div>
             </div>
 
-            <!-- 分類按鈕 -->
+            <!-- 分類與主題按鈕 -->
             <div>
-                <div class="mb-1 font-medium">分類</div>
-                <div class="flex flex-wrap gap-2">
-                    <button v-for="cat in categories" :key="cat.id" type="button" @click="toggleCat(cat.id)" :class="[
-                        'px-3 py-1 border rounded',
-                        local.postCategoryIds.includes(cat.id)
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-100 hover:bg-gray-200'
-                    ]">
+                <label>分類</label>
+                <div class="toggle-buttons">
+                    <button v-for="cat in categories" :key="cat.id" type="button" @click="toggleCat(cat.id)"
+                        :class="['toggle-btn', { active: local.postCategoryIds.includes(cat.id) }]">
                         {{ cat.name }}
                     </button>
                 </div>
             </div>
 
             <!-- 主題按鈕 -->
-            <div>
-                <div class="mb-1 font-medium">主題</div>
-                <div class="flex flex-wrap gap-2">
-                    <button v-for="topic in topics" :key="topic.id" type="button" @click="toggleTopic(topic.id)" :class="[
-                        'px-3 py-1 border rounded',
-                        local.postTopicIds.includes(topic.id)
-                            ? 'bg-green-500 text-white'
-                            : 'bg-gray-100 hover:bg-gray-200'
-                    ]">
+            <div class="field-group">
+                <label>主題</label>
+                <div class="toggle-buttons">
+                    <button v-for="topic in topics" :key="topic.id" type="button" @click="toggleTopic(topic.id)"
+                        :class="['toggle-btn', { active: local.postTopicIds.includes(topic.id) }]">
                         {{ topic.name }}
                     </button>
                 </div>
             </div>
 
-            <!-- 排序（單一下拉） -->
-            <!-- <label class="block">
-                排序
-                <select v-model="local.sortDir" class="w-full border rounded px-2 py-1">
-                    <option value="createdAt,asc">建立時間 ⯅</option>
-                    <option value="createdAt,desc">建立時間 ⯆</option>
-                </select>
-            </label> -->
-
-            <!-- 按鈕群 -->
-            <div class="flex justify-between">
-                <button type="button" @click="onClear" class="px-4 py-2 border rounded hover:bg-gray-100">
+            <!-- 按鈕區：sticky at bottom -->
+            <div class="actions-bar">
+                <button type="button" @click="onClear" class="action-clear">
                     清除條件
                 </button>
-                <div class="flex space-x-2">
-                    <button type="button" @click="onClose" class="px-4 py-2 border rounded hover:bg-gray-100">
-                        取消
-                    </button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                        套用篩選
-                    </button>
-                </div>
+                <button type="button" @click="onClose" class="action-cancel">
+                    取消
+                </button>
+                <button type="submit" class="action-apply">
+                    套用篩選
+                </button>
             </div>
         </form>
     </BaseModal>
@@ -204,24 +183,128 @@ function onClose() {
 </script>
 
 <style scoped>
-form input,
-form select {
+.filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-input,
+select {
+    width: 100%;
+    padding: 0.5rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 0.5rem
+    transition: border-color 0.2s;
 }
 
-form hr {
-    border: none;
+.filter-input:focus,
+select:focus {
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+.date-range {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+}
+
+.select-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.toggle-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.toggle-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+    background: #f9f9f9;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.toggle-btn:hover {
+    color: #fff;
+    transform: scale(1.05);
+    background: var(--color-primary);
+}
+
+.toggle-btn.active {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+}
+
+.actions-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 0.75rem 0;
     border-top: 1px solid #eee;
-    margin: 1rem 0
 }
 
-button {
-    transition: background 0.2s
+.action-clear,
+.action-cancel,
+.action-apply {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
-button:hover {
-    transform: translateY(-2px);
+.action-clear {
+    background: var(--color-tertiary);
+    color: #fff;
+}
+
+.action-clear:hover {
+    background: #378bc6;
+}
+
+.action-cancel {
+    background: var(--color-secondary);
+    color: #fff;
+}
+
+.action-cancel:hover {
+    background: #e68a8a;
+}
+
+.action-apply {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.action-apply:hover {
+    background: #45a499;
+}
+
+/* 小螢幕調整 */
+@media (max-width: 640px) {
+    .actions-bar {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
 }
 </style>
