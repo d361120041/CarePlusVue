@@ -63,7 +63,7 @@
 
 <script setup>
 import GlobalBanner from '@/components/GlobalBanner.vue'
-import homeBannerImg from '@/assets/images/GlobalBanner/mediums-hot-smiley-people-indoors.jpg'
+import homeBannerImg from '@/assets/images/GlobalBanner/mediums-hot-smiley-people-indoors.webp'
 
 // -----Rita start
 import Rita from '@/yuni/components/Rita.vue';
