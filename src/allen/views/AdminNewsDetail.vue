@@ -13,17 +13,17 @@
 
     <!-- 正常渲染 -->
     <div v-else>
-      <!-- 標題區 -->
-      <div class="flex justify-between items-center mb-6 border-b pb-4">
-        <h1 class="text-3xl font-bold text-gray-800">{{ news.title }}</h1>
-        <div class="flex gap-2">
-          <button @click="goToEdit(news.newsId)" class="btn-blue">編輯</button>
-          <button @click="confirmDelete(news.newsId)" class="btn-red">刪除</button>
-          <button v-if="news.status === 0" @click="publishNews(news.newsId)" class="btn-green">發布</button>
-          <button v-else @click="unpublishNews(news.newsId)" class="btn-yellow">下架</button>
-          <router-link to="/admin/news" class="btn-gray">返回</router-link>
-        </div>
+    <!-- 標題區 -->
+    <div class="flex justify-between items-center mb-6 border-b pb-4">
+      <h1 class="text-3xl font-bold text-gray-800">{{ news.title }}</h1>
+      <div class="flex gap-4 items-center">
+        <button @click="goToEdit(news.newsId)" class="btn btn-blue">編輯</button>
+        <button @click="confirmDelete(news.newsId)" class="btn btn-red">刪除</button>
+        <button v-if="news.status === 0" @click="publishNews(news.newsId)" class="btn btn-green">發布</button>
+        <button v-else @click="unpublishNews(news.newsId)" class="btn btn-yellow">下架</button>
+        <button @click="$router.push('/admin/news')" class="btn btn-gray">返回</button>
       </div>
+    </div>
 
       <!-- 縮圖區塊 -->
       <div class="col-span-1 flex justify-center items-center bg-gray-50 p-4 rounded-lg shadow-inner mb-6">
@@ -178,64 +178,73 @@
     box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.1);
     line-height: 1.6;
   }
-  
-  .btn-blue {
-    background-color: #3498db;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transition: background-color 0.2s;
-  }
-  
-  .btn-blue:hover {
-    background-color: #2980b9;
-  }
-  
-  .btn-red {
-    background-color: #e74c3c;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transition: background-color 0.2s;
-  }
-  
-  .btn-red:hover {
-    background-color: #c0392b;
-  }
-  
-  .btn-green {
-    background-color: #2ecc71;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transition: background-color 0.2s;
-  }
-  
-  .btn-green:hover {
-    background-color: #27ae60;
-  }
-  
-  .btn-yellow {
-    background-color: #f1c40f;
-    color: #333;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transition: background-color 0.2s;
-  }
-  
-  .btn-yellow:hover {
-    background-color: #f39c12;
-  }
-  
-  .btn-gray {
-    background-color: #95a5a6;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transition: background-color 0.2s;
-  }
-  
-  .btn-gray:hover {
-    background-color: #7f8c8d;
-  }
-  </style>
+  .btn {
+  padding: var(--space-sm) var(--space-lg);  /* 調整按鈕尺寸 */
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border: none;
+  outline: none;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-md);
+}
+/* 藍色按鈕 */
+.btn-blue {
+  background-color: #3e9bdc;
+  color: #fff;
+}
+
+.btn-blue:hover {
+  background-color: #3480b1;
+}
+
+.btn-blue:active {
+  background-color: #2c6d99;
+}
+
+/* 紅色按鈕 */
+.btn-red {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.btn-red:hover {
+  background-color: #c0392b;
+}
+
+.btn-red:active {
+  background-color: #a93226;
+}
+
+/* 綠色按鈕 */
+.btn-green {
+  background-color: #27ae60;
+  color: #fff;
+}
+
+.btn-green:hover {
+  background-color: #229954;
+}
+
+.btn-green:active {
+  background-color: #1e8449;
+}
+
+/* 灰色按鈕 */
+.btn-gray {
+  background-color: #95a5a6;
+  color: #fff;
+}
+
+.btn-gray:hover {
+  background-color: #7f8c8d;
+}
+
+.btn-gray:active {
+  background-color: #707b7c;
+}
+</style>

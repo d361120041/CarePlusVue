@@ -115,10 +115,10 @@ onMounted(() => {
 .btn-primary {
   display: inline-block;
   padding: 10px 20px;
-  font-size: 1rem;
+  font-size: var(--font-size-md);
   font-weight: 600;
   color: #fff;
-  background-color: #2563eb;
+  background-color: var(--color-tertiary);
   border-radius: 6px;
   text-decoration: none;
   transition: background-color 0.3s ease;

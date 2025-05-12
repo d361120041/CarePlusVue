@@ -16,7 +16,8 @@
 
     <!-- allen: 新聞預覽區塊 -->
     <!-- 最新消息標籤 -->
-    <div class="news-header">
+    <br>
+    <div class="news-header" @click="goToNews">
         <span class="news-icon">📢</span>
         <span class="news-title">最新消息</span>
     </div>
@@ -60,10 +61,17 @@ import CourseFeat from '@/yuni/components/CourseFeat.vue';
 import { ref, onMounted } from 'vue';
 import myAxios from '@/plugins/axios';
 import { getFullImageUrl } from '@/allen/utils/urlHelper';
-import Footer from './footer.vue';
+import { useRouter } from "vue-router";
+
 const previewNews = ref([]);
 const defaultThumbnail = '/src/assets/allen/no-image.jpg';
 const loading = ref(false);
+
+//按鈕導到新聞首頁
+const router = useRouter();
+const goToNews = () => {
+    router.push('/news');
+};
 
 // 圖片錯誤處理
 const handleImgError = (event) => {
@@ -116,33 +124,26 @@ onMounted(() => {
 .news-header {
     display: flex;
     align-items: center;
-    background: linear-gradient(135deg, #ff7e5f, #feb47b);
-    /* 漸變背景 */
-    padding: 12px 20px;
-    border-radius: 16px;
+    background: var(--color-btn-primary-bg);
     /* 大圓角 */
-    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: var(--radius-pill);
+     /* 字體字型 */
+    color: var(--color-btn-primary-text);
     font-weight: bold;
-    font-size: 1.1rem;
-    /* 字體加大 */
+    font-size: var(--font-size-xl);
+    /*按鈕大小*/
     margin-bottom: 24px;
-    width: 150px;
-    /* 控制寬度 */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 180px;
+    /**/
     user-select: none;
-    /* 禁止選取 */
-    cursor: default;
-    /* 取消指針效果 */
-    transition: background-color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    transition: background-color var(--transition-medium), box-shadow var(--transition-medium), transform var(--transition-fast);
 }
-
 .news-header:hover {
-    background: linear-gradient(135deg, #ff7e5f, #feb47b);
-    /* 保持背景一致 */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    /* 保持陰影一致 */
-    transform: none;
-    /* 取消放大效果 */
+  background-color: var(--color-btn-primary-bg-hover);
+  box-shadow: var(--shadow-lg);
+  transform: scale(1.05);
 }
 
 .news-icon {
@@ -195,15 +196,6 @@ onMounted(() => {
 .news-content {
     text-align: center;
     padding: 8px 0;
-}
-
-.news-title {
-    font-size: 1.1rem;
-    /* 字體加大 */
-    font-weight: bold;
-    margin-bottom: 12px;
-    /* 調整間距 */
-    line-height: 1.4;
 }
 
 .news-date,

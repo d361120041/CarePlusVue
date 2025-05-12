@@ -132,7 +132,7 @@ const handleDeleteCategory = async () => {
 
   if (isConfirmed) {
     try {
-      await myAxios.delete(`/news/category/${selectedCategory.categoryId}`);
+      const response = await myAxios.delete(`/news/category/${selectedCategory.categoryId}`);
 
       Swal.fire({
         icon: 'success',
@@ -144,11 +144,15 @@ const handleDeleteCategory = async () => {
       await fetchCategories();
       // 重置分類選擇
       news.value.category.categoryId = '';
+
     } catch (err) {
       console.error('刪除分類失敗：', err);
+
+      const errorMessage = err.response?.data?.message || '刪除分類失敗，請稍後再試';
+
       Swal.fire({
         icon: 'error',
-        title: '刪除分類失敗，請稍後再試',
+        title: errorMessage,
         confirmButtonText: '確定'
       });
     }
