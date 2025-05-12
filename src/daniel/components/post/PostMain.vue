@@ -22,7 +22,7 @@
         <div ref="sentinel" class="sentinel"></div>
 
         <!-- 載入中 Spinner -->
-        <div v-if="postStore.isLoading" class="loading">載入中…</div>
+        <div v-if="postStore.isLoading" class="loading" :class="{ active: postStore.isLoading }">載入中…</div>
 
         <!-- 沒有更多貼文 提示 -->
         <div v-if="!postStore.hasMore && !postStore.isLoading" class="no-more">
@@ -66,6 +66,8 @@ const topicStore = useTopicStore()
 const authStore = useAuthStore()
 const sentinel = ref(null)
 let observer = null
+const isLoadingVisible = ref(false) // 控制載入中提示的顯示
+let loadingTimeout = null // 用於清除 timeout
 
 // 使用者大頭貼
 const imageUrl = ref(null)
@@ -73,6 +75,14 @@ imageUrl.value = `data:image/png;base64,${authStore.user.profilePicture}`
 
 // 重新載入貼文的函式
 async function reloadPosts() {
+
+    if (postStore.isLoading) {
+        isLoadingVisible.value = true;
+    } else {
+        // 避免在非載入狀態時顯示
+        isLoadingVisible.value = false;
+    }
+
     await postStore.loadPosts({
         postCategoryIds: categoryStore.selectedIds,
         postTopicIds: topicStore.selectedIds,
@@ -80,7 +90,10 @@ async function reloadPosts() {
     }, {
         page: 1,
         append: false
-    })
+    }).finally(() => {
+        isLoadingVisible.value = false;
+        clearTimeout(loadingTimeout); // 清除任何未執行的 timeout
+    });
 }
 
 function setupObserver() {
@@ -90,7 +103,9 @@ function setupObserver() {
                 postCategoryIds: categoryStore.selectedIds,
                 postTopicIds: topicStore.selectedIds,
                 userId: props.onlyMine ? authStore.user.userId : null
-            }, { page: postStore.currentPage + 1, append: true })
+            }, { page: postStore.currentPage + 1, append: true }).finally(() => {
+                isLoadingVisible.value = false;
+            });
         }
     }, {
         root: null,
@@ -126,6 +141,21 @@ watch(
     { deep: true }
 )
 
+watch(
+    () => postStore.isLoading,
+    (newValue) => {
+        clearTimeout(loadingTimeout); // 清除之前的 timeout
+        if (newValue) {
+            // 延遲一段時間後顯示載入中提示
+            setTimeout(() => {
+                isLoadingVisible.value = true
+            }, 200) // 例如延遲 200 毫秒
+        } else {
+            isLoadingVisible.value = false
+        }
+    }
+)
+
 // 初始載入分類與貼文
 onMounted(async () => {
     await categoryStore.loadCategories()
@@ -136,6 +166,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
     observer?.disconnect()
+    clearTimeout(loadingTimeout); // 清除 timeout
 })
 
 </script>
@@ -149,6 +180,7 @@ onBeforeUnmount(() => {
 }
 
 .new-post-card {
+    width: 450px;
     display: flex;
     align-items: center;
     background: #fff;
@@ -158,10 +190,6 @@ onBeforeUnmount(() => {
     margin-bottom: 1.5rem;
     transition: background 0.2s;
 }
-
-/* .new-post-card:hover {
-    background: #f9f9f9;
-} */
 
 .new-post-input {
     flex: 1;
@@ -181,20 +209,30 @@ onBeforeUnmount(() => {
 
 .sentinel {
     height: 1px;
-    /* 你可以用背景色暫時 debug： background: red; */
-    /* background: red; */
 }
 
 /* 載入中 / 沒有更多貼文 */
-.loading,
-.no-more {
+.loading {
     text-align: center;
     padding: 1rem;
     font-size: 0.9rem;
     color: #666;
+    opacity: 0;
+    /* 初始時設定為完全透明 */
+    transition: opacity 0.3s ease-in-out;
+    /* 添加一個 0.3 秒的淡入淡出效果 */
+}
+
+/* 當 postStore.isLoading 為 true 時，添加一個 active 類名來改變 opacity */
+.loading.active {
+    opacity: 1;
+    /* 載入時設定為完全不透明 */
 }
 
 .no-more {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.9rem;
     color: #999;
 }
 </style>

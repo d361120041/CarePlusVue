@@ -9,7 +9,7 @@
         <aside class="sidebar sidebar-filter">
             <!-- 類別篩選 -->
             <section class="filter-section">
-                <h4>貼文分類</h4>
+                <h4 class="filter-title">貼文分類</h4>
                 <div class="categories">
                     <button v-for="cat in categoryStore.categories" :key="cat.id"
                         @click="categoryStore.toggleCategory(cat.id)" :class="{
@@ -23,7 +23,7 @@
 
             <!-- 主題篩選 -->
             <section class=" filter-section">
-                <h4>貼文主題</h4>
+                <h4 class="filter-title">貼文主題</h4>
                 <div class="topics">
                     <button v-for="top in topicStore.topics" :key="top.id" @click="topicStore.toggleTopic(top.id)"
                         :class="['category-btn', { active: topicStore.selectedIds.includes(top.id) }]">
@@ -67,7 +67,7 @@ import { useTopicStore } from '@/daniel/stores/topics.js'
 import myAxios from '@/plugins/axios.js'
 import PostMain from '@/daniel/components/post/PostMain.vue'
 import GlobalBanner from '@/components/GlobalBanner.vue'
-import homeBannerImg from '@/assets/images/GlobalBanner/old-senior-asian-friends-retired-people-hapiness-positive-laugh-smile-conversation-together-living-room-nursing-home-seniors-participating-group-activities-adult-daycare-center.jpg'
+import homeBannerImg from '@/assets/images/GlobalBanner/old-senior-asian-friends-retired-people-hapiness-positive-laugh-smile-conversation-together-living-room-nursing-home-seniors-participating-group-activities-adult-daycare-center.webp'
 
 const categoryStore = useCategoryStore()
 const topicStore = useTopicStore()
@@ -101,63 +101,78 @@ onMounted(async () => {
 .social-layout {
     display: grid;
     grid-template-columns: 1fr minmax(300px, 2fr) 1fr;
-    gap: 1rem;
+    gap: var(--space-md);
     position: relative;
-    /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    background: linear-gradient(135deg,
-            rgba(77, 182, 172, 0.15) 0%,
-            rgba(255, 255, 255, 0.8) 100%); */
+    padding: var(--space-md);
+    background-color: var(--color-bg-page);
 }
 
 main {
-    border-radius: 8px;
-    /* padding: 1rem; */
-    margin: 1rem;
+    border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    background: linear-gradient(135deg,
-            rgba(77, 182, 172, 0.15) 0%,
-            rgba(255, 255, 255, 0.8) 100%); */
-    /* color: #333333; */
+    gap: var(--space-md);
 }
 
 /* 共用側欄樣式 */
 .sidebar {
-    border-radius: 8px;
-    padding: 1rem;
-    margin: 1rem;
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    margin: var(--space-md);
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    background: linear-gradient(135deg,
-            rgba(77, 182, 172, 0.05) 0%,
-            rgba(255, 255, 255, 0.9) 100%);
-    box-shadow:
-        0 4px 6px rgba(0, 0, 0, 0.05),
-        0 1px 3px rgba(0, 0, 0, 0.1);
-    color: #333333;
+    gap: var(--space-md);
+    background: var(--color-bg-surface);
+    box-shadow: var(--shadow-md);
+    color: var(--color-text-tertiary);
+
+    position: sticky;
+    top: 75px;
+    align-self: start;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+/* 針對 WebKit 瀏覽器的捲軸樣式 */
+.sidebar::-webkit-scrollbar {
+    width: 8px; /* 設定捲軸寬度 */
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent; /* 設定捲軸軌道背景透明 */
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.1); /* 設定捲軸滑塊初始顏色，較淡 */
+    border-radius: 4px;
+}
+
+.sidebar:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3); /* 滑鼠懸停時滑塊顏色，更明顯 */
 }
 
 .widget-title,
-.filter-section h4 {
-    font-size: 1.5rem;
-    font-weight: bold;
+.filter-title {
+    /* font-weight: var(--font-weight-bold); */
     text-align: center;
-    margin-bottom: 0.5rem;
-    color: #333333;
-    border-bottom: 2px solid #333333;
-    padding-bottom: 0.25rem;
+    border-bottom: 2px solid var(--color-primary);
+    padding-bottom: var(--space-xxs);
+    color: var(--color-text-tertiary);
+    
+    /* background: linear-gradient(to right, var(--color-primary), var(--color-tertiary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text; */
 }
 
 .filter-section,
 .widget {
-    background: #FFFFFF;
-    border: 1px solid #EEEEEE;
-    border-radius: 1.2rem;
-    margin-bottom: 1rem;
-    padding: 0.75rem;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-md);
+    padding: var(--space-md);
+    box-shadow: var(--shadow-sm);
 }
 
 .categories,
@@ -165,69 +180,83 @@ main {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    gap: var(--space-xs);
+    margin: 1rem 0;
 }
 
 .category-btn {
-    padding: 0.3rem 0.6rem;
-    margin: 0.3rem;
-    border: 2px solid #3e9bdc;
-    border-radius: 6px;
+    padding: var(--space-xxs) var(--space-sm);
+    border: 2px solid #CCC;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    font-size: 1rem;
-    background: #fff;
-    color: #3e9bdc;
+    transition: var(--transition-medium);
+    font-size: var(--font-size-sm);
+    background: var(--color-bg-card);
+    color: var(--color-text-muted);
     will-change: transform, box-shadow;
 }
 
-.category-btn:hover,
-.category-btn.active {
-    background: #3e9bdc;
-    color: #FFFFFF;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.category-btn:hover {
+    background: var(--color-btn-primary-bg);
+    color: var(--color-btn-primary-text);
+    /* transform: translateY(2px); */
+    box-shadow: var(--shadow-md);
 }
 
 .category-btn.active {
-    background: #3e9bdc;
-    color: #fff;
-    border-color: #3e9bdc;
-    transform: scale(1.05);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    /* transform: scale(1.05); */
+    background: var(--color-btn-primary-bg-hover);
+    color: var(--color-btn-primary-text);
 }
 
-.widget-title {
-    background: linear-gradient(to right, #4db6ac, #3e9bdc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.category-btn.focus {
+    background: var(--color-btn-primary-bg);
+    color: var(--color-btn-primary-text);
 }
 
-/* 兩個 widget 之間加分隔線 */
+.widget-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.widget-list li {
+    padding: var(--space-xs) 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
 .widget-list a {
-    color: #333333;
+    color: var(--color-text-secondary);
     text-decoration: none;
+    transition: var(--transition-fast);
+    display: block;
+    padding: var(--space-xxs) var(--space-xs);
+    border-radius: var(--radius-sm);
 }
 
-.widget-list a:hover {
-    text-decoration: underline;
-    color: #333333;
-}
-
-.widget+.widget {
-    border-top: 1px solid #EEEEEE;
-    margin-top: 1rem;
-    padding-top: 1rem;
-}
-
-/* 響應式佈局調整 */
-@media (max-width: 768px) {
+@media (max-width: var(--breakpoint-md)) {
     .social-layout {
         grid-template-columns: 1fr;
         grid-template-areas:
-            "banner"
             "main"
             "sidebar-filter"
             "sidebar-info";
+        gap: var(--space-sm);
+        padding: var(--space-sm);
+    }
+
+    .sidebar,
+    main {
+        margin: var(--space-sm);
+    }
+}
+
+/* 平板大小的調整 */
+@media (min-width: calc(var(--breakpoint-md) + 1px)) and (max-width: var(--breakpoint-lg)) {
+    .social-layout {
+        grid-template-columns: 1fr 2fr;
+        grid-template-areas:
+            "sidebar-filter main"
+            "sidebar-info main";
     }
 }
 </style>

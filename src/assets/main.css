@@ -48,7 +48,7 @@ footer {
 main {
   flex: 1; /* 撐滿剩餘空間，實現黏性 footer */
   /* padding: 1.5rem; */
-  overflow-y: auto;
+  /* overflow-y: auto; */
 }
 
 /* 4. 全站連結預設 */
