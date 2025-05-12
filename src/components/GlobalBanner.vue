@@ -21,8 +21,6 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
-
 // 預設圖片：牽手圖
 import defaultImg from '@/assets/images/GlobalBanner/nurse-holding-senior-man-s-hands-sympathy.jpg'
 

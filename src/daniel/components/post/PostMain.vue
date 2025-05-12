@@ -26,7 +26,7 @@
 
         <!-- 沒有更多貼文 提示 -->
         <div v-if="!postStore.hasMore && !postStore.isLoading" class="no-more">
-            沒有更多貼文
+            沒有貼文囉！
         </div>
 
         <!-- 新增與編輯 Modal -->
