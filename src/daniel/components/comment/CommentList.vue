@@ -30,10 +30,10 @@ onMounted(reloadComments)
 
 <style scoped>
 .comment-section {
-    margin-top: 1.5rem;
-    padding: 1rem;
+    /* margin-top: 1.5rem; */
+    /* padding: 1rem; */
     background: #fafafa;
-    border-left: 4px solid #e0e0e0;
+    /* border-left: 4px solid #e0e0e0; */
     border-radius: 4px;
 }
 

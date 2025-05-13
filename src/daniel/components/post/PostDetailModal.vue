@@ -48,18 +48,20 @@
                 </button>
                 <button class="action-btn"> 💬 留言</button>
                 <button class="action-btn" @click="sharePost">
-                    🔗 分享 ({{ shareCount  }})
+                    🔗 分享 ({{ shareCount }})
                 </button>
             </div>
 
             <!-- 留言列表 -->
             <CommentList ref="commentList" :postId="post.postId" class="comment-list" />
+        </div>
 
+        <template #footer>
             <!-- 留言表單 -->
             <div class="comment-form-wrapper">
                 <CommentForm :postId="post.postId" @added="onCommentAdded" />
             </div>
-        </div>
+        </template>
     </BaseModal>
 </template>
 
@@ -178,7 +180,7 @@ function onCommentAdded() {
 .post-detail {
     /* 讓裡面 sticky 生效 */
     max-height: 70vh;
-    overflow-y: auto;
+    /* overflow-y: auto; */
     position: relative;
 }
 
@@ -309,14 +311,14 @@ function onCommentAdded() {
 
 /* 黏底表單 */
 .comment-form-wrapper {
-    position: sticky;
-    bottom: 0;
-    background: #fff;
+    /* position: sticky; */
+    /* bottom: 0; */
+    /* background: #fff; */
     /* 遮住後面的內容 */
     padding: 0.75rem 1rem;
     /* 依表單內部間距調整 */
-    border-top: 1px solid #eee;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    /* border-top: 1px solid #eee; */
+    /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); */
     z-index: 10;
 }
 </style>

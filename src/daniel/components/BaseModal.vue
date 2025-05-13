@@ -93,7 +93,6 @@ const emit = defineEmits(['close'])
     background: #fff;
 }
 
-.post-modal-footer {
-    padding: 1rem;
-}
+/* .post-modal-footer {
+} */
 </style>

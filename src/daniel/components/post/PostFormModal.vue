@@ -35,7 +35,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" @click="nextStep" :disabled="!canProceedToContent"
-                        class="btn-tertiary btn">下一步</button>
+                    class="btn-tertiary btn">下一步</button>
                 </div>
             </div>
 

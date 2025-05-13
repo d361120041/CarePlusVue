@@ -106,7 +106,7 @@ onMounted(() => {
 <style scoped>
 .comment-item {
     background: #fff;
-    border: 1px solid #eee;
+    /* border: 1px solid #eee; */
     border-radius: 4px;
     padding: 0.75rem;
     margin-bottom: 1rem;
