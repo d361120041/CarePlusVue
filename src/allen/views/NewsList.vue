@@ -38,12 +38,25 @@
 
         <!-- 搜尋按鈕 -->
         <button @click="handleSearch" class="search-btn w-full">🔍 搜尋</button>
+          </div>
+
+          <div class="category-buttons flex gap-2 mb-4">
+        <button 
+          v-for="cat in categories" 
+          :key="cat.categoryId" 
+          @click="applyCategoryFilter(cat.categoryId)"
+          :class="['btn-outline-green', selectedCategory === cat.categoryId ? 'btn-selected' : '']"
+        >
+          {{ cat.categoryName }}
+        </button>
+
+        <!-- 清除按鈕 -->
+        <button @click="clearCategory" class="btn-clear">X</button>
       </div>
 
       <!-- 搜尋摘要 -->
       <div v-if="hasSearched && summaryText" class="search-summary text-gray-700 mt-4">
         🔎 以下是 {{ summaryText }} 的搜尋結果
-        <button @click="clearSearch" class="clear-btn">取消篩選</button>
       </div>
 
       <NewsListSkeleton v-if="loading" />
@@ -274,15 +287,41 @@ const loadNews = async () => {
   }
 };
 
+const selectedCategory = ref(null);
+
+const applyCategoryFilter = (categoryId) => {
+  if (selectedCategory.value === categoryId) {
+    selectedCategory.value = null;
+    search.value.categoryId = '';
+  } else {
+    selectedCategory.value = categoryId;
+    search.value.categoryId = categoryId;
+  }
+
+  handleSearch();
+};
+
+const clearCategory = () => {
+  selectedCategory.value = null;
+  search.value.categoryId = '';
+  // ✅ 清除篩選條件後，重新執行 `handleSearch`
+  handleSearch();
+};
+
 const handleSearch = () => {
   hasSearched.value = true;
   page.value = 0;
 
-  // ✅ 將搜尋條件保存至 searchSnapshot
+  // ✅ 更新 `searchSnapshot`，確保按鈕狀態被正確監測
   searchSnapshot.value = { ...search.value };
-  console.log("當前排序條件：", searchSnapshot.value.sortBy);  // ✅ 檢查排序條件
+
+  // ✅ 更新快捷按鈕狀態
+  selectedCategory.value = search.value.categoryId;
+
   loadNews();
 };
+
+
 
 const prevPage = () => {
   if (page.value > 0) {
@@ -312,7 +351,9 @@ const fetchCategories = async () => {
 onMounted(() => {
   fetchCategories();
   loadNews();
+  console.log("初次加載 categories：", categories.value);
 });
+
 </script>
 
 <style scoped>
@@ -472,30 +513,37 @@ onMounted(() => {
   transform: none;
 }
 
-.clear-btn {
+.btn-outline-green {
+  color: var(--color-btn-primary-bg);
+  border: 1px solid var(--color-btn-primary-bg);
+  background-color: transparent;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-green:hover {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+}
+
+.btn-selected {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+}
+
+.btn-clear {
   background-color: var(--color-btn-secondary-bg);
   color: var(--color-btn-secondary-text);
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-btn-secondary-bg);
   cursor: pointer;
-  transition: background-color var(--transition-fast), transform var(--transition-fast);
-  border: none;
-  outline: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
 }
 
-.clear-btn:hover {
+.btn-clear:hover {
   background-color: var(--color-btn-secondary-bg-hover);
-  transform: translateY(-2px);
-}
-
-.clear-btn:active {
-  background-color: var(--color-btn-secondary-bg-hover);
-  transform: translateY(0);
+  color: #fff;
 }
 
 </style>
