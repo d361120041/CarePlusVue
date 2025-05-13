@@ -33,7 +33,7 @@ import AdminNewsDetail from "@/allen/views/AdminNewsDetail.vue";
 import AdminNewsPreview from "@/allen/views/AdminNewsPreview.vue";
 
 // ------------------ allen ------------------
-
+ 
 // ------------------ yuuhou ------------------
 import CaregiverLogin from "@/yuuhou/LoginCaregiver.vue";
 import CaregiverProfileView from "@/yuuhou/CaregiverProfileView.vue";
