@@ -67,7 +67,7 @@ import { useTopicStore } from '@/daniel/stores/topics.js'
 import myAxios from '@/plugins/axios.js'
 import PostMain from '@/daniel/components/post/PostMain.vue'
 import GlobalBanner from '@/components/GlobalBanner.vue'
-import homeBannerImg from '@/assets/images/GlobalBanner/old-senior-asian-friends-retired-people-hapiness-positive-laugh-smile-conversation-together-living-room-nursing-home-seniors-participating-group-activities-adult-daycare-center.webp'
+import homeBannerImg from '@/assets/images/GlobalBanner/old-senior-asian-friends-retired-people-hapiness-positive-laugh-smile-conversation.webp'
 
 const categoryStore = useCategoryStore()
 const topicStore = useTopicStore()
