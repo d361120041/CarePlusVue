@@ -12,7 +12,7 @@
 <script setup>
 import CourseList from '@/yuni/components/CourseList.vue'
 import GlobalBanner from '@/components/GlobalBanner.vue'
-import bannerImg from '@/assets/images/GlobalBanner/nurse-holding-senior-man-s-hands-sympathy.jpg'
+import bannerImg from '@/assets/images/GlobalBanner/nurse-holding-senior-man-s-hands-sympathy.webp'
 </script>
 
 <style scoped>
