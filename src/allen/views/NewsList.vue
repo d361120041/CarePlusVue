@@ -25,6 +25,16 @@
         <option value="month">30天內</option>
         <option value="year">365天內</option>
       </select>
+
+      <!-- 新增排序條件 -->
+      <select v-model="search.sortBy" class="border p-2 rounded w-1/4">
+        <option value="">排序條件</option>
+        <option value="publishAt">依發布日期</option>
+        <option value="viewCount">依瀏覽人數</option>
+        <option value="modifyAt">依最後修改日期</option>
+      </select>
+
+      <!-- 搜尋按鈕 -->
       <button @click="handleSearch" class="search-btn w-full">🔍 搜尋</button>
     </div>
 
@@ -91,7 +101,7 @@ const loading = ref(false);
 const defaultThumbnail = noImage;
 const hasSearched = ref(false);
 const searchSnapshot = ref({});
-const search = ref({keyword: '', categoryId: '', dateRange: '' });
+const search = ref({keyword: '', categoryId: '', dateRange: '', sortBy: ''});
 
 const formatDate = (date) => {
   if (typeof date === 'string') {
@@ -197,12 +207,24 @@ const summaryText = computed(() => {
   if (snap.dateRange && rangeMap[snap.dateRange]) {
     parts.push(`時間為「${rangeMap[snap.dateRange]}」`);
   }
+
+  // ✅ 排序條件顯示
+  const sortMap = {
+    publishAt: "依發布日期",
+    viewCount: "依瀏覽人數",
+    modifyAt: "依最後修改日期",
+  };
+
+  if (snap.sortBy && sortMap[snap.sortBy]) {
+    parts.push(`排序為「${sortMap[snap.sortBy]}」`);
+  }
+
   return parts.length ? parts.join('、') : '';
 });
 
 const clearSearch = () => {
   // ✅ 清空篩選條件
-  search.value = { keyword: '', categoryId: '', dateRange: '', status: '' };
+  search.value = { keyword: '', categoryId: '', dateRange: '', status: '', sortBy: ''};
   searchSnapshot.value = {}; // ✅ 清除摘要內容來源
   hasSearched.value = false;
   page.value = 0;
@@ -217,14 +239,31 @@ const loadNews = async () => {
     keyword: search.value.keyword || null,
     categoryId: search.value.categoryId || null,
     dateFrom: dateFrom || null,
-    dateTo: dateTo || null
+    dateTo: dateTo || null,
   };
 
+  // ✅ 將 sortBy 與 sortDirection 分離出來，並傳遞至 URL 查詢參數
+  const sortBy = search.value.sortBy || 'publishAt';
+  const sortDirection = "desc";
+
+  console.log("傳遞的排序參數：", sortBy, sortDirection);
+  console.log("API 請求 URL：", `/news/public/search?page=${page.value}&size=${size.value}&sortBy=${sortBy}&sortDirection=${sortDirection}`);
+
   try {
-    const res = await myAxios.post(`/news/public/search?page=${page.value}&size=${size.value}`, requestBody);
+    const res = await myAxios.post(
+      `/news/public/search?page=${page.value}&size=${size.value}&sortBy=${sortBy}&sortDirection=${sortDirection}`,
+      requestBody
+    );
+
+    console.log("API 返回數據：", res.data.content);
+
+    // ✅ 強制觸發 reactivity，避免 Vue 跳過更新
+    newsList.value = [];
     newsList.value = res.data.content;
+
     hasNextPage.value = !res.data.last;
     hasSearched.value = true;
+
   } catch (err) {
     console.error('載入新聞失敗', err);
   } finally {
@@ -236,8 +275,9 @@ const handleSearch = () => {
   hasSearched.value = true;
   page.value = 0;
 
-  // ✅ 直接覆蓋 searchSnapshot，避免累積
+  // ✅ 將搜尋條件保存至 searchSnapshot
   searchSnapshot.value = { ...search.value };
+  console.log("當前排序條件：", searchSnapshot.value.sortBy);  // ✅ 檢查排序條件
   loadNews();
 };
 
