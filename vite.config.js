@@ -24,6 +24,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/patient/, '/patient'),
       },
     },
+    allowedHosts: ['4226-1-160-3-119.ngrok-free.app'],  // ngrok
   },
 })
 

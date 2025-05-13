@@ -1,169 +1,367 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue';
+import { defineStore } from "pinia";
+import { ref, toRaw, isProxy } from "vue";
+import { useAuthStore } from "@/stores/auth";
 
-
-export const useAppointmentStore = defineStore('appointment', {
+export const useAppointmentStore = defineStore("appointment", {
   state: () => ({
     appointment: {
       userId: null,
-      caregiverId: null,
+      caregiverId: localStorage.getItem("caregiverId") || null,
       patientId: null,
-      patientInfo: {},
-      timeType: 'continuous',
+      timeType: "continuous",
       contractConfirmed: false,
-      status: 'Pending',
+      status: "Pending",
       totalPrice: null,
-      locationType: 'Home' // or 'Hospital'
+      locationType: "居家", // or '醫院'
+      patientInfo: {
+        name: "",
+        gender: "",
+      },
+      diseaseIds: [],
+      physicalIds: [],
+      serviceIds: [],
+      diseaseOther: "",
+      physicalOther: "",
+      serviceOther: "",
+
+      hospitalName: "",
+      hospitalAddress: "",
+      hospitalWardType: "一般病房",
+      hospitalWardNumber: "",
+      hospitalBedNumber: "",
+      hospitalDepartment: "",
+      hospitalTransportNote: "",
+      homeAddress: "",
+      homeTransportNote: "",
     },
 
     // 時間資料
     continuous: {
-      startDate: '',
-      startTime: '',
-      endDate: '',
-      endTime: ''
+      startDate: "",
+      startTime: "",
+      endDate: "",
+      endTime: "",
     },
+
     multi: {
       multi: {
-        startDate: '',
-        endDate: '',
-        repeatDays: { // 修改為物件
+        startDate: "",
+        endDate: "",
+        repeatDays: {
           monday: false,
           tuesday: false,
           wednesday: false,
           thursday: false,
           friday: false,
           saturday: false,
-          sunday: false
+          sunday: false,
         },
-        timeSlots: []  // 支援多個時段
+        timeSlots: [], // 支援多個時段
       },
     },
 
-    // 地點資料（分 hospital/home）
-    location: {
-      hospitalName: '',
-      hospitalAddress: '',
-      hospitalWardType: '一般病房',
-      hospitalWardNumber: '',
-      hospitalBedNumber: '',
-      hospitalDepartment: '',
-      hospitalTransportNote: '',
+    // 疾病、身體狀況、服務名稱映射
+    diseaseMap: {
+      1: "無",
+      2: "中風",
+      3: "肺炎",
+      4: "骨折",
+      5: "帕金森氏症",
+      6: "手術照顧",
+      7: "高血壓",
+      8: "糖尿病",
+      9: "洗腎",
+      10: "精神疾病",
+      11: "失智症",
+      12: "疥瘡或肺結核等傳染性疾病",
+      13: "抑鬱症",
+      14: "冠心病",
+      15: "慢性阻塞性氣管病",
+      16: "骨質疏鬆",
+      17: "腸胃道感染",
+      18: "其他",
+    },
 
-      homeAddress: '',
-      homeTransportNote: ''
-    }
+    physicalMap: {
+      0: "無",
+      1: "長期臥床",
+      2: "使用輔具",
+      3: "褥瘡、傷口",
+      4: "管路（鼻胃管、尿管、氣切管、引流管等）",
+      5: "腸造口/胃造口",
+      6: "自殘傾向",
+      7: "攻擊傾向",
+      8: "情緒低落",
+      9: "其他",
+    },
+
+    serviceMap: {
+      0: "無",
+      1: "協助進食、用藥（按醫囑給藥）",
+      2: "陪同外出或就醫",
+      3: "代購物品",
+      4: "身心靈陪伴及安全維護",
+      5: "備餐（限被照顧者及其伴侶）",
+      6: "環境整理、洗衣",
+      7: "翻身拍背、簡易肢體關節活動",
+      8: "身體清潔",
+      9: "大小便處理",
+      10: "協助移位",
+      11: "鼻胃管灌食",
+      12: "管路清潔照護",
+      13: "協助穿脫衣物",
+      14: "協助如廁",
+      15: "其他",
+    },
   }),
 
+  getters: {
+    // 回傳已選疾病名稱
+    selectedDiseaseNames(state) {
+      return state.appointment.diseaseIds.map(
+        (id) => state.diseaseMap[id] || "未知"
+      );
+    },
+
+    // 回傳已選身體狀況名稱
+    selectedPhysicalNames(state) {
+      return state.appointment.physicalIds.map(
+        (id) => state.physicalMap[id] || "未知"
+      );
+    },
+
+    // 回傳已選服務名稱
+    selectedServiceNames(state) {
+      return state.appointment.serviceIds.map(
+        (id) => state.serviceMap[id] || "未知"
+      );
+    },
+  },
+
   actions: {
+    syncUserId() {
+      const auth = useAuthStore();
+      if (auth.isAuthenticated && auth.user) {
+        this.appointment.userId = auth.user.userId;
+        console.log("User ID 設置成功:", this.appointment.userId);
+      } else {
+        this.appointment.userId = null;
+        console.warn("使用者未登入，無法設置 userId");
+      }
+      this.saveToLocalStorage();
+    },
 
     setPatientInfo(patientData) {
-      this.appointment.patientId = patientData.patientId;
-      this.appointment.patientInfo = { 
-        name: patientData.name || '',
-        gender: patientData.gender === 1 ? '男' : '女',
-        diseases: patientData.diseases || [],
-        diseaseOther: patientData.diseaseOther || '',
-        physicalConditions: patientData.physicalConditions || [],
-        physicalOther: patientData.physicalOther || '',
-        services: patientData.services || [],
-        serviceOther: patientData.serviceOther || ''
+      const plainData = toRaw(patientData);
+
+      // 設置基本病患資訊
+      this.appointment.patientId = plainData.patientId || null;
+      this.appointment.patientInfo = {
+        name: plainData.name || "",
+        gender:
+          plainData.gender === 1 || plainData.gender === "1" ? "男" : "女",
       };
+
+      this.saveToLocalStorage();
+      console.log("Patient info 設置成功:", this.appointment.patientInfo);
     },
-    
+
+    setBasicDetails({ diseases, physicalConditions, services }) {
+      this.appointment.diseaseIds = Array.isArray(diseases)
+        ? diseases.map((d) => (typeof d === "object" ? d.id : d))
+        : [];
+      this.appointment.physicalIds = Array.isArray(physicalConditions)
+        ? physicalConditions.map((p) => (typeof p === "object" ? p.id : p))
+        : [];
+      this.appointment.serviceIds = Array.isArray(services)
+        ? services.map((s) => (typeof s === "object" ? s.id : s))
+        : [];
+
+      if (
+        this.appointment.diseaseIds.length === 0 ||
+        this.appointment.physicalIds.length === 0 ||
+        this.appointment.serviceIds.length === 0 ||
+        !this.appointment.patientId
+      ) {
+        console.warn(
+          "請確保 patientId, diseaseIds, physicalIds, serviceIds 不為空"
+        );
+        return;
+      }
+
+      this.saveToLocalStorage();
+      console.log("基本資料設置成功:", {
+        diseases: this.appointment.diseaseIds,
+        physicalConditions: this.appointment.physicalIds,
+        services: this.appointment.serviceIds,
+      });
+    },
+
     setAppointmentBase(payload) {
-      this.appointment = { ...this.appointment, ...payload }
+      this.appointment = { ...this.appointment, ...payload };
+      this.saveToLocalStorage();
     },
 
     setCaregiverId(id) {
       this.appointment.caregiverId = id;
+      localStorage.setItem("caregiverId", id);
+      this.saveToLocalStorage();
     },
 
     setTime(type, payload) {
       this.appointment.timeType = type;
-      if (type === 'continuous') {
+      if (type === "continuous") {
         this.continuous = { ...payload };
-      } else if (type === 'multi') {
+      } else if (type === "multi") {
         this.multi = { ...payload };
       }
+      this.saveToLocalStorage();
     },
 
-    setLocationType(type) {
-      this.appointment.locationType = type
-    },
-
+    // 設定醫院位置
     setHospitalLocation(payload) {
-      this.location = { ...this.location, ...payload }
+      Object.assign(this.appointment, {
+        hospitalName: payload.hospitalName || "",
+        hospitalAddress: payload.hospitalAddress || "",
+        hospitalWardType: payload.hospitalWardType || "一般病房",
+        hospitalWardNumber: payload.hospitalWardNumber || "",
+        hospitalBedNumber: payload.hospitalBedNumber || "",
+        hospitalDepartment: payload.hospitalDepartment || "",
+        hospitalTransportNote: payload.hospitalTransportNote || "",
+      });
+      this.saveToLocalStorage();
     },
 
+    // 設定居家位置
     setHomeLocation(payload) {
-      this.location = { ...this.location, ...payload }
+      Object.assign(this.appointment, {
+        homeAddress: payload.homeAddress || "",
+        homeTransportNote: payload.homeTransportNote || "",
+      });
+      this.saveToLocalStorage();
     },
 
     setTotalPrice(price) {
-      this.appointment.totalPrice = price
+      this.appointment.totalPrice = price;
+      this.saveToLocalStorage();
     },
 
     resetAll() {
-      this.$reset()
+      this.$reset();
+      this.saveToLocalStorage();
     },
 
+    // AppointmentStore.js
+
     saveToLocalStorage() {
-      localStorage.setItem('appointmentData', JSON.stringify({
-        appointment: this.appointment,
-        continuous: this.continuous,
-        multi: this.multi,
-        location: this.location
-      }))
+      try {
+        const data = JSON.stringify({
+          appointment: toRaw(this.appointment),
+          continuous: this.continuous,
+          multi: this.multi,
+        });
+        localStorage.setItem("appointmentData", data);
+        console.log("LocalStorage 設置成功:", data);
+      } catch (error) {
+        console.error("LocalStorage 儲存失敗:", error);
+      }
     },
 
     loadFromLocalStorage() {
-      const raw = localStorage.getItem('appointmentData')
+      const raw = localStorage.getItem("appointmentData");
       if (raw) {
-        const parsed = JSON.parse(raw)
-        this.appointment = parsed.appointment || this.appointment
-        this.continuous = parsed.continuous || this.continuous
-        this.multi = parsed.multi || this.multi
-        this.location = parsed.location || this.location
+        const parsed = JSON.parse(raw);
+        this.appointment = {
+          ...this.appointment,
+          ...parsed.appointment,
+          diseaseIds: parsed.appointment.diseaseIds || [],
+          physicalIds: parsed.appointment.physicalIds || [],
+          serviceIds: parsed.appointment.serviceIds || [],
+        };
+        this.continuous = parsed.continuous || this.continuous;
+        this.multi = parsed.multi || this.multi;
       }
+      this.syncUserId();
     },
 
     async submitAppointment() {
-      const appointmentData = {
-        appointment: { ...this.appointment },
-        diseases: [], // 從您的 Vue 組件獲取
-        physicals: [], // 從您的 Vue 組件獲取
-        services: [], // 從您的 Vue 組件獲取
-        continuous: null,
-        multi: null
-      };
-
-      if (this.appointment.timeType === 'continuous') {
-        appointmentData.continuous = {
-          startTime: `${this.continuous.startDate}T${this.continuous.startTime}:00`,
-          endTime: `${this.continuous.endDate}T${this.continuous.endTime}:00`
-        };
-      } else if (this.appointment.timeType === 'multi') {
-        appointmentData.multi = {
-          startDate: this.multi.startDate,
-          endDate: this.multi.endDate,
-          appointmentTimeMulti: this.multi.timeSlots.map(slot => ({
-            startTime: slot.startTime,
-            endTime: slot.endTime
-          }))
-        };
-      }
-
       try {
-        const response = await fetch('/api/appointment/full', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(appointmentData)
-        });
-        // ... 處理回應
+        const appointmentData = {
+          appointment: {
+            ...this.appointment,
+            locationType:
+              this.appointment.locationType === "居家" ? "居家" : "醫院",
+          },
+          continuous: null,
+          multi: null,
+          diseases: this.appointment.diseaseIds.map((id) => ({
+            diseaseId: id,
+          })),
+          physicals: this.appointment.physicalIds.map((id) => ({
+            physicalId: id,
+          })),
+          services: this.appointment.serviceIds.map((id) => ({
+            serviceId: id,
+          })),
+        };
+
+        // 設置時間資料
+        if (
+          this.appointment.timeType === "continuous" &&
+          this.continuous.startDate &&
+          this.continuous.startTime
+        ) {
+          appointmentData.continuous = {
+            startTime: `${this.continuous.startDate}T${this.continuous.startTime}:00`,
+            endTime: `${this.continuous.endDate}T${this.continuous.endTime}:00`,
+          };
+        } else if (this.appointment.timeType === "multi") {
+          appointmentData.multi = {
+            startDate: this.multi.multi.startDate,
+            endDate: this.multi.multi.endDate,
+            dailyStartTime:
+              this.multi.multi.timeSlots[0].startTime || "00:00:00",
+            dailyEndTime: this.multi.multi.timeSlots[0].endTime || "23:59:59",
+            ...this.multi.multi.repeatDays,
+          };
+        }
+
+        console.log("送出資料:", appointmentData);
+
+        const response = await fetch(
+          "http://localhost:8082/api/appointment/full",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(appointmentData),
+          }
+        );
+
+        const result = await response.json();
+        if (response.ok) {
+          console.log("Appointment created successfully:", result);
+
+           // ✅ 儲存 appointmentId 和 userId
+           this.appointment.appointmentId = result.appointmentId;
+           this.appointment.userId = result.userId;
+           this.appointment.totalPrice = result.totalPrice;
+
+           return result.appointmentId;
+        } else {
+          console.error("Appointment creation failed:", result);
+          alert("預約建立失敗，請稍後再試");
+          throw new Error("Appointment creation failed");
+        }
       } catch (error) {
-        console.error('Error creating appointment:', error);
+        console.error("Error creating appointment:", error);
+        alert("發生錯誤，請稍後再試");
+        throw error;
       }
     },
-  }
-})
+  },
+
+  // ✅ 確保初始化時自動加載
+  created() {
+    this.loadFromLocalStorage();
+  },
+});

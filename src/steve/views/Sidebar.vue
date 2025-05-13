@@ -35,6 +35,10 @@
     >
       我的貼文
     </router-link>
+    <router-link to="/user-center/orders" class="sidebar-button" active-class="active">
+      我的預約
+    </router-link>
+    
   </nav>
 </template>
 

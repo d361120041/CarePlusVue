@@ -123,7 +123,7 @@
             :disabled="!isFormComplete"
             @click="submitForm"
           >
-            確認並繼續
+            下一步：確認被照顧者資訊
           </button>
         </div>
       </div>
