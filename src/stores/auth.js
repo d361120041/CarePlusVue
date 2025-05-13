@@ -5,7 +5,8 @@ import axios from "@/plugins/axios";
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     isAuthenticated: false,
-    user: null, // ✅ 存整個 user 物件
+    user: null,
+    userPhotoUrl: null, // ✅ 加入照片 URL
     storeReady: false,
   }),
   actions: {
@@ -13,24 +14,40 @@ export const useAuthStore = defineStore("auth", {
       try {
         const res = await axios.get("/user/profile");
         this.isAuthenticated = true;
-        this.user = res.data; // ✅ 存完整 user 資料
+        this.user = res.data;
+        await this.fetchUserPhoto(); // ✅ 登入時順便抓頭貼
       } catch {
         this.isAuthenticated = false;
         this.user = null;
+        this.userPhotoUrl = null;
+      }
+    },
+    async fetchUserPhoto() {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      try {
+        const res = await fetch(`${baseUrl}/user/profile-picture`, {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const blob = await res.blob();
+          this.userPhotoUrl = URL.createObjectURL(blob); // ✅ 存到 state
+        } else {
+          this.userPhotoUrl = null;
+        }
+      } catch {
+        this.userPhotoUrl = null;
       }
     },
     async logout() {
       try {
         await axios.post("/user/logout");
-      } catch {
-        // 忽略錯誤
-      } finally {
-        this.isAuthenticated = false;
-        this.user = null;
-      }
+      } catch {}
+      this.isAuthenticated = false;
+      this.user = null;
+      this.userPhotoUrl = null;
     },
   },
-  persist: true, // ✅ 開啟 persist，讓 user 資料刷新後還存在
+  persist: true,
 });
 
 //下面寫的就是發送通行證以及驗證的過程

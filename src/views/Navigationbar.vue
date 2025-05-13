@@ -99,21 +99,22 @@ import { useCaregiverAuth } from "@/stores/useCaregiverAuth";
 import { useAuthStore } from "@/stores/auth";
 
 const auth = useAuthStore();
+const imageUrl = computed(() => auth.userPhotoUrl);
 const isUserLogin = computed(() => auth.isAuthenticated);
-const imageUrl = ref(null);
-const fetchImage = async () => {
-  try {
-    const res = await fetch("http://192.168.66.54:8082/user/profile-picture", {
-      credentials: "include",
-    });
-    if (res.ok) {
-      const blob = await res.blob();
-      imageUrl.value = URL.createObjectURL(blob);
-    }
-  } catch (e) {
-    imageUrl.value = null;
-  }
-};
+// const imageUrl = ref(null);
+// const fetchImage = async () => {
+//   try {
+//     const res = await fetch("http://192.168.66.54:8082/user/profile-picture", {
+//       credentials: "include",
+//     });
+//     if (res.ok) {
+//       const blob = await res.blob();
+//       imageUrl.value = URL.createObjectURL(blob);
+//     }
+//   } catch (e) {
+//     imageUrl.value = null;
+//   }
+// };
 const goToCaregiverPage = () => {
   router.push("/caregiver"); // ⬅️ 改成你想導向的網址
 };
@@ -129,9 +130,9 @@ const route = useRoute();
 // 使用者登入狀態每次進入都確認（照顧者用 restoreLogin 不需要）
 onMounted(() => {
   auth.checkAuth?.();
-  if (auth.isAuthenticated) {
-    fetchImage();
-  }
+  // if (auth.isAuthenticated) {
+  //   fetchImage();
+  // }
 
   caregiver.restoreLogin(); // ✅ 用 Pinia 的方法處理登入狀態與頭貼
 });
@@ -184,7 +185,7 @@ const caregiverLogout = () => {
   display: flex;
   justify-content: space-between;
   align-items: center; /* ✅ 修改：原本是 align-items: stretch，改成 center 讓內容垂直置中 */
-  background-color: #a0d8d2;
+  background-color: #4db6ac;
   padding: 0;
   position: relative;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
