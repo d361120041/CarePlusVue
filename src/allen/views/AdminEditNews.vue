@@ -12,14 +12,20 @@
       <!-- 分類 -->
       <div class="mb-4">
         <label class="block font-semibold mb-1">分類</label>
-        <select v-model="news.category.categoryId" class="w-full border p-2 rounded">
+        <select v-model="news.category.categoryId" class="w-full border p-2 rounded" @change="handleCategoryChange">
           <option disabled value="">請選擇分類</option>
           <option v-for="cat in categories" :key="cat.categoryId" :value="cat.categoryId">
             {{ cat.categoryName }}
           </option>
+          <option value="add">新增分類...</option>
         </select>
-      </div>
 
+        <!-- 刪除分類按鈕 -->
+        <button @click.prevent="handleDeleteCategory"  class="text-red-500 hover:text-red-700">
+          🗑️
+        </button>
+      </div>
+  
 
       <!-- 縮圖 -->
       <div class="mb-4">
@@ -29,7 +35,7 @@
           <button type="button" class="btn-remove-image" @click="removeImage">不使用圖片</button>
         </div>
         <div class="mt-2 flex items-center gap-4">
-          <img :src="previewUrl" alt="預覽縮圖" class="h-32 object-cover rounded" />
+          <img :src="previewUrl" alt="預覽縮圖" class="h-32 object-cover rounded" @error="handleImageError" />
         </div>
       </div>
 
@@ -73,37 +79,165 @@ const news = ref({
   title: '',
   content: '',
   category: { categoryId: '' },
-  thumbnail: ''
+  thumbnail: '',
+  status: 0 // 預設為 0 (草稿狀態)
 });
 const categories = ref([]);
 const previewUrl = ref(null);
 const isDirty = ref(false);
 const quillRef = ref(null);
 
+//新增分類
+const handleCategoryChange = async (e) => {
+  const selectedValue = e.target.value;
+
+  // 如果選擇的是 "新增分類"
+  if (selectedValue === "add") {
+    await addCategory();
+    // 重設下拉選單
+    news.value.category.categoryId = '';
+  }
+};
+
+//刪除分類
+const handleDeleteCategory = async () => {
+  if (!news.value.category.categoryId) {
+    Swal.fire({
+      icon: 'warning',
+      title: '請先選擇要刪除的分類！',
+      confirmButtonText: '確定'
+    });
+    return;
+  }
+
+  const selectedCategory = categories.value.find(cat => cat.categoryId === news.value.category.categoryId);
+
+  if (!selectedCategory) {
+    Swal.fire({
+      icon: 'warning',
+      title: '無法找到選擇的分類！',
+      confirmButtonText: '確定'
+    });
+    return;
+  }
+
+  const { isConfirmed } = await Swal.fire({
+    title: `確定要刪除分類「${selectedCategory.categoryName}」嗎？`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: '刪除',
+    cancelButtonText: '取消',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6'
+  });
+
+  if (isConfirmed) {
+    try {
+      const response = await myAxios.delete(`/news/category/${selectedCategory.categoryId}`);
+
+      Swal.fire({
+        icon: 'success',
+        title: `分類「${selectedCategory.categoryName}」已刪除！`,
+        confirmButtonText: '確定'
+      });
+
+      // 重新加載分類列表
+      await fetchCategories();
+      // 重置分類選擇
+      news.value.category.categoryId = '';
+
+    } catch (err) {
+      console.error('刪除分類失敗：', err);
+
+      const errorMessage = err.response?.data?.message || '刪除分類失敗，請稍後再試';
+
+      Swal.fire({
+        icon: 'error',
+        title: errorMessage,
+        confirmButtonText: '確定'
+      });
+    }
+  }
+};
+
 const fetchCategories = async () => {
-  const res = await myAxios.get('/news/category');
-  categories.value = res.data;
+  try {
+    const res = await myAxios.get('/news/category');
+    categories.value = res.data;
+  } catch (err) {
+    console.error('載入分類失敗：', err);
+  }
+};
+
+const addCategory = async () => {
+  try {
+    const { value: categoryName } = await Swal.fire({
+      title: '新增分類',
+      input: 'text',
+      inputLabel: '輸入分類名稱',
+      inputPlaceholder: '請輸入分類名稱',
+      confirmButtonText: '新增',
+      showCancelButton: true,
+      cancelButtonText: '取消',
+      inputValidator: (value) => {
+        if (!value.trim()) {
+          return '分類名稱不得為空！';
+        }
+      }
+    });
+
+    if (categoryName) {
+      // 發送新增分類請求
+      const res = await myAxios.post('/news/category', { categoryName: categoryName.trim() });
+
+      // 提示成功訊息
+      Swal.fire({
+        icon: 'success',
+        title: `分類「${res.data.categoryName}」新增成功！`,
+        confirmButtonText: '確定'
+      });
+
+      // 重新加載分類列表
+      await fetchCategories();
+    }
+  } catch (err) {
+    console.error('新增分類失敗：', err);
+    Swal.fire({
+      icon: 'error',
+      title: '新增分類失敗，請稍後再試',
+      confirmButtonText: '確定'
+    });
+  }
 };
 
 const fetchNews = async () => {
   try {
     const res = await myAxios.get(`/news/admin/${newsId}`);
-    news.value = {
-      title: res.data.title,
-      content: res.data.content,
-      thumbnail: res.data.thumbnail || '',
-      category: res.data.category || { categoryId: '' }
-    };
-    previewUrl.value = news.value.thumbnail ? `http://localhost:8082${res.data.thumbnail}` : '/src/assets/allen/no-image.jpg';
+    news.value = res.data;
+
+    const thumbnailPath = res.data.thumbnail;
+
+     // 檢查是否為完整 URL 或相對路徑
+    previewUrl.value = thumbnailPath 
+      ? thumbnailPath.startsWith('http')
+        ? thumbnailPath 
+        : `http://localhost:8082${thumbnailPath}`
+      : NO_IMAGE_URL;
+
   } catch (error) {
     alert('載入新聞失敗，可能不存在該筆資料');
     router.push('/admin/news');
   }
 };
 
+//圖片相關控制
+
+const NO_IMAGE_URL = 'http://localhost:8082/uploads/news_thumbnails/no-image.jpg';
+
+//刪除圖片
 const removeImage = () => {
   news.value.thumbnail = '';
-  previewUrl.value = '/src/assets/allen/no-image.jpg';
+  previewUrl.value = NO_IMAGE_URL;
   isDirty.value = true;
 };
 
@@ -135,6 +269,16 @@ const handleSubmit = async () => {
       });
       return;
     }
+    
+    // 驗證標題字數限制
+    if (news.value.title.trim().length > 30) {
+      Swal.fire({
+        icon: 'warning',
+        title: '標題不得超過30字！',
+        confirmButtonText: '確定'
+      });
+      return;
+    }
 
     // 驗證分類
     if (!news.value.category.categoryId) {
@@ -161,10 +305,16 @@ const handleSubmit = async () => {
       return;
     }
 
-    // 如果沒有縮圖，使用預設圖片
-    if (!news.value.thumbnail) {
-      news.value.thumbnail = '/assets/allen/no-image.jpg';
-    }
+    // ✅ 確保 `status` 為 0 (草稿狀態)
+    news.value.status = 0;
+
+    // 如果沒有縮圖，設置為 NO_IMAGE_URL
+    news.value.thumbnail = news.value.thumbnail ? news.value.thumbnail : NO_IMAGE_URL;
+
+  // 圖片加載錯誤處理
+  const handleImageError = (event) => {
+    event.target.src = NO_IMAGE_URL;
+  };
 
     // 儲存新聞
     if (isEditMode) {

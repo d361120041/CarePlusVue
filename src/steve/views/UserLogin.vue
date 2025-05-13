@@ -96,7 +96,7 @@ button {
 }
 .extra-buttons .register {
   gap: 1rem;
-  background-color: #007bff;
+  background-color: #5299e6;
 }
 .extra-buttons .forgot {
   gap: 1rem;

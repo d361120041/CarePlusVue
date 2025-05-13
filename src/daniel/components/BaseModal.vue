@@ -15,7 +15,11 @@
                 <section class="modal-body">
                     <slot />
                 </section>
-
+                
+                <!-- 可擴充 footer slot -->
+                <footer class="modal-footer">
+                    <slot name="footer" />
+                </footer>
             </div>
         </div>
     </Teleport>
@@ -32,42 +36,65 @@ const emit = defineEmits(['close'])
 <style scoped>
 .modal-backdrop {
     position: fixed;
-    /* top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0; */
-    inset: 0; /* top/right/bottom/left 全部 0 */
-    background: rgba(0, 0, 0, 0.5);
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 1rem;
     z-index: 1000;
 }
 
 .modal-content {
-    background: white;
-    border-radius: 8px;
+    background: #ffffff;
+    border-radius: 12px;
     width: 500px;
     max-width: 95%;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .modal-header {
+    background: #f7f7f7;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid #eee;
 }
 
-.modal-body {
-    padding: 1rem;
+.modal-header h3 {
+    flex: 1;
+    text-align: center;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
 }
 
 .close-btn {
     background: none;
     border: none;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     cursor: pointer;
+    padding: 0.25rem;
+    transition: transform 0.2s ease;
+}
+
+.close-btn:hover {
+    color: #d9534f;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    background: #fff;
+    flex: 1;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    background: #f9f9f9;
+    border-top: 1px solid #e0e0e0;
+    text-align: right;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="navbar">
     <router-link to="/" class="logo">
-      <img src="@/assets/logo/logo_0508.png" alt="網站 Logo" />
+      <img src="@/assets/logo/care+_logo.png" alt="網站 Logo" />
     </router-link>
     <ul>
       <li>
@@ -33,11 +33,6 @@
       <template v-if="isUserLogin">
         <div class="user-info">
           <!-- ✅ 純文字歡迎語 -->
-          <span class="welcome-text" v-if="auth.user"
-            >歡迎：{{ auth.user.userName }}</span
-          >
-
-          <!-- ✅ 點擊頭像導向個人資料頁 -->
           <router-link to="/user-center/profile" class="user-icon-wrapper">
             <img
               v-if="imageUrl"
@@ -46,28 +41,35 @@
               class="user-icon"
               title="編輯個人資料"
             />
+            <img
+              v-else
+              src="@/assets/defaultImg/default-avatar.jpg"
+              alt="預設頭像"
+              class="user-icon"
+              title="編輯個人資料"
+            />
           </router-link>
+
+          <span class="welcome-text" v-if="auth.user">
+            歡迎：{{ auth.user.userName }}
+          </span>
 
           <button @click="userLogout" class="logout-button">登出</button>
         </div>
       </template>
 
       <!-- ✅ 照顧者登入後 -->
-      <!-- Navbar.vue -->
-      <template v-else-if="isCaregiverLogin">
-        <div class="user-info">
-          <router-link to="/caregiver" class="user-icon-wrapper">
-            <img
-              v-if="photoPreviewUrl !== undefined && photoPreviewUrl !== ''"
-              :src="photoPreviewUrl"
-              class="avatar"
-              @click.stop="triggerFileInput"
-            />
-          </router-link>
-          <span class="welcome">歡迎，{{ caregiver.email }}</span>
-          <button @click="caregiverLogout" class="logout-button">登出</button>
-        </div>
-      </template>
+     <!-- Navbar.vue -->
+     <template v-else-if="isCaregiverLogin">
+  <div class="user-info">
+    <router-link to="/caregiver" class="user-icon-wrapper">
+      <!-- ✅ 確保從 Pinia 取得 photo -->
+      <img v-if="caregiver.photo" :src="caregiver.photo" alt="照顧者大頭貼" class="avatar" />
+    </router-link>
+    <span class="welcome">歡迎，{{ caregiver.email }}</span>
+    <button @click="caregiverLogout" class="logout-button">登出</button>
+  </div>
+</template>
 
       <!-- ✅ 都沒登入 -->
       <template v-else>
@@ -87,16 +89,18 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-
+import { useCaregiverAuth } from "@/stores/useCaregiverAuth";
 // ✅ 使用者：Session-based 登入狀態
 import { useAuthStore } from "@/stores/auth";
+
+
 
 const auth = useAuthStore();
 const isUserLogin = computed(() => auth.isAuthenticated);
 const imageUrl = ref(null);
 const fetchImage = async () => {
   try {
-    const res = await fetch("http://localhost:8082/user/profile-picture", {
+    const res = await fetch("http://192.168.66.54:8082/user/profile-picture", {
       credentials: "include",
     });
     if (res.ok) {
@@ -112,7 +116,7 @@ const goToCaregiverPage = () => {
 };
 
 // ✅ 照顧者：JWT-based 登入狀態
-import { useCaregiverAuth } from "@/stores/useCaregiverAuth";
+
 const caregiver = useCaregiverAuth();
 const isCaregiverLogin = computed(() => !!caregiver.token);
 
@@ -166,7 +170,13 @@ const caregiverLogout = () => {
 </script>
 
 <style scoped>
-/* ----- Navbar Container ----- */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -180,12 +190,25 @@ const caregiverLogout = () => {
 
 /* ----- Logo 開始 ----- */
 .logo {
-  display: block;
-  margin-right: 1rem;
+  transition: none !important;
 }
+/* ----- Logo 大小設定 ----- */
 .logo img {
-  height: 40px;
-  display: block;
+  height: 150px; /* ⬆️ 調整圖片高度 */
+  max-width: 350px; /* ⬆️ 調整最大寬度 */
+  object-fit: contain;
+  margin-left: 0.5rem;
+  transition: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+
+.logo:hover,
+.logo img:hover {
+  background-color: transparent !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 /* ----- Logo 結束 ----- */
 
@@ -359,7 +382,7 @@ const caregiverLogout = () => {
 }
 
 .welcome {
-  color: white;
+  color: rgb(7, 7, 7);
   margin-right: 0.5rem;
   /* 強制文字變黑，與底色對比 */
 }
@@ -396,7 +419,7 @@ const caregiverLogout = () => {
   flex-shrink: 0; /* ✅ 新增：防止被壓縮過窄 */
 }
 .logout-button:hover {
-  background-color: #c82333; /* ✅ 新增：hover 效果更明顯 */
+  background-color: #dd4857; /* ✅ 新增：hover 效果更明顯 */
 }
 
 .welcome-text {
@@ -406,13 +429,17 @@ const caregiverLogout = () => {
 
 /* 頭像容器 */
 .user-icon-wrapper {
-  width: 36px; /* ✅ 修改：原本是 32px */
-  height: 36px; /* ✅ 修改：原本是 32px */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   overflow: hidden;
+  margin-left: 0.5rem;
   background-color: transparent;
   border: none;
-  flex-shrink: 0; /* ✅ 新增：防止太小畫面被擠爆 */
+  /* flex-shrink: 0; ✅ 新增：防止太小畫面被擠爆 */
 }
 
 .user-icon-wrapper:focus {
@@ -421,11 +448,11 @@ const caregiverLogout = () => {
 }
 
 .user-icon {
-  width: 150%; /* ✅ 修改：原本寫死 50px，改為容器撐滿 */
+  width: 130%; /* ✅ 剛好填滿容器 */
   height: 100%;
   object-fit: cover;
-  border-radius: 100%;
-  border: 1px solid #ccc; /* ✅ 新增：細邊框讓頭像更清晰 */
+  border-radius: 50%;
+  border: 1px solid #ccc;
 }
 
 /* ----- login ----- */
@@ -468,7 +495,7 @@ const caregiverLogout = () => {
 }
 
 .dropdown-login-menu button:hover {
-  background-color: #28a745;
+  background-color: #46b6ab;
 }
 
 /* 顯示下拉選單 */

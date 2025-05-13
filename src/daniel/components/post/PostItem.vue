@@ -4,13 +4,24 @@
             <!-- 使用者資訊區塊 -->
             <UserAvatar :imageUrl="imageUrl" />
             <div class="user-info">
-                <div class="user-name">{{ post.user.userName }}</div>
+                <div class="user-name">{{ post.user.userName }}
+                    <span v-if="post.createdAt !== post.modifiedAt" class="edited-marker">已編輯</span>
+                </div>
                 <div class="post-time">{{ formattedTime }}</div>
             </div>
+
+            <!-- 分類標籤 -->
             <div class="post-categories">
                 <span v-for="cat in post.postCategoryClassifiers" :key="cat.postCategoryClassifierId"
                     class="post-category-tag">
                     {{ cat.postCategory.postCategory }}
+                </span>
+            </div>
+
+            <!-- 主題標籤 -->
+            <div class="post-topics">
+                <span v-for="top in post.postTopicClassifiers" :key="top.postTopicClassifierId" class="post-topic-tag">
+                    {{ top.postTopic.topic }}
                 </span>
             </div>
 
@@ -168,11 +179,13 @@ onMounted(async () => {
 
 <style scoped>
 .post-item {
+    width: 450px;
+    max-width: 600px;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1rem;
-    margin-bottom: 2rem;
+    margin: 0 auto 2rem;
     position: relative;
 }
 
@@ -197,6 +210,11 @@ onMounted(async () => {
     color: #666;
 }
 
+.edited-marker {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
 .post-categories {
     margin-top: 0.25rem;
     margin-left: 0.5rem;
@@ -209,6 +227,22 @@ onMounted(async () => {
     font-size: 0.75rem;
     background: #eef;
     color: #336;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    margin-right: 0.25rem;
+}
+
+.post-topics {
+    margin-top: 0.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.post-topic-tag {
+    font-size: 0.75rem;
+    background: #fee;
+    color: #633;
     padding: 0.15rem 0.5rem;
     border-radius: 3px;
 }

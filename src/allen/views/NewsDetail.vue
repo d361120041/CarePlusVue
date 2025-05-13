@@ -13,7 +13,6 @@
         📅 發布日期：{{ formatDate(news.publishAt) }}<br>
         🛠️ 最後修改：{{ news.modifyAt ? formatDate(news.modifyAt) : '尚未修改' }}<br>
         📂 分類：{{ news.category?.categoryName || '未分類' }}<br>
-        🏷️ 標籤：<span v-if="news.tags">{{ news.tags }}</span><span v-else>無</span><br>
         👁️ 瀏覽次數：{{ news.viewCount || 0 }}
       </div>
 
@@ -116,10 +115,10 @@ onMounted(() => {
 .btn-primary {
   display: inline-block;
   padding: 10px 20px;
-  font-size: 1rem;
+  font-size: var(--font-size-md);
   font-weight: 600;
   color: #fff;
-  background-color: #2563eb;
+  background-color: var(--color-tertiary);
   border-radius: 6px;
   text-decoration: none;
   transition: background-color 0.3s ease;
