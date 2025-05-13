@@ -216,12 +216,13 @@ onMounted(fetchProfile);
 
 <style scoped>
 .profile-container {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  border: 1px solid #ccc;
+  max-width: 500px;
+  margin: 1.5rem auto;
+  padding: 1.5rem 2rem;
+  border: 1px solid #ddd;
   border-radius: 10px;
-  background-color: #f9f9f9;
+  background-color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 

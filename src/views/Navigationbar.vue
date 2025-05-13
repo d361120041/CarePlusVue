@@ -1,7 +1,7 @@
 <template>
   <div class="navbar">
     <router-link to="/" class="logo">
-      <img src="@/assets/logo/logo_0508.png" alt="網站 Logo" />
+      <img src="@/assets/logo/care+_logo.png" alt="網站 Logo" />
     </router-link>
     <ul>
       <li>
@@ -175,12 +175,25 @@ const caregiverLogout = () => {
 
 /* ----- Logo 開始 ----- */
 .logo {
-  display: block;
-  margin-right: 1rem;
+  transition: none !important;
 }
+/* ----- Logo 大小設定 ----- */
 .logo img {
-  height: 40px;
-  display: block;
+  height: 150px; /* ⬆️ 調整圖片高度 */
+  max-width: 350px; /* ⬆️ 調整最大寬度 */
+  object-fit: contain;
+  margin-left: 0.5rem;
+  transition: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+
+.logo:hover,
+.logo img:hover {
+  background-color: transparent !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 /* ----- Logo 結束 ----- */
 

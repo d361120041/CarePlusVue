@@ -117,11 +117,32 @@ const routes = [
   { path: "/admin/news/edit/:id", component: AdminEditNews, name: "adminNewsEdit",}, //後台編輯新聞
   { path: "/admin/news/:id", component: AdminNewsDetail, name: "adminNewsDetail", }, //後台新聞內容
   { path: '/admin/news/preview/:id', component: AdminNewsPreview , name: 'AdminNewsPreview' }, //後台新聞預覽
-
+  
   // ------------------ allen ------------------
-
+  
   // ------------------ yuuhou ------------------
   
+  {
+    path: "/caregiver",
+    component: CaregiverDashboard,
+    children: [
+      { path: "profile", component: CaregiverProfileView },
+      { path: "pricing", component: CaregiverPricing },
+      // { path: "schedule", component: ScheduleView },
+      // { path: "orders", component: OrdersView },
+    ],
+  },
+  
+  
+  // {
+    //   path: "/caregiver",
+    //   component: CaregiverDashboard,
+    //   name: "caregiverDashboard",
+    // },
+    // { path: "/caregiver/profile", component: CaregiverProfileView },
+    // { path: "/caregiver/pricing", component: CaregiverPricing },
+    
+
   {
     path: "/caregiverLogin",
     component: CaregiverLogin,
@@ -132,25 +153,17 @@ const routes = [
   { path: "/forgot", component: UserForgotPwd, name: "forgotPwd" },
   
   // { path: "/navigationbar" , component: Navigationbar, name: "navigationBar" },
-  {
-    path: "/admin/dashboard",
-    component: AdminDashboard,
-    name: "adminDashboard",
-  },
-  { path: "/user/dashboard", component: UserDashboard },
-  {
-    path: "/caregiver",
-    component: CaregiverDashboard,
-    name: "caregiverDashboard",
-  },
+{ path: "/user/dashboard", component: UserDashboard },
+
+
   // { path: '/adminLogin', component: AdminLogin, name: 'adminLogin' },
-  { path: "/admin/dashboard", component: AdminDashboard },
+  
+
+  
   { path: "/reset/yuuhou", component: ResetPasswordYuuhou },
   { path: "/verify-success", component: VerifySuccess, name: "verifySuccess" },
   { path: "/verify-reminder", component: VerifyReminder },
   { path: "/verify-failed", component: VerifyFailed },
-  { path: "/caregiver/profile", component: CaregiverProfileView },
-  { path: "/caregiver/pricing", component: CaregiverPricing },
   {
     path: "/login-select",
     component: () => import("@/yuuhou/LoginSelect.vue"),
@@ -272,6 +285,8 @@ const routes = [
       { path: "cms/courses", component: CourseAdmin, name: "cmsCourses" },
       { path: "cms/chapters", component: ChapterAdmin, name: "cmsChapters" },
       { path: "cms/progress", component: ProgressAdmin, name: "cmsProgress" },
+        {path: "admin/dashboard",component: AdminDashboard,name: "adminDashboard",
+  },
     ],
   },
 ];
