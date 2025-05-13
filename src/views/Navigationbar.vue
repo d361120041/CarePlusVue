@@ -433,7 +433,7 @@ const caregiverLogout = () => {
   margin-left: 0.5rem;
   background-color: transparent;
   border: none;
-  flex-shrink: 0; /* ✅ 新增：防止太小畫面被擠爆 */
+  /* flex-shrink: 0; ✅ 新增：防止太小畫面被擠爆 */
 }
 
 .user-icon-wrapper:focus {
