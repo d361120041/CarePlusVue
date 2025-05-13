@@ -26,7 +26,7 @@ const submit = async () => {
     await myAxios.post('/api/comments', {
         content: content.value, 
         user: {
-            userId: 3
+            userId: authStore.user.userId
         },
         post: { 
             postId: props.postId 
