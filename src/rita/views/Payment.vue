@@ -237,8 +237,9 @@ const proceedToPayment = async () => {
     document.body.appendChild(tempDiv);
     tempDiv.querySelector("form").submit();  // 直接提交該表單
 
+
     // // 跳轉到支付成功頁面（在當前頁面，非新分頁）
-    // router.push("/payment/success");
+    router.push("/payment/success");
 
     // // ✅ 清空 localStorage
     // localStorage.removeItem("appointmentData");
