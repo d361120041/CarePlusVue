@@ -59,17 +59,22 @@
       </template>
 
       <!-- ✅ 照顧者登入後 -->
-     <!-- Navbar.vue -->
-     <template v-else-if="isCaregiverLogin">
-  <div class="user-info">
-    <router-link to="/caregiver" class="user-icon-wrapper">
-      <!-- ✅ 確保從 Pinia 取得 photo -->
-      <img v-if="caregiver.photo" :src="caregiver.photo" alt="照顧者大頭貼" class="avatar" />
-    </router-link>
-    <span class="welcome">歡迎，{{ caregiver.email }}</span>
-    <button @click="caregiverLogout" class="logout-button">登出</button>
-  </div>
-</template>
+      <!-- Navbar.vue -->
+      <template v-else-if="isCaregiverLogin">
+        <div class="user-info">
+          <router-link to="/caregiver" class="user-icon-wrapper">
+            <!-- ✅ 確保從 Pinia 取得 photo -->
+            <img
+              v-if="caregiver.photo"
+              :src="caregiver.photo"
+              alt="照顧者大頭貼"
+              class="avatar"
+            />
+          </router-link>
+          <span class="welcome">歡迎，{{ caregiver.email }}</span>
+          <button @click="caregiverLogout" class="logout-button">登出</button>
+        </div>
+      </template>
 
       <!-- ✅ 都沒登入 -->
       <template v-else>
@@ -92,8 +97,6 @@ import { useRouter, useRoute } from "vue-router";
 import { useCaregiverAuth } from "@/stores/useCaregiverAuth";
 // ✅ 使用者：Session-based 登入狀態
 import { useAuthStore } from "@/stores/auth";
-
-
 
 const auth = useAuthStore();
 const isUserLogin = computed(() => auth.isAuthenticated);
@@ -181,7 +184,7 @@ const caregiverLogout = () => {
   display: flex;
   justify-content: space-between;
   align-items: center; /* ✅ 修改：原本是 align-items: stretch，改成 center 讓內容垂直置中 */
-  background-color: var(--color-bg-card);
+  background-color: #a0d8d2;
   padding: 0;
   position: relative;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -202,7 +205,6 @@ const caregiverLogout = () => {
   transform: none !important;
   box-shadow: none !important;
 }
-
 
 .logo:hover,
 .logo img:hover {
