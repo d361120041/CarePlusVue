@@ -43,16 +43,6 @@
     <!-- 使用者資訊 -->
     <div v-if="user">
       <div class="mb-4">
-        <label class="block font-medium">帳號（無法修改）</label>
-        <input
-          type="text"
-          v-model="user.userAccount"
-          disabled
-          class="w-full border rounded p-2 bg-gray-100"
-        />
-      </div>
-
-      <div class="mb-4">
         <label class="block font-medium">姓名</label>
         <input
           style="margin-left: 96px"
@@ -62,27 +52,25 @@
         />
       </div>
 
+      <!-- ✅ Email：不能修改 -->
       <div class="mb-4">
-        <label class="block font-medium">Email</label>
+        <label class="block font-medium">Email（無法修改）</label>
         <input
-          style="margin-left: 88px"
           type="email"
           v-model="user.emailAddress"
-          class="w-full border rounded p-2"
+          class="w-full border rounded p-2 bg-gray-100"
+          disabled
         />
       </div>
 
+      <!-- ✅ 電話：不能修改 -->
       <div class="mb-4">
-        <label class="block font-medium">電話</label>
+        <label class="block font-medium">電話（無法修改）</label>
         <input
-          style="margin-left: 96px"
           type="tel"
           v-model="user.phoneNumber"
-          class="w-full border rounded p-2"
-          minlength="8"
-          maxlength="10"
-          pattern="\\d{8,10}"
-          required
+          class="w-full border rounded p-2 bg-gray-100"
+          disabled
         />
       </div>
 

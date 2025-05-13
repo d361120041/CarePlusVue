@@ -41,6 +41,13 @@
               class="user-icon"
               title="編輯個人資料"
             />
+            <img
+              v-else
+              src="@/assets/defaultImg/default-avatar.jpg"
+              alt="預設頭像"
+              class="user-icon"
+              title="編輯個人資料"
+            />
           </router-link>
 
           <span class="welcome-text" v-if="auth.user">
@@ -395,7 +402,7 @@ const caregiverLogout = () => {
   flex-shrink: 0; /* ✅ 新增：防止被壓縮過窄 */
 }
 .logout-button:hover {
-  background-color: #c82333; /* ✅ 新增：hover 效果更明顯 */
+  background-color: #dd4857; /* ✅ 新增：hover 效果更明顯 */
 }
 
 .welcome-text {
