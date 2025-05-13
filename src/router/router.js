@@ -265,7 +265,7 @@ const routes = [
       {
         path: "orders",
         component: () => import("@/rita/views/OrderList.vue"),
-        name: "ritaOrder",
+        name: "orderList",
       },
     ],
   },
