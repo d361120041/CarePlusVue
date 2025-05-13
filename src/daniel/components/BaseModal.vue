@@ -6,18 +6,18 @@
             <!-- 在這一層攔截掉所有內部點擊，避免冒泡到 backdrop -->
             <div class="modal-content" @click.stop>
 
-                <header class="modal-header">
+                <header class="post-modal-header">
                     <h3>{{ title }}</h3>
                     <button class="close-btn" @click="$emit('close')">✕</button>
                 </header>
 
                 <!-- 主內容由 slot 提供 -->
-                <section class="modal-body">
+                <section class="post-modal-body">
                     <slot />
                 </section>
-                
+
                 <!-- 可擴充 footer slot -->
-                <footer class="modal-footer">
+                <footer class="post-modal-footer" v-if="$slots.footer">
                     <slot name="footer" />
                 </footer>
             </div>
@@ -46,17 +46,18 @@ const emit = defineEmits(['close'])
 }
 
 .modal-content {
+    display: flex;
+    flex-direction: column;
     background: #ffffff;
     border-radius: 12px;
     width: 500px;
     max-width: 95%;
+    max-height: 95vh;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
     overflow: hidden;
 }
 
-.modal-header {
+.post-modal-header {
     background: #f7f7f7;
     padding: 1rem 1.5rem;
     border-bottom: 1px solid #e0e0e0;
@@ -64,7 +65,7 @@ const emit = defineEmits(['close'])
     align-items: center;
 }
 
-.modal-header h3 {
+.post-modal-header h3 {
     flex: 1;
     text-align: center;
     margin: 0;
@@ -85,16 +86,14 @@ const emit = defineEmits(['close'])
     color: #d9534f;
 }
 
-.modal-body {
+.post-modal-body {
+    flex: 1;
+    overflow-y: auto;
     padding: 1.5rem;
     background: #fff;
-    flex: 1;
 }
 
-.modal-footer {
-    padding: 1rem 1.5rem;
-    background: #f9f9f9;
-    border-top: 1px solid #e0e0e0;
-    text-align: right;
+.post-modal-footer {
+    padding: 1rem;
 }
 </style>
