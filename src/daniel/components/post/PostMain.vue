@@ -2,7 +2,7 @@
     <div class="social-container">
         <!-- 新增貼文卡片 -->
         <article class="new-post-card">
-            <UserAvatar :imageUrl="imageUrl" />
+            <UserAvatar :imageUrl="imageUrl" style="margin-right: 0.5rem;" />
             <div class="new-post-input" @click="() => postStore.openModal(null)">{{ authStore.user.userName }}，在想些什麼？
             </div>
         </article>

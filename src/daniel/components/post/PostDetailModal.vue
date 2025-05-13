@@ -273,6 +273,7 @@ function onCommentAdded() {
 .post-actions {
     display: flex;
     border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
     margin-top: 1rem;
 }
 

@@ -35,6 +35,7 @@ const src = computed(() => {
     /* ← 核心：裁切填滿容器，保留比例 */
     object-position: center;
     /* ← 可選：決定裁切的圖片焦點 */
+    border: 1px solid #DDD;
 }
 
 /* .user-avatar:hover {
