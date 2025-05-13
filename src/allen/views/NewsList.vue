@@ -3,76 +3,78 @@
     <h1>新聞列表</h1>
   </GlobalBanner>  
 
-  <div class="news-list">
-    <!-- 搜尋欄 -->
-    <div class="search-bar mb-4 flex gap-2">
-      <input 
-        v-model="search.keyword" 
-        type="text" 
-        placeholder="輸入關鍵字"
-        class="border p-2 rounded w-1/3"
-      />
-      <select v-model="search.categoryId" class="border p-2 rounded w-1/4">
-        <option value="">選擇分類</option>
-        <option v-for="cat in categories" :key="cat.categoryId" :value="cat.categoryId">
-          {{ cat.categoryName }}
-        </option>
-      </select>
-      <select v-model="search.dateRange" class="border p-2 rounded w-1/4">
-        <option value="">選擇時間範圍</option>
-        <option value="today">今天</option>
-        <option value="week">7天內</option>
-        <option value="month">30天內</option>
-        <option value="year">365天內</option>
-      </select>
+  <div class="news-page flex gap-6">
+    <!-- 左側新聞列表區域 -->
+    <div class="news-list">
+      <!-- 搜尋欄 -->
+      <div class="search-bar mb-4 flex gap-2">
+        <input 
+          v-model="search.keyword" 
+          type="text" 
+          placeholder="輸入關鍵字"
+          class="border p-2 rounded w-1/3"
+        />
+        <select v-model="search.categoryId" class="border p-2 rounded w-1/4">
+          <option value="">選擇分類</option>
+          <option v-for="cat in categories" :key="cat.categoryId" :value="cat.categoryId">
+            {{ cat.categoryName }}
+          </option>
+        </select>
+        <select v-model="search.dateRange" class="border p-2 rounded w-1/4">
+          <option value="">選擇時間範圍</option>
+          <option value="today">今天</option>
+          <option value="week">7天內</option>
+          <option value="month">30天內</option>
+          <option value="year">365天內</option>
+        </select>
 
-      <!-- 新增排序條件 -->
-      <select v-model="search.sortBy" class="border p-2 rounded w-1/4">
-        <option value="">排序條件</option>
-        <option value="publishAt">依發布日期</option>
-        <option value="viewCount">依瀏覽人數</option>
-        <option value="modifyAt">依最後修改日期</option>
-      </select>
+        <!-- 新增排序條件 -->
+        <select v-model="search.sortBy" class="border p-2 rounded w-1/4">
+          <option value="">排序條件</option>
+          <option value="publishAt">依發布日期</option>
+          <option value="viewCount">依瀏覽人數</option>
+          <option value="modifyAt">依最後修改日期</option>
+        </select>
 
-      <!-- 搜尋按鈕 -->
-      <button @click="handleSearch" class="search-btn w-full">🔍 搜尋</button>
-    </div>
+        <!-- 搜尋按鈕 -->
+        <button @click="handleSearch" class="search-btn w-full">🔍 搜尋</button>
+      </div>
 
-    <!-- 搜尋摘要 -->
-    <div v-if="hasSearched && summaryText" class="search-summary text-gray-700 mt-4">
-      🔎 以下是 {{ summaryText }} 的搜尋結果
-      <button @click="clearSearch" class="clear-btn">取消篩選</button>
-    </div>
+      <!-- 搜尋摘要 -->
+      <div v-if="hasSearched && summaryText" class="search-summary text-gray-700 mt-4">
+        🔎 以下是 {{ summaryText }} 的搜尋結果
+        <button @click="clearSearch" class="clear-btn">取消篩選</button>
+      </div>
 
-    <NewsListSkeleton v-if="loading" />
+      <NewsListSkeleton v-if="loading" />
 
-    <!-- 新聞清單 -->
-    <div v-if="newsList.length === 0" class="text-gray-500 text-center">暫無新聞資料</div>
-      <div v-else>
-        <div
-          v-for="news in newsList"
-          :key="news.newsId"
-          class="news-item flex items-start gap-4 mb-6 border-b pb-4"
-        >
-          <router-link :to="`/news/${news.newsId}`" class="flex-shrink-0">
-            <img
-            :src="getFullImageUrl(news.thumbnail) || defaultThumbnail"
-            alt="縮圖"
-            class="thumbnail w-20 h-20 object-cover rounded-lg shadow"
-            @error="handleImgError"
-            />
-          </router-link>
-
-          <div class="flex-1">
-            <router-link :to="`/news/${news.newsId}`" class="text-lg font-semibold hover:underline block mb-1"
-            >
-              {{ news.title }}
+      <!-- 新聞清單 -->
+      <div v-if="newsList.length === 0" class="text-gray-500 text-center">暫無新聞資料</div>
+        <div v-else>
+          <div
+            v-for="news in newsList"
+            :key="news.newsId"
+            class="news-item flex items-start gap-4 mb-6 border-b pb-4"
+          >
+            <router-link :to="`/news/${news.newsId}`" class="flex-shrink-0">
+              <img
+              :src="getFullImageUrl(news.thumbnail) || defaultThumbnail"
+              alt="縮圖"
+              class="thumbnail w-20 h-20 object-cover rounded-lg shadow"
+              @error="handleImgError"
+              />
             </router-link>
-            <p class="text-sm text-gray-600">📅 發布日期：{{ formatDate (news.publishAt) }}</p>
-            <p class="text-sm text-gray-600">🛠️ 最後修改：{{ news.modifyAt ? formatDate (news.modifyAt) : '尚未修改' }}</p>
-            <p class="text-sm text-gray-600">👁️ 瀏覽次數：{{ news.viewCount || 0 }}</p>
-          </div>  
-      </div> 
+
+            <div class="flex-1">
+              <router-link :to="`/news/${news.newsId}`" class="text-lg font-semibold hover:underline block mb-1"
+              >
+                {{ news.title }}
+              </router-link>
+              <p class="text-sm text-gray-600">📅 發布日期：{{ formatDate (news.publishAt) }}</p>
+              <p class="text-sm text-gray-600">🛠️ 最後修改：{{ news.modifyAt ? formatDate (news.modifyAt) : '尚未修改' }}</p>
+              <p class="text-sm text-gray-600">👁️ 瀏覽次數：{{ news.viewCount || 0 }}</p>
+            </div>  
+        </div> 
 
         <!-- 分頁控制 -->
         <div class="pagination mt-6">
@@ -80,6 +82,7 @@
           <span>第 {{ page + 1 }} 頁</span>
           <button @click="nextPage" :disabled="!hasNextPage || loading" class="page-btn">下一頁</button>
         </div> 
+      </div>
     </div>
   </div>
 </template>
@@ -313,6 +316,22 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
+.news-page {
+  padding: var(--space-lg);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.news-list {
+  width: auto; /* 自動根據內容調整寬度 */
+  max-width: 1200px; /* 根據內容調整寬度，但最大不超過 1200px */
+  margin-left: auto;  /* 置中對齊 */
+  margin-right: auto;
+  padding-right: var(--space-lg);
+  transition: width 0.3s ease;
+}
+
 .thumbnail {
   width: 120px;
   height: 120px;

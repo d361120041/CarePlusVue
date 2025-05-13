@@ -83,7 +83,7 @@ const news = ref({
   status: 0 // 預設為 0 (草稿狀態)
 });
 const categories = ref([]);
-const previewUrl = ref(null);
+const previewUrl = ref(NO_IMAGE_URL);
 const isDirty = ref(false);
 const quillRef = ref(null);
 
@@ -231,7 +231,6 @@ const fetchNews = async () => {
 };
 
 //圖片相關控制
-
 const NO_IMAGE_URL = 'http://localhost:8082/uploads/news_thumbnails/no-image.jpg';
 
 //刪除圖片
@@ -311,11 +310,6 @@ const handleSubmit = async () => {
     // 如果沒有縮圖，設置為 NO_IMAGE_URL
     news.value.thumbnail = news.value.thumbnail ? news.value.thumbnail : NO_IMAGE_URL;
 
-  // 圖片加載錯誤處理
-  const handleImageError = (event) => {
-    event.target.src = NO_IMAGE_URL;
-  };
-
     // 儲存新聞
     if (isEditMode) {
       await myAxios.put(`/news/admin/${newsId}`, news.value);
@@ -342,6 +336,11 @@ const handleSubmit = async () => {
       confirmButtonText: '確定'
     });
   }
+};
+
+// 圖片加載錯誤處理
+const handleImageError = (event) => {
+  event.target.src = NO_IMAGE_URL;
 };
 
 const handleBack = async () => {
