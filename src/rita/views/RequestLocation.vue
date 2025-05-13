@@ -33,18 +33,19 @@
                 <input
                   type="radio"
                   v-model="appointmentStore.appointment.locationType"
-                  value="醫院"
+                  value="居家"
                 />
-                醫院
+                居家
               </label>
               <label>
                 <input
                   type="radio"
                   v-model="appointmentStore.appointment.locationType"
-                  value="居家"
+                  value="醫院"
                 />
-                居家
+                醫院
               </label>
+              
             </div>
           </div>
 
@@ -186,7 +187,7 @@
 
             <div>
               <p>
-                <strong>病患：</strong
+                <strong>被照顧者：</strong
                 >{{ appointmentStore.appointment.patientInfo.name }}
               </p>
               <p>
@@ -275,41 +276,10 @@ import { useAppointmentStore } from "@/stores/AppointmentStore";
 const appointmentStore = useAppointmentStore();
 const router = useRouter();
 
-// // 表单绑定数据
-// const form = ref({
-//   locationType: appointmentStore.appointment.locationType || "醫院",
-//   hospitalName: appointmentStore.appointment.hospitalName || "",
-//   hospitalAddress: appointmentStore.appointment.hospitalAddress || "",
-//   hospitalWardType: appointmentStore.appointment.hospitalWardType || "",
-//   hospitalWardNumber: appointmentStore.appointment.hospitalWardNumber || "",
-//   hospitalBedNumber: appointmentStore.appointment.hospitalBedNumber || "",
-//   hospitalDepartment: appointmentStore.appointment.hospitalDepartment || "",
-//   hospitalTransportNote: appointmentStore.appointment.hospitalTransportNote || "",
-//   homeAddress: appointmentStore.appointment.homeAddress || "",
-//   homeTransportNote: appointmentStore.appointment.homeTransportNote || "",
-// });
-
-// /// 確保即時同步表單數據
-// watch(form, (newForm) => {
-//   // 同步到 appointmentStore
-//   if (newForm.locationType === "醫院") {
-//     appointmentStore.appointment.locationType = "醫院";
-//     appointmentStore.appointment.hospitalName = newForm.hospitalName;
-//     appointmentStore.appointment.hospitalAddress = newForm.hospitalAddress;
-//     appointmentStore.appointment.hospitalWardType = newForm.hospitalWardType;
-//     appointmentStore.appointment.hospitalWardNumber = newForm.hospitalWardNumber;
-//     appointmentStore.appointment.hospitalBedNumber = newForm.hospitalBedNumber;
-//     appointmentStore.appointment.hospitalDepartment = newForm.hospitalDepartment;
-//     appointmentStore.appointment.hospitalTransportNote = newForm.hospitalTransportNote;
-//   } else if (newForm.locationType === "居家") {
-//     appointmentStore.appointment.locationType = "居家";
-//     appointmentStore.appointment.homeAddress = newForm.homeAddress;
-//     appointmentStore.appointment.homeTransportNote = newForm.homeTransportNote;
-//   }
-
-//   // 即時保存到 localStorage
-//   appointmentStore.saveToLocalStorage();
-// }, { deep: true });
+onMounted(() => {
+  // 預設選擇居家
+  appointmentStore.appointment.locationType = '居家';
+});
 
 /// 計算是否表單已填寫完成
 const isFormComplete = computed(() => {

@@ -13,7 +13,7 @@
       <div class="arrow">→</div>
       <div class="step d-flex flex-column align-items-center">
         <div class="step-circle">2</div>
-        <div class="step-text" style="max-width: 180px;">比較報價・確認評價</div>
+        <div class="step-text" style="max-width: 180px;">填寫預約單</div>
       </div>
       <div class="arrow">→</div>
       <div class="step d-flex flex-column align-items-center">

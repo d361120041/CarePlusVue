@@ -61,7 +61,7 @@ import GlobalBanner from '@/components/GlobalBanner.vue'
 import homeBannerImg from '@/assets/images/GlobalBanner/mediums-hot-smiley-people-indoors.jpg'
 
 // -----Rita start
-import Rita from '@/yuni/components/Rita.vue';
+import Rita from '@/rita/components/Introduction.vue';
 
 // ------yuni start
 import CourseFeat from '@/yuni/components/CourseFeat.vue';

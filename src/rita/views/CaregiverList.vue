@@ -1,8 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="search-conditions card-section mb-6">
-      <div class="flex justify-between items-center">
-        <div class="conditions-container">
+    <!-- <div class="search-conditions card-section mb-6">
+      <div class="flex justify-between items-center"> -->
+    <!-- <div class="conditions-container">
           <h3 class="text-xl font-semibold text-gray-800 mb-3">您的搜尋條件</h3>
           <div class="condition-tags">
             <span class="condition-tag">
@@ -40,19 +40,25 @@
               </span>
             </span>
           </div>
-        </div>
-        <button 
-  @click="goBackToSearch" 
-  class=" goBackToSearch px-4 py-2 bg-teal-600 text-white rounded-md text-sm font-medium hover:bg-teal-700 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 focus:ring-opacity-50">
-  返回搜尋
-</button>
+        </div> -->
+    <button
+      @click="goBackToSearch"
+      class="goBackToSearch px-4 py-2 bg-teal-600 text-white rounded-md text-sm font-medium hover:bg-teal-700 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 focus:ring-opacity-50"
+    >
+      ⬅︎ 返回搜尋
+    </button>
 
-      </div>
-    </div>
+    <!-- </div> -->
+    <!-- </div> -->
 
     <div class="header flex justify-between items-center mb-6">
-      <h3 class="text-xl font-semibold text-gray-800">搜尋結果：共 {{ sortedCaregivers.length }} 位照服員</h3>
-      <select v-model="sortOption" class="border p-2 rounded-md text-gray-600 focus:border-teal-600 focus:ring focus:ring-teal-200 focus:ring-opacity-50">
+      <h3 class="text-xl font-semibold text-gray-800">
+        搜尋結果：共 {{ sortedCaregivers.length }} 位照服員
+      </h3>
+      <select
+        v-model="sortOption"
+        class="border p-2 rounded-md text-gray-600 focus:border-teal-600 focus:ring focus:ring-teal-200 focus:ring-opacity-50"
+      >
         <option value="price">按總價排序</option>
         <option value="experience">按年資排序</option>
       </select>
@@ -81,26 +87,33 @@
         :key="caregiver.caregiverId"
         @click="goToCaregiverDetail(caregiver)"
       >
-      <img
-    class="caregiver-image"
-    :src="caregiver.photoPath"
-    :alt="`看護 ${caregiver.caregiverName}`"
-/>
-
-
-
-
+        <img
+          class="caregiver-image"
+          :src="caregiver.photoPath"
+          :alt="`看護 ${caregiver.caregiverName}`"
+        />
         <div class="flex justify-between items-center mb-2">
-          <h3 class=" caregiver-name text-lg font-semibold text-teal-600">
+          <h3 class="caregiver-name text-lg font-semibold text-teal-600">
             {{ caregiver.caregiverName }}
           </h3>
           <button
             @click.stop="toggleFavorite(caregiver.caregiverId)"
-            class="text-red-500 hover:text-red-600 text-xl"
+            class="flex items-center justify-center p-2 bg-transparent border-0 rounded-full hover:bg-gray-200 transition duration-300 ease-in-out"
           >
-            <span v-if="isFavorited(caregiver.caregiverId)">♥</span>
-            <span v-else>♡</span>
-          </button> 
+            <!-- 使用過渡效果和顏色變化 -->
+            <span
+              v-if="isFavorited(caregiver.caregiverId)"
+              class="text-red-500 text-3xl transform transition-transform duration-300 ease-in-out"
+            >
+              ♥
+            </span>
+            <span
+              v-else
+              class="text-gray-400 text-3xl transform transition-transform duration-300 ease-in-out"
+            >
+              ♡
+            </span>
+          </button>
         </div>
         <div class="caregiver-info">
           <div class="info-row text-sm text-gray-600">
@@ -108,12 +121,18 @@
             <span>國籍：{{ caregiver.nationality || "未知" }}</span>
             <span>語言：{{ caregiver.languages || "未知" }}</span>
           </div>
-          <p class="text-sm text-gray-600">年資：{{ caregiver.yearOfExperience }} 年</p>
-         <!--  <p class="text-sm text-gray-600">時薪：{{ caregiver.hourlyRate ? `${caregiver.hourlyRate} 元/小時` : '未提供' }}</p>
+          <p class="text-sm text-gray-600">
+            年資：{{ caregiver.yearOfExperience }} 年
+          </p>
+          <!--  <p class="text-sm text-gray-600">時薪：{{ caregiver.hourlyRate ? `${caregiver.hourlyRate} 元/小時` : '未提供' }}</p>
           <p class="text-sm text-gray-600">半日薪水：{{ caregiver.halfDayRate ? `${caregiver.halfDayRate} 元/半日` : '未提供' }}</p><p class="text-sm text-gray-600">全日薪水：{{ caregiver.fullDayRate ? `${caregiver.fullDayRate} 元/全日` : '未提供' }}</p>  -->
-          <p class="text-sm text-gray-600 mt-2 line-clamp-2">{{ caregiver.description || '尚無詳細介紹' }}</p>
+          <p class="text-sm text-gray-600 mt-2 line-clamp-2">
+            {{ caregiver.description || "尚無詳細介紹" }}
+          </p>
           <p class="text-sm text-teal-700 font-semibold mt-2">
-            總價：{{ caregiver.totalPrice ? `${caregiver.totalPrice} 元`  : '計算中...' }}
+            總價：{{
+              caregiver.totalPrice ? `${caregiver.totalPrice} 元` : "計算中..."
+            }}
           </p>
         </div>
       </div>
@@ -256,7 +275,7 @@ const sortedCaregivers = computed(() => {
 
 const formatDateTime = (dateTimeStr) => {
   console.log("收到的日期時間字串：", dateTimeStr);
-  if (!dateTimeStr || isNaN(Date.parse(dateTimeStr))) return '未指定';
+  if (!dateTimeStr || isNaN(Date.parse(dateTimeStr))) return "未指定";
   const date = new Date(dateTimeStr);
   return date.toLocaleString("zh-TW", {
     year: "numeric",
@@ -370,7 +389,7 @@ onMounted(async () => {
   max-width: 1300px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: 'Inter', sans-serif; /* 使用現代無襯線字體 */
+  font-family: "Inter", sans-serif; /* 使用現代無襯線字體 */
 }
 
 /* 篩選條件區塊 */
@@ -403,11 +422,13 @@ onMounted(async () => {
   background-color: #e6f4f3;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    background-color 0.2s ease;
   cursor: pointer;
 }
 
-.condition-tag:hover, .condition-tag:focus {
+.condition-tag:hover,
+.condition-tag:focus {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: #d1e9e5;
@@ -416,7 +437,7 @@ onMounted(async () => {
 
 .condition-tag .label {
   font-weight: 600;
-  color: #2A9287;
+  color: #2a9287;
   margin-right: 0.5rem;
 }
 
@@ -433,11 +454,12 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2.5rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .header h3 {
-  color: #2A9287;
+  color: #2a9287;
   font-size: 1.5rem;
   font-weight: 700;
 }
@@ -446,13 +468,13 @@ onMounted(async () => {
   border: 1px solid #d1d5db;
   background-color: #fff;
   border-radius: 8px;
-  padding: 0.75rem 1.25rem;
+  padding: 1.75rem 1.25rem;
   font-size: 1rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .header select:focus {
-  border-color: #4DB6AC;
+  border-color: #4db6ac;
   box-shadow: 0 0 0 3px rgba(77, 182, 172, 0.2);
   outline: none;
 }
@@ -475,7 +497,8 @@ onMounted(async () => {
   cursor: pointer;
 }
 
-.caregiver-card:hover, .caregiver-card:focus {
+.caregiver-card:hover,
+.caregiver-card:focus {
   transform: translateY(-8px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   outline: none;
@@ -508,7 +531,7 @@ onMounted(async () => {
 }
 
 .caregiver-info .hourly-rate {
-  color: #2A9287;
+  color: #2a9287;
   font-weight: 600;
   font-size: 1.125rem;
 }
@@ -519,21 +542,22 @@ onMounted(async () => {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #4b5563;
+  color: #579a65;
 }
 
 /* 姓名區塊樣式 */
 .caregiver-name {
   font-size: 1.725rem; /* 保持字體大小 */
   font-weight: 600; /* 加粗字體 */
-  color: #2A9287; /* 與卡片主色調一致 */
-  background-color: #E6F4F3; /* 柔和背景色 */
+  color: #2a9287; /* 與卡片主色調一致 */
+  background-color: #e6f4f3; /* 柔和背景色 */
   padding: 0.5rem 1rem; /* 適當內邊距 */
   border-radius: 12px; /* 與卡片圓角（12px）統一 */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* 與卡片陰影風格一致 */
   display: inline-block; /* 保持內聯塊級元素 */
   margin-bottom: 0.75rem; /* 增加與下方內容的間距 */
-  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease; /* 平滑過渡 */
+  transition: transform 0.3s ease, background-color 0.3s ease,
+    box-shadow 0.3s ease, color 0.3s ease; /* 平滑過渡 */
 }
 
 /* 懸停和聚焦效果 */
@@ -541,7 +565,7 @@ onMounted(async () => {
 .caregiver-name:focus {
   transform: translateY(-2px); /* 與卡片懸停效果（translateY）統一 */
   background-color: #d1e9e5; /* 略深的背景色，與 .condition-tag:hover 一致 */
-  color: #2A9287; /* 保持文字顏色，避免突兀變化 */
+  color: #2a9287; /* 保持文字顏色，避免突兀變化 */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); /* 略強的陰影 */
   outline: none; /* 移除默認聚焦框 */
 }
@@ -551,11 +575,10 @@ onMounted(async () => {
   box-shadow: 0 0 0 3px rgba(77, 182, 172, 0.2); /* 與其他聚焦效果一致 */
 }
 
-
 /* 返回按鈕 */
 .goBackToSearch {
   padding: 0.75rem 1.5rem;
-  background-color: #4DB6AC;
+  background-color: #4db6ac;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -565,7 +588,8 @@ onMounted(async () => {
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.goBackToSearch:hover, .goBackToSearch:focus {
+.goBackToSearch:hover,
+.goBackToSearch:focus {
   background-color: #3d9c93;
   transform: translateY(-2px);
   outline: none;

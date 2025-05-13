@@ -22,7 +22,6 @@ import { ref, onMounted } from 'vue'
 import axios from '@/plugins/axios'
 import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const userId = ref(null)
 const appointments = ref([])
 

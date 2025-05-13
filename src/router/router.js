@@ -212,7 +212,7 @@ const routes = [
 
   // 使用者查看訂單與付款
   {
-    path: "/orders",
+    path: "/user-center/orders",
     component: () => import("@/rita/views/OrderList.vue"),
     name: "orderList",
   },
@@ -264,7 +264,7 @@ const routes = [
       { path: "myPost", component: MyPost },
       {
         path: "orders",
-        component: () => import("@/yuni/views/RitaOrder.vue"),
+        component: () => import("@/rita/views/OrderList.vue"),
         name: "ritaOrder",
       },
     ],

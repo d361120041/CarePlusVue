@@ -1,19 +1,18 @@
 <template>
-  <div class="wrapper">
+   <div class="wrapper">
     <!-- 🔙 返回按鈕 -->
     <button
       @click="goBack"
-      class="back-button flex items-center text-teal-600 hover:text-teal-700 transition-colors duration-200"
-      aria-label="返回搜尋結果"
-    >
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-      </svg>
-      返回搜尋結果
+      class="back-button flex items-center text-teal-600 hover:text-teal-700 transition-colors duration-200 py-2 px-2 rounded-md mt-2 ml-4 mb-9"
+  aria-label="返回搜尋結果"
+>
+      <!-- <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      </svg> -->
+      ⬅︎ 返回搜尋結果
     </button>
-
+   
     <!-- 👤 看護個人資料區塊 -->
-    <div v-if="caregiver" class="caregiver-profile card-section">
+    <div v-if="caregiver" class="caregiver-profile card-section mt-4">
       <div class="flex flex-col md:flex-row gap-8">
         <!-- 左側：看護資訊 -->
         <div class="flex-1 space-y-8">
@@ -28,7 +27,7 @@
           </div>
 
           <!-- 🧾 姓名 -->
-          <h1 class="text-3xl font-bold text-teal-700">{{ caregiver.caregiverName }}</h1>
+          <h1 class="text-4xl font-bold text-teal-700">{{ caregiver.caregiverName }}</h1>
 
           <!-- 📋 基本資訊 -->
           <div class="info-grid">
@@ -52,9 +51,9 @@
           </div>
 
           <!-- 📄 詳細介紹 -->
-          <div>
-            <h3 class="section-title">詳細介紹</h3>
-            <p class="text-gray-600 mt-3 leading-relaxed">{{ caregiver.description || '尚無詳細介紹' }}</p>
+          <div class="mt-3">
+            <h3 class="section-title mb-6">詳細介紹</h3>
+            <p class="text-gray-600 mt-7 leading-relaxed">{{ caregiver.description || '尚無詳細介紹' }}</p>
           </div>
 
        <!--   <div v-if="caregiver?.caregiverLicenses?.length > 0">
@@ -90,7 +89,7 @@
         </div>
       </div>
 
-      <div class="mt-4">
+      <div class="mt-6">
           <h4 class="section-title">預估總價</h4>
           <p class="text-xl font-semibold text-teal-700">
             {{  caregiver.totalPrice ? `${caregiver.totalPrice} 元`  : '計算中...' }}
@@ -235,26 +234,27 @@ const confirmBooking = () => {
   transition: transform 0.3s ease;
 }
 
-.card-section:hover {
-  transform: translateY(-4px);
-}
-
 .back-button {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 1rem;
+  padding: 1.75rem 1.5rem;
+  background-color: #4db6ac;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
   font-size: 1rem;
   font-weight: 500;
-  color: #1f2937;
-  background-color: #e5f4f5;
-  border-radius: 8px;
-  border: 1px solid #b0e0e6;
-  margin-bottom: 1.5rem;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.back-button:hover {
+.back-button:hover,
+.back-button:focus {
+  background-color: #3d9c93;
+  transform: translateY(-2px);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(77, 182, 172, 0.2);
+}
+
+/* .back-button:hover {
   background-color: #d1ecee;
   color: #0f766e;
   transform: translateX(-2px);
@@ -275,7 +275,7 @@ const confirmBooking = () => {
 
 .back-button:hover svg {
   transform: translateX(-3px);
-}
+} */
 
 .caregiver-image {
   width: 100%;
@@ -314,7 +314,7 @@ const confirmBooking = () => {
 }
 
 .label {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: #6b7280;
   font-weight: 600;
   text-transform: uppercase;
@@ -322,13 +322,13 @@ const confirmBooking = () => {
 }
 
 .value {
-  font-size: 1rem;
+  font-size: 1.125rem;
   color: #1f2937;
   margin-top: 0.25rem;
 }
 
 .section-title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: #1f2937;
 }

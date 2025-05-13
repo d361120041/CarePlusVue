@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="confirmation-card card-section">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-6">確認您的預約</h2>
+      <h2 class="section-title">確認您的預約</h2>
 
       <!-- 顯示預約資料 -->
       <div class="info-grid">
@@ -12,12 +12,12 @@
           }}</span>
         </div>
 
-        <div class="info-item">
+        <!-- <div class="info-item">
           <span class="label">看護ID</span>
           <span class="value">{{
             appointmentStore.appointment.caregiverId || "未指定"
           }}</span>
-        </div>
+        </div> -->
 
         <div class="info-item">
           <span class="label">時間類型</span>
@@ -151,7 +151,7 @@
             appointmentStore.appointment.hospitalBedNumber
           }}</span>
 
-          <span class="label">科别</span>
+          <span class="label">科別</span>
           <span class="value">{{
             appointmentStore.appointment.hospitalDepartment || "未填寫"
           }}</span>
@@ -191,20 +191,20 @@
       </div>
 
       <!-- 按鈕區域 -->
-      <div class="button-group mt-8">
+      <div class="button-group">
         <!-- 送出預約按鈕 -->
         <button
           @click="submitAppointment"
-          class="booking-button w-full flex justify-center items-center py-3 bg-teal-600 text-white rounded-full font-medium hover:bg-teal-700 transition-all duration-200 transform hover:scale-105"
+          class="booking-button"
           aria-label="送出預約"
         >
-          送出預約
+          下一步：付款
         </button>
 
         <!-- 更改需求單按鈕 -->
         <button
           @click="goBackToRequest"
-          class="edit-button w-full flex justify-center items-center py-3 bg-gray-300 text-gray-800 rounded-full font-medium hover:bg-gray-400 transition-all duration-200 transform hover:scale-105 mt-4"
+          class="edit-button"
           aria-label="更改需求單"
         >
           更改需求單
@@ -220,6 +220,7 @@ import { useRouter } from "vue-router";
 import { useCaregiverStore } from "@/stores/caregiverStore";
 import { useAppointmentStore } from "@/stores/AppointmentStore";
 import myAxios from "@/plugins/axios";
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const caregiverStore = useCaregiverStore();
@@ -228,17 +229,29 @@ const appointmentStore = useAppointmentStore();
 // 送出預約
 const submitAppointment = async () => {
   try {
+    // 顯示「建立預約中...」的 SweetAlert
+    const swalLoading = Swal.fire({
+      title: '建立預約中...',
+      text: '請稍候，我們正在處理您的預約。',
+      allowOutsideClick: false, // 禁止外部點擊關閉彈窗
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
     // ✅ 呼叫 Store Action 建立預約
     const appointmentId = await appointmentStore.submitAppointment();
 
     // ✅ 將 appointmentId 儲存到 localStorage
     localStorage.setItem("appointmentId", appointmentId);
 
-    // ✅ 跳轉到付款頁面
     router.push(`/payment/${appointmentId}`);
+
+    swalLoading.close();
   } catch (error) {
     console.error("預約送出失敗:", error);
     alert("發生錯誤，請稍後再試");
+
+    Swal.close();
   }
 };
 
@@ -253,107 +266,188 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.button-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
+/* Global styles */
 .wrapper {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem 1rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+/* Card styling */
 .card-section {
   background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   padding: 2.5rem;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.card-section:hover {
+/* .card-section:hover {
   transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+} */
+
+/* Title styling */
+.section-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 2rem;
+  letter-spacing: -0.025em;
 }
 
+/* Info grid */
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.info-item:hover {
+  background-color: #f1f5f9;
 }
 
 .label {
   font-size: 0.875rem;
-  color: #6b7280;
   font-weight: 600;
+  color: #475569;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
 }
 
 .value {
   font-size: 1rem;
-  color: #1f2937;
-  margin-top: 0.25rem;
+  color: #1e293b;
+  line-height: 1.5;
 }
 
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
+/* Button group */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
 }
 
+/* Booking button */
 .booking-button {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 1.5rem;
   font-size: 1.125rem;
   font-weight: 600;
   color: #ffffff;
-  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
   border: none;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease,
-    opacity 0.2s ease;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
 .booking-button:hover {
-  background: linear-gradient(135deg, #0d615a 0%, #0f4d47 100%);
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  opacity: 0.95;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 .booking-button:active {
   transform: scale(0.98);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .booking-button:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.3);
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.3);
 }
 
+/* Edit button */
 .edit-button {
-  background-color: #f3f4f6;
-  color: #374151;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem 1.5rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  color: #1e293b;
+  background-color: #e2e8f0;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
 .edit-button:hover {
-  background-color: #d1d5db;
-  transform: scale(1.02);
+  background-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.edit-button:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.edit-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(203, 213, 225, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .card-section {
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .booking-button,
+  .edit-button {
+    font-size: 1rem;
+    padding: 0.75rem 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .info-item {
+    padding: 0.75rem;
+  }
+
+  .label {
+    font-size: 0.75rem;
+  }
+
+  .value {
+    font-size: 0.875rem;
+  }
 }
 </style>

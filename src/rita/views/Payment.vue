@@ -224,35 +224,31 @@ const proceedToPayment = async () => {
     }
 
     // 使用 URLSearchParams 將資料格式化為 x-www-form-urlencoded 格式
-    const params = new URLSearchParams();
-    params.append('appointmentId', appointmentId);
-
-    console.log("Request URL: /payment/ecpay?" + params.toString());  // 打印最終的請求 URL
+    const formData = new URLSearchParams();
+    formData.append('appointmentId', appointmentId);
 
    // 發送 GET 請求，並將 appointmentId 作為查詢參數傳遞
-   const response = await myAxios.get(
-      `/payment/ecpay?${params.toString()}`,
-    );
+   const response = await myAxios.post("/payment/ecpay", formData);
     console.log(response.data);
 
     // 將返回的表單 HTML 插入到頁面並提交
-    const form = document.createElement("form");
-    form.innerHTML = response.data;  // 假設返回的內容是 HTML 表單
-    document.body.appendChild(form);
-    form.submit();  // 直接提交該表單
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = response.data;  // 假設返回的內容是 HTML 表單
+    document.body.appendChild(tempDiv);
+    tempDiv.querySelector("form").submit();  // 直接提交該表單
 
-    // 跳轉到支付成功頁面（在當前頁面，非新分頁）
-    router.push("/payment/success");
+    // // 跳轉到支付成功頁面（在當前頁面，非新分頁）
+    // router.push("/payment/success");
 
-    // ✅ 清空 localStorage
-    localStorage.removeItem("appointmentData");
-    localStorage.removeItem("appointmentId");
-    localStorage.removeItem("caregiverId");
-    localStorage.removeItem("continuousEndDate");
-    localStorage.removeItem("continuousEndTime");
-    localStorage.removeItem("continuousStartDate");
-    localStorage.removeItem("continuousStartTime");
-    localStorage.removeItem("timeType");
+    // // ✅ 清空 localStorage
+    // localStorage.removeItem("appointmentData");
+    // localStorage.removeItem("appointmentId");
+    // localStorage.removeItem("caregiverId");
+    // localStorage.removeItem("continuousEndDate");
+    // localStorage.removeItem("continuousEndTime");
+    // localStorage.removeItem("continuousStartDate");
+    // localStorage.removeItem("continuousStartTime");
+    // localStorage.removeItem("timeType");
 
     console.log("LocalStorage 清空完成");
   } catch (error) {

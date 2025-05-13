@@ -334,6 +334,17 @@ const validateTime = () => {
 
 //搜尋看護
 const searchCaregivers = async () => {
+
+  // 顯示搜尋中的 SweetAlert
+  const swalLoading = Swal.fire({
+    title: '搜尋中...',
+    text: '請稍等，我們正在搜尋最適合的看護人選。',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  })
+
   // ✅ 先檢查時間是否有效
   if (!validateTime()) return;
   const { city, district, continuous, multi, timeType } = form.value
@@ -432,9 +443,15 @@ console.log("過濾條件:", filters);
 
     router.push('/caregivers/list');
 
+    // 關閉 SweetAlert
+    swalLoading.close();
+
   } catch (err) {
     console.error('搜尋失敗', err)
     alert('搜尋失敗，請稍後再試')
+
+    // 關閉 SweetAlert
+    swalLoading.close();
   }
 }
 
