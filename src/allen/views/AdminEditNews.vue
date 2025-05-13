@@ -269,6 +269,16 @@ const handleSubmit = async () => {
       });
       return;
     }
+    
+    // 驗證標題字數限制
+    if (news.value.title.trim().length > 30) {
+      Swal.fire({
+        icon: 'warning',
+        title: '標題不得超過30字！',
+        confirmButtonText: '確定'
+      });
+      return;
+    }
 
     // 驗證分類
     if (!news.value.category.categoryId) {

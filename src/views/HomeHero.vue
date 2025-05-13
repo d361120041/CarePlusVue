@@ -136,17 +136,17 @@ onMounted(() => {
     margin-bottom: 2rem;
 }
 
-/* allen start*/
-
 .news-content {
     text-align: center;
     padding: 8px 0;
-    height: 100px;  /* 限制內容區域的高度 */
-    overflow: hidden;  /* 防止內容溢出 */
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-
-.news-list-container{
+.news-list-container {
     background-color: var(--color-bg-page);
 }
 
@@ -154,25 +154,22 @@ onMounted(() => {
     display: flex;
     align-items: center;
     background: var(--color-btn-primary-bg);
-    /* 大圓角 */
     padding: 12px 20px;
     border-radius: var(--radius-pill);
-     /* 字體字型 */
     color: var(--color-btn-primary-text);
     font-weight: bold;
     font-size: var(--font-size-xl);
-    /*按鈕大小*/
     margin-bottom: 24px;
     width: 180px;
-    /**/
     user-select: none;
     cursor: pointer;
     transition: background-color var(--transition-medium), box-shadow var(--transition-medium), transform var(--transition-fast);
 }
+
 .news-header:hover {
-  background-color: var(--color-btn-primary-bg-hover);
-  box-shadow: var(--shadow-lg);
-  transform: scale(1.05);
+    background-color: var(--color-btn-primary-bg-hover);
+    box-shadow: var(--shadow-lg);
+    transform: scale(1.05);
 }
 
 .news-icon {
@@ -183,17 +180,14 @@ onMounted(() => {
 .news-preview-container {
     display: flex;
     justify-content: center;
-    /* 置中對齊 */
     gap: 24px;
-    /* 間距縮小 */
     padding: 24px 48px;
-    /* 上下留白加大 */
 }
 
 .news-preview-card {
-    flex: 0 0 380px; /* 固定寬度 */
-    max-width: 380px; /* 限制最大寬度 */
-    height: 380px; /* 固定高度 */
+    flex: 0 0 380px;
+    max-width: 380px;
+    height: 380px;
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
@@ -203,7 +197,9 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between; /* 將內容均勻分布 */
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
 }
 
 .news-preview-card:hover {
@@ -212,39 +208,58 @@ onMounted(() => {
 
 .news-image {
     width: 100%;
-    max-width: 240px;  /* 限制圖片寬度 */
-    height: 160px;     /* 限制圖片高度 */
+    max-width: 240px;
+    height: 160px;
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 8px;
 }
 
+.news-content {
+    width: 100%;  /* 讓它與 .news-preview-card 同寬 */
+    max-width: 348px;  /* 與 .news-preview-card - padding */
+    padding: 8px 0;
+    position: relative;
+    flex-grow: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 .news-title {
     display: -webkit-box;
-    -webkit-line-clamp: 2;  /* 限制顯示最多兩行 */
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
     line-height: 1.4;
-    max-height: calc(1.4em * 2); /* 控制高度 */
+    max-height: calc(1.4em * 2);
     font-size: var(--font-size-lg);
-    margin-bottom: 8px;
-}
-
-.news-content {
-    text-align: center;
-    padding: 8px 0;
+    margin-bottom: 16px;
+    margin-top: 40px;  /* 向下移動 40px */
+    z-index: 1;
 }
 
 .news-date,
 .news-views {
     font-size: 1rem;
-    /* 字體加大 */
     color: #555555;
-    margin-bottom: 4px;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    text-align: center;
 }
 
-/* allen end*/
+.news-date {
+    bottom: 36px;
+}
+
+.news-views {
+    bottom: 10px;
+}
+
+/* allen end */
 
 </style>
