@@ -2,7 +2,7 @@
     <article class="post-item">
         <div class="post-header">
             <!-- 使用者資訊區塊 -->
-            <UserAvatar :imageUrl="imageUrl" />
+            <UserAvatar :imageUrl="imageUrl" style="margin-right: 0.5rem;"/>
             <div class="user-info">
                 <div class="user-name">{{ post.user.userName }}
                     <span v-if="post.createdAt !== post.modifiedAt" class="edited-marker">已編輯</span>
