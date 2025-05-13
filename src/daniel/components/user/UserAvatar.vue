@@ -7,7 +7,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import defaultAvatar from '@/assets/daniel/circle-user-solid.svg'
+import defaultAvatar from '@/assets/defaultImg/default-avatar.jpg'
 
 const props = defineProps({
     imageUrl: {
@@ -31,8 +31,10 @@ const src = computed(() => {
     border-radius: 50%;
     margin-right: 0.5rem;
     transition: transform 0.2s, box-shadow 0.2s;
-    /* cursor: pointer; */
-    /* box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.15); */
+    object-fit: cover;
+    /* ← 核心：裁切填滿容器，保留比例 */
+    object-position: center;
+    /* ← 可選：決定裁切的圖片焦點 */
 }
 
 /* .user-avatar:hover {
