@@ -259,9 +259,8 @@ const updateUser = async () => {
       imageFile.value = null;
     }
 
-    await fetchImage();
-    auth.user = { ...user.value };
-    alert("資料更新成功");
+    alert("資料更新成功，即將重新整理頁面");
+    location.reload(); // ✅ 重整頁面
   } catch {
     alert("更新失敗");
   } finally {
