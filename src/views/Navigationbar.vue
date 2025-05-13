@@ -102,7 +102,7 @@ const isUserLogin = computed(() => auth.isAuthenticated);
 const imageUrl = ref(null);
 const fetchImage = async () => {
   try {
-    const res = await fetch("http://localhost:8082/user/profile-picture", {
+    const res = await fetch("http://192.168.66.54:8082/user/profile-picture", {
       credentials: "include",
     });
     if (res.ok) {
