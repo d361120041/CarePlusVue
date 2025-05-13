@@ -1,12 +1,12 @@
 <template>
-  <div class="user-center-layout">
+  <div class="user-center-layout" style="background-color: #fff8f0">
     <!-- 左側 Sidebar -->
     <aside class="sidebar">
       <Sidebar />
     </aside>
 
     <!-- 右側內容 -->
-    <main class="content">
+    <main class="content" style="background-color: #fff8f0">
       <router-view />
     </main>
   </div>

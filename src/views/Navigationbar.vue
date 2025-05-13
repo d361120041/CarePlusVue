@@ -33,11 +33,6 @@
       <template v-if="isUserLogin">
         <div class="user-info">
           <!-- ✅ 純文字歡迎語 -->
-          <span class="welcome-text" v-if="auth.user"
-            >歡迎：{{ auth.user.userName }}</span
-          >
-
-          <!-- ✅ 點擊頭像導向個人資料頁 -->
           <router-link to="/user-center/profile" class="user-icon-wrapper">
             <img
               v-if="imageUrl"
@@ -46,7 +41,18 @@
               class="user-icon"
               title="編輯個人資料"
             />
+            <img
+              v-else
+              src="@/assets/defaultImg/default-avatar.jpg"
+              alt="預設頭像"
+              class="user-icon"
+              title="編輯個人資料"
+            />
           </router-link>
+
+          <span class="welcome-text" v-if="auth.user">
+            歡迎：{{ auth.user.userName }}
+          </span>
 
           <button @click="userLogout" class="logout-button">登出</button>
         </div>
@@ -94,7 +100,7 @@ const isUserLogin = computed(() => auth.isAuthenticated);
 const imageUrl = ref(null);
 const fetchImage = async () => {
   try {
-    const res = await fetch("http://localhost:8082/user/profile-picture", {
+    const res = await fetch("http://192.168.66.54:8082/user/profile-picture", {
       credentials: "include",
     });
     if (res.ok) {
@@ -413,7 +419,7 @@ const caregiverLogout = () => {
   flex-shrink: 0; /* ✅ 新增：防止被壓縮過窄 */
 }
 .logout-button:hover {
-  background-color: #c82333; /* ✅ 新增：hover 效果更明顯 */
+  background-color: #dd4857; /* ✅ 新增：hover 效果更明顯 */
 }
 
 .welcome-text {
@@ -442,14 +448,11 @@ const caregiverLogout = () => {
 }
 
 .user-icon {
-  width: 100%;
+  width: 130%; /* ✅ 剛好填滿容器 */
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid #ccc;
-  position: absolute;
-  top: 0;
-  left: 0;
+  border: 1px solid #ccc;
 }
 
 /* ----- login ----- */
@@ -492,7 +495,7 @@ const caregiverLogout = () => {
 }
 
 .dropdown-login-menu button:hover {
-  background-color: #28a745;
+  background-color: #46b6ab;
 }
 
 /* 顯示下拉選單 */
