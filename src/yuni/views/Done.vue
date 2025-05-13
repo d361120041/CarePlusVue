@@ -1,15 +1,17 @@
-<template>
-  <div class="done-page text-center py-5">
-    <h1 class="text-success mb-4">🎉 恭喜{{ auth.userName }}完成課程！</h1>
-    <h3 class="mb-3">{{ course.title }}</h3>
-    <p class="text-muted mb-4">
-      你已完成 {{ totalChapters }} 個章節，完成時間：{{ completionDate }}
-    </p>
 
-    <div class="btn-group mt-4">
-      <router-link to="/my-courses" class="button-green">回到我的課程</router-link>
-      <!-- <router-link to="/" class="btn btn-outline-secondary">回首頁</router-link> -->
-      <!-- <button class="btn btn-success">📄 下載證書</button> -->
+
+
+<template>
+  <div class="done-wrapper d-flex justify-content-center align-items-center">
+    <div class="card p-5 text-center shadow-sm done-card">
+      <h1 class="text-success mb-4">🎉 恭喜{{ auth.userName }}完成課程！</h1>
+      <h3 class="mb-3">{{ course.title }}</h3>
+      <p class="text-muted mb-4">
+        你已完成 {{ totalChapters }} 個章節，完成時間：{{ completionDate }}
+      </p>
+      <div class="btn-group mt-4">
+        <router-link to="/my-courses" class="button-green">回到我的課程</router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -106,7 +108,22 @@ onMounted(async () => {
   margin: 0 auto;
 }
 
-.btn-group>* {
-  margin: 0 0.5rem;
+.btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
 }
+.done-wrapper {
+  height: 62vh;
+}
+
+.done-card {
+  max-width: 600px;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
 </style>

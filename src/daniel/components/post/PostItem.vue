@@ -179,11 +179,13 @@ onMounted(async () => {
 
 <style scoped>
 .post-item {
+    width: 100%;
+    max-width: 600px;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1rem;
-    margin-bottom: 2rem;
+    margin: 0 auto 2rem;
     position: relative;
 }
 

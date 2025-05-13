@@ -28,13 +28,20 @@ body {
 }
 
 /* 2. 頁首與頁尾 */
-header,
-footer {
+header {
   background-color: var(--color-bg-card);
   color: var(--color-primary-text);
   text-align: center;
   padding: 1rem 0;
   flex-shrink: 0; /* 不隨容器縮小 */
+}
+
+footer {
+  background-color: var(--color-bg-card);
+  color: var(--color-primary-text);
+  text-align: center;
+  flex-shrink: 0; /* 不隨容器縮小 */
+  margin-top: 40px;
 }
 
 /* 3. 主內容區塊 */
