@@ -1,12 +1,13 @@
 <template>
     <div class="reply-item">
-        <div class="reply-header">
-            <!-- 使用者資訊區塊 -->
+        <div class="reply-top">
+            <!-- 第一行：大頭貼 + 使用者姓名與內容 -->
             <UserAvatar :imageUrl="imageUrl" />
-            <div class="user-info">
+            <div class="reply-main">
                 <div class="user-name">{{ reply.user.userName }}</div>
-                <div class="reply-time">{{ formattedTime }}</div>
+                <div>{{ reply.content }}</div>
             </div>
+
             <!-- 漢堡選單 -->
             <div class="reply-menu-wrapper">
                 <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
@@ -17,18 +18,20 @@
             </div>
         </div>
 
-        <!-- 編輯表單與顯示內容切換 -->
-        <div v-if="editing">
-            <EditReplyForm :reply="reply" @updated="onUpdated" @cancel="stopEdit" />
-        </div>
-        <div v-else>
-            <p>{{ reply.content }}</p>
+        <!-- 第二行：時間與按讚，對齊 reply-main 開頭 -->
+        <div class="reply-bottom">
+            <div class="reply-time">{{ formattedTime }}</div>
+
+            <!-- 按讚按鈕 -->
+            <div class="reply-actions">
+                <button class="action-btn" @click="likeReply">讚</button>
+                <span>(👍{{ likeCount }})</span>
+            </div>
         </div>
 
-        <!-- 按讚按鈕 -->
-        <div class="reply-actions">
-            <button class="action-btn" @click="likeReply">讚</button>
-            <span>(👍{{ likeCount }})</span>
+        <!-- 編輯表單 -->
+        <div v-if="editing">
+            <EditReplyForm :reply="reply" @updated="onUpdated" @cancel="stopEdit" />
         </div>
     </div>
 </template>
@@ -103,81 +106,108 @@ onMounted(() => {
 <style scoped>
 .reply-item {
     background: #fff;
-    border: 1px solid #f0f0f0;
     border-radius: 4px;
-    padding: 0.5rem;
+    padding: 0.75rem;
     margin-bottom: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     position: relative;
 }
 
-.reply-header {
+.reply-top {
     display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
+    position: relative;
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     margin-right: 0.75rem;
+    flex-shrink: 0;
 }
 
-.user-info {
+.reply-main {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    font-size: 0.9rem;
+    gap: 0.25rem;
+    background: #f5f5f5;
+    padding: 0.5rem;
+    border-radius: 4px;
 }
 
 .user-name {
     font-weight: bold;
+    font-size: 0.95rem;
 }
 
-.reply-time {
-    font-size: 0.8rem;
-    color: #666;
+.reply-content {
+    font-size: 0.9rem;
+    margin: 0;
+    white-space: pre-wrap;
 }
 
 .reply-menu-wrapper {
     position: absolute;
     top: 0;
-    right: 0;
+    right: 0.5rem;
 }
 
 .hamburger-btn {
     background: none;
     border: none;
     font-size: 1rem;
+    padding: 0.25rem;
     cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.hamburger-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .reply-dropdown {
     position: absolute;
     right: 0;
-    top: 1.2rem;
-    background: white;
+    top: 1.5rem;
+    background: #fff;
     border: 1px solid #ccc;
     border-radius: 4px;
     list-style: none;
-    padding: 0.5rem 0;
-    margin: 0;
+    padding: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     z-index: 100;
 }
 
 .reply-dropdown li {
-    padding: 0.3rem 0.8rem;
+    padding: 0.25rem 0.75rem;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .reply-dropdown li:hover {
-    background-color: #f5f5f5;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.reply-bottom {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #666;
+    margin-left: calc(36px + 0.75rem);
+    gap: 0.5rem;
 }
 
 .reply-actions {
     display: flex;
-    justify-content: flex-start;
-    margin: 0.5rem 0;
-    font-size: 0.9rem;
+    align-items: center;
+    gap: 0.25rem;
 }
 
 .action-btn {
@@ -188,6 +218,6 @@ onMounted(() => {
 }
 
 .action-btn:hover {
-    text-decoration: underline
+    text-decoration: underline;
 }
 </style>

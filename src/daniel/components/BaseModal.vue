@@ -89,7 +89,7 @@ const emit = defineEmits(['close'])
 .post-modal-body {
     flex: 1;
     overflow-y: auto;
-    padding: 1.5rem;
+    padding: 1.5rem 1.5rem 0;
     background: #fff;
 }
 
