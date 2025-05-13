@@ -70,10 +70,12 @@ const login = async () => {
   try {
     await authStore.login(email.value, password.value);
 
+    
     if (authStore.role === "ADMIN") {
       router.push("/admin");
     } else if (authStore.role === "CAREGIVER") {
       router.push("/caregiver");
+      await authStore.fetchProfile();
     } else {
       generalError.value = "未知角色，請聯絡管理員";
     }

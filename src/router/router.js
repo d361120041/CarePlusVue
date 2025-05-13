@@ -38,6 +38,8 @@ import AdminNewsPreview from "@/allen/views/AdminNewsPreview.vue";
 import CaregiverLogin from "@/yuuhou/LoginCaregiver.vue";
 import CaregiverProfileView from "@/yuuhou/CaregiverProfileView.vue";
 import CaregiverPricing from "@/yuuhou/EditService.vue";
+
+import UserForgotPwd from "@/yuuhou/UserForgotPwd.vue";
 // import Navigationbar from "@/views/Navigationbar.vue";
 
 // import CaregiverSchedule from '@/yuuhou/Schedule.vue'
@@ -46,7 +48,7 @@ import CaregiverPricing from "@/yuuhou/EditService.vue";
 
 import LoginView from "@/yuuhou/LoginView.vue";
 import RegisterView from "@/yuuhou/RegisterView.vue";
-import UserForgotPwd from "@/yuuhou/UserForgotPwd.vue";
+
 // import AdminLogin          from '@/yuuhou/AdminLogin.vue'
 import AdminDashboard from "@/yuuhou/AdminDashboard.vue";
 import UserDashboard from "@/yuuhou/UserDashboard.vue";
@@ -113,13 +115,35 @@ const routes = [
   { path: "/news/:id", component: NewsDetail, name: "newsDetail" }, //前台新聞內容
   { path: "/admin/news", component: AdminNewsList, name: "adminNewsList" }, //後台新聞主頁
   { path: "/admin/news/new", component: AdminEditNews, name: "adminNewsNew" }, //後台新增新聞
-  { path: "/admin/news/edit/:id", component: AdminEditNews, name: "adminNewsEdit",}, //後台編輯新聞
+  { path: "/admin/news/edit/:id", component: AdminEditNews, name: "adminNewsEdit", }, //後台編輯新聞
   { path: "/admin/news/:id", component: AdminNewsDetail, name: "adminNewsDetail", }, //後台新聞內容
-  { path: '/admin/news/preview/:id', component: AdminNewsPreview , name: 'AdminNewsPreview' }, //後台新聞預覽
+  { path: '/admin/news/preview/:id', component: AdminNewsPreview, name: 'AdminNewsPreview' }, //後台新聞預覽
 
   // ------------------ allen ------------------
 
   // ------------------ yuuhou ------------------
+
+  {
+    path: "/caregiver",
+    component: CaregiverDashboard,
+    children: [
+      { path: "profile", component: CaregiverProfileView },
+      { path: "pricing", component: CaregiverPricing },
+      // { path: "schedule", component: ScheduleView },
+      // { path: "orders", component: OrdersView },
+    ],
+  },
+
+
+  // {
+  //   path: "/caregiver",
+  //   component: CaregiverDashboard,
+  //   name: "caregiverDashboard",
+  // },
+  // { path: "/caregiver/profile", component: CaregiverProfileView },
+  // { path: "/caregiver/pricing", component: CaregiverPricing },
+
+
   {
     path: "/caregiverLogin",
     component: CaregiverLogin,
@@ -128,26 +152,19 @@ const routes = [
   { path: "/login", component: LoginView, name: "login" },
   { path: "/register", component: RegisterView, name: "register" },
   { path: "/forgot", component: UserForgotPwd, name: "forgotPwd" },
+
   // { path: "/navigationbar" , component: Navigationbar, name: "navigationBar" },
-  {
-    path: "/admin/dashboard",
-    component: AdminDashboard,
-    name: "adminDashboard",
-  },
   { path: "/user/dashboard", component: UserDashboard },
-  {
-    path: "/caregiver",
-    component: CaregiverDashboard,
-    name: "caregiverDashboard",
-  },
+
+
   // { path: '/adminLogin', component: AdminLogin, name: 'adminLogin' },
-  { path: "/admin/dashboard", component: AdminDashboard },
+
+
+
   { path: "/reset/yuuhou", component: ResetPasswordYuuhou },
   { path: "/verify-success", component: VerifySuccess, name: "verifySuccess" },
   { path: "/verify-reminder", component: VerifyReminder },
   { path: "/verify-failed", component: VerifyFailed },
-  { path: "/caregiver/profile", component: CaregiverProfileView },
-  { path: "/caregiver/pricing", component: CaregiverPricing },
   {
     path: "/login-select",
     component: () => import("@/yuuhou/LoginSelect.vue"),
@@ -279,14 +296,14 @@ const routes = [
       { path: "cms/courses", component: CourseAdmin, name: "cmsCourses" },
       { path: "cms/chapters", component: ChapterAdmin, name: "cmsChapters" },
       { path: "cms/progress", component: ProgressAdmin, name: "cmsProgress" },
-
       // ✅ 新聞模組路由整合
       { path: "news", component: AdminNewsList, name: "adminNewsList" },
       { path: "news/new", component: AdminEditNews, name: "adminNewsNew" },
       { path: "news/edit/:id", component: AdminEditNews, name: "adminNewsEdit" },
       { path: "news/:id", component: AdminNewsDetail, name: "adminNewsDetail" },
       { path: "news/preview/:id", component: AdminNewsPreview, name: "AdminNewsPreview" },
-      ],
+      { path: "admin/dashboard", component: AdminDashboard, name: "adminDashboard", },
+    ],
   },
 ];
 // ================== 設定路徑 結束==================

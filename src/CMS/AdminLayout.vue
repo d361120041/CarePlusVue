@@ -8,6 +8,7 @@
 
       <nav class="sidebar-nav">
         <router-link to="/admin" class="sidebar-link">首頁</router-link>
+        <router-link to="/admin/admin/dashboard" class="sidebar-link">照服員管理</router-link>
         <router-link to="/admin/cms/courses" class="sidebar-link">課程管理</router-link>
         <router-link to="/admin/cms/chapters" class="sidebar-link">章節管理</router-link>
         <router-link to="/admin/cms/progress" class="sidebar-link">進度管理</router-link>
