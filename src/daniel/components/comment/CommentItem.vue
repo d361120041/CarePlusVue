@@ -36,12 +36,6 @@
                     <button class="action-btn" @click="onReplyClick">回覆</button>
                 </div>
             </div>
-    
-            <!-- 編輯表單與顯示切換 -->
-            <!-- <div v-if="editing">
-                <EditCommentForm :comment="comment" @updated="onUpdated" @cancel="stopEdit" />
-            </div> -->
-    
         </div>
         
         <ReplyList :commentId="comment.commentId" :showForm="showReplyForm" />

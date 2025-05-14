@@ -16,8 +16,8 @@
                 <div class="reply-menu-wrapper">
                     <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
                     <ul v-if="menuOpen" class="reply-dropdown">
-                        <li @click="startEdit">編輯回覆</li>
-                        <li @click="confirmDelete">刪除回覆</li>
+                        <li @click="startEdit">編輯</li>
+                        <li @click="confirmDelete">刪除</li>
                     </ul>
                 </div>
             </div>
@@ -35,18 +35,18 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import myAxios from '@/plugins/axios.js'
+import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+import { useToggle } from '@/daniel/composables/useToggle'
 
+import myAxios from '@/plugins/axios.js'
 import EditReplyForm from '@/daniel/components/reply/EditReplyForm.vue'
 import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
 
 const props = defineProps({ reply: Object })
 const emit = defineEmits(['updated', 'deleted'])
 
-import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
 const { formattedTime } = useTimeFormat(props.reply.createdAt)
 
-import { useToggle } from '@/daniel/composables/useToggle'
 const [menuOpen, toggleMenu] = useToggle(false)
 
 // 使用者資訊區塊
