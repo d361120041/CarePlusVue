@@ -26,19 +26,16 @@
             <div class="comment-actions">
                 <button class="action-btn" @click="likeComment">讚</button>
                 <span>(👍{{ likeCount }})</span>
-                <button class="action-btn" @click="toggleReply">回覆</button>
+                <button class="action-btn" @click="onReplyClick">回覆</button>
             </div>
         </div>
-
-        <!-- 回覆表單 (小尺寸) -->
-        <ReplyForm v-if="showReplyForm" :commentId="comment.commentId" @added="onReplied" class="reply-form-small" />
 
         <!-- 編輯表單與顯示切換 -->
         <div v-if="editing">
             <EditCommentForm :comment="comment" @updated="onUpdated" @cancel="stopEdit" />
         </div>
 
-        <ReplyList :commentId="comment.commentId" @reloaded="emitReload" />
+        <ReplyList :commentId="comment.commentId" :showForm="showReplyForm" />
     </div>
 </template>
 
@@ -49,17 +46,15 @@ import { useToggle } from '@/daniel/composables/useToggle'
 
 import myAxios from '@/plugins/axios.js'
 import ReplyList from '@/daniel/components/reply/ReplyList.vue'
-import ReplyForm from '@/daniel/components/reply/ReplyForm.vue'
 import EditCommentForm from '@/daniel/components/comment/EditCommentForm.vue'
 import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
 
 const props = defineProps({ comment: Object })
-const emit = defineEmits(['replied', 'updated', 'deleted'])
+const emit = defineEmits(['replied', 'updated', 'deleted', 'toggle-reply'])
 
 const { formattedTime } = useTimeFormat(props.comment.createdAt)
 const [menuOpen, toggleMenu] = useToggle(false)
 const [showReplyForm, toggleReply] = useToggle(false)
-const emitReload = () => emit('replied')
 
 // 使用者資訊區塊
 const imageUrl = ref(null)
@@ -103,9 +98,9 @@ async function likeComment() {
     }
 }
 
-function onReplied() {
-    showReplyForm.value = false
-    emitReload()
+function onReplyClick() {
+    toggleReply()
+    emit('toggle-reply', props.comment.commentId)
 }
 
 onMounted(() => {
@@ -234,26 +229,5 @@ onMounted(() => {
 
 .action-btn:hover {
     text-decoration: underline
-}
-
-/* 小尺寸回覆表單覆蓋 */
-.reply-form-small {
-    margin-left: calc(40px + 0.75rem);
-}
-
-.reply-form-small .reply-form-container {
-    padding: 0.5rem;
-    border-radius: 8px;
-    gap: 0.25rem;
-}
-
-.reply-form-small .reply-input {
-    padding: 0.5rem;
-    font-size: 0.85rem;
-}
-
-.reply-form-small .submit-btn {
-    padding: 0.25rem 0.75rem;
-    font-size: 0.8rem;
 }
 </style>

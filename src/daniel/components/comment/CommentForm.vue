@@ -58,7 +58,7 @@ const submit = async () => {
 .comment-input {
     flex: 1;
     resize: none;
-    padding: 0.75rem;
+    padding: 0.5rem;
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 0.95rem;
