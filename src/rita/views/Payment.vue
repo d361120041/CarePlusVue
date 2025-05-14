@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <!-- 🔙 返回按鈕 -->
-    <button
+    <!-- <button
       @click="goBack"
       class="back-button flex items-center text-teal-600 hover:text-teal-700 transition-colors duration-200"
       aria-label="返回預約頁面"
@@ -21,7 +21,7 @@
         ></path>
       </svg>
       返回
-    </button>
+    </button> -->
 
     <!-- 📋 訂單資訊區塊 -->
     <div class="card-section mb-8">

@@ -613,12 +613,18 @@ h2, h3 {
   left: 0;
   width: 100%;
   height: 570px; /* 覆蓋預約流程和填寫需求區塊的高度 */
-  background-image: url('/images/young-asian-woman-taking-care.jpg');
+  /* background-image: url('/images/GlobalBanner/appointmentHeader.jpg'); */
   background-size: cover;
   background-position: center 52%;
   text-align: center;
   z-index: -1; /* 確保背景圖片在內容下方 */
 }
+
+.background-image {
+  background-image: url('@/assets/images/GlobalBanner/appointmentHeader.jpg');
+}
+
+
 /* 預約流程 */
 .reservation-process {
   text-align: center;

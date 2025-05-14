@@ -89,9 +89,14 @@
       >
         <img
           class="caregiver-image"
-          :src="caregiver.photoPath"
+          :src="
+            caregiver.photoPath ||
+            'https://finalimagesbucket.s3.ap-northeast-1.amazonaws.com/default-placeholder.jpg'
+          "
           :alt="`看護 ${caregiver.caregiverName}`"
+          loading="lazy"
         />
+
         <div class="flex justify-between items-center mb-2">
           <h3 class="caregiver-name text-lg font-semibold text-teal-600">
             {{ caregiver.caregiverName }}

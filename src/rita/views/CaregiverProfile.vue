@@ -1,18 +1,18 @@
 <template>
-   <div class="wrapper">
+  <div class="wrapper">
     <!-- 🔙 返回按鈕 -->
     <button
       @click="goBack"
       class="back-button flex items-center text-teal-600 hover:text-teal-700 transition-colors duration-200 py-2 px-2 rounded-md mt-2 ml-4 mb-9"
-  aria-label="返回搜尋結果"
->
+      aria-label="返回搜尋結果"
+    >
       <!-- <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       </svg> -->
       ⬅︎ 返回搜尋結果
     </button>
-   
-     <!-- 👤 看護個人資料區塊 -->
-     <div v-if="caregiver" class="caregiver-profile card-section mt-4">
+
+    <!-- 👤 看護個人資料區塊 -->
+    <div v-if="caregiver" class="caregiver-profile card-section mt-4">
       <div class="flex flex-col md:flex-row gap-8">
         <!-- 左側：看護資訊 -->
         <div class="flex-1 space-y-8">
@@ -21,44 +21,81 @@
             <div class="flex-shrink-0 relative">
               <img
                 class="caregiver-image"
-                :src="caregiver.photoPath || 'https://finalimagesbucket.s3.amazonaws.com/default-placeholder.jpg'"
+                :src="
+                  caregiver.photoPath ||
+                  'https://finalimagesbucket.s3.ap-northeast-1.amazonaws.com/default-placeholder.jpg'
+                "
                 :alt="`看護 ${caregiver.caregiverName}`"
                 loading="lazy"
               />
             </div>
 
             <!-- 🧾 姓名 -->
-            <h1 class="text-4xl font-bold text-teal-700">{{ caregiver.caregiverName }}</h1>
+            <h1 class="text-4xl font-bold text-teal-700">
+              {{ caregiver.caregiverName }}
+            </h1>
           </div>
 
           <!-- 📋 基本資訊 -->
           <div class="info-grid">
-            <div class="info-item"><span class="label">性別</span><span class="value">{{ caregiver.gender || '未知' }}</span></div>
-            <div class="info-item"><span class="label">國籍</span><span class="value">{{ caregiver.nationality || '未知' }}</span></div>
+            <div class="info-item">
+              <span class="label">性別</span
+              ><span class="value">{{ caregiver.gender || "未知" }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">國籍</span
+              ><span class="value">{{ caregiver.nationality || "未知" }}</span>
+            </div>
             <div class="info-item">
               <span class="label">語言</span>
               <span class="value">
                 <template v-if="Array.isArray(caregiver?.languages)">
-                  {{ caregiver.languages.join(', ') }}
+                  {{ caregiver.languages.join(", ") }}
                 </template>
                 <template v-else>
-                  {{ caregiver?.languages || '未知' }}
+                  {{ caregiver?.languages || "未知" }}
                 </template>
               </span>
             </div>
-            <div class="info-item"><span class="label">經驗年數</span><span class="value">{{ caregiver.yearOfExperience }} 年</span></div>
-            <div class="info-item"><span class="label">時薪</span><span class="value">{{ caregiver.hourlyRate ? `${caregiver.hourlyRate} 元/小時` : '未提供' }}</span></div>
-            <div class="info-item"><span class="label">半日薪</span><span class="value">{{ caregiver.hourlyRate ? `${caregiver.halfDayRate} 元/小時` : '未提供' }}</span></div>
-            <div class="info-item"><span class="label">日薪</span><span class="value">{{ caregiver.hourlyRate ? `${caregiver.fullDayRate} 元/小時` : '未提供' }}</span></div>
+            <div class="info-item">
+              <span class="label">經驗年數</span
+              ><span class="value">{{ caregiver.yearOfExperience }} 年</span>
+            </div>
+            <div class="info-item">
+              <span class="label">時薪</span
+              ><span class="value">{{
+                caregiver.hourlyRate
+                  ? `${caregiver.hourlyRate} 元/小時`
+                  : "未提供"
+              }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">半日薪</span
+              ><span class="value">{{
+                caregiver.hourlyRate
+                  ? `${caregiver.halfDayRate} 元/小時`
+                  : "未提供"
+              }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">日薪</span
+              ><span class="value">{{
+                caregiver.hourlyRate
+                  ? `${caregiver.fullDayRate} 元/小時`
+                  : "未提供"
+              }}</span>
+            </div>
           </div>
 
           <!-- 📄 詳細介紹 -->
           <div class="mt-3">
             <h3 class="section-title mb-6">詳細介紹</h3>
-            <p class="text-gray-600 mt-7 leading-relaxed">{{ caregiver.description || '尚無詳細介紹' }}</p>
+            <p class="text-gray-600 mt-7 leading-relaxed">
+              {{ caregiver.description || "尚無詳細介紹" }}
+            </p>
           </div>
 
-       <!--   <div v-if="caregiver?.caregiverLicenses?.length > 0">
+          <!--   <div v-if="caregiver?.caregiverLicenses?.length > 0">
             <h3 class="section-title">專業證照</h3>
             <ul class="mt-3 list-disc list-inside text-gray-600">
               <li v-for="license in caregiver.caregiverLicenses" :key="license.licenseId || license.licenseName">
@@ -92,11 +129,13 @@
       </div>
 
       <div class="mt-6">
-          <h4 class="section-title">預估總價</h4>
-          <p class="text-xl font-semibold text-teal-700">
-            {{  caregiver.totalPrice ? `${caregiver.totalPrice} 元`  : '計算中...' }}
-          </p>
-        </div>
+        <h4 class="section-title">預估總價</h4>
+        <p class="text-xl font-semibold text-teal-700">
+          {{
+            caregiver.totalPrice ? `${caregiver.totalPrice} 元` : "計算中..."
+          }}
+        </p>
+      </div>
 
       <!-- ✅ 預約按鈕 -->
       <div class="mt-8">
@@ -111,19 +150,24 @@
     </div>
 
     <!-- ⏳ 載入狀態 -->
-    <div v-else class="loading-state text-center py-12 bg-white rounded-lg shadow-sm">
-      <div class="animate-spin inline-block w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full"></div>
+    <div
+      v-else
+      class="loading-state text-center py-12 bg-white rounded-lg shadow-sm"
+    >
+      <div
+        class="animate-spin inline-block w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full"
+      ></div>
       <p class="mt-4 text-lg text-gray-600">正在載入看護資料...</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useCaregiverStore } from '@/stores/caregiverStore';
-import { useAppointmentStore } from '@/stores/AppointmentStore';
-import myAxios from '@/plugins/axios';
+import { ref, onMounted, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useCaregiverStore } from "@/stores/caregiverStore";
+import { useAppointmentStore } from "@/stores/AppointmentStore";
+import myAxios from "@/plugins/axios";
 
 const router = useRouter();
 const route = useRoute();
@@ -134,45 +178,59 @@ const caregiver = ref(null);
 
 // 🔄 當使用者選擇看護時儲存 ID
 const selectCaregiver = (caregiverId) => {
-  localStorage.setItem('caregiverId', caregiverId);
+  localStorage.setItem("caregiverId", caregiverId);
   appointmentStore.setCaregiverId(caregiverId);
 };
 
 onMounted(async () => {
   const caregiverId = route.params.id;
-  console.log('Caregiver ID from route:', caregiverId);
+  console.log("Caregiver ID from route:", caregiverId);
 
-  if (caregiverStore.selectedCaregiver && caregiverStore.selectedCaregiver.caregiverId === parseInt(caregiverId)) {
+  if (
+    caregiverStore.selectedCaregiver &&
+    caregiverStore.selectedCaregiver.caregiverId === parseInt(caregiverId)
+  ) {
     caregiver.value = caregiverStore.selectedCaregiver;
-    console.log('Caregiver from store:', caregiver.value);
+    console.log("Caregiver from store:", caregiver.value);
   } else if (caregiverId) {
     try {
       const response = await myAxios.get(`/api/caregivers/${caregiverId}`);
       caregiver.value = response.data;
       caregiverStore.selectCaregiver(response.data); // 更新 store
-      console.log('Caregiver details fetched from API:', caregiver.value);
+      console.log("Caregiver details fetched from API:", caregiver.value);
     } catch (error) {
-      console.error('Failed to fetch caregiver details:', error);
+      console.error("Failed to fetch caregiver details:", error);
       // 處理錯誤
     }
   } else {
-    console.warn('No caregiver ID available.');
+    console.warn("No caregiver ID available.");
     // 處理沒有 ID 的情況
   }
 
   // 從 localStorage 加載 appointmentStore 的狀態
-  appointmentStore.appointment.timeType = localStorage.getItem('timeType') || 'continuous';
-  appointmentStore.continuous.startDate = localStorage.getItem('continuousStartDate') || '';
-  appointmentStore.continuous.startTime = localStorage.getItem('continuousStartTime') || '';
-  appointmentStore.continuous.endDate = localStorage.getItem('continuousEndDate') || '';
-  appointmentStore.continuous.endTime = localStorage.getItem('continuousEndTime') || '';
-  appointmentStore.multi.multi.startDate = localStorage.getItem('multiStartDate') || '';
-  appointmentStore.multi.multi.endDate = localStorage.getItem('multiEndDate') || '';
+  appointmentStore.appointment.timeType =
+    localStorage.getItem("timeType") || "continuous";
+  appointmentStore.continuous.startDate =
+    localStorage.getItem("continuousStartDate") || "";
+  appointmentStore.continuous.startTime =
+    localStorage.getItem("continuousStartTime") || "";
+  appointmentStore.continuous.endDate =
+    localStorage.getItem("continuousEndDate") || "";
+  appointmentStore.continuous.endTime =
+    localStorage.getItem("continuousEndTime") || "";
+  appointmentStore.multi.multi.startDate =
+    localStorage.getItem("multiStartDate") || "";
+  appointmentStore.multi.multi.endDate =
+    localStorage.getItem("multiEndDate") || "";
   try {
-    appointmentStore.multi.multi.repeatDays = JSON.parse(localStorage.getItem('multiRepeatDays') || '{}');
-    appointmentStore.multi.multi.timeSlots = JSON.parse(localStorage.getItem('multiTimeSlots') || '[]');
+    appointmentStore.multi.multi.repeatDays = JSON.parse(
+      localStorage.getItem("multiRepeatDays") || "{}"
+    );
+    appointmentStore.multi.multi.timeSlots = JSON.parse(
+      localStorage.getItem("multiTimeSlots") || "[]"
+    );
   } catch (error) {
-    console.error('Error parsing multi time data from localStorage:', error);
+    console.error("Error parsing multi time data from localStorage:", error);
     // 處理錯誤，例如設置為預設值
     appointmentStore.multi.multi.repeatDays = {};
     appointmentStore.multi.multi.timeSlots = [];
@@ -181,24 +239,26 @@ onMounted(async () => {
   if (caregiverStore.selectedCaregiver) {
     caregiver.value = caregiverStore.selectedCaregiver;
   } else {
-    const storedCaregiver = localStorage.getItem('selectedCaregiver');
+    const storedCaregiver = localStorage.getItem("selectedCaregiver");
     if (storedCaregiver) {
       try {
         caregiver.value = JSON.parse(storedCaregiver);
       } catch (error) {
-        console.error('Error parsing stored caregiver:', error);
-        localStorage.removeItem('selectedCaregiver');
+        console.error("Error parsing stored caregiver:", error);
+        localStorage.removeItem("selectedCaregiver");
       }
     }
   }
 
   if (!caregiver.value) {
     const caregiverId = route.params.caregiverId;
-    const foundCaregiver = caregiverStore.caregivers.find(c => c.caregiverId === caregiverId);
+    const foundCaregiver = caregiverStore.caregivers.find(
+      (c) => c.caregiverId === caregiverId
+    );
     if (foundCaregiver) {
       caregiver.value = foundCaregiver;
       caregiverStore.selectCaregiver(foundCaregiver);
-      localStorage.setItem('selectedCaregiver', JSON.stringify(foundCaregiver));
+      localStorage.setItem("selectedCaregiver", JSON.stringify(foundCaregiver));
     } else {
       console.warn(`找不到 ID 為 ${caregiverId} 的看護`);
       caregiver.value = {};
@@ -207,7 +267,7 @@ onMounted(async () => {
 });
 
 const goBack = () => {
-  router.push('/caregivers/list');
+  router.push("/caregivers/list");
 };
 
 const confirmBooking = () => {
@@ -216,7 +276,7 @@ const confirmBooking = () => {
     appointmentStore.appointment.totalPrice = caregiver.value.totalPrice;
     router.push(`/request/time?caregiverId=${caregiver.value.caregiverId}`);
   } else {
-    console.warn('無法確認預約，看護資料未載入。');
+    console.warn("無法確認預約，看護資料未載入。");
   }
 };
 </script>
@@ -344,16 +404,25 @@ const confirmBooking = () => {
   font-size: 1.125rem;
   font-weight: 600;
   color: #ffffff;
-  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%); /* 微妙漸變，與配色協調 */
+  background: linear-gradient(
+    135deg,
+    #0f766e 0%,
+    #115e59 100%
+  ); /* 微妙漸變，與配色協調 */
   border: none;
   border-radius: 8px; /* 與 .back-button 圓角一致 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, opacity 0.2s ease;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease,
+    opacity 0.2s ease;
 }
 
 .booking-button:hover {
-  background: linear-gradient(135deg, #0d615a 0%, #0f4d47 100%); /* 懸停時略暗的漸變 */
+  background: linear-gradient(
+    135deg,
+    #0d615a 0%,
+    #0f4d47 100%
+  ); /* 懸停時略暗的漸變 */
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   opacity: 0.95; /* 微妙透明度變化 */
