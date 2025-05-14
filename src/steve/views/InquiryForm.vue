@@ -12,7 +12,7 @@
         :class="{ active: selectedTemplate === 1 }"
         @click="fillTemplate(1)"
       >
-        諮詢照護者
+        諮詢看護
       </button>
       <button
         class="template-btn"
@@ -95,8 +95,8 @@ onMounted(async () => {
 
 const fillTemplate = (type) => {
   const templates = {
-    1: "您好，我對某位照護者的服務有疑問，想了解更多詳情，煩請協助說明。",
-    2: "您好，想詢問某門課程的內容或報名方式，請問可以提供更多資訊嗎？",
+    1: "我想詢問看護服務，想了解更多詳情，煩請協助說明。",
+    2: "我想詢問某門課程的內容或報名方式，請問可以提供更多資訊嗎？",
     3: "您好，我想對先前的服務經驗提出申訴，以下是具體內容：",
     4: "您好，我有一些其他問題或建議如下：",
   };
