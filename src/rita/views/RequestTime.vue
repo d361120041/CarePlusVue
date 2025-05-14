@@ -397,12 +397,12 @@ body {
   transition: border-color 0.2s ease;
 }
 
-.form-item input[type="date"],
+/* .form-item input[type="date"],
 .form-item input[type="time"] {
   padding: 0.75rem 2.5rem 0.75rem 0.75rem;
   background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>') no-repeat right 0.75rem center;
   background-size: 16px;
-}
+} */
 
 .form-item input:focus {
   outline: none;

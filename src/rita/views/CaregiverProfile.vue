@@ -11,23 +11,25 @@
       ⬅︎ 返回搜尋結果
     </button>
    
-    <!-- 👤 看護個人資料區塊 -->
-    <div v-if="caregiver" class="caregiver-profile card-section mt-4">
+     <!-- 👤 看護個人資料區塊 -->
+     <div v-if="caregiver" class="caregiver-profile card-section mt-4">
       <div class="flex flex-col md:flex-row gap-8">
         <!-- 左側：看護資訊 -->
         <div class="flex-1 space-y-8">
-          <!-- 📸 看護照片 -->
-          <div class="flex-shrink-0 relative">
-            <img
-              class="caregiver-image"
-              :src="caregiver.photoPath || 'https://finalimagesbucket.s3.amazonaws.com/default-placeholder.jpg'"
-              :alt="`看護 ${caregiver.caregiverName}`"
-              loading="lazy"
-            />
-          </div>
+          <!-- 📸 看護照片和姓名在同一行顯示 -->
+          <div class="flex items-center gap-6">
+            <div class="flex-shrink-0 relative">
+              <img
+                class="caregiver-image"
+                :src="caregiver.photoPath || 'https://finalimagesbucket.s3.amazonaws.com/default-placeholder.jpg'"
+                :alt="`看護 ${caregiver.caregiverName}`"
+                loading="lazy"
+              />
+            </div>
 
-          <!-- 🧾 姓名 -->
-          <h1 class="text-4xl font-bold text-teal-700">{{ caregiver.caregiverName }}</h1>
+            <!-- 🧾 姓名 -->
+            <h1 class="text-4xl font-bold text-teal-700">{{ caregiver.caregiverName }}</h1>
+          </div>
 
           <!-- 📋 基本資訊 -->
           <div class="info-grid">

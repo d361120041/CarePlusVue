@@ -53,18 +53,18 @@
         <div class="card-body">
           <!-- Core appointment info -->
           <div class="info-group">
-            <div class="info-item">
+            <!-- <div class="info-item">
               <span class="label">預約時間</span>
               <span class="value">{{ formatDate(appointment.appointmentTime) }}</span>
-            </div>
+            </div> -->
             <div class="info-item">
               <span class="label">價格</span>
               <span class="value">{{ appointment.totalPrice ? `${appointment.totalPrice} 元` : "未提供" }}</span>
             </div>
-            <div class="info-item">
+            <!-- <div class="info-item">
               <span class="label">看護姓名</span>
               <span class="value">{{ appointment.caregiverName || "未提供" }}</span>
-            </div>
+            </div> -->
           </div>
 
           <!-- Location info -->
