@@ -405,8 +405,8 @@ watch(filteredCourses, () => {
 }
 
 .card {
-  max-width: 1280px;
-  margin: 10px 5px;
+  max-width: 1570px;
+  margin: auto;
   padding: 24px;
   background: #fff;
   border: 1px solid #e5e7eb;
@@ -483,15 +483,15 @@ watch(filteredCourses, () => {
 }
 
 .col-idx {
-  width: 30px
+  width: 40px
 }
 
 .col-cover {
-  width: 80px
+  width: 90px
 }
 
 .col-title {
-  width: 236px
+  width: 250px
 }
 
 .col-cat {

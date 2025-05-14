@@ -169,7 +169,8 @@ onMounted(fetchAll)
 
 <style scoped>
 .page-wrapper { padding: 24px; background: #f5f6fa; }
-.card { max-width: 1280px; margin: auto; padding: 24px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,.05); }
+.card {   max-width: 1570px;
+  margin: auto; padding: 24px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,.05); }
 .search-row { display: flex; gap: 8px; justify-content: center; align-items: center; margin-bottom: 24px; }
 .search-input { flex-grow: 1; min-width: 200px; padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 4px; }
 .btn { padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: background .2s; }
