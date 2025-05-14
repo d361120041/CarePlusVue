@@ -226,7 +226,7 @@ onMounted(async () => {
 }
 
 .breadcrumb-dynamic {
-  color: #6c757d; /* Bootstrap 的 text-muted */
+  color: #6c757d;
   font-weight: normal;
   display: inline-block;
   transition: transform 0.2s ease, color 0.2s ease;
@@ -234,7 +234,7 @@ onMounted(async () => {
 
 .breadcrumb-dynamic:hover {
   transform: scale(1.05);
-  color: #007bff; /* Hover 時變藍 */
+  color:  #4db6ac;
   text-decoration: none;
 }
 .breadcrumb-item + .breadcrumb-item::before {
@@ -254,7 +254,7 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-bottom: 2rem; /* 試著移除或減少 */
+  padding-bottom: 2rem;
 }
 
 .card {

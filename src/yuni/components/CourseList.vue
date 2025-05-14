@@ -35,10 +35,10 @@
           </button>
           <ul class="dropdown-menu">
             <li>
-              <a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-asc'">依課程編號 小 → 大</a>
+              <a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-asc'">依課程 舊 → 新 </a>
             </li>
             <li>
-              <a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-desc'">依課程編號 大 → 小</a>
+              <a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-desc'">依課程 新 → 舊</a>
             </li>
           </ul>
         </div>

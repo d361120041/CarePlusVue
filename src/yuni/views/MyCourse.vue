@@ -40,10 +40,25 @@
 </nav>
 
   <!-- 排序選單 -->
-  <select v-model="sortOption" class="form-select w-auto">
+  <!-- <select v-model="sortOption" class="form-select w-auto">
     <option value="id-asc">依課程編號（小 → 大）</option>
     <option value="id-desc">依課程編號（大 → 小）</option>
-  </select>
+  </select> -->
+
+  <!-- 排序選單（取代原本 select） -->
+<div class="dropdown m-1">
+  <button class="btn btn-outline-green dropdown-toggle" type="button" data-bs-toggle="dropdown">
+    排序方式
+  </button>
+  <ul class="dropdown-menu">
+    <li>
+      <a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-asc'">依課程 舊 → 新</a>
+    </li>
+    <li>
+      <a class="dropdown-item" href="#" @click.prevent="sortOption = 'id-desc'">依課程 新 → 舊</a>
+    </li>
+  </ul>
+</div>
 </div>
 
 
@@ -210,7 +225,7 @@ onMounted(async () => {
 }
 
 .breadcrumb-link {
-  color: #212529; /* 與 text-dark 一致 */
+  color: #212529;
   font-weight: bold;
   transition: transform 0.2s ease, color 0.2s ease;
   display: inline-block;
@@ -218,11 +233,11 @@ onMounted(async () => {
 
 .breadcrumb-link:hover {
   transform: scale(1.05);
-  color: var(--color-primary, #007bff); /* 也可用你自定義的主色 */
+  color: var(--color-primary, #4db6ac);
   text-decoration: none;
 }
 .breadcrumb-dynamic {
-  color: #6c757d; /* Bootstrap 的 text-muted 顏色 */
+  color: #6c757d;
   font-weight: normal;
   display: inline-block;
   transition: transform 0.2s ease, color 0.2s ease;
@@ -230,7 +245,7 @@ onMounted(async () => {
 
 .breadcrumb-dynamic:hover {
   transform: scale(1.05);
-  color: #007bff; 
+  color: #4db6ac; 
   text-decoration: none;
 }
 
@@ -244,5 +259,19 @@ onMounted(async () => {
   content: ">";
   color: #6c757d;
 }
+
+.btn-outline-green {
+  color: var(--color-btn-primary-bg);
+  border: 1px solid var(--color-btn-primary-bg);
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-green:hover,
+.btn-outline-green:focus {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+}
+
 
 </style>

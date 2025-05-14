@@ -321,7 +321,7 @@ onMounted(async () => {
 
 .breadcrumb-dynamic:hover {
   transform: scale(1.05);
-  color: #007bff;
+  color: #4DB6AC;
   text-decoration: none;
 }
 
