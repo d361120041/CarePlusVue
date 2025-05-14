@@ -1,40 +1,49 @@
 <template>
     <div class="comment-item">
 
-        <!-- 第一行：大頭貼 + 使用者姓名與內容區塊 -->
-        <div class="comment-top">
-            <UserAvatar :imageUrl="imageUrl" class="user-avatar" />
-            <div class="comment-main">
-                <div class="user-name">{{ comment.user.userName }}</div>
-                <div class="comment-content">{{ comment.content }}</div>
-            </div>
-
-            <!-- 漢堡選單 -->
-            <div class="comment-menu-wrapper">
-                <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
-                <ul v-if="menuOpen" class="comment-dropdown">
-                    <li @click="startEdit">編輯</li>
-                    <li @click="confirmDelete">刪除</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- 第二行：時間與按讚，對齊 comment-main 開頭 -->
-        <div class="comment-bottom">
-            <div class="comment-time">{{ formattedTime }}</div>
-            <!-- 按讚按鈕 -->
-            <div class="comment-actions">
-                <button class="action-btn" @click="likeComment">讚</button>
-                <span>(👍{{ likeCount }})</span>
-                <button class="action-btn" @click="onReplyClick">回覆</button>
-            </div>
-        </div>
-
-        <!-- 編輯表單與顯示切換 -->
+        <!-- 1. 編輯模式 -->
         <div v-if="editing">
             <EditCommentForm :comment="comment" @updated="onUpdated" @cancel="stopEdit" />
         </div>
 
+        <!-- 2. 顯示模式 -->
+        <div v-else>
+            <!-- 第一行：大頭貼 + 使用者姓名與內容區塊 -->
+            <div class="comment-top">
+                <UserAvatar :imageUrl="imageUrl" class="user-avatar" />
+                <div class="comment-main">
+                    <div class="user-name">{{ comment.user.userName }}</div>
+                    <div class="comment-content">{{ comment.content }}</div>
+                </div>
+    
+                <!-- 漢堡選單 -->
+                <div class="comment-menu-wrapper">
+                    <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
+                    <ul v-if="menuOpen" class="comment-dropdown">
+                        <li @click="startEdit">編輯</li>
+                        <li @click="confirmDelete">刪除</li>
+                    </ul>
+                </div>
+            </div>
+    
+            <!-- 第二行：時間與按讚，對齊 comment-main 開頭 -->
+            <div class="comment-bottom">
+                <div class="comment-time">{{ formattedTime }}</div>
+                <!-- 按讚按鈕 -->
+                <div class="comment-actions">
+                    <button class="action-btn" @click="likeComment">讚</button>
+                    <span>(👍{{ likeCount }})</span>
+                    <button class="action-btn" @click="onReplyClick">回覆</button>
+                </div>
+            </div>
+    
+            <!-- 編輯表單與顯示切換 -->
+            <!-- <div v-if="editing">
+                <EditCommentForm :comment="comment" @updated="onUpdated" @cancel="stopEdit" />
+            </div> -->
+    
+        </div>
+        
         <ReplyList :commentId="comment.commentId" :showForm="showReplyForm" />
     </div>
 </template>

@@ -1,37 +1,34 @@
 <template>
     <div class="reply-item">
-        <div class="reply-top">
-            <!-- 第一行：大頭貼 + 使用者姓名與內容 -->
-            <UserAvatar :imageUrl="imageUrl" />
-            <div class="reply-main">
-                <div class="user-name">{{ reply.user.userName }}</div>
-                <div>{{ reply.content }}</div>
-            </div>
-
-            <!-- 漢堡選單 -->
-            <div class="reply-menu-wrapper">
-                <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
-                <ul v-if="menuOpen" class="reply-dropdown">
-                    <li @click="startEdit">編輯回覆</li>
-                    <li @click="confirmDelete">刪除回覆</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- 第二行：時間與按讚，對齊 reply-main 開頭 -->
-        <div class="reply-bottom">
-            <div class="reply-time">{{ formattedTime }}</div>
-
-            <!-- 按讚按鈕 -->
-            <div class="reply-actions">
-                <button class="action-btn" @click="likeReply">讚</button>
-                <span>(👍{{ likeCount }})</span>
-            </div>
-        </div>
-
-        <!-- 編輯表單 -->
+        <!-- 1. 編輯模式 -->
         <div v-if="editing">
             <EditReplyForm :reply="reply" @updated="onUpdated" @cancel="stopEdit" />
+        </div>
+
+        <!-- 2. 顯示模式 -->
+        <div v-else>
+            <div class="reply-top">
+                <UserAvatar :imageUrl="imageUrl" />
+                <div class="reply-main">
+                    <div class="user-name">{{ reply.user.userName }}</div>
+                    <div class="reply-content">{{ reply.content }}</div>
+                </div>
+                <div class="reply-menu-wrapper">
+                    <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
+                    <ul v-if="menuOpen" class="reply-dropdown">
+                        <li @click="startEdit">編輯回覆</li>
+                        <li @click="confirmDelete">刪除回覆</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="reply-bottom">
+                <div class="reply-time">{{ formattedTime }}</div>
+                <div class="reply-actions">
+                    <button class="action-btn" @click="likeReply">讚</button>
+                    <span>(👍{{ likeCount }})</span>
+                </div>
+            </div>
         </div>
     </div>
 </template>
