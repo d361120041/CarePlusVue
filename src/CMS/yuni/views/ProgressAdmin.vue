@@ -19,20 +19,24 @@
               <th>章節</th>
               <th>狀態</th>
               <th>完成</th>
-              <th>觀看秒數</th>
+              <!-- <th>觀看秒數</th> -->
+              <th>紀錄時間</th>
               <th class="col-action">操作</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="p in paginatedProgresses" :key="p.progressId" :class="{ 'row-hover': editingId !== p.progressId }">
+            <tr v-for="p in paginatedProgresses" :key="p.progressId"
+              :class="{ 'row-hover': editingId !== p.progressId }">
               <template v-if="editingId === p.progressId">
                 <td>{{ p.progressId }}</td>
                 <!-- <td><input v-model.number="form.userId" type="number" class="input-edit" /></td>
                 <td><input v-model.number="form.courseId" type="number" class="input-edit" /></td>
                 <td><input v-model.number="form.chapterId" type="number" class="input-edit" /></td> -->
-                <td>{{ p.userId?.name || p.userId?.userId }}</td>
-<td>{{ p.courseId?.title || p.courseId?.courseId }}</td>
-<td>{{ p.chapterId?.title || p.chapterId?.chapterId }}</td>
+                <!-- <td>{{ p.userId?.name || p.userId?.userId }}</td> -->
+                <td>{{ p.userId?.name || p.userId?.userName || p.userId?.userId }}</td>
+
+                <td>{{ p.courseId?.title || p.courseId?.courseId }}</td>
+                <td>{{ p.chapterId?.title || p.chapterId?.chapterId }}</td>
                 <td>
                   <select v-model="form.status" class="input-edit">
                     <option v-for="s in statuses" :key="s" :value="s">{{ statusLabel(s) }}</option>
@@ -44,7 +48,9 @@
                     <option :value="false">✘</option>
                   </select>
                 </td>
-                <td><input v-model.number="form.lastWatched" type="number" class="input-edit" /></td>
+                <!-- <td><input v-model.number="form.lastWatched" type="number" class="input-edit" /></td> -->
+                <td>{{ p.recordedAt }}</td>
+
                 <td class="action-cell">
                   <button @click="save" class="link green">儲存</button>
                   <button @click="cancel" class="link gray">取消</button>
@@ -52,12 +58,15 @@
               </template>
               <template v-else>
                 <td>{{ p.progressId }}</td>
-                <td>{{ p.userId?.userId ?? p.userId }}</td>
+                <!-- <td>{{ p.userId?.userId ?? p.userId }}</td> -->
+                <td>{{ p.userId?.name || p.userId?.userName || p.userId?.userId }}</td>
+
                 <td>{{ p.courseId?.title ?? `#${p.courseId?.courseId}` }}</td>
                 <td>{{ p.chapterId?.title ?? `#${p.chapterId?.chapterId}` }}</td>
                 <td>{{ statusLabel(p.status) }}</td>
                 <td>{{ p.isCompleted ? '✔' : '✘' }}</td>
-                <td>{{ p.lastWatched ?? '-' }}</td>
+                <!-- <td>{{ p.lastWatched ?? '-' }}</td> -->
+                <td>{{ p.recordedAt }}</td>
                 <td class="action-cell">
                   <button @click="edit(p)" class="link blue">編輯</button>
                   <button @click="remove(p.progressId)" class="link red">刪除</button>
@@ -68,7 +77,8 @@
               <td>#</td>
               <td><input v-model.number="form.userId" type="number" class="input-create" placeholder="User" /></td>
               <td><input v-model.number="form.courseId" type="number" class="input-create" placeholder="Course" /></td>
-              <td><input v-model.number="form.chapterId" type="number" class="input-create" placeholder="Chapter" /></td>
+              <td><input v-model.number="form.chapterId" type="number" class="input-create" placeholder="Chapter" />
+              </td>
               <td>
                 <select v-model="form.status" class="input-create">
                   <option disabled value="">狀態</option>
@@ -82,7 +92,9 @@
                   <option :value="false">否</option>
                 </select>
               </td>
-              <td><input v-model.number="form.lastWatched" type="number" class="input-create" /></td>
+              <!-- <td><input v-model.number="form.lastWatched" type="number" class="input-create" /></td> -->
+              <td>{{ new Date().toLocaleString() }}</td>
+
               <td class="action-cell">
                 <button @click="save" class="link green">送出</button>
                 <button @click="cancel" class="link gray">取消</button>
@@ -91,11 +103,13 @@
             <!-- <tr v-else class="row-add" @click="startCreate">
               <td colspan="8">➕ 新增進度</td>
             </tr> -->
+            
           </tbody>
         </table>
         <div class="pagination">
           <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">«</button>
-          <button v-for="page in totalPages" :key="page" :class="{ 'active-page': page === currentPage }" @click="goToPage(page)">
+          <button v-for="page in totalPages" :key="page" :class="{ 'active-page': page === currentPage }"
+            @click="goToPage(page)">
             {{ page }}
           </button>
           <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">»</button>
@@ -122,32 +136,86 @@ const form = ref(empty())
 
 const fetchAll = async () => {
   const { data } = await api.get('/api/progress')
-  progresses.value = data
+  const now = new Date().toLocaleString()
+  progresses.value = data.map(p => ({ ...p, recordedAt: now }))
 }
+
 const search = async () => {
   if (!searchKeyword.value) return fetchAll()
   const { data } = await api.get('/api/progress', { params: { keyword: searchKeyword.value } })
   progresses.value = data
 }
+// const save = async () => {
+//   const payload = { ...form.value }
+//   if (editingId.value) {
+//     const { data } = await api.put(`/api/progress/${editingId.value}`, payload)
+//     const i = progresses.value.findIndex(p => p.progressId === data.progressId)
+//     if (i !== -1) progresses.value[i] = data
+//   } else {
+//     const { data } = await api.post('/api/progress', payload)
+//     progresses.value.push(data)
+//   }
+//   cancel()
+// }
+
+
+
 const save = async () => {
-  const payload = { ...form.value }
-  if (editingId.value) {
-    const { data } = await api.put(`/api/progress/${editingId.value}`, payload)
-    const i = progresses.value.findIndex(p => p.progressId === data.progressId)
-    if (i !== -1) progresses.value[i] = data
-  } else {
-    const { data } = await api.post('/api/progress', payload)
-    progresses.value.push(data)
+  const payload = {
+    userId: form.value.userId,
+    status: form.value.status,
+    isCompleted: form.value.isCompleted,
+    lastWatched: form.value.lastWatched ?? 0,
+    completionDate: new Date().toISOString(),
   }
-  cancel()
+
+  try {
+    console.log('💾 save triggered (PATCH)', payload)
+    const { data } = await api.patch(
+      `/api/progress/user/${form.value.userId}/chapter/${form.value.chapterId}/progress`,
+      payload
+    )
+    const i = progresses.value.findIndex(p => p.progressId === editingId.value)
+    if (i !== -1) {
+      progresses.value[i] = {
+        ...data,
+        recordedAt: new Date().toLocaleString() // 本地前端紀錄時間
+      }
+    }
+    cancel()
+  } catch (err) {
+    console.error('❌ 儲存失敗：', err)
+    alert('儲存失敗，請檢查是否有選到正確的章節與使用者')
+  }
 }
+
+
 const remove = async (id) => {
   if (confirm(`確定刪除進度 ${id}？`)) {
     await api.delete(`/api/progress/${id}`)
     progresses.value = progresses.value.filter(p => p.progressId !== id)
   }
 }
-const edit = p => { editingId.value = p.progressId; creating.value = false; form.value = { ...p, userId: p.userId?.userId ?? p.userId, courseId: p.courseId?.courseId ?? p.courseId, chapterId: p.chapterId?.chapterId ?? p.chapterId } }
+
+// const edit = p => { editingId.value = p.progressId; creating.value = false; form.value = { ...p, userId: p.userId?.userId ?? p.userId,
+//    courseId: p.courseId?.courseId ?? p.courseId, 
+//    chapterId: p.chapterId?.chapterId ?? p.chapterId,
+//    recordedAt: p.recordedAt || new Date().toLocaleString()
+//   } }
+
+  const edit = p => {
+  editingId.value = p.progressId
+  creating.value = false
+  form.value = {
+    userId: p.userId?.userId ?? p.userId,
+    courseId: p.courseId?.courseId ?? p.courseId,
+    chapterId: p.chapterId?.chapterId ?? p.chapterId,
+    status: p.status,
+    isCompleted: p.isCompleted,
+    lastWatched: p.lastWatched ?? 0,
+    recordedAt: p.recordedAt || new Date().toLocaleString()
+  }
+}
 const startCreate = () => { creating.value = true; editingId.value = null; form.value = empty() }
 const cancel = () => { creating.value = false; editingId.value = null; form.value = empty() }
 const resetFilters = () => { searchKeyword.value = ''; fetchAll() }
@@ -168,39 +236,192 @@ onMounted(fetchAll)
 </script>
 
 <style scoped>
-.page-wrapper { padding: 24px; background: #f5f6fa; }
-.card {   max-width: 1570px;
-  margin: auto; padding: 24px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,.05); }
-.search-row { display: flex; gap: 8px; justify-content: center; align-items: center; margin-bottom: 24px; }
-.search-input { flex-grow: 1; min-width: 200px; padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 4px; }
-.btn { padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: background .2s; }
-.btn-primary { background: #2563eb; color: #fff; border: none; }
-.btn-primary:hover { background: #1d4ed8; }
-.btn-secondary { background: #fff; border: 1px solid #d1d5db; }
-.btn-secondary:hover { background: #f3f4f6; }
-.table-wrapper { overflow-x: auto; }
-.course-table { width: 100%; border-collapse: collapse; }
-.course-table thead { background: #f3f4f6; }
-.course-table th, .course-table td { padding: 12px; border-top: 1px solid #e5e7eb; text-align: left; }
-.row-hover:hover { background: #f9fafb; }
-.col-idx { width: 48px; }
-.col-action { width: 128px; }
-.input-edit, .input-create { width: 100%; padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 4px; }
-.row-creating { background: #fef9c3; }
-.row-add { background: #f9fafb; cursor: pointer; transition: background .2s; text-align: center; }
-.row-add:hover { background: #e0f2fe; text-decoration: underline; }
-.link { font-weight: 500; cursor: pointer; background: none; border: none; padding: 0; }
-.link.blue { color: #2563eb; }
-.link.green { color: #16a34a; }
-.link.red { color: #dc2626; }
-.link.gray { color: #6b7280; }
-.link.blue:hover { color: #1d4ed8; }
-.link.green:hover { color: #15803d; }
-.link.red:hover { color: #b91c1c; }
-.link.gray:hover { color: #4b5563; }
-.action-cell { display: flex; gap: 8px; justify-content: flex-start; align-items: center; height: 55px; }
-.pagination { display: flex; justify-content: center; align-items: center; gap: 12px; margin: 16px 0; }
-.pagination button { padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc; background-color: #fff; cursor: pointer; }
-.pagination button:disabled { cursor: not-allowed; opacity: 0.5; }
-.active-page { background-color: #2563eb; color: #fff; }
+.page-wrapper {
+  padding: 24px;
+  background: #f5f6fa;
+}
+
+.card {
+  max-width: 1570px;
+  margin: auto;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
+}
+
+.search-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.search-input {
+  flex-grow: 1;
+  min-width: 200px;
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.btn-primary {
+  background: #11295c;
+  color: #fff;
+  border: none
+}
+
+.btn-primary:hover {
+  background: #1d4ed8
+}
+
+.btn-secondary {
+  background: #a7a1a1;
+  border: 1px solid #d1d5db
+}
+
+
+.btn-secondary:hover {
+  background: #f3f4f6;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.course-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.course-table thead {
+  background: #f3f4f6;
+}
+
+.course-table th,
+.course-table td {
+  padding: 12px;
+  border-top: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.row-hover:hover {
+  background: #f9fafb;
+}
+
+.col-idx {
+  width: 48px;
+}
+
+.col-action {
+  width: 128px;
+}
+
+.input-edit,
+.input-create {
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.row-creating {
+  background: #fef9c3;
+}
+
+.row-add {
+  background: #f9fafb;
+  cursor: pointer;
+  transition: background .2s;
+  text-align: center;
+}
+
+.row-add:hover {
+  background: #e0f2fe;
+  text-decoration: underline;
+}
+
+.link {
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.link.blue {
+  color: #11295c
+}
+
+
+.link.green {
+  color: #16a34a;
+}
+
+.link.red {
+  color: #b68a8a
+}
+
+.link.gray {
+  color: #6b7280;
+}
+
+.link.blue:hover {
+  color: #1d4ed8;
+}
+
+.link.green:hover {
+  color: #15803d;
+}
+
+.link.red:hover {
+  color: #b91c1c;
+}
+
+.link.gray:hover {
+  color: #4b5563;
+}
+
+.action-cell {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+  align-items: center;
+  height: 55px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.active-page {
+  background-color: #2563eb;
+  color: #fff;
+}
 </style>

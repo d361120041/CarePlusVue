@@ -6,13 +6,13 @@
       <!-- ────────── 搜尋列 ────────── -->
       <div class="search-row">
         <input v-model.trim="searchKeyword" placeholder="輸入關鍵字搜尋" class="search-input" />
-        <!-- 這顆只讓使用者點擊後失去焦點，不再呼叫 API -->
+
         <button class="btn btn-primary" @click="$event.target.blur()">搜尋</button>
         <button class="btn btn-secondary" @click="resetFilters">✕</button>
  
         <div class="add-button-wrapper">
   <button class="btn btn-add" style="border: solid 1px;" @click="startCreate">
-    <span class="icon">➕</span> 新增課程
+ 新增課程
   </button>
 </div>
 
@@ -129,7 +129,7 @@
                 <td>{{ formatDuration(course.duration) }}</td>
                 <td class="action-cell">
                   <button @click="startEdit(course)" class="link blue">編輯</button>
-                  <button @click="deleteOne(course.courseId)" class="link red">刪除</button>
+                  <button @click="deleteOne(course.courseId)" class="link red"> <i class="fas fa-trash-alt"></i></button>
                 </td>
               </template>
             </tr>
@@ -439,7 +439,7 @@ watch(filteredCourses, () => {
 }
 
 .btn-primary {
-  background: #2563eb;
+  background: #11295c;
   color: #fff;
   border: none
 }
@@ -449,7 +449,7 @@ watch(filteredCourses, () => {
 }
 
 .btn-secondary {
-  background: #dc2626;
+  background: #a7a1a1;
   border: 1px solid #d1d5db
 }
 
@@ -548,7 +548,7 @@ watch(filteredCourses, () => {
 }
 
 .link.blue {
-  color: #2563eb
+  color: #11295c
 }
 
 .link.blue:hover {
@@ -564,7 +564,7 @@ watch(filteredCourses, () => {
 }
 
 .link.red {
-  color: #dc2626
+  color: #b68a8a
 }
 
 .link.red:hover {
@@ -621,28 +621,7 @@ watch(filteredCourses, () => {
   opacity: 0.5;
 }
 
-/* .swal2-select, .swal2-file, .swal2-textarea {
-  width: 100%;
-  font-size: 15px;
-  padding: 8px;
-  margin: 4px 0;
-} */
-
-/* SweetAlert2 表單統一寬度與字體大小 */
-/* .swal2-input,
-.swal2-textarea,
-.swal2-select,
-.swal2-file {
-  width: 100% !important;
-  max-width: 100% !important;
-  font-size: 14px;
-  box-sizing: border-box;
-  margin: 6px 0;
-}
-
 .swal2-popup {
-  width: 480px !important;
-} */.swal2-popup {
   width: 480px !important;
 }
 
