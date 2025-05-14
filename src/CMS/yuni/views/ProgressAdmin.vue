@@ -69,7 +69,7 @@
                 <td>{{ p.recordedAt }}</td>
                 <td class="action-cell">
                   <button @click="edit(p)" class="link blue">編輯</button>
-                  <button @click="remove(p.progressId)" class="link red">刪除</button>
+                  <button @click="remove(p.progressId)" class="link red"><i class="fas fa-trash-alt"></i></button>
                 </td>
               </template>
             </tr>

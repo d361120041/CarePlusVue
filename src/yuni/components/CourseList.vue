@@ -30,8 +30,13 @@
 
         <!-- 右側：排序下拉選單 -->
         <div class="dropdown m-1">
-          <button class="btn btn-outline-green dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          <!-- <button class="btn btn-outline-green dropdown-toggle" type="button" data-bs-toggle="dropdown">
             排序方式
+          </button> -->
+
+          <button class="btn btn-outline-green dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            <i class="fa-solid fa-sliders"></i>
+
           </button>
           <ul class="dropdown-menu">
             <li>
@@ -70,7 +75,7 @@
               <h5 class="card-title">{{ course.title }}</h5>
               <p class="card-text"><small class="text-muted">#{{ getCategoryLabel(course.category) }}</small></p>
               <p class="card-text">{{ course.description }}</p>
-              <p class="card-text"><small class="text-muted">No.{{ course.courseId }}</small></p>
+              <!-- <p class="card-text"><small class="text-muted">No.{{ course.courseId }}</small></p> -->
             </div>
           </div>
         </div>
@@ -300,5 +305,20 @@ onMounted(fetchCourses);
   color: var(--color-btn-primary-text);
   border-color: var(--color-btn-primary-bg);
 }
+
+.btn-primary {
+  background-color: #4DB6AC !important;
+  border-color: #4DB6AC !important;
+  color: white !important;
+}
+
+
+.dropdown-item:focus,
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #399e95 !important;
+  border-color: #399e95 !important;
+}
+
 
 </style>
