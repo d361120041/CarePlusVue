@@ -65,6 +65,7 @@
     margin: 0 auto;
     padding: 48px 20px;
     flex-wrap: wrap;
+    
   }
   
   .left-section {

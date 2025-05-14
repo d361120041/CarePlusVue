@@ -45,7 +45,6 @@ const goToRequestTime = () => {
 </script> -->
 <style scoped>
 .reservation-section {
-  background-color: #ffe2bd;
   padding: 4rem 1rem;
 }
 
