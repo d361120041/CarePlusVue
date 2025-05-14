@@ -72,12 +72,14 @@ import { useToggle } from '@/daniel/composables/useToggle'
 import { formatCount } from '@/daniel/composables/number.js'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useAuthStore } from '@/stores/auth'
+
 import VueEasyLightbox from 'vue-easy-lightbox'
 
 import BaseModal from '@/daniel/components/BaseModal.vue'
 import CommentList from '@/daniel/components/comment/CommentList.vue'
 import CommentForm from '@/daniel/components/comment/CommentForm.vue'
 import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
+import Swal from 'sweetalert2'
 
 const props = defineProps({
     visible: Boolean,
@@ -113,13 +115,34 @@ const commentList = ref(null)
 // 刪除貼文
 async function onDelete() {
     toggleMenu()
-    if (!confirm('確定要刪除此貼文？此操作無法復原')) return
+
+    const { isConfirmed } = await Swal.fire({
+        title: '確定要刪除此貼文？',
+        text: '此操作無法復原',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '是的，刪除吧',
+        cancelButtonText: '取消',
+    })
+    if (!isConfirmed) return
+
     try {
         await postStore.deletePost(props.post.postId)
         emit('refresh')
         postStore.closeDetailModal()
+
+        await Swal.fire({
+            title: '已刪除！',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false,
+        })
     } catch {
-        alert('刪除失敗，請稍後再試')
+        Swal.fire({
+            title: '刪除失敗',
+            text: '請稍後再試',
+            icon: 'error',
+        })
     }
 }
 
