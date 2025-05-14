@@ -114,10 +114,12 @@
 import { ref, onMounted } from 'vue';
 import axios from '@/plugins/axios';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
 const userId = ref(null);
 const appointments = ref([]);
 const router = useRouter();
+const authStore = useAuthStore();
 
 const fetchAppointments = async () => {
   try {
@@ -146,32 +148,35 @@ const formatDate = (dateStr) => {
   }
 };
 
-const getStatusClass = (status) => {
-  switch (status) {
-    case '已確認':
-      return 'status-confirmed';
-    case '待付款':
-      return 'status-pending';
-    case '已取消':
-      return 'status-cancelled';
-    default:
-      return 'status-default';
-  }
-};
+// const getStatusClass = (status) => {
+//   switch (status) {
+//     case '已確認':
+//       return 'status-confirmed';
+//     case '待付款':
+//       return 'status-pending';
+//     case '已取消':
+//       return 'status-cancelled';
+//     default:
+//       return 'status-default';
+//   }
+// };
 
 const startNewAppointment = () => {
   router.push('/request/location');
 };
 
 onMounted(async () => {
-  try {
-    const res = await axios.get('/user/profile', { withCredentials: true });
-    userId.value = res.data.userId;
-    await fetchAppointments();
-  } catch (err) {
-    console.error('無法取得使用者資訊', err);
-    router.push('/login');
+
+  console.log("User ID:", userId.value);
+  // 檢查是否已經登錄
+  if (!authStore.isAuthenticated) {
+    router.push('/userlogin'); // 未登入，跳轉到登入頁
+    return;
   }
+
+  // 使用 userId 獲取預約資料
+  userId.value = authStore.user.userId;
+  await fetchAppointments();
 });
 </script>
 
