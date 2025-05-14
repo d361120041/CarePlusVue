@@ -1,5 +1,4 @@
 <template>
-  
   <!-- 導覽列 開始-->
   <nav v-if="!isAdminRoute">
     <Navigationbar />
@@ -20,10 +19,9 @@
     <!-- <div class="container text-center">
       <h1>&copy; 2025 Care+ 照護平台</h1>
     </div> -->
-      <Footer />
+    <Footer />
   </footer>
   <!-- 頁尾 結束-->
-   
 </template>
 
 <script setup>

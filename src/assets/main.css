@@ -1,4 +1,4 @@
-@import '@/assets/css/settings.css';
+@import "@/assets/css/settings.css";
 
 /* 1. 全局重置與基底設定 */
 *,
@@ -37,7 +37,7 @@ header {
 }
 
 footer {
-  background-color: var(--color-bg-card);
+  /* background-color: var(--color-bg-card); */
   color: var(--color-primary-text);
   text-align: center;
   flex-shrink: 0; /* 不隨容器縮小 */
@@ -86,7 +86,6 @@ h3 {
 .button-green:hover {
   background-color: var(--color-btn-primary-bg-hover);
 }
-
 
 .button-pink {
   background-color: var(--color-btn-secondary-bg);
