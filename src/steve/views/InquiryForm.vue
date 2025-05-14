@@ -58,7 +58,8 @@
           <input
             type="text"
             v-model="caregiverIdentifier"
-            placeholder="請輸入看護 ID"
+            placeholder="看護 ID"
+            style="width: 8ch"
             class="w-1/2 border rounded p-2"
             maxlength="2"
             inputmode="numeric"
@@ -70,8 +71,9 @@
           <input
             type="text"
             v-model="courseIdentifier"
-            placeholder="請輸入課程 ID"
+            placeholder="課程 ID"
             class="w-1/2 border rounded p-2"
+            style="width: 8ch"
             maxlength="2"
             inputmode="numeric"
           />
@@ -122,8 +124,8 @@ onMounted(async () => {
 
 const fillTemplate = (type) => {
   const templates = {
-    1: "您好，我對某位照護者的服務有疑問，想了解更多詳情，煩請協助說明。",
-    2: "您好，想詢問某門課程的內容或報名方式，請問可以提供更多資訊嗎？",
+    1: "您好，我對服務有疑問，想了解更多詳情，煩請協助說明:",
+    2: "您好，想詢問某門課程的內容:",
     3: "您好，我想對先前的服務經驗提出申訴，以下是具體內容：",
     4: "您好，我有一些其他問題或建議如下：",
   };
