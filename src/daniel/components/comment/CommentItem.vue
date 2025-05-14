@@ -191,7 +191,6 @@ onMounted(() => {
     padding: 0.5rem;
     display: flex;
     flex-wrap: wrap;
-    /* 允許換行 */
     gap: 0.5rem;
     z-index: 100;
 }

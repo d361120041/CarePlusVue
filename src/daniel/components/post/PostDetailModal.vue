@@ -222,29 +222,41 @@ function onCommentAdded() {
     background: none;
     border: none;
     font-size: 1rem;
+    line-height: 1;
+    padding: 0.25rem;
     cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.hamburger-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .post-dropdown {
     position: absolute;
     right: 0;
-    top: 1.8rem;
-    background: white;
+    top: 1.5rem;
+    background: #fff;
     border: 1px solid #ccc;
     border-radius: 4px;
     list-style: none;
-    padding: 0.5rem 0;
-    margin: 0;
-    z-index: 10;
+    padding: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    z-index: 100;
 }
 
 .post-dropdown li {
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 0.75rem;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .post-dropdown li:hover {
-    background: #c7a0a0;
+    background: #f5f5f5;
+    border-radius: 4px;
 }
 
 .post-content {
