@@ -55,39 +55,39 @@
           <div class="info-group">
             <!-- <div class="info-item">
               <span class="label">預約時間</span>
-              <span class="value">{{ formatDate(appointment.appointmentTime) }}</span>
+              <span class="value">{{ formatDate(appointment.patient.birthday) }}</span>
             </div> -->
             <div class="info-item">
-              <span class="label">價格</span>
+              <span class="label">價格:</span>
               <span class="value">{{ appointment.totalPrice ? `${appointment.totalPrice} 元` : "未提供" }}</span>
             </div>
-            <!-- <div class="info-item">
-              <span class="label">看護姓名</span>
-              <span class="value">{{ appointment.caregiverName || "未提供" }}</span>
-            </div> -->
+            <div class="info-item">
+              <span class="label">看護:</span>
+              <span class="value">{{ appointment.caregiver.caregiverName || "未提供" }}</span>
+            </div>
           </div>
 
           <!-- Location info -->
           <div class="info-group">
             <h6 class="section-subtitle">{{ appointment.locationType === '醫院' ? '醫院資訊' : '居家資訊' }}</h6>
             <div v-if="appointment.locationType === '醫院'" class="info-item">
-              <span class="label">名稱</span>
+              <span class="label">名稱:</span>
               <span class="value">{{ appointment.hospitalName || "未提供" }}</span>
             </div>
             <div class="info-item">
-              <span class="label">地址</span>
+              <span class="label">地址:</span>
               <span class="value">{{ appointment.locationType === '醫院' ? appointment.hospitalAddress : appointment.homeAddress || "未提供" }}</span>
             </div>
             <div v-if="appointment.locationType === '醫院'" class="info-item">
-              <span class="label">病房</span>
+              <span class="label">病房:</span>
               <span class="value">{{ appointment.hospitalWardType }} {{ appointment.hospitalWardNumber || "" }} {{ appointment.hospitalBedNumber || "" }}</span>
             </div>
             <div v-if="appointment.locationType === '醫院'" class="info-item">
-              <span class="label">科別</span>
+              <span class="label">科別:</span>
               <span class="value">{{ appointment.hospitalDepartment || "未提供" }}</span>
             </div>
             <div class="info-item">
-              <span class="label">運送備註</span>
+              <span class="label">運送備註:</span>
               <span class="value">{{ appointment.locationType === '醫院' ? appointment.hospitalTransportNote : appointment.homeTransportNote || "無" }}</span>
             </div>
           </div>
