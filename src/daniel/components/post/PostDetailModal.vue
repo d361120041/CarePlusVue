@@ -10,7 +10,7 @@
                 </div>
 
                 <!-- 漢堡選單 -->
-                <div class="menu-wrapper">
+                <div class="menu-wrapper" v-click-outside="closeMenu">
                     <button class="hamburger-btn" @click.stop="toggleMenu"
                         v-if="post.user.userId === currentUser.userId">⋯</button>
                     <ul v-if="menuOpen" class="post-dropdown">
@@ -84,6 +84,10 @@ const props = defineProps({
     post: Object
 })
 const emit = defineEmits(['close', 'refresh'])
+
+function closeMenu() {
+    menuOpen.value = false
+}
 
 // 時間格式化
 const { formattedTime } = useTimeFormat(props.post.createdAt)

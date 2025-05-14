@@ -13,7 +13,7 @@
                     <div class="user-name">{{ reply.user.userName }}</div>
                     <div class="reply-content">{{ reply.content }}</div>
                 </div>
-                <div class="reply-menu-wrapper">
+                <div class="reply-menu-wrapper" v-click-outside="closeMenu">
                     <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
                     <ul v-if="menuOpen" class="reply-dropdown">
                         <li @click="startEdit">編輯</li>
@@ -46,17 +46,15 @@ const props = defineProps({ reply: Object })
 const emit = defineEmits(['updated', 'deleted'])
 
 const { formattedTime } = useTimeFormat(props.reply.createdAt)
-
 const [menuOpen, toggleMenu] = useToggle(false)
+
+function closeMenu() {
+    menuOpen.value = false
+}
 
 // 使用者資訊區塊
 const imageUrl = ref(null)
 imageUrl.value = `data:image/png;base64,${props.reply.user.profilePicture}`
-
-// 下拉選單狀態
-function closeMenu() {
-    menuOpen.value = false
-}
 
 // 編輯狀態
 const editing = ref(false)

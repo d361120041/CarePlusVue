@@ -2,7 +2,7 @@
     <article class="post-item">
         <div class="post-header">
             <!-- 使用者資訊區塊 -->
-            <UserAvatar :imageUrl="imageUrl" style="margin-right: 0.5rem;"/>
+            <UserAvatar :imageUrl="imageUrl" style="margin-right: 0.5rem;" />
             <div class="user-info">
                 <div class="user-name">{{ post.user.userName }}
                     <span v-if="post.createdAt !== post.modifiedAt" class="edited-marker">已編輯</span>
@@ -26,7 +26,7 @@
             </div>
 
             <!-- 漢堡選單 -->
-            <div class="menu-wrapper">
+            <div class="menu-wrapper" v-click-outside="closeMenu">
                 <button class="hamburger-btn" @click.stop="toggleMenu" v-if="post.user.userId === currentUser.userId">⋯
                 </button>
                 <ul v-if="menuOpen" class="post-dropdown">
@@ -116,6 +116,10 @@ const needsToggle = ref(false)
 const lightboxVisible = ref(false)
 const currentIndex = ref(0)
 const imgList = computed(() => props.post.images.map(img => `data:image/jpeg;base64,${img.imageData}`))
+
+function closeMenu() {
+    menuOpen.value = false
+}
 
 // 刪除貼文
 async function onDelete() {

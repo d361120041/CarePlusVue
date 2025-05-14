@@ -17,7 +17,7 @@
                 </div>
     
                 <!-- 漢堡選單 -->
-                <div class="comment-menu-wrapper">
+                <div class="comment-menu-wrapper" v-click-outside="closeMenu">
                     <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
                     <ul v-if="menuOpen" class="comment-dropdown">
                         <li @click="startEdit">編輯</li>
@@ -58,6 +58,10 @@ const emit = defineEmits(['replied', 'updated', 'deleted', 'toggle-reply'])
 const { formattedTime } = useTimeFormat(props.comment.createdAt)
 const [menuOpen, toggleMenu] = useToggle(false)
 const [showReplyForm, toggleReply] = useToggle(false)
+
+function closeMenu() {
+    menuOpen.value = false
+}
 
 // 使用者資訊區塊
 const imageUrl = ref(null)

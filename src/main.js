@@ -19,6 +19,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { far } from "@fortawesome/free-regular-svg-icons";
 library.add(far);
+import clickOutside from "@/daniel/directives/click-outside";
 // ---------------- daniel ----------------
 
 // ---------------- allen ----------------
@@ -46,6 +47,7 @@ app.use(VueSweetalert2);
 
 // ---------------- daniel ----------------
 app.component("font-awesome-icon", FontAwesomeIcon);
+app.directive('click-outside', clickOutside)
 // ---------------- daniel ----------------
 
 // ---------------- yuuhou ----------------
