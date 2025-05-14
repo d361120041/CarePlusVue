@@ -62,7 +62,7 @@
               <span class="value">{{ appointment.totalPrice ? `${appointment.totalPrice} 元` : "未提供" }}</span>
             </div>
             <div class="info-item">
-              <span class="label">看護:</span>
+              <span class="label">照服員:</span>
               <span class="value">{{ appointment.caregiver.caregiverName || "未提供" }}</span>
             </div>
           </div>

@@ -18,7 +18,10 @@
       </div>
       <h1 class="section-title">付款成功！</h1>
       <p class="success-message">
-        感謝你選擇Care+！我們致力於為您和您的家人提供專業、貼心的照護服務。您的預約已確認，我們的團隊將盡快與您聯繫，確保一切順利進行。
+        感謝你選擇Care+！<br />
+        我們致力於為您和您的家人提供專業、貼心的照護服務 💚<br />
+        您的預約已確認，我們的團隊將盡快與您聯繫<br />
+        確保一切順利進行
       </p>
       <!-- <button
         @click="goToOrders"
@@ -27,7 +30,7 @@
       >
         查看預約
       </button> -->
-<router-link to="/user-center/orders" class="view-button"
+      <router-link to="/user-center/orders" class="view-button"
         >查看預約</router-link
       >
     </div>
@@ -51,7 +54,8 @@ const goToOrders = () => {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem 1rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;

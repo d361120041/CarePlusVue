@@ -1,27 +1,5 @@
 <template>
   <div class="wrapper">
-    <!-- 🔙 返回按鈕 -->
-    <!-- <button
-      @click="goBack"
-      class="back-button flex items-center text-teal-600 hover:text-teal-700 transition-colors duration-200"
-      aria-label="返回預約頁面"
-    >
-      <svg
-        class="w-5 h-5 mr-2"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M15 19l-7-7 7-7"
-        ></path>
-      </svg>
-      返回
-    </button> -->
 
     <!-- 📋 訂單資訊區塊 -->
     <div class="card-section mb-8">
@@ -107,7 +85,7 @@
     <!-- 💳 付款按鈕 -->
     <div class="card-section">
       <h2 class="section-title">付款</h2>
-      <p class="text-gray-600 mb-4">請確認訂單資訊後進行付款。</p>
+      <p class="text-gray-600 mb-4">本平台使用第三方支付「綠界ECPAY」進行付款</p>
       <button
         @click="proceedToPayment"
         :disabled="!appointment"

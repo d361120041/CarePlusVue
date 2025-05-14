@@ -61,6 +61,8 @@
               <span class="label">經驗年數</span
               ><span class="value">{{ caregiver.yearOfExperience }} 年</span>
             </div>
+
+            <div class="salary-info">
             <div class="info-item">
               <span class="label">時薪</span
               ><span class="value">{{
@@ -73,7 +75,7 @@
               <span class="label">半日薪</span
               ><span class="value">{{
                 caregiver.hourlyRate
-                  ? `${caregiver.halfDayRate} 元/小時`
+                  ? `${caregiver.halfDayRate} 元/6小時`
                   : "未提供"
               }}</span>
             </div>
@@ -81,10 +83,11 @@
               <span class="label">日薪</span
               ><span class="value">{{
                 caregiver.hourlyRate
-                  ? `${caregiver.fullDayRate} 元/小時`
+                  ? `${caregiver.fullDayRate} 元/8小時`
                   : "未提供"
               }}</span>
             </div>
+          </div>
           </div>
 
           <!-- 📄 詳細介紹 -->
