@@ -52,7 +52,8 @@
 
     <!-- yuni -->
     <div>
-        <div>
+        <div style="  background-color: #ffe2bd;
+">
             <CourseFeat />
         </div>
     </div>
