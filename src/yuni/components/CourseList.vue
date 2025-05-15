@@ -9,7 +9,7 @@
         class="form-control mb-3 mx-auto search-input" />
 
       <!-- <div class="d-flex justify-content-between flex-wrap align-items-center mb-3"> -->
-        <div class="filter-row mx-auto d-flex justify-content-between flex-wrap align-items-center mb-3">
+      <div class="filter-row mx-auto d-flex justify-content-between flex-wrap align-items-center mb-3">
 
         <!-- 左側：分類搜尋按鈕群組 -->
         <div class="btn-group flex-wrap" role="group">
@@ -227,9 +227,17 @@ const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
     // 滾動到課程區塊頂部
+    // const target = document.getElementById("course-top");
+    // if (target) {
+    //   target.scrollTo({ top:0, behavior: "smooth" });
+    // }
+
+    // 滾動到課程區塊頂部下方家100px
     const target = document.getElementById("course-top");
     if (target) {
-      target.scrollIntoView({ behavior: "smooth" });
+      const offset = 100; // 偏移 100px
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
     }
   }
 };
@@ -242,6 +250,13 @@ const resetFilters = async () => {
 };
 
 onMounted(fetchCourses);
+
+
+// onMounted(async () => {
+//   await fetchCourses()
+//   window.scrollTo({ top: 0, behavior: 'smooth' })
+// });
+
 </script>
 
 <style scoped>
@@ -319,6 +334,4 @@ onMounted(fetchCourses);
   background-color: #399e95 !important;
   border-color: #399e95 !important;
 }
-
-
 </style>
