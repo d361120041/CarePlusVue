@@ -185,7 +185,7 @@ const caregiverLogout = () => {
   display: flex;
   justify-content: space-between;
   align-items: center; /* ✅ 修改：原本是 align-items: stretch，改成 center 讓內容垂直置中 */
-  background-color: #4db6ac;
+  background-color: #fff8f0;
   padding: 0;
   position: relative;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
