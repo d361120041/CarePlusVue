@@ -45,8 +45,8 @@ nav {
   z-index: 1000;
 }
 
-.footer {
+/* .footer {
   margin-top: 40px;
-}
+} */
 
 </style>
