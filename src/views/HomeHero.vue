@@ -16,29 +16,32 @@
 
     <!-- allen: 新聞預覽區塊 -->
     <!-- 最新消息標籤 -->
-    <div class="news-list-container">
-        <br>
-        <div class="news-header" @click="goToNews">
-            <span class="news-icon">📢</span>
-            <span class="title">最新消息</span>
+    <div class="news-preview-container">
+    <!-- 單一新聞卡片 -->
+    <router-link
+        v-for="news in previewNews.slice(0, 3)"
+        :key="news.newsId"
+        :to="`/news/${news.newsId}`"
+        class="news-preview-card"
+    >
+        <img :src="getFullImageUrl(news.thumbnail)" alt="新聞圖片" class="news-image" @error="handleImgError" />
+
+        <div class="news-content">
+            <h3 class="news-title">{{ news.title }}</h3>
+            <p class="news-date">發布日期：{{ news.publishAt }}</p>
+            <p class="news-views">瀏覽次數：{{ news.viewCount }}</p>
         </div>
+    </router-link>
 
-        <div class="news-preview-container">
-            <div v-for="news in previewNews" :key="news.newsId" class="news-preview-card">
-                <router-link :to="`/news/${news.newsId}`" class="news-link">
-                    <img :src="getFullImageUrl(news.thumbnail) || defaultThumbnail" alt="新聞圖片" class="news-image"
-                        @error="handleImgError" />
-                </router-link>
+    <!-- "更多新聞" Card -->
+    <router-link to="/news" class="news-preview-card">
+        <img :src="moreNewsImage" alt="更多新聞圖片" class="news-image" />
 
-                <div class="news-content">
-                    <h3 class="news-title">{{ news.title }}</h3>
-                    <p class="news-date">發布日期：{{ news.publishAt }}</p>
-                    <p class="news-views">瀏覽次數：{{ news.viewCount }}</p>
-                </div>
-            </div>
+        <div class="news-content">
+            <h3 class="more-news-title">更多新聞....</h3>
         </div>
-
-    </div>
+    </router-link>
+</div>
     <!-- allen end-->
 
 
@@ -80,8 +83,8 @@ import { getFullImageUrl } from '@/allen/utils/urlHelper';
 import { useRouter } from "vue-router";
 
 const previewNews = ref([]);
-const defaultThumbnail = '/src/assets/allen/no-image.jpg';
 const loading = ref(false);
+const moreNewsImage =  'src/assets/allen/more_news.png'; 
 
 //按鈕導到新聞首頁
 const router = useRouter();
@@ -105,7 +108,7 @@ const fetchNews = async () => {
     };
 
     try {
-        const response = await myAxios.post(`/news/public/search?page=0&size=4&sort=publishAt,DESC`, params);
+        const response = await myAxios.post(`/news/public/search?page=0&size=3&sort=publishAt,DESC`, params);
         previewNews.value = response.data.content;
     } catch (error) {
         console.error('取得新聞預覽失敗:', error);
@@ -137,6 +140,7 @@ onMounted(() => {
     margin-bottom: 2rem;
 }
 
+/*allen start*/ 
 .news-content {
     text-align: center;
     padding: 8px 0;
@@ -209,7 +213,7 @@ onMounted(() => {
 
 .news-image {
     width: 100%;
-    max-width: 240px;
+    max-width: 160px;
     height: 160px;
     object-fit: cover;
     border-radius: 8px;
@@ -241,6 +245,22 @@ onMounted(() => {
     margin-bottom: 16px;
     margin-top: 40px;  /* 向下移動 40px */
     z-index: 1;
+}
+.more-news-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    line-height: 1.4;
+    max-height: calc(1.4em * 2);
+    font-size: var(--font-size-xxl);  /* 調整為較大字體 */
+    font-weight: bold;
+    margin-bottom: 16px;
+    margin-top: 32px;  /* 與圖片間距 */
+    z-index: 1;
+    text-align: center;
 }
 
 .news-date,

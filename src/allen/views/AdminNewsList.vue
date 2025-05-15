@@ -50,8 +50,8 @@
     </div>
 
     <!-- 上方標題與新增 -->
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-xl font-bold">🛠 最新新聞列表（後台）</h1>
+    <div class="header-container flex justify-between items-center mb-4">
+      <h1 class="header-title">🛠 最新新聞列表</h1>
       <button @click="goToCreate" class="btn-blue">
         <font-awesome-icon icon="fa-solid fa-plus" /> 新增新聞
       </button>
@@ -73,7 +73,7 @@
             {{ news.title }}
           </router-link>
 
-          <div class="flex flex-wrap gap-2 mt-2">
+          <div class="btn-group flex flex-wrap gap-2 mt-2">
             <button @click="goToEdit(news.newsId)" class="btn-blue">
               <font-awesome-icon icon="fa-solid fa-pen" /> 編輯
             </button>
@@ -383,6 +383,12 @@ onMounted(() => {
 .news-item > div.flex-1 {
   padding-top: 0.5rem;
 }
+.btn-group {
+    display: flex;
+    flex-wrap: wrap;  /* 自動換行 */
+    gap: var(--space-md);  /* 控制按鈕之間的間距 */
+    margin-top: var(--space-sm);
+}
 .btn-blue {
   background-color: var(--color-tertiary);
   color: var(--color-btn-primary-text);
@@ -642,4 +648,16 @@ onMounted(() => {
   background-color: var(--color-btn-secondary-bg-hover);
   transform: translateY(0);
 }
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-title {
+  font-size: var(--font-size-xl); /* 加大標題字體 */
+  font-weight: bold;
+}
+
 </style>
