@@ -35,10 +35,8 @@
         >
           <span class="label">服務時間</span>
           <span class="value">
-            {{ appointmentStore.continuous.startDate }}
-            {{ appointmentStore.continuous.startTime }} 至
-            {{ appointmentStore.continuous.endDate }}
-            {{ appointmentStore.continuous.endTime }}
+            {{ formatDateTime(appointmentStore.continuous.startTime) }} 至
+            {{ formatDateTime(appointmentStore.continuous.endTime) }}
           </span>
         </div>
 
@@ -226,6 +224,17 @@ const router = useRouter();
 const caregiverStore = useCaregiverStore();
 const appointmentStore = useAppointmentStore();
 
+// 🗓️ 日期和時間格式化函數
+const formatDateTime = (isoString) => {
+  if (!isoString) return "未填寫";
+  
+  // 確保是 ISO 8601 格式
+  const [date, time] = isoString.split("T");
+  
+  // 只返回 yyyy-MM-dd HH:mm 格式
+  return `${date} ${time}`;
+};
+
 // 送出預約
 const submitAppointment = async () => {
   try {
@@ -255,6 +264,8 @@ const submitAppointment = async () => {
   }
 };
 
+
+
 // 返回需求單頁面
 const goBackToRequest = () => {
   router.push("/request/location");
@@ -263,6 +274,8 @@ const goBackToRequest = () => {
 onMounted(() => {
   appointmentStore.loadFromLocalStorage();
 });
+
+
 </script>
 
 <style scoped>
@@ -319,7 +332,7 @@ onMounted(() => {
 }
 
 .label {
-  font-size: 0.875rem;
+  font-size: 0.995rem;
   font-weight: 600;
   color: #475569;
   text-transform: uppercase;

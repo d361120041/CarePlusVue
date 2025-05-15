@@ -53,17 +53,17 @@
         <div class="card-body">
           <!-- Core appointment info -->
           <div class="info-group">
-            <div class="info-item">
+            <!-- <div class="info-item">
               <span class="label">預約時間</span>
-              <span class="value">{{ formatDate(appointment.appointmentTime) }}</span>
-            </div>
+              <span class="value">{{ formatDate(appointment.patient.birthday) }}</span>
+            </div> -->
             <div class="info-item">
-              <span class="label">價格</span>
+              <span class="label">價格:</span>
               <span class="value">{{ appointment.totalPrice ? `${appointment.totalPrice} 元` : "未提供" }}</span>
             </div>
             <div class="info-item">
-              <span class="label">看護姓名</span>
-              <span class="value">{{ appointment.caregiverName || "未提供" }}</span>
+              <span class="label">照服員:</span>
+              <span class="value">{{ appointment.caregiver.caregiverName || "未提供" }}</span>
             </div>
           </div>
 
@@ -71,23 +71,23 @@
           <div class="info-group">
             <h6 class="section-subtitle">{{ appointment.locationType === '醫院' ? '醫院資訊' : '居家資訊' }}</h6>
             <div v-if="appointment.locationType === '醫院'" class="info-item">
-              <span class="label">名稱</span>
+              <span class="label">名稱:</span>
               <span class="value">{{ appointment.hospitalName || "未提供" }}</span>
             </div>
             <div class="info-item">
-              <span class="label">地址</span>
+              <span class="label">地址:</span>
               <span class="value">{{ appointment.locationType === '醫院' ? appointment.hospitalAddress : appointment.homeAddress || "未提供" }}</span>
             </div>
             <div v-if="appointment.locationType === '醫院'" class="info-item">
-              <span class="label">病房</span>
+              <span class="label">病房:</span>
               <span class="value">{{ appointment.hospitalWardType }} {{ appointment.hospitalWardNumber || "" }} {{ appointment.hospitalBedNumber || "" }}</span>
             </div>
             <div v-if="appointment.locationType === '醫院'" class="info-item">
-              <span class="label">科別</span>
+              <span class="label">科別:</span>
               <span class="value">{{ appointment.hospitalDepartment || "未提供" }}</span>
             </div>
             <div class="info-item">
-              <span class="label">運送備註</span>
+              <span class="label">運送備註:</span>
               <span class="value">{{ appointment.locationType === '醫院' ? appointment.hospitalTransportNote : appointment.homeTransportNote || "無" }}</span>
             </div>
           </div>
@@ -114,10 +114,12 @@
 import { ref, onMounted } from 'vue';
 import axios from '@/plugins/axios';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
 const userId = ref(null);
 const appointments = ref([]);
 const router = useRouter();
+const authStore = useAuthStore();
 
 const fetchAppointments = async () => {
   try {
@@ -146,32 +148,35 @@ const formatDate = (dateStr) => {
   }
 };
 
-const getStatusClass = (status) => {
-  switch (status) {
-    case '已確認':
-      return 'status-confirmed';
-    case '待付款':
-      return 'status-pending';
-    case '已取消':
-      return 'status-cancelled';
-    default:
-      return 'status-default';
-  }
-};
+// const getStatusClass = (status) => {
+//   switch (status) {
+//     case '已確認':
+//       return 'status-confirmed';
+//     case '待付款':
+//       return 'status-pending';
+//     case '已取消':
+//       return 'status-cancelled';
+//     default:
+//       return 'status-default';
+//   }
+// };
 
 const startNewAppointment = () => {
   router.push('/request/location');
 };
 
 onMounted(async () => {
-  try {
-    const res = await axios.get('/user/profile', { withCredentials: true });
-    userId.value = res.data.userId;
-    await fetchAppointments();
-  } catch (err) {
-    console.error('無法取得使用者資訊', err);
-    router.push('/login');
+
+  console.log("User ID:", userId.value);
+  // 檢查是否已經登錄
+  if (!authStore.isAuthenticated) {
+    router.push('/userlogin'); // 未登入，跳轉到登入頁
+    return;
   }
+
+  // 使用 userId 獲取預約資料
+  userId.value = authStore.user.userId;
+  await fetchAppointments();
 });
 </script>
 

@@ -1,27 +1,5 @@
 <template>
   <div class="wrapper">
-    <!-- 🔙 返回按鈕 -->
-    <button
-      @click="goBack"
-      class="back-button flex items-center text-teal-600 hover:text-teal-700 transition-colors duration-200"
-      aria-label="返回預約頁面"
-    >
-      <svg
-        class="w-5 h-5 mr-2"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M15 19l-7-7 7-7"
-        ></path>
-      </svg>
-      返回
-    </button>
 
     <!-- 📋 訂單資訊區塊 -->
     <div class="card-section mb-8">
@@ -107,7 +85,7 @@
     <!-- 💳 付款按鈕 -->
     <div class="card-section">
       <h2 class="section-title">付款</h2>
-      <p class="text-gray-600 mb-4">請確認訂單資訊後進行付款。</p>
+      <p class="text-gray-600 mb-4">本平台使用第三方支付「綠界ECPAY」進行付款</p>
       <button
         @click="proceedToPayment"
         :disabled="!appointment"
@@ -237,18 +215,19 @@ const proceedToPayment = async () => {
     document.body.appendChild(tempDiv);
     tempDiv.querySelector("form").submit();  // 直接提交該表單
 
+
     // // 跳轉到支付成功頁面（在當前頁面，非新分頁）
-    // router.push("/payment/success");
+    router.push("/payment/success");
 
     // // ✅ 清空 localStorage
-    // localStorage.removeItem("appointmentData");
-    // localStorage.removeItem("appointmentId");
-    // localStorage.removeItem("caregiverId");
-    // localStorage.removeItem("continuousEndDate");
-    // localStorage.removeItem("continuousEndTime");
-    // localStorage.removeItem("continuousStartDate");
-    // localStorage.removeItem("continuousStartTime");
-    // localStorage.removeItem("timeType");
+    localStorage.removeItem("appointmentData");
+    localStorage.removeItem("appointmentId");
+    localStorage.removeItem("caregiverId");
+    localStorage.removeItem("continuousEndDate");
+    localStorage.removeItem("continuousEndTime");
+    localStorage.removeItem("continuousStartDate");
+    localStorage.removeItem("continuousStartTime");
+    localStorage.removeItem("timeType");
 
     console.log("LocalStorage 清空完成");
   } catch (error) {
@@ -354,11 +333,34 @@ const goBack = () => {
 
 .payment-button {
   background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: white; /* 保證文字顏色明顯 */
+  font-size: 16px; /* 提供適當的字型大小 */
+  font-weight: 600; /* 使用稍微粗一點的字體 */
+  padding: 12px 24px; /* 增加內邊距，使按鈕更大、更容易點擊 */
+  border-radius: 8px; /* 圓角 */
+  border: none; /* 去除邊框 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 增加陰影，提升立體感 */
+  transition: all 0.3s ease; /* 平滑過渡效果 */
 }
 
 .payment-button:hover:enabled {
   background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+  transform: translateY(-2px); /* 當滑鼠懸停時，略微提升按鈕 */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* 當滑鼠懸停時，增強陰影 */
 }
+
+.payment-button:focus {
+  outline: none; /* 去除默認焦點框 */
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.6); /* 聚焦時顯示陰影 */
+}
+
+.payment-button:disabled {
+  background: #d1d5db; /* 禁用時顏色變淡 */
+  color: #6b7280; /* 禁用時文字變灰 */
+  box-shadow: none; /* 禁用時去掉陰影 */
+  cursor: not-allowed; /* 禁用時顯示禁用指標 */
+}
+
 
 .loading-state {
   display: flex;
