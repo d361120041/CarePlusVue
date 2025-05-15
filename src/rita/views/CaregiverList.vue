@@ -105,13 +105,13 @@
               v-if="isFavorited(caregiver.caregiverId)"
               class="text-red-500 text-3xl transform transition-transform duration-300 ease-in-out"
             >
-              ♥
+              ❤️
             </span>
             <span
               v-else
               class="text-gray-400 text-3xl transform transition-transform duration-300 ease-in-out"
             >
-              ♡
+              🤍
             </span>
           </button>
         </div>
