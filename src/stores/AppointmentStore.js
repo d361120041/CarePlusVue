@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { ref, toRaw, isProxy } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import authApi from "@/api/auth"; 
+import myAxios from "@/plugins/axios";
+
 export const useAppointmentStore = defineStore("appointment", {
   state: () => ({
     appointment: {
@@ -311,81 +313,152 @@ export const useAppointmentStore = defineStore("appointment", {
       this.syncUserId();
     },
 
-    async submitAppointment() {
-      try {
-        const appointmentData = {
-          appointment: {
-            ...this.appointment,
-            locationType:
-              this.appointment.locationType === "居家" ? "居家" : "醫院",
-          },
-          continuous: null,
-          multi: null,
-          diseases: this.appointment.diseaseIds.map((id) => ({
-            diseaseId: id,
-          })),
-          physicals: this.appointment.physicalIds.map((id) => ({
-            physicalId: id,
-          })),
-          services: this.appointment.serviceIds.map((id) => ({
-            serviceId: id,
-          })),
+  //   async submitAppointment() {
+  //     try {
+  //       const appointmentData = {
+  //         appointment: {
+  //           ...this.appointment,
+  //           locationType:
+  //             this.appointment.locationType === "居家" ? "居家" : "醫院",
+  //         },
+  //         continuous: null,
+  //         multi: null,
+  //         diseases: this.appointment.diseaseIds.map((id) => ({
+  //           diseaseId: id,
+  //         })),
+  //         physicals: this.appointment.physicalIds.map((id) => ({
+  //           physicalId: id,
+  //         })),
+  //         services: this.appointment.serviceIds.map((id) => ({
+  //           serviceId: id,
+  //         })),
+  //       };
+
+  //       // 設置時間資料
+  //       if (
+  //         this.appointment.timeType === "continuous" &&
+  //         this.continuous.startDate &&
+  //         this.continuous.startTime
+  //       ) {
+  //         appointmentData.continuous = {
+  //           startTime: `${this.continuous.startDate}T${this.continuous.startTime}:00`,
+  //           endTime: `${this.continuous.endDate}T${this.continuous.endTime}:00`,
+  //         };
+  //       } else if (this.appointment.timeType === "multi") {
+  //         appointmentData.multi = {
+  //           startDate: this.multi.multi.startDate,
+  //           endDate: this.multi.multi.endDate,
+  //           dailyStartTime:
+  //             this.multi.multi.timeSlots[0].startTime || "00:00:00",
+  //           dailyEndTime: this.multi.multi.timeSlots[0].endTime || "23:59:59",
+  //           ...this.multi.multi.repeatDays,
+  //         };
+  //       }
+
+  //       console.log("送出資料:", appointmentData);
+
+  //       const response = await fetch(
+  //         "http://localhost:8082/api/appointment/full",
+  //         {
+  //           method: "POST",
+  //           headers: { "Content-Type": "application/json" },
+  //           body: JSON.stringify(appointmentData),
+  //         }
+  //       );
+
+  //       const result = await response.json();
+  //       if (response.ok) {
+  //         console.log("Appointment created successfully:", result);
+
+  //          // ✅ 儲存 appointmentId 和 userId
+  //          this.appointment.appointmentId = result.appointmentId;
+  //          this.appointment.userId = result.userId;
+  //          this.appointment.totalPrice = result.totalPrice;
+
+  //          return result.appointmentId;
+  //       } else {
+  //         console.error("Appointment creation failed:", result);
+  //         alert("預約建立失敗，請稍後再試");
+  //         throw new Error("Appointment creation failed");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error creating appointment:", error);
+  //       alert("發生錯誤，請稍後再試");
+  //       throw error;
+  //     }
+  //   },
+  // },
+
+  async submitAppointment() {
+    try {
+      const appointmentData = {
+        appointment: {
+          ...this.appointment,
+          locationType:
+            this.appointment.locationType === "居家" ? "居家" : "醫院",
+        },
+        continuous: null,
+        multi: null,
+        diseases: this.appointment.diseaseIds.map((id) => ({
+          diseaseId: id,
+        })),
+        physicals: this.appointment.physicalIds.map((id) => ({
+          physicalId: id,
+        })),
+        services: this.appointment.serviceIds.map((id) => ({
+          serviceId: id,
+        })),
+      };
+  
+      // 設置時間資料
+      if (
+        this.appointment.timeType === "continuous" &&
+        this.continuous.startDate &&
+        this.continuous.startTime
+      ) {
+        appointmentData.continuous = {
+          startTime: `${this.continuous.startDate}T${this.continuous.startTime}:00`,
+          endTime: `${this.continuous.endDate}T${this.continuous.endTime}:00`,
         };
-
-        // 設置時間資料
-        if (
-          this.appointment.timeType === "continuous" &&
-          this.continuous.startDate &&
-          this.continuous.startTime
-        ) {
-          appointmentData.continuous = {
-            startTime: `${this.continuous.startDate}T${this.continuous.startTime}:00`,
-            endTime: `${this.continuous.endDate}T${this.continuous.endTime}:00`,
-          };
-        } else if (this.appointment.timeType === "multi") {
-          appointmentData.multi = {
-            startDate: this.multi.multi.startDate,
-            endDate: this.multi.multi.endDate,
-            dailyStartTime:
-              this.multi.multi.timeSlots[0].startTime || "00:00:00",
-            dailyEndTime: this.multi.multi.timeSlots[0].endTime || "23:59:59",
-            ...this.multi.multi.repeatDays,
-          };
-        }
-
-        console.log("送出資料:", appointmentData);
-
-        const response = await fetch(
-          "http://localhost:8082/api/appointment/full",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(appointmentData),
-          }
-        );
-
-        const result = await response.json();
-        if (response.ok) {
-          console.log("Appointment created successfully:", result);
-
-           // ✅ 儲存 appointmentId 和 userId
-           this.appointment.appointmentId = result.appointmentId;
-           this.appointment.userId = result.userId;
-           this.appointment.totalPrice = result.totalPrice;
-
-           return result.appointmentId;
-        } else {
-          console.error("Appointment creation failed:", result);
-          alert("預約建立失敗，請稍後再試");
-          throw new Error("Appointment creation failed");
-        }
-      } catch (error) {
-        console.error("Error creating appointment:", error);
-        alert("發生錯誤，請稍後再試");
-        throw error;
+      } else if (this.appointment.timeType === "multi") {
+        appointmentData.multi = {
+          startDate: this.multi.multi.startDate,
+          endDate: this.multi.multi.endDate,
+          dailyStartTime:
+            this.multi.multi.timeSlots[0].startTime || "00:00:00",
+          dailyEndTime: this.multi.multi.timeSlots[0].endTime || "23:59:59",
+          ...this.multi.multi.repeatDays,
+        };
       }
-    },
+  
+      console.log("送出資料:", appointmentData);
+  
+      // ✅ 改用 axios 發送請求
+      const response = await myAxios.post(
+        "/api/appointment/full",
+        appointmentData,
+        {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }
+    );
+  
+      // 處理成功回應
+      console.log("Appointment created successfully:", response.data);
+      this.appointment.appointmentId = response.data.appointmentId;
+      this.appointment.userId = response.data.userId;
+      this.appointment.totalPrice = response.data.totalPrice;
+  
+      return response.data.appointmentId;
+    } catch (error) {
+      console.error("Error creating appointment:", error);
+      alert("預約建立失敗，請稍後再試");
+      throw error;
+    }
   },
+  },
+  
 
   // ✅ 確保初始化時自動加載
   created() {
