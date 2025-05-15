@@ -7,7 +7,7 @@
 
       <!-- 📝 個人資訊管理 -->
       <div class="dropdown">
-        <button class="dropdown-title">👤 個人資訊管理</button>
+        <button class="dropdown-title">個人資訊管理</button>
         <div class="dropdown-content">
           <button @click="go('/caregiver/profile')"> 編輯個人資料</button>
           <button @click="go('/caregiver/pricing')"> 可服務區域與收費設定</button>
