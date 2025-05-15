@@ -289,28 +289,122 @@ const handleVerifyCode = async () => {
 
 <style scoped>
 .register-container {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 20px;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
+.register-container h2 {
+  font-size: 2rem;
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.register-container div:not(.avatar-section) {
+  margin-bottom: 20px;
+}
+
+.register-container label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  display: block;
+  color: #555;
+}
+
+.required {
+  color: #d9534f;
+  margin-right: 4px;
+}
 .register-container div {
   margin-bottom: 10px;
 }
 
-.required {
-  color: red;
-  margin-right: 4px;
+.register-container input[type="text"],
+.register-container input[type="email"],
+.register-container input[type="password"],
+.register-container input[type="date"],
+.register-container input[type="number"],
+.register-container textarea,
+.register-container select {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 5px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #333;
+  background-color: #fff;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.register-container input:focus,
+.register-container textarea:focus,
+.register-container select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  outline: none;
 }
 
 .error {
-  color: red;
+  color: #d9534f;
   font-size: 0.9rem;
+  margin-top: 5px;
 }
 
 .message {
+  margin-top: 15px;
+  color: #5cb85c;
+  text-align: center;
+  font-weight: 600;
+}
+
+.register-container button[type="submit"] {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+.register-container button[type="submit"]:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.register-container textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+
+.register-container .upload-container {
+  margin-top: 20px;
+}
+
+.register-container input[type="text"][pattern] {
+  width: calc(100% - 20px);
+  display: inline-block;
+}
+
+.register-container .custom-nationality {
   margin-top: 10px;
-  color: green;
+}
+
+.register-container select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url("data:image/svg+xml;charset=US-ASCII,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M7 10l5 5 5-5H7z' fill='%23333'/%3e%3c/svg%3e") no-repeat right 12px center;
+  background-size: 12px;
 }
 
 .avatar-img {

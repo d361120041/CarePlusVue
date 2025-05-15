@@ -2,28 +2,15 @@
   <div class="wrapper">
     <h2 class="section-title">📝 我的訂單紀錄</h2>
 
-    <!-- Empty state -->
-    <div v-if="appointments.length === 0" class="empty-state">
-      <svg
-        class="empty-icon"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="16" y1="13" x2="8" y2="13" />
-        <line x1="16" y1="17" x2="8" y2="17" />
-      </svg>
-      <p class="empty-message">尚無預約紀錄。立即開始您的第一筆預約吧！</p>
-      <button @click="startNewAppointment" class="action-button" aria-label="開始新預約">
-        開始預約
-      </button>
+    <!-- Loading state -->
+    <div v-if="isLoading" class="loading-state">
+      <p>資料加載中，請稍候...</p>
     </div>
+
+    <!-- Empty state -->
+    <div v-else-if="appointments.length === 0" class="empty-state">
+  <p class="empty-message">等待是一種美德，下一位需要您照顧的客戶，或許正在路上。</p>
+</div>
 
     <!-- Appointment list -->
     <div v-else class="appointment-grid">
@@ -35,18 +22,18 @@
         </div>
         <div class="card-body">
           <div class="info-group">
-              <div class="info-item">
-                <span class="label">客戶姓名</span>
-                <span class="value">{{ appointment.user.userName || "未提供" }}</span>
-              </div>
-              <div class="info-item">
-                  <span class="label">價格</span>
-                  <span class="value">{{ appointment.totalPrice ? `${appointment.totalPrice} 元` : "未提供" }}</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">生日</span>
-                  <span class="value">{{ formatDate(appointment.patient.birthday) }}</span>
-                </div>
+            <div class="info-item">
+              <span class="label">客戶姓名</span>
+              <span class="value">{{ appointment.user.userName || "未提供" }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">價格</span>
+              <span class="value">{{ appointment.totalPrice ? `${appointment.totalPrice} 元` : "未提供" }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">生日</span>
+              <span class="value">{{ formatDate(appointment.patient.birthday) }}</span>
+            </div>
           </div>
 
           <div class="info-group">
@@ -58,7 +45,6 @@
             <div class="info-item">
               <span class="label">性別</span>
               <span class="value">{{ appointment.patients && appointment.patients.length > 0 && appointment.patients[0].gender === 1 ? '男性' : '女性' }}</span>
-              
             </div>
           </div>
         </div>
@@ -72,8 +58,9 @@ import { ref, onMounted } from 'vue';
 import auth from '@/api/auth';
 import { useRouter } from 'vue-router';
 
-// 訂單資料
+// 狀態變數
 const appointments = ref([]);
+const isLoading = ref(true);
 const router = useRouter();
 
 // 日期格式化函數
@@ -102,6 +89,8 @@ const fetchAppointments = async () => {
     } else {
       alert("❌ 無法載入資料，請重新登入");
     }
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -113,6 +102,7 @@ onMounted(fetchAppointments);
 </script>
 
 <style scoped>
+/* ✅ 外層容器 */
 .wrapper {
   max-width: 1280px;
   margin: 0 auto;
@@ -120,50 +110,94 @@ onMounted(fetchAppointments);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+/* ✅ 標題樣式 */
 .section-title {
-  font-size: 1.875rem;
+  font-size: 2.25rem;
   font-weight: 700;
   color: #1e293b;
   margin-bottom: 2rem;
   letter-spacing: -0.025em;
+  text-align: center;
 }
 
-/* Appointment grid */
+/* ✅ Loading 狀態 */
+.loading-state {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+  font-size: 1.2rem;
+}
+
+/* ✅ 空狀態區塊 */
+.empty-state {
+  text-align: center;
+  margin: 40px auto;
+  padding: 2rem 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+.empty-message {
+  font-size: 1.25rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+/* ✅ 訂單網格 */
 .appointment-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
-/* Appointment card */
+/* ✅ 訂單卡片 */
 .appointment-card {
   background-color: #ffffff;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  padding: 1.25rem;
+  padding: 1.5rem;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
 }
 
 .appointment-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+  border-color: #d1d5db;
 }
 
-/* Info group */
+/* ✅ 卡片標題 */
+.card-header {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.75rem;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* ✅ 資訊群組 */
 .info-group {
   padding: 0.75rem 0;
   border-top: 1px solid #e5e7eb;
+  margin-top: 0.75rem;
 }
 
+/* ✅ 資訊項目 */
 .info-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.25rem 0;
+  padding: 0.5rem 0;
 }
 
 .label {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #475569;
   text-transform: uppercase;
@@ -171,8 +205,49 @@ onMounted(fetchAppointments);
 }
 
 .value {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: #1e293b;
   text-align: right;
+  font-weight: 500;
 }
+
+/* ✅ 區塊副標題 */
+.section-subtitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #475569;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ✅ 隱藏預設空白 SVG */
+.empty-icon {
+  display: none;
+}
+
+/* ✅ 按鈕樣式 */
+.action-button {
+  background-color: #007bff;
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.action-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+/* ✅ 行動按鈕可視化 */
+.action-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
+}
+
 </style>
