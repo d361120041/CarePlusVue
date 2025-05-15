@@ -5,9 +5,11 @@
       <Sidebar />
     </aside>
 
-    <!-- 右側內容 -->
+    <!-- 右側內容：加入 transition 包住 router-view -->
     <main class="content" style="background-color: #fff8f0">
-      <router-view />
+      <transition name="fade-slide" mode="out-in">
+        <router-view />
+      </transition>
     </main>
   </div>
 </template>
@@ -24,8 +26,8 @@ onMounted(() => {
 <style scoped>
 .user-center-layout {
   display: flex;
-  height: 100%; /* 撐滿外層 main 定義的區塊 */
-  overflow: hidden; /* 禁止這層本身滾動 */
+  height: 100%;
+  overflow: hidden;
 }
 
 .sidebar {
@@ -34,13 +36,29 @@ onMounted(() => {
   border-right: 1px solid #ddd;
   padding: 1rem;
   box-shadow: inset -1px 0 0 #eee;
-  overflow-y: auto; /* 側欄若內容過長可滾動 */
+  overflow-y: auto;
 }
 
 .content {
   flex: 1;
   padding: 2rem;
-  overflow-y: auto; /* 主要內容可獨立垂直滾動 */
+  overflow-y: auto;
   background-color: #fff;
+}
+
+/* ✅ 動畫樣式 */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 1s ease;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
 }
 </style>

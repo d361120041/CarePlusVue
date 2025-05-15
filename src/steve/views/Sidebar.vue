@@ -21,13 +21,7 @@
     >
       收藏庫
     </router-link>
-    <router-link
-      to="/user-center/support"
-      class="sidebar-button"
-      active-class="active"
-    >
-      聯絡客服
-    </router-link>
+
     <router-link
       to="/user-center/myPost"
       class="sidebar-button"
@@ -35,7 +29,11 @@
     >
       我的貼文
     </router-link>
-    <router-link to="/user-center/orders" class="sidebar-button" active-class="active">
+    <router-link
+      to="/user-center/orders"
+      class="sidebar-button"
+      active-class="active"
+    >
       我的預約
     </router-link>
 
@@ -44,6 +42,13 @@
     </router-link>
 
     
+    <router-link
+      to="/user-center/support"
+      class="sidebar-button"
+      active-class="active"
+    >
+      聯絡客服
+    </router-link>
   </nav>
 </template>
 
@@ -57,30 +62,25 @@ nav {
 }
 
 .sidebar-button {
-  color: #ffffff;
-  text-decoration: none;
-  margin-bottom: 6px;
-  /* 增加每個按鈕的分隔感 */
-  width: 100%;
   display: block;
-  text-align: center;
-  padding: 0.75rem;
-  border-radius: 12px;
-  background-color: #80ccc3;
-  transition: box-shadow 0.3s, background-color 0.3s;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  color: black;
+  background-color: transparent;
+  text-decoration: none;
+  border-radius: 4px;
   font-weight: 500;
-  border: 1px solid #4db6ac;
+  transition: background-color 0.2s ease;
 }
 
+/* hover 時底色浮出，使用原本 hover 色 */
 .sidebar-button:hover {
-  box-shadow: 0 0 8px #66cfc4;
-  /* 藍色光暈 */
   background-color: #b3e2da;
 }
 
+/* 當前頁面選中效果，使用原本 active 色 */
 .active {
   background-color: #3ca094;
   font-weight: 600;
-  border: 1px solid #66cfc4;
 }
 </style>

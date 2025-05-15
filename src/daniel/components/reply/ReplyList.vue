@@ -3,7 +3,7 @@
         <div v-for="reply in replies" :key="reply.replyId">
             <ReplyItem :reply="reply" @updated="reloadReplies" @deleted="onDeleted" />
         </div>
-        <ReplyForm :commentId="props.commentId" @added="reloadReplies" />
+        <ReplyForm v-if="showForm" :commentId="props.commentId" @added="reloadReplies" class="reply-form"/>
     </section>
 </template>
 
@@ -13,7 +13,10 @@ import myAxios from '@/plugins/axios.js'
 import ReplyForm from '@/daniel/components/reply/ReplyForm.vue'
 import ReplyItem from '@/daniel/components/reply/ReplyItem.vue'
 
-const props = defineProps({ commentId: Number })
+const props = defineProps({ 
+    commentId: Number,
+    showForm: { type: Boolean, default: false }
+})
 const replies = ref([])
 
 const reloadReplies = async () => {
@@ -32,12 +35,12 @@ function onDeleted(id) {
 .reply-section {
     margin-top: 0.5rem;
     padding-left: 1.5rem;
-    border-left: 2px dashed #ddd;
+    /* border-left: 2px dashed #ddd; */
 }
 
 .reply-item {
     background: #fff;
-    border: 1px solid #f0f0f0;
+    /* border: 1px solid #f0f0f0; */
     border-radius: 4px;
     padding: 0.5rem;
     margin-bottom: 0.5rem;

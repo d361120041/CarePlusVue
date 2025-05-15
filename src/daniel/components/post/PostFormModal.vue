@@ -35,7 +35,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" @click="nextStep" :disabled="!canProceedToContent"
-                        class="btn-tertiary btn">下一步</button>
+                    class="btn-tertiary btn">下一步</button>
                 </div>
             </div>
 
@@ -434,7 +434,8 @@ async function onSubmit() {
     display: flex;
     justify-content: flex-end;
     gap: 0.5rem;
-    margin-top: 1rem
+    /* margin-top: 1rem; */
+    padding: 1.5rem;
 }
 
 .modal-actions button[disabled] {

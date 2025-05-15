@@ -10,7 +10,7 @@
                 </div>
 
                 <!-- 漢堡選單 -->
-                <div class="menu-wrapper">
+                <div class="menu-wrapper" v-click-outside="closeMenu">
                     <button class="hamburger-btn" @click.stop="toggleMenu"
                         v-if="post.user.userId === currentUser.userId">⋯</button>
                     <ul v-if="menuOpen" class="post-dropdown">
@@ -48,18 +48,20 @@
                 </button>
                 <button class="action-btn"> 💬 留言</button>
                 <button class="action-btn" @click="sharePost">
-                    🔗 分享 ({{ shareCount  }})
+                    🔗 分享 ({{ shareCount }})
                 </button>
             </div>
 
             <!-- 留言列表 -->
             <CommentList ref="commentList" :postId="post.postId" class="comment-list" />
+        </div>
 
+        <template #footer>
             <!-- 留言表單 -->
             <div class="comment-form-wrapper">
                 <CommentForm :postId="post.postId" @added="onCommentAdded" />
             </div>
-        </div>
+        </template>
     </BaseModal>
 </template>
 
@@ -70,18 +72,24 @@ import { useToggle } from '@/daniel/composables/useToggle'
 import { formatCount } from '@/daniel/composables/number.js'
 import { usePostStore } from '@/daniel/stores/posts'
 import { useAuthStore } from '@/stores/auth'
+
 import VueEasyLightbox from 'vue-easy-lightbox'
 
 import BaseModal from '@/daniel/components/BaseModal.vue'
 import CommentList from '@/daniel/components/comment/CommentList.vue'
 import CommentForm from '@/daniel/components/comment/CommentForm.vue'
 import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
+import Swal from 'sweetalert2'
 
 const props = defineProps({
     visible: Boolean,
     post: Object
 })
 const emit = defineEmits(['close', 'refresh'])
+
+function closeMenu() {
+    menuOpen.value = false
+}
 
 // 時間格式化
 const { formattedTime } = useTimeFormat(props.post.createdAt)
@@ -107,13 +115,34 @@ const commentList = ref(null)
 // 刪除貼文
 async function onDelete() {
     toggleMenu()
-    if (!confirm('確定要刪除此貼文？此操作無法復原')) return
+
+    const { isConfirmed } = await Swal.fire({
+        title: '確定要刪除此貼文？',
+        text: '此操作無法復原',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '是的，刪除吧',
+        cancelButtonText: '取消',
+    })
+    if (!isConfirmed) return
+
     try {
         await postStore.deletePost(props.post.postId)
         emit('refresh')
         postStore.closeDetailModal()
+
+        await Swal.fire({
+            title: '已刪除！',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false,
+        })
     } catch {
-        alert('刪除失敗，請稍後再試')
+        Swal.fire({
+            title: '刪除失敗',
+            text: '請稍後再試',
+            icon: 'error',
+        })
     }
 }
 
@@ -178,7 +207,7 @@ function onCommentAdded() {
 .post-detail {
     /* 讓裡面 sticky 生效 */
     max-height: 70vh;
-    overflow-y: auto;
+    /* overflow-y: auto; */
     position: relative;
 }
 
@@ -220,29 +249,41 @@ function onCommentAdded() {
     background: none;
     border: none;
     font-size: 1rem;
+    line-height: 1;
+    padding: 0.25rem;
     cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.hamburger-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .post-dropdown {
     position: absolute;
     right: 0;
-    top: 1.8rem;
-    background: white;
+    top: 1.5rem;
+    background: #fff;
     border: 1px solid #ccc;
     border-radius: 4px;
     list-style: none;
-    padding: 0.5rem 0;
-    margin: 0;
-    z-index: 10;
+    padding: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    z-index: 100;
 }
 
 .post-dropdown li {
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 0.75rem;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .post-dropdown li:hover {
-    background: #c7a0a0;
+    background: #f5f5f5;
+    border-radius: 4px;
 }
 
 .post-content {
@@ -271,6 +312,7 @@ function onCommentAdded() {
 .post-actions {
     display: flex;
     border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
     margin-top: 1rem;
 }
 
@@ -309,14 +351,14 @@ function onCommentAdded() {
 
 /* 黏底表單 */
 .comment-form-wrapper {
-    position: sticky;
-    bottom: 0;
-    background: #fff;
+    /* position: sticky; */
+    /* bottom: 0; */
+    /* background: #fff; */
     /* 遮住後面的內容 */
     padding: 0.75rem 1rem;
     /* 依表單內部間距調整 */
-    border-top: 1px solid #eee;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    /* border-top: 1px solid #eee; */
+    /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); */
     z-index: 10;
 }
 </style>

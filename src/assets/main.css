@@ -41,7 +41,7 @@ footer {
   color: var(--color-primary-text);
   text-align: center;
   flex-shrink: 0; /* 不隨容器縮小 */
-  margin-top: 40px;
+  /* margin-top: 40px; */
 }
 
 /* 3. 主內容區塊 */

@@ -233,6 +233,10 @@ main {
     border-radius: var(--radius-sm);
 }
 
+.widget-list a:hover {
+    color: var(--color-tertiary)
+}
+
 @media (max-width: var(--breakpoint-md)) {
     .social-layout {
         grid-template-columns: 1fr;

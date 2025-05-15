@@ -66,7 +66,9 @@
                     </button>
                 </div>
             </div>
+        </form>
 
+        <template #footer>
             <!-- 按鈕區：sticky at bottom -->
             <div class="actions-bar">
                 <button type="button" @click="onClear" class="action-clear">
@@ -79,7 +81,7 @@
                     套用篩選
                 </button>
             </div>
-        </form>
+        </template>
     </BaseModal>
 </template>
 
@@ -187,8 +189,8 @@ function onClose() {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    max-height: 80vh;
-    overflow-y: auto;
+    /* max-height: 80vh; */
+    /* overflow-y: auto; */
     position: relative;
 }
 
@@ -258,7 +260,7 @@ select:focus {
     position: sticky;
     bottom: 0;
     background: white;
-    padding: 0.75rem 0;
+    padding: 1.25rem 1rem;
     border-top: 1px solid #eee;
 }
 

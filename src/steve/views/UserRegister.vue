@@ -22,7 +22,11 @@
           <option value="+81">+81 (日本)</option>
           <option value="+1">+1 (美國)</option>
         </select>
-        <input v-model="localPhoneNumber" placeholder="電話（不含區碼）" />
+        <input
+          v-model="localPhoneNumber"
+          placeholder="電話（不含區碼）"
+          maxlength="10"
+        />
       </div>
 
       <input v-model="address" placeholder="地址" />

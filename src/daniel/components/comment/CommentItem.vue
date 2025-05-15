@@ -1,58 +1,67 @@
 <template>
     <div class="comment-item">
-        <div class="comment-header">
-            <!-- 使用者資訊區塊 -->
-            <UserAvatar :imageUrl="imageUrl" />
-            <div class="user-info">
-                <div class="user-name">{{ comment.user.userName }}</div>
-                <div class="comment-time">{{ formattedTime }}</div>
-            </div>
 
-            <!-- 漢堡選單 -->
-            <div class="comment-menu-wrapper">
-                <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
-                <ul v-if="menuOpen" class="comment-dropdown">
-                    <li @click="startEdit">編輯評論</li>
-                    <li @click="confirmDelete">刪除評論</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- 編輯表單與顯示切換 -->
+        <!-- 1. 編輯模式 -->
         <div v-if="editing">
             <EditCommentForm :comment="comment" @updated="onUpdated" @cancel="stopEdit" />
         </div>
+
+        <!-- 2. 顯示模式 -->
         <div v-else>
-            <p>{{ comment.content }}</p>
+            <!-- 第一行：大頭貼 + 使用者姓名與內容區塊 -->
+            <div class="comment-top">
+                <UserAvatar :imageUrl="imageUrl" class="user-avatar" />
+                <div class="comment-main">
+                    <div class="user-name">{{ comment.user.userName }}</div>
+                    <div class="comment-content">{{ comment.content }}</div>
+                </div>
+    
+                <!-- 漢堡選單 -->
+                <div class="comment-menu-wrapper" v-click-outside="closeMenu">
+                    <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
+                    <ul v-if="menuOpen" class="comment-dropdown">
+                        <li @click="startEdit">編輯</li>
+                        <li @click="confirmDelete">刪除</li>
+                    </ul>
+                </div>
+            </div>
+    
+            <!-- 第二行：時間與按讚，對齊 comment-main 開頭 -->
+            <div class="comment-bottom">
+                <div class="comment-time">{{ formattedTime }}</div>
+                <!-- 按讚按鈕 -->
+                <div class="comment-actions">
+                    <button class="action-btn" @click="likeComment">讚</button>
+                    <span>(👍{{ likeCount }})</span>
+                    <button class="action-btn" @click="onReplyClick">回覆</button>
+                </div>
+            </div>
         </div>
-
-        <!-- 按讚按鈕 -->
-        <div class="comment-actions">
-            <button class="action-btn" @click="likeComment">讚</button>
-            <span>(👍{{ likeCount }})</span>
-        </div>
-
-        <ReplyList :commentId="comment.commentId" @reloaded="emitReload" />
+        
+        <ReplyList :commentId="comment.commentId" :showForm="showReplyForm" />
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import myAxios from '@/plugins/axios.js'
+import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
+import { useToggle } from '@/daniel/composables/useToggle'
 
+import myAxios from '@/plugins/axios.js'
 import ReplyList from '@/daniel/components/reply/ReplyList.vue'
 import EditCommentForm from '@/daniel/components/comment/EditCommentForm.vue'
 import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
 
 const props = defineProps({ comment: Object })
-const emit = defineEmits(['replied', 'updated', 'deleted'])
-const emitReload = () => emit('replied')
+const emit = defineEmits(['replied', 'updated', 'deleted', 'toggle-reply'])
 
-import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
 const { formattedTime } = useTimeFormat(props.comment.createdAt)
-
-import { useToggle } from '@/daniel/composables/useToggle'
 const [menuOpen, toggleMenu] = useToggle(false)
+const [showReplyForm, toggleReply] = useToggle(false)
+
+function closeMenu() {
+    menuOpen.value = false
+}
 
 // 使用者資訊區塊
 const imageUrl = ref(null)
@@ -85,7 +94,7 @@ async function confirmDelete() {
     }
 }
 
-//================= 按讚 開始=================
+// 按讚
 const likeCount = ref(props.comment.reactions?.length || 0)
 async function likeComment() {
     try {
@@ -95,7 +104,11 @@ async function likeComment() {
         console.error('評論按讚失敗', error);
     }
 }
-//================= 按讚 結束=================
+
+function onReplyClick() {
+    toggleReply()
+    emit('toggle-reply', props.comment.commentId)
+}
 
 onMounted(() => {
     likeCount.value = props.comment.reactions?.length || 0
@@ -106,17 +119,19 @@ onMounted(() => {
 <style scoped>
 .comment-item {
     background: #fff;
-    border: 1px solid #eee;
     border-radius: 4px;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
+    padding: 0.75rem 0.75rem 0;
+    /* margin-bottom: 1rem; */
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.comment-header {
+.comment-top {
     display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
+    /* align-items: flex-start; */
+    position: relative;
 }
 
 .user-avatar {
@@ -124,63 +139,91 @@ onMounted(() => {
     height: 40px;
     border-radius: 50%;
     margin-right: 0.75rem;
+    flex-shrink: 0;
 }
 
-.user-info {
+.comment-main {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    font-size: 0.9rem;
+    gap: 0.25rem;
+    background: #f9f9f9;
+    /* 淺色區隔 */
+    padding: 0.5rem;
+    border-radius: 4px;
 }
 
 .user-name {
     font-weight: bold;
+    font-size: 0.95rem;
 }
 
-.comment-time {
-    font-size: 0.8rem;
-    color: #666;
+.comment-content {
+    font-size: 0.9rem;
+    white-space: pre-wrap;
 }
 
 .comment-menu-wrapper {
     position: absolute;
-    top: 0.5rem;
+    top: 0rem;
     right: 0.5rem;
 }
 
 .hamburger-btn {
     background: none;
     border: none;
-    font-size: 1.2rem;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0.25rem;
     cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.hamburger-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .comment-dropdown {
     position: absolute;
     right: 0;
     top: 1.5rem;
-    background: white;
+    background: #fff;
     border: 1px solid #ccc;
     border-radius: 4px;
     list-style: none;
-    margin: 0;
-    padding: 0.5rem 0;
+    padding: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     z-index: 100;
 }
 
 .comment-dropdown li {
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 0.75rem;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .comment-dropdown li:hover {
-    background-color: #f5f5f5;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.comment-bottom {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #666;
+    margin-left: calc(40px + 0.75rem);
+    /* 對齊 comment-main 開頭 */
+    gap: 0.5rem;
 }
 
 .comment-actions {
     display: flex;
-    justify-content: flex-start;
-    margin: 0.5rem 0;
-    font-size: 0.9rem;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .action-btn {
