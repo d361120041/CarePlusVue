@@ -12,8 +12,8 @@
       </div>
 
       <!-- 其他選項 -->
-      <button @click="go('/caregiver/schedule')">📅 我的排班表</button>
-      <button @click="go('/caregiver/orders')">📦 我的訂單紀錄</button>
+      <button @click="go('/caregiver/orderss')">📦 我的訂單紀錄</button>
+     
     </div>
   </div>
 </template>

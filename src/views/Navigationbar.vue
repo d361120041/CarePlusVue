@@ -79,7 +79,7 @@
       <!-- ✅ 都沒登入 -->
       <template v-else>
         <div class="dropdown-login">
-          <button class="login-dropdown-btn">登入/註冊</button>
+          <button class="login-dropdown-btn">登入 / 註冊</button>
           <div class="dropdown-login-menu">
             <button @click="goUserLogin">一般用戶登入</button>
             <button @click="goCaregiverLogin">照服人員登入</button>
@@ -160,7 +160,9 @@ onMounted(() => {
 const goUserLogin = () => router.push("/userlogin");
 //照護者登入按鈕
 const goCaregiverLogin = () => router.push("/caregiverLogin");
-const goAdminLogin = () => router.push("/login-admin");
+const goAdminLogin = () => {
+  window.open("/login-admin", "_blank");
+};
 
 const userLogout = async () => {
   await auth.logout();

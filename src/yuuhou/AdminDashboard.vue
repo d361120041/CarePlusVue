@@ -56,6 +56,7 @@ import { ref, onMounted, computed } from "vue";
 import axios from "@/plugins/axios";
 import { useCaregiverAuth } from "@/stores/useCaregiverAuth";
 import EditCaregiver from "@/yuuhou/EditCaregiver.vue";
+import Swal from "sweetalert2";
 
 const caregivers = ref([]);
 const isEditing = ref(false);
@@ -113,37 +114,103 @@ const cancelEdit = () => {
 
 const saveCaregiver = async (updatedCaregiver) => {
   try {
-    await axios.put(`/admin/caregivers/${updatedCaregiver.caregiverId}`, updatedCaregiver, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-      },
+    const result = await Swal.fire({
+      title: "確定要儲存變更嗎？",
+      text: "確認後將會更新照顧者資料。",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "儲存",
+      denyButtonText: "不儲存",
+      cancelButtonText: "取消",
+      confirmButtonColor: "#3085d6",
+      denyButtonColor: "#d33",
+      cancelButtonColor: "#aaa",
     });
-    const index = caregivers.value.findIndex(c => c.caregiverId === updatedCaregiver.caregiverId);
-    if (index !== -1) {
-      caregivers.value[index] = updatedCaregiver;
+
+    if (result.isConfirmed) {
+      // 執行儲存請求
+      await axios.put(`/admin/caregivers/${updatedCaregiver.caregiverId}`, updatedCaregiver, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      });
+
+      // 更新本地資料
+      const index = caregivers.value.findIndex(c => c.caregiverId === updatedCaregiver.caregiverId);
+      if (index !== -1) {
+        caregivers.value[index] = updatedCaregiver;
+      }
+
+      // 顯示成功訊息
+      Swal.fire({
+        title: "已儲存！",
+        text: "照顧者資料已成功更新。",
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+      });
+
+      // 關閉編輯模式
+      isEditing.value = false;
+
+    } else if (result.isDenied) {
+      Swal.fire({
+        title: "變更未儲存",
+        text: "您的變更未儲存。",
+        icon: "info",
+        confirmButtonColor: "#3085d6",
+      });
     }
-    alert("✅ 照顧者資料已成功更新！");
-    isEditing.value = false;
   } catch (error) {
     console.error("儲存照顧者資料失敗", error);
-    alert("❌ 無法儲存變更！");
+    Swal.fire({
+      title: "錯誤！",
+      text: "❌ 無法儲存變更，請稍後再試。",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 };
 
 const deleteCaregiver = async (id) => {
-  if (confirm("確定要刪除這位照顧者嗎？")) {
-    try {
+  try {
+    const result = await Swal.fire({
+      title: "確定要刪除這位照顧者嗎？",
+      text: "刪除後將無法復原！",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "是的，刪除！",
+      cancelButtonText: "取消",
+    });
+
+    if (result.isConfirmed) {
+      // 執行刪除請求
       await axios.delete(`/admin/caregivers/${id}`, {
         headers: {
           Authorization: `Bearer ${authStore.token}`,
         },
       });
+
+      // 移除本地資料
       caregivers.value = caregivers.value.filter(c => c.caregiverId !== id);
-      alert("✅ 照顧者已成功刪除！");
-    } catch (error) {
-      console.error("刪除照顧者失敗", error);
-      alert("❌ 刪除失敗！");
+
+      // 顯示成功訊息
+      Swal.fire({
+        title: "已刪除！",
+        text: "照顧者資料已成功刪除。",
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+      });
     }
+  } catch (error) {
+    console.error("刪除照顧者失敗", error);
+    Swal.fire({
+      title: "錯誤！",
+      text: "❌ 刪除失敗，請稍後再試。",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   }
 };
 </script>

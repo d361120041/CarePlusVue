@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, toRaw, isProxy } from "vue";
 import { useAuthStore } from "@/stores/auth";
-
+import authApi from "@/api/auth"; 
 export const useAppointmentStore = defineStore("appointment", {
   state: () => ({
     appointment: {
@@ -150,16 +150,17 @@ export const useAppointmentStore = defineStore("appointment", {
       }
       this.saveToLocalStorage();
     },
-
+   
+    
     setPatientInfo(patientData) {
       const plainData = toRaw(patientData);
-
+      
       // 設置基本病患資訊
       this.appointment.patientId = plainData.patientId || null;
       this.appointment.patientInfo = {
         name: plainData.name || "",
         gender:
-          plainData.gender === 1 || plainData.gender === "1" ? "男" : "女",
+        plainData.gender === 1 || plainData.gender === "1" ? "男" : "女",
       };
 
       this.saveToLocalStorage();
@@ -196,6 +197,32 @@ export const useAppointmentStore = defineStore("appointment", {
         services: this.appointment.serviceIds,
       });
     },
+
+//yuuhou
+
+// ✅ 追加：從後端載入使用者的所有預約紀錄
+//     async loadAppointments(userId) {
+//   try {
+//     const response = await authApi.getUserAppointments(userId);
+
+//     // 確保 API 回傳的是陣列
+//     if (!Array.isArray(response.data)) {
+//       console.error("❌ 預約紀錄回傳格式錯誤，應該是陣列:", response.data);
+//       return [];
+//     }
+
+//     console.log("📅 已載入預約紀錄:", response.data);
+//     return response.data;
+//   } catch (error) {
+//     console.error("❌ 載入預約紀錄失敗:", error);
+//     throw error;
+//   }
+// },
+
+
+//yuuhou
+
+
 
     setAppointmentBase(payload) {
       this.appointment = { ...this.appointment, ...payload };
