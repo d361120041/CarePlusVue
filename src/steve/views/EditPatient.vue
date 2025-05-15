@@ -1,36 +1,28 @@
 <template>
   <div class="edit-patient-container">
-    <h2 class="text-xl font-bold mb-4">編輯患者</h2>
-    <form @submit.prevent="onSubmit" class="space-y-4">
-      <div>
-        <label class="block font-medium mb-1">姓名</label>
-        <input
-         style="margin-left: 96px"
-          v-model="form.name"
-          type="text"
-          class="w-full border rounded p-2"
-          required
-        />
+    <h2 class="form-title">編輯患者</h2>
+    <form @submit.prevent="onSubmit">
+      <div class="form-row">
+        <label>姓名</label>
+        <input v-model="form.name" type="text" required />
       </div>
 
-      <div>
-        <label class="block font-medium mb-1">生日</label>
-        <div class="flex gap-2">
-          <select v-model="selectedYear" class="border rounded p-2">
+      <div class="form-row">
+        <label>生日</label>
+        <div class="birthday-group">
+          <select v-model="selectedYear">
             <option value="">年</option>
             <option v-for="year in years" :key="year" :value="year">
               {{ year }}
             </option>
           </select>
-
-          <select v-model="selectedMonth" class="border rounded p-2">
+          <select v-model="selectedMonth">
             <option value="">月</option>
             <option v-for="month in 12" :key="month" :value="month">
               {{ month }}
             </option>
           </select>
-
-          <select v-model="selectedDay" class="border rounded p-2">
+          <select v-model="selectedDay">
             <option value="">日</option>
             <option v-for="day in availableDays" :key="day" :value="day">
               {{ day }}
@@ -39,91 +31,53 @@
         </div>
       </div>
 
-      <div>
-        <label class="block font-medium mb-1">性別</label>
-        <select
-          v-model="form.gender"
-          class="w-full border rounded p-2"
-          required
-        >
+      <div class="form-row">
+        <label>性別</label>
+        <select v-model="form.gender" required>
           <option value="">請選擇</option>
           <option :value="0">女性</option>
           <option :value="1">男性</option>
         </select>
       </div>
 
-      <div>
-        <label class="block font-medium mb-1">緊急聯絡</label>
-        <input
-          v-model="form.emergencyContact"
-          type="text"
-          class="w-full border rounded p-2"
-        />
+      <div class="form-row">
+        <label>緊急聯絡</label>
+        <input v-model="form.emergencyContact" type="text" />
       </div>
 
-      <div>
-        <label class="block font-medium mb-1">地址</label>
-        <input
-          v-model="form.address"
-          type="text"
-          class="w-full border rounded p-2"
-        />
+      <div class="form-row">
+        <label>地址</label>
+        <input v-model="form.address" type="text" />
       </div>
 
-      <div>
-        <label class="block font-medium mb-1">病患詳情</label>
-        <textarea
-          v-model="form.patientDetail"
-          rows="3"
-          class="w-full border rounded p-2"
-        />
+      <div class="form-row">
+        <label>病患詳情</label>
+        <textarea v-model="form.patientDetail" rows="3" />
       </div>
 
-      <div>
-        <label class="block font-medium mb-1">過敏史</label>
-        <textarea
-          v-model="form.allergies"
-          rows="3"
-          class="w-full border rounded p-2"
-        />
+      <div class="form-row">
+        <label>過敏史</label>
+        <textarea v-model="form.allergies" rows="3" />
       </div>
 
-      <div>
-        <label class="block font-medium mb-1">家族病史</label>
-        <textarea
-          v-model="form.familyHistory"
-          rows="3"
-          class="w-full border rounded p-2"
-        />
+      <div class="form-row">
+        <label>家族病史</label>
+        <textarea v-model="form.familyHistory" rows="3" />
       </div>
 
-      <div>
-        <label class="block font-medium mb-1">目前用藥</label>
-        <textarea
-          v-model="form.currentMedications"
-          rows="3"
-          class="w-full border rounded p-2"
-        />
+      <div class="form-row">
+        <label>目前用藥</label>
+        <textarea v-model="form.currentMedications" rows="3" />
       </div>
 
-      <div class="flex space-x-4">
-  <button
-    type="submit"
-    class="btn-save"
-  >
-    儲存修改
-  </button>
-  <button
-    type="button"
-    @click="cancel"
-    class="btn-cancel"
-  >
-    取消
-  </button>
-</div>
+      <div class="form-actions">
+        <button type="submit" class="btn-save">儲存修改</button>
+        <button type="button" @click="cancel" class="btn-cancel">取消</button>
+      </div>
     </form>
   </div>
 </template>
+
 
 <script setup>
 import Swal from 'sweetalert2';
@@ -324,12 +278,66 @@ textarea:focus {
 .edit-patient-container {
   background-color: #fff8f0;
   max-width: 700px;
-  margin: 2rem auto;        /* 上下留白，左右置中 */
+  margin: 2rem auto;
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: none;         /* 移除陰影 */
-  border: none;             /* 若有邊框也移除 */
 }
+
+.form-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.form-row label {
+  width: 100px;
+  font-weight: 500;
+  margin-right: 1rem;
+  text-align: right;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+  flex: 1;
+  background-color: #fff8f0;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem;
+  outline: none;
+  font-size: 1rem;
+}
+
+.form-row textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus {
+  background-color: #f7f1e8;
+}
+
+.birthday-group {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
 .btn-save {
   background-color: #4db6ac;
   color: white;
@@ -359,5 +367,6 @@ textarea:focus {
 .btn-cancel:hover {
   background-color: #ff6666;
 }
+
 
 </style>
