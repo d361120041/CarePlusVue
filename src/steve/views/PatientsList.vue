@@ -1,9 +1,9 @@
 <template>
   <div
-    class="patients-content flex h-full gap-6"
+    class="patients-content flex h-full gap-6 items-start"
     style="background-color: #fff8f0"
   >
-    <!-- 右側內容：患者列表 -->
+    <!-- 左側：病患管理卡片 -->
     <section
       class="list-section p-6 rounded overflow-y-auto h-full"
       style="background-color: #fff7ed"
@@ -55,6 +55,7 @@
         </tbody>
       </table>
     </section>
+    <!-- 插圖區塊已移除 -->
   </div>
 </template>
 
@@ -62,7 +63,6 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "@/plugins/axios";
-import Sidebar from "@/steve/views/Sidebar.vue";
 
 const patients = ref([]);
 const router = useRouter();
@@ -84,14 +84,8 @@ const formatDate = (dateStr) =>
       })
     : "";
 
-const goAdd = () => {
-  router.push("/user-center/patients/add");
-};
-
-const goEdit = (id) => {
-  router.push(`/user-center/patients/edit/${id}`);
-};
-
+const goAdd = () => router.push("/user-center/patients/add");
+const goEdit = (id) => router.push(`/user-center/patients/edit/${id}`);
 const deletePatient = async (id) => {
   if (!confirm("確定要刪除此病患？")) return;
   try {
@@ -101,8 +95,6 @@ const deletePatient = async (id) => {
     alert("刪除失敗");
   }
 };
-
-onMounted(fetchPatients);
 </script>
 
 <style scoped>
@@ -110,14 +102,21 @@ onMounted(fetchPatients);
   height: 100%;
   display: flex;
   gap: 1.5rem;
+  background-color: #fff8f0;
 }
+
+.list-section {
+  flex: 1;
+  border-radius: 16px;
+  padding: 1rem;
+  background-color: #fff7ed;
+  overflow-y: auto;
+}
+
 .addPatient {
   color: white;
-  text-decoration: none;
   margin-bottom: 6px;
-  /* 增加每個按鈕的分隔感 */
   width: 25%;
-  display: block;
   text-align: center;
   padding: 0.75rem;
   border-radius: 12px;
@@ -126,23 +125,20 @@ onMounted(fetchPatients);
   font-weight: 500;
   border: 1px solid #4db6ac;
 }
-.list-section {
-  border-radius: 16px; /* ✅ 比較明顯的圓角，可以自行調整為 8px、24px 等 */
-  padding: 1rem;
-  background-color: blue;
+.addPatient:hover {
+  background-color: #66cfc4;
 }
 
 .edit,
 .delete {
   padding: 0.5rem 1rem;
   color: white;
-  border-radius: 8px; /* ✅ 圓角 */
+  border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
-  border: 2px solid transparent; /* 先設一個預設值，hover 時會覆蓋 */
+  border: 2px solid transparent;
   transition: background-color 0.3s, border-color 0.3s;
 }
-
 .edit {
   background-color: #3e9bdc;
   border-color: #3e9bdc;
@@ -151,7 +147,6 @@ onMounted(fetchPatients);
   background-color: #2c82c9;
   border-color: #2c82c9;
 }
-
 .delete {
   background-color: #ff9999;
   border-color: #ff9999;
@@ -159,11 +154,5 @@ onMounted(fetchPatients);
 .delete:hover {
   background-color: #ff6666;
   border-color: #ff6666;
-}
-.patients-content {
-  height: 100%;
-  display: flex;
-  gap: 1.5rem;
-  background-color: #fff8f0; /* ✅ 米色背景 */
 }
 </style>
