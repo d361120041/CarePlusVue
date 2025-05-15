@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="max-w-2xl mx-auto p-6"
-    style="margin-left: 3rem; margin-top: 2rem"
-  >
+  <div class="inquiry-wrapper">
     <h2 class="text-2xl font-bold mb-4">客服信件</h2>
 
     <!-- 公版按鈕 -->
@@ -45,7 +42,7 @@
           type="email"
           v-model="inquiry.email"
           disabled
-          class="w-full border rounded p-2 bg-gray-100"
+         class="w-full"
         />
       </div>
 
@@ -81,11 +78,11 @@
 
         <br />
         <textarea
-          style="width: 70%; height: 100px"
+          style="width: 70%; height: 150px"
           v-model="inquiry.inquiryText"
           rows="6"
           placeholder="請在此輸入您的問題或建議…"
-          class="w-full border rounded p-2"
+          class="border rounded p-2 bg-gray-100"
           required
         ></textarea>
       </div>
@@ -202,6 +199,13 @@ const submitInquiry = async () => {
 </script>
 
 <style scoped>
+input,
+textarea {
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+  outline: none;
+}
 .template-btn {
   padding: 0.5rem 0.5rem;
   border-radius: 8px;
@@ -240,5 +244,13 @@ const submitInquiry = async () => {
   background-color: #a8dad4;
   border-color: #a8dad4;
   cursor: not-allowed;
+}
+.inquiry-wrapper {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: transparent; /* ✅ 從 #fff8f0 改為 transparent */
+  border-radius: 0;               /* ✅ 移除圓角 */
+  box-shadow: none;               /* ✅ 拿掉陰影 */
 }
 </style>

@@ -204,8 +204,10 @@ onMounted(fetchFavorites);
 
 <style scoped>
 .favorites-container {
-  max-width: 100%;
-  margin-left: 0;
+  flex: none;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto; 
   padding-left: 1rem; /* 可選：讓左側有內距 */
   padding-right: 2rem;
 }

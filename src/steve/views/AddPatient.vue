@@ -104,7 +104,7 @@
         </div>
 
         <div>
-          <label class="block font-medium mb-1">病患詳情</label>
+          <label class="block font-medium mb-1">家屬詳情</label>
           <br />
           <textarea
             style="width: 70%; height: 100px"

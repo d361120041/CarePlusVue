@@ -40,6 +40,8 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "@/plugins/axios";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 const step = ref(1);
 const userAccount = ref("");
@@ -54,7 +56,10 @@ const router = useRouter();
 
 const nextStep = () => {
   if (!userAccount.value || !userPassword.value || !emailAddress.value) {
-    alert("請完整填寫帳號、密碼與 Email");
+    Swal.fire({
+      icon: "warning",
+      title: "請完整填寫帳號、密碼與 Email",
+    });
     return;
   }
   step.value = 2;
@@ -80,7 +85,7 @@ const register = async () => {
   const fullPhone = `${countryCode.value}${localPhoneNumber.value}`;
 
   try {
-    const res = await axios.post("/user/register/send", {
+    await axios.post("/user/register/send", {
       userAccount: userAccount.value,
       userPassword: userPassword.value,
       userName: userName.value,
@@ -88,11 +93,18 @@ const register = async () => {
       phoneNumber: fullPhone,
       address: address.value,
     });
-    alert("驗證碼已寄出，請去信箱查收");
+    Swal.fire({
+      icon: "success",
+      title: "驗證碼已寄出，請去信箱查收",
+    });
     localStorage.setItem("pendingEmail", emailAddress.value);
     router.push("/verify");
   } catch (error) {
-    alert("註冊失敗：" + (error.response?.data || "無法連線後端"));
+    Swal.fire({
+      icon: "error",
+      title: "註冊失敗",
+      text: error.response?.data || "無法連線後端",
+    });
   }
 };
 </script>
