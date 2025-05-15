@@ -5,9 +5,6 @@
     </router-link>
     <ul>
       <li>
-        <router-link to="/">Care+</router-link>
-      </li>
-      <li>
         <router-link to="/caregivers/search">找看護</router-link>
       </li>
       <li>

@@ -1,7 +1,7 @@
 <template>
   <div class="forgot-password-container">
     <div class="forgot-password-card">
-      <h2>🔒 忘記密碼</h2>
+      <h2> 忘記密碼</h2>
       <form @submit.prevent="handleForgotPassword">
         <input 
           v-model="email" 
