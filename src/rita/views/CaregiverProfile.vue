@@ -6,18 +6,17 @@
       class="back-button flex items-center text-teal-600 hover:text-teal-700 transition-colors duration-200 py-2 px-2 rounded-md mt-2 ml-4 mb-9"
       aria-label="返回搜尋結果"
     >
-      <!-- <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      </svg> -->
       ⬅︎ 返回搜尋結果
     </button>
 
     <!-- 👤 看護個人資料區塊 -->
-    <div v-if="caregiver" class="caregiver-profile card-section mt-4">
-      <div class="flex flex-col md:flex-row gap-8">
+    <div v-if="caregiver" class="caregiver-profile card-section">
+      <div class="flex flex-col md:flex-row gap-12">
         <!-- 左側：看護資訊 -->
-        <div class="flex-1 space-y-8">
-          <!-- 📸 看護照片和姓名在同一行顯示 -->
-          <div class="flex items-center gap-6">
+        <div class="flex-1 space-y-10">
+          <!-- 📸 看護照片和姓名 -->
+          <div class="flex items-center gap-6 flex-nowrap">
+            <!-- 📸 圓形大頭貼 -->
             <div class="flex-shrink-0 relative">
               <img
                 class="caregiver-image"
@@ -29,87 +28,88 @@
                 loading="lazy"
               />
             </div>
-
             <!-- 🧾 姓名 -->
-            <h1 class="text-4xl font-bold text-teal-700">
+            <h1 class="text-3xl font-bold text-teal-700 truncate">
               {{ caregiver.caregiverName }}
             </h1>
           </div>
 
-          <!-- 📋 基本資訊 -->
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="label">性別</span
-              ><span class="value">{{ caregiver.gender || "未知" }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">國籍</span
-              ><span class="value">{{ caregiver.nationality || "未知" }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">語言</span>
-              <span class="value">
-                <template v-if="Array.isArray(caregiver?.languages)">
-                  {{ caregiver.languages.join(", ") }}
-                </template>
-                <template v-else>
-                  {{ caregiver?.languages || "未知" }}
-                </template>
-              </span>
-            </div>
-            <div class="info-item">
-              <span class="label">經驗年數</span
-              ><span class="value">{{ caregiver.yearOfExperience }} 年</span>
+          <!-- 📋 基本資訊與薪資資訊 -->
+          <div class="info-container">
+            <h3 class="section-title mb-4">基本資訊</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">性別</span>
+                <span class="value">{{ caregiver.gender || "未知" }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">國籍</span>
+                <span class="value">{{ caregiver.nationality || "未知" }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">語言</span>
+                <span class="value">
+                  <template v-if="Array.isArray(caregiver?.languages)">
+                    {{ caregiver.languages.join(", ") }}
+                  </template>
+                  <template v-else>
+                    {{ caregiver?.languages || "未知" }}
+                  </template>
+                </span>
+              </div>
+              <div class="info-item">
+                <span class="label">經驗年數</span>
+                <span class="value">{{ caregiver.yearOfExperience }} 年</span>
+              </div>
             </div>
 
-            <div class="salary-info">
-            <div class="info-item">
-              <span class="label">時薪</span
-              ><span class="value">{{
-                caregiver.hourlyRate
-                  ? `${caregiver.hourlyRate} 元/小時`
-                  : "未提供"
-              }}</span>
+            <h3 class="section-title mt-8 mb-4">薪資資訊</h3>
+            <div class="info-grid salary-grid">
+              <div class="info-item">
+                <span class="label">時薪</span>
+                <span class="value">{{
+                  caregiver.hourlyRate
+                    ? `${caregiver.hourlyRate} 元/小時`
+                    : "未提供"
+                }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">半日薪</span>
+                <span class="value">{{
+                  caregiver.halfDayRate
+                    ? `${caregiver.halfDayRate} 元/6小時`
+                    : "未提供"
+                }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">日薪</span>
+                <span class="value">{{
+                  caregiver.fullDayRate
+                    ? `${caregiver.fullDayRate} 元/8小時`
+                    : "未提供"
+                }}</span>
+              </div>
             </div>
-            <div class="info-item">
-              <span class="label">半日薪</span
-              ><span class="value">{{
-                caregiver.hourlyRate
-                  ? `${caregiver.halfDayRate} 元/6小時`
-                  : "未提供"
-              }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">日薪</span
-              ><span class="value">{{
-                caregiver.hourlyRate
-                  ? `${caregiver.fullDayRate} 元/8小時`
-                  : "未提供"
-              }}</span>
-            </div>
-          </div>
           </div>
 
           <!-- 📄 詳細介紹 -->
-          <div class="mt-3">
-            <h3 class="section-title mb-6">詳細介紹</h3>
-            <p class="text-gray-600 mt-7 leading-relaxed">
+          <div>
+            <h3 class="section-title mb-4">詳細介紹</h3>
+            <p class="text-gray-600 leading-relaxed">
               {{ caregiver.description || "尚無詳細介紹" }}
             </p>
           </div>
 
-          <!--   <div v-if="caregiver?.caregiverLicenses?.length > 0">
-            <h3 class="section-title">專業證照</h3>
-            <ul class="mt-3 list-disc list-inside text-gray-600">
-              <li v-for="license in caregiver.caregiverLicenses" :key="license.licenseId || license.licenseName">
-                {{ license.licenseName || '未提供證照名稱' }}
-              </li>
-            </ul>
+          <!-- 預估總價 -->
+          <!-- 修改：將預估總價移至左側容器內，與其他資訊垂直對齊 -->
+          <div>
+            <h4 class="section-title mb-4">預估總價</h4>
+            <p class="text-xl font-semibold text-teal-700">
+              {{
+                caregiver.totalPrice ? `${caregiver.totalPrice} 元` : "計算中..."
+              }}
+            </p>
           </div>
-          <div v-else>
-            <h3 class="section-title">專業證照</h3>
-            <p class="text-gray-600 mt-3">未提供相關證照資訊。</p>
-          </div> -->
         </div>
 
         <!-- 分隔線 -->
@@ -117,7 +117,6 @@
 
         <!-- 右側：使用者輸入資訊 -->
         <div class="flex-1 space-y-6">
-          <!-- <h3 class="section-title">您的需求</h3> -->
           <div class="info-grid">
             <!-- <div class="info-item">
               <span class="label">服務縣市</span>
@@ -131,16 +130,8 @@
         </div>
       </div>
 
-      <div class="mt-6">
-        <h4 class="section-title">預估總價</h4>
-        <p class="text-xl font-semibold text-teal-700">
-          {{
-            caregiver.totalPrice ? `${caregiver.totalPrice} 元` : "計算中..."
-          }}
-        </p>
-      </div>
-
       <!-- ✅ 預約按鈕 -->
+      <!-- 修改：保留預約按鈕在卡片底部，獨立於左側容器 -->
       <div class="mt-8">
         <button
           @click="confirmBooking"
@@ -319,45 +310,21 @@ const confirmBooking = () => {
   box-shadow: 0 0 0 3px rgba(77, 182, 172, 0.2);
 }
 
-/* .back-button:hover {
-  background-color: #d1ecee;
-  color: #0f766e;
-  transform: translateX(-2px);
-}
-
-.back-button:active {
-  transform: scale(0.98);
-}
-
-.back-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px #0f766e;
-}
-
-.back-button svg {
-  transition: transform 0.2s ease;
-}
-
-.back-button:hover svg {
-  transform: translateX(-3px);
-} */
-
 .caregiver-image {
-  width: 100%;
-  max-width: 320px;
-  height: 240px;
+  width: 120px;
+  height: 120px;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 50%;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .status-badge {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.875rem;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.75rem;
   font-weight: 500;
   color: white;
   background-color: #f87171;
@@ -367,10 +334,21 @@ const confirmBooking = () => {
   background-color: #34d399;
 }
 
+.info-container {
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.25rem;
+}
+
+.salary-grid {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.25rem;
 }
 
 .info-item {
@@ -379,7 +357,7 @@ const confirmBooking = () => {
 }
 
 .label {
-  font-size: 1rem;
+  font-size: 0.875rem;
   color: #6b7280;
   font-weight: 600;
   text-transform: uppercase;
@@ -387,33 +365,28 @@ const confirmBooking = () => {
 }
 
 .value {
-  font-size: 1.125rem;
+  font-size: 1rem;
   color: #1f2937;
   margin-top: 0.25rem;
 }
 
 .section-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: #1f2937;
 }
 
-/* 預約按鈕 */
 .booking-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.5rem; /* 增加內邊距，提升點擊區域 */
+  padding: 0.75rem 1.5rem;
   font-size: 1.125rem;
   font-weight: 600;
   color: #ffffff;
-  background: linear-gradient(
-    135deg,
-    #0f766e 0%,
-    #115e59 100%
-  ); /* 微妙漸變，與配色協調 */
+  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
   border: none;
-  border-radius: 8px; /* 與 .back-button 圓角一致 */
+  border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease,
@@ -421,24 +394,20 @@ const confirmBooking = () => {
 }
 
 .booking-button:hover {
-  background: linear-gradient(
-    135deg,
-    #0d615a 0%,
-    #0f4d47 100%
-  ); /* 懸停時略暗的漸變 */
+  background: linear-gradient(135deg, #0d615a 0%, #0f4d47 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  opacity: 0.95; /* 微妙透明度變化 */
+  opacity: 0.95;
 }
 
 .booking-button:active {
   transform: scale(0.98);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 點擊時陰影減弱 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .booking-button:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.3); /* 增強聚焦環，與 .back-button 協調 */
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.3);
 }
 
 .booking-button:disabled {
@@ -452,7 +421,7 @@ const confirmBooking = () => {
 .divider {
   width: 1px;
   background-color: #e5e7eb;
-  margin: 0 1.5rem;
+  margin: 0 2rem;
 }
 
 .loading-state {
@@ -471,12 +440,28 @@ const confirmBooking = () => {
   }
 
   .caregiver-image {
-    max-width: 100%;
-    height: 200px;
+    width: 100px;
+    height: 100px;
   }
 
-  .info-grid {
+  .flex-nowrap {
+    flex-wrap: nowrap;
+  }
+
+  .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 150px;
+  }
+
+  .info-grid,
+  .salary-grid {
     grid-template-columns: 1fr;
+  }
+
+  .info-container {
+    padding: 1rem;
   }
 
   .divider {
@@ -491,15 +476,15 @@ const confirmBooking = () => {
 @media (max-width: 768px) {
   .booking-button {
     padding: 0.65rem 1.25rem;
-    font-size: 1rem; /* 略縮小字體 */
-    border-radius: 6px; /* 縮小圓角以適配小螢幕 */
+    font-size: 1rem;
+    border-radius: 6px;
   }
 }
 
 @media (max-width: 480px) {
   .booking-button {
     padding: 0.5rem 1rem;
-    font-size: 0.9375rem; /* 進一步縮小字體 */
+    font-size: 0.9375rem;
   }
 }
 </style>
