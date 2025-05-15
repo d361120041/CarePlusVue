@@ -7,20 +7,21 @@
     <!-- 左側新聞列表區域 -->
     <div class="news-list">
       <!-- 搜尋欄 -->
-      <div class="search-bar mb-4 flex gap-2">
+      <div class="search-bar mb-4 flex gap-2" @keyup.enter="handleSearch">
         <input 
           v-model="search.keyword" 
           type="text" 
           placeholder="輸入關鍵字"
           class="border p-2 rounded w-1/3"
+          
         />
-        <select v-model="search.categoryId" class="border p-2 rounded w-1/4">
+        <select v-model="search.categoryId" class="border p-2 rounded w-1/4" >
           <option value="">選擇分類</option>
           <option v-for="cat in categories" :key="cat.categoryId" :value="cat.categoryId">
             {{ cat.categoryName }}
           </option>
         </select>
-        <select v-model="search.dateRange" class="border p-2 rounded w-1/4">
+        <select v-model="search.dateRange" class="border p-2 rounded w-1/4" >
           <option value="">選擇時間範圍</option>
           <option value="today">今天</option>
           <option value="week">7天內</option>
@@ -38,9 +39,12 @@
 
         <!-- 搜尋按鈕 -->
         <button @click="handleSearch" class="search-btn w-full">🔍 搜尋</button>
-          </div>
+        <!-- 清除按鈕 -->
+        <button @click="clearAll" class="btn-clear">X</button>
+      </div>
 
-          <div class="category-buttons flex gap-2 mb-4">
+      <!-- 快捷分類按鈕 -->
+      <div class="category-buttons flex gap-2 mb-4">
         <button 
           v-for="cat in categories" 
           :key="cat.categoryId" 
@@ -49,9 +53,6 @@
         >
           {{ cat.categoryName }}
         </button>
-
-        <!-- 清除按鈕 -->
-        <button @click="clearCategory" class="btn-clear">X</button>
       </div>
 
       <!-- 搜尋摘要 -->
@@ -301,9 +302,14 @@ const applyCategoryFilter = (categoryId) => {
   handleSearch();
 };
 
-const clearCategory = () => {
+const clearAll = () => {
   selectedCategory.value = null;
-  search.value.categoryId = '';
+  search.value = {
+    keyword: '',
+    categoryId: '',
+    dateRange: '',
+    sortBy: ''
+  };
   // ✅ 清除篩選條件後，重新執行 `handleSearch`
   handleSearch();
 };
@@ -320,8 +326,6 @@ const handleSearch = () => {
 
   loadNews();
 };
-
-
 
 const prevPage = () => {
   if (page.value > 0) {
@@ -483,7 +487,7 @@ onMounted(() => {
   border-radius: var(--radius-md);
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-medium);
-  width: 100px; /* 根據視覺比例調整 */
+  width: 150px; /* 根據視覺比例調整 */
   height: 38px; /* 與左側輸入欄位高度一致 */
   cursor: pointer;
   transition: background-color var(--transition-medium), box-shadow var(--transition-fast), transform var(--transition-fast);
@@ -520,6 +524,7 @@ onMounted(() => {
   padding: 0.5rem 1rem;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  margin-right: 0.5rem; /* 調整按鈕之間的間隔 */
 }
 
 .btn-outline-green:hover {
