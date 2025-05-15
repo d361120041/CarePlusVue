@@ -110,6 +110,7 @@ import auth from '@/api/auth'
 
 const router = useRouter()
 
+// 表單資料
 const email = ref('')
 const emailExists = ref(false)
 const password = ref('')
@@ -129,6 +130,11 @@ const halfDayRate = ref(1000)
 const fullDayRate = ref(2000)
 const message = ref('')
 
+// 驗證碼
+const verificationCode = ref('')
+const showVerificationCodeInput = ref(false)
+
+// 城市與區域
 const cityDistricts = {
   台北市: ['中正區', '大同區', '中山區', '萬華區', '信義區'],
   新北市: ['板橋區', '新莊區', '三重區', '淡水區'],
@@ -137,21 +143,16 @@ const cityDistricts = {
 const currentDistricts = computed(() => cityDistricts[serviceCity.value] || [])
 const onCityChange = () => (serviceDistrict.value = '')
 
-//大頭貼
+// 大頭貼
 const photoFile = ref(null)
 const photoPreviewUrl = ref(null)
 
 const MAX_WIDTH = 1680
 const MAX_HEIGHT = 1680
 
-const fileInput = ref(null);  // ✅ 確保有綁定 ref
-
 const triggerFileInput = () => {
-  if (fileInput.value) {
-    fileInput.value.click();
-  }
-};
-
+  document.querySelector("input[type='file']").click()
+}
 
 const handlePhotoChange = (event) => {
   const file = event.target.files[0]
@@ -176,24 +177,6 @@ const handlePhotoChange = (event) => {
   image.src = objectUrl
 }
 
-
-
-const base64Photo = ref('')
-
-const handleImageUpload = async (event) => {
-  const file = event.target.files[0]
-  if (!file) return
-
-  const reader = new FileReader()
-  reader.onload = () => {
-    const result = reader.result
-    base64Photo.value = result.split(',')[1]
-  }
-  reader.readAsDataURL(file)
-}
-//大頭貼
-
-
 // ✅ 即時檢查信箱是否存在
 watch(email, async (newEmail) => {
   emailExists.value = false
@@ -207,28 +190,27 @@ watch(email, async (newEmail) => {
   }
 })
 
+// ✅ 改成發送驗證碼
+// ✅ handleRegister 修改
+// ✅ 修改 handleRegister，確保圖片會傳到後端
+// ✅ 改用 Promise 包裝 FileReader
 const handleRegister = async () => {
   if (emailExists.value) {
     message.value = '❌ 此信箱已被註冊，請使用其他信箱'
     return
   }
 
-  // ✅ 如果有上傳大頭貼才轉 base64
-  if (photoFile.value) {
-    const reader = new FileReader()
-    reader.onload = async () => {
-      base64Photo.value = reader.result.split(',')[1] // 去掉開頭 data:image/jpeg;base64,
-      await submitForm()
-    }
-    reader.readAsDataURL(photoFile.value)
-  } else {
-    // 沒選圖片 → 直接送出表單
-    await submitForm()
+  // ✅ 檢查是否有上傳大頭貼
+  if (!photoFile.value) {
+    message.value = '❌ 請選擇大頭貼'
+    return
   }
-}
 
-const submitForm = async () => {
   try {
+    // ✅ 轉換圖片為 Base64
+    const base64Photo = await readFileAsBase64(photoFile.value)
+
+    // ✅ 發送註冊請求
     await auth.register({
       email: email.value,
       password: password.value,
@@ -242,23 +224,54 @@ const submitForm = async () => {
       serviceCity: serviceCity.value,
       serviceDistrict: serviceDistrict.value,
       description: description.value,
-      photoPath: '/images/default.png',
       hourlyRate: hourlyRate.value,
       halfDayRate: halfDayRate.value,
       fullDayRate: fullDayRate.value,
-      base64Photo: base64Photo.value
+      base64Photo: base64Photo
     })
 
-    message.value = '註冊成功！請到信箱完成驗證 ✅'
-    setTimeout(() => {
-      router.push('/verify-reminder')
-    }, 3000)
+    // ✅ 跳轉到驗證頁面
+    router.push({
+      path: '/verify-code',
+      query: { email: email.value }
+    })
+
   } catch (error) {
-    message.value = error.response?.data || '註冊失敗！'
+    message.value = error.response?.data || '❌ 註冊失敗！'
   }
 }
 
+// ✅ 把 FileReader 包裝成 Promise
+const readFileAsBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result.split(',')[1])
+    reader.onerror = (error) => reject(error)
+    reader.readAsDataURL(file)
+  })
+}
+
+
+
+
+// ✅ 確認驗證碼
+const handleVerifyCode = async () => {
+  try {
+    const response = await axios.post('/api/auth/verify', {
+      email: email.value,
+      verificationCode: verificationCode.value
+    })
+
+    message.value = '✅ 驗證成功！您的帳號已啟用，可以登入囉！'
+    setTimeout(() => {
+      router.push('/login')
+    }, 3000)
+  } catch (error) {
+    message.value = error.response?.data || '驗證失敗！'
+  }
+}
 </script>
+
 
 <style scoped>
 .register-container {

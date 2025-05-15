@@ -15,13 +15,13 @@
         </div>
         
         <!-- ✅ 上傳成功訊息，只顯示在這裡 -->
-        <div v-if="uploadMessage" class="upload-success">{{ uploadMessage }}</div>
+        <div v-if="uploadMessage" class="message">{{ uploadMessage }}</div>
       </div>
     </div>
    
 
     <form @submit.prevent="handleSubmit">
-      <div><label>姓名：</label><input v-model="form.caregiverName" required /></div>
+      <div><label>姓名：</label><input type="text" v-model="form.caregiverName" required /></div>
       <div><label>性別：</label>
         <select v-model="form.gender" required>
           <option value="男">男</option>
@@ -29,11 +29,11 @@
         </select>
       </div>
       <div><label>生日：</label><input v-model="form.birthday" type="date" required /></div>
-      <div><label>電話：</label><input v-model="form.phone" maxlength="10" required /></div>
+      <div><label>電話：</label><input type="text" v-model="form.phone" maxlength="10" required /></div>
       <div><label>國籍：</label>
         <select v-model="form.nationality">
           <option value="中華民國">中華民國</option>
-          <option value="其他">其他</option>
+          <option value="其他">其它</option>
         </select>
         <input v-if="form.nationality === '其他'" v-model="form.customNationality" placeholder="請輸入國籍" />
       </div>
@@ -215,18 +215,197 @@ onMounted(fetchProfile);
 
 
 <style scoped>
+/* =======================
+   🌟 Profile Container
+======================= */
 .profile-container {
-  max-width: 500px;
-  margin: 1.5rem auto;
-  padding: 1.5rem 2rem;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: linear-gradient(145deg, #f0f4ff, #ffffff);
+  border-radius: 15px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e7ff;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
+/* ✅ 背景裝飾 */
+.profile-container::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 200%;
+  height: 200%;
+  background: url('/src/assets/images/profile-bg-pattern.png') repeat;
+  opacity: 0.05;
+  z-index: 0;
+}
 
-/* ✅ 讓預覽和按鈕分開 */
+/* =======================
+   📌 Header Section
+======================= */
+.profile-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+  font-weight: 700;
+  font-size: 28px;
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(145deg, #4a90e2, #5f6dc3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* =======================
+   📄 Form Styles
+======================= */
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 兩欄結構 */
+  gap: 15px 20px;
+  z-index: 2;
+  position: relative;
+}
+
+/* ✅ 單欄佈局 */
+form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ✅ 單欄排版 */
+form > div.half {
+  grid-column: span 1;
+}
+
+/* ✅ 雙欄排版 */
+form > div.full {
+  grid-column: span 2;
+}
+
+/* ✅ 標籤樣式 */
+form label {
+  font-weight: bold;
+  color: #555;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+/* ✅ 輸入框樣式 */
+form input[type="text"],
+form input[type="number"],
+form input[type="date"],
+form select,
+form textarea {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #d0d7ff;
+  background-color: #f9faff;
+  font-size: 14px;
+  transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* ✅ 聚焦效果 */
+form input:focus,
+form select:focus,
+form textarea:focus {
+  border-color: #4a90e2;
+  background-color: #ffffff;
+  outline: none;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.2);
+}
+
+/* ✅ 必填標記 */
+.required {
+  color: #e53935;
+  font-size: 20px;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* =======================
+   🚀 Button Styles
+======================= */
+button[type="submit"] {
+  background: linear-gradient(145deg, #4a90e2, #5f6dc3);
+  color: #ffffff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  grid-column: span 2; /* 佔滿兩欄 */
+}
+
+button[type="submit"]:hover {
+  background: linear-gradient(145deg, #5f6dc3, #4a90e2);
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(74, 144, 226, 0.3);
+}
+
+/* ✅ 點擊效果 */
+button[type="submit"]:active {
+  transform: scale(0.95);
+  box-shadow: 0 5px 20px rgba(74, 144, 226, 0.5);
+}
+
+/* =======================
+   ✅ Message Styles
+======================= */
+.message {
+  margin-top: 1rem;
+  color: #28a745;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 20px;
+  padding: 10px 20px;
+  background-color: #e6f7e6;
+  animation: slideDown 0.3s ease-in-out;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  grid-column: span 2;
+}
+
+/* ❌ 錯誤訊息 */
+.message.error {
+  background-color: #fbecec;
+  color: #e53935;
+}
+
+/* 💥 Animation Styles */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =======================
+   🖼️ Avatar Section (不動)
+======================= */
+.avatar-section {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ✅ 預覽和按鈕分開 */
 .avatar-wrapper {
   width: 150px;
   height: 150px;
@@ -239,14 +418,7 @@ onMounted(fetchProfile);
   margin-bottom: 10px;
 }
 
-.avatar-section {
-  text-align: center;
-  margin-bottom: 40px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+/* ✅ 圖片樣式 */
 .avatar {
   width: 100%;
   height: 100%;
@@ -254,11 +426,7 @@ onMounted(fetchProfile);
   border-radius: 50%;
 }
 
-
-/* ✅ 圖片樣式 */
-
-
-
+/* ✅ 透明遮罩 */
 .avatar-overlay {
   position: absolute;
   top: 0;
@@ -277,8 +445,7 @@ onMounted(fetchProfile);
   transition: opacity 0.2s;
 }
 
-
-
+/* ✅ Hover 效果 */
 .avatar-wrapper:hover .avatar-overlay {
   opacity: 0.5;
 }
@@ -289,23 +456,13 @@ onMounted(fetchProfile);
   margin-top: 10px;
 }
 
+/* ✅ 縮放效果 */
 .avatar:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-.message {
-  margin-top: 1rem;
-  color: green;
-}
-
-.upload-container {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-/* ✅ 中心化上傳按鈕 */
+/* ✅ 上傳按鈕 */
 .upload-button {
   background-color: #007bff;
   color: #fff;
@@ -329,25 +486,4 @@ onMounted(fetchProfile);
   text-decoration: underline;
 }
 
-.upload-success {
-  background-color: #28a745;
-  color: #fff;
-  padding: 5px 15px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: bold;
-  transition: opacity 0.2s;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
 </style>

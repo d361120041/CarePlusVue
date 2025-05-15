@@ -33,8 +33,9 @@ import AdminNewsDetail from "@/allen/views/AdminNewsDetail.vue";
 import AdminNewsPreview from "@/allen/views/AdminNewsPreview.vue";
 
 // ------------------ allen ------------------
-
+ 
 // ------------------ yuuhou ------------------
+import VerifyCodeView from "@/yuuhou/VerifyCodeView.vue";
 import CaregiverLogin from "@/yuuhou/LoginCaregiver.vue";
 import CaregiverProfileView from "@/yuuhou/CaregiverProfileView.vue";
 import CaregiverPricing from "@/yuuhou/EditService.vue";
@@ -57,7 +58,7 @@ import ComingSoon from "@/views/ComingSoon.vue";
 import VerifySuccess from "@/yuuhou/VerifySuccess.vue";
 import ResetPasswordYuuhou from "@/yuuhou/ResetPassword.vue";
 import VerifyFailed from "@/yuuhou/VerifyFailed.vue";
-import VerifyReminder from "@/yuuhou/VerifyReminder.vue";
+import VerifyReminder from "@/yuuhou/VerifyCodeView.vue";
 // ------------------ yuuhou ------------------
 //UserInterface
 import UserLogin from "@/steve/views/UserLogin.vue";
@@ -86,6 +87,7 @@ import ProgressAdmin from '@/CMS/yuni/views/ProgressAdmin.vue'
 
 // ================== 設定路徑 開始==================
 const routes = [
+  
   { path: "/", component: HomeHero, name: "homeHero" },
   { path: "/home", component: Home, name: "home" },
   { path: "/:pathMatch(.*)*", component: NotFound, name: "notfound" },
@@ -122,7 +124,14 @@ const routes = [
   // ------------------ allen ------------------
 
   // ------------------ yuuhou ------------------
+ {
+  path: '/verify-code',
+  name: 'VerifyCode',
+  component: () => import('@/yuuhou/VerifyCodeView.vue')
+},
 
+
+  
   {
     path: "/caregiver",
     component: CaregiverDashboard,
