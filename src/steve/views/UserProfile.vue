@@ -315,16 +315,16 @@ onMounted(() => {
   text-align: center;
   padding: 0.75rem 1.5rem; /* ✅ 調整左右內距讓文字更寬鬆 */
   border-radius: 12px;
-  background-color: #80ccc3;
+  background-color: #ff8c42;
   transition: box-shadow 0.3s, background-color 0.3s;
   font-weight: 500;
-  border: 1px solid #4db6ac;
+  border: 1px solid #ff8c42;
   white-space: nowrap; /* ✅ 不允許文字換行 */
 }
 .save-button:hover {
-  box-shadow: 0 0 8px #66cfc4;
+  box-shadow: 0 0 8px #ffa76b;
   /* 藍色光暈 */
-  background-color: #b3e2da;
+  background-color: #ffa76b;
 }
 .gif-decoration {
   position: absolute;

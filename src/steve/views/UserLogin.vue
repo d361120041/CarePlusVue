@@ -88,7 +88,7 @@ const goForgot = () => {
 button {
   width: 100%;
   padding: 0.6rem;
-  background-color: #4db6ac;
+  background-color: #ff8c42;
   color: #ffffff;
   border: none;
   border-radius: 4px;
@@ -103,9 +103,9 @@ button {
   justify-content: space-between;
 }
 .extra-buttons .register {
-  background-color: #5299e6;
+  background-color: #a8d5ba;
 }
 .extra-buttons .forgot {
-  background-color: #ff9999;
+  background-color: #6e6259;
 }
 </style>
