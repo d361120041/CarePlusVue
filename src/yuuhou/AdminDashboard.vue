@@ -214,7 +214,7 @@ const deleteCaregiver = async (id) => {
   }
 };
 </script>
- 
+  
 <style scoped>
 .admin-dashboard {
   max-width: 1200px;
