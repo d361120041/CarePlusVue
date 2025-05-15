@@ -250,6 +250,8 @@ const submitAppointment = async () => {
     // ✅ 呼叫 Store Action 建立預約
     const appointmentId = await appointmentStore.submitAppointment();
 
+    console.log("預約建立成功，預約 ID:", appointmentId);
+
     // ✅ 將 appointmentId 儲存到 localStorage
     localStorage.setItem("appointmentId", appointmentId);
 
