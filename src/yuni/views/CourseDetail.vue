@@ -254,7 +254,9 @@ onMounted(async () => {
   } catch (err) {
     console.error('課程或章節載入失敗：', err)
   }
-})
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+)
 </script>
 
 <style scoped>
