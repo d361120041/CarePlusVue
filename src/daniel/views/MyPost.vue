@@ -124,6 +124,7 @@ onMounted(async () => {
     /* 直向堆疊 */
     align-items: center;
     /* 置中 */
+    margin-left: 50px;
 }
 
 /* 大頭貼從上到下第一個 */
@@ -151,8 +152,6 @@ onMounted(async () => {
 }
 
 .mypost-header {
-    grid-column: 2;
-    max-width: 500px;
     margin: 0 auto;
     padding: 1rem;
     text-align: center;
