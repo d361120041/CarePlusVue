@@ -25,7 +25,7 @@
               <p class="course-duration">時長：{{ course.duration }}</p>
             </div>
 
-            <div class="text-end" style="min-width: 200px; padding-right: 80px; padding-top: 100px;">
+            <div class="text-end" style="min-width: 200px; padding-right: 80px; padding-top: 150px;">
               <div class="btn-group-vertical w-100" role="group">
                 <button class="btn btn-outline enroll-btn mb-2"
                         :class="enrolled ? 'btn-danger' : ''"
@@ -254,7 +254,7 @@ onMounted(async () => {
   } catch (err) {
     console.error('課程或章節載入失敗：', err)
   }
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 )
 </script>
@@ -308,6 +308,7 @@ onMounted(async () => {
 .course-description {
   padding-left: 45px;
   margin-bottom: 35px;
+      width: 650px;
 }
 
 .course-duration {
