@@ -6,7 +6,7 @@
     <section class="list-section p-6 rounded overflow-y-auto h-full">
       <!-- 1. 改這行 -->
       <div class="flex items-center mb-4 space-x-2">
-        <h2 class="text-xl font-bold">病患管理</h2>
+        <h2 class="text-xl font-bold">家屬管理</h2>
         <button
           @click="patientCount < 5 && goAdd()"
           class="addPatient"
