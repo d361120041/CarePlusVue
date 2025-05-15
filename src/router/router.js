@@ -174,10 +174,10 @@ const routes = [
   { path: "/verify-success", component: VerifySuccess, name: "verifySuccess" },
   { path: "/verify-reminder", component: VerifyReminder },
   { path: "/verify-failed", component: VerifyFailed },
-  {
-    path: "/login-select",
-    component: () => import("@/yuuhou/LoginSelect.vue"),
-  },
+  // {
+  //   path: "/login-select",
+  //   component: () => import("@/yuuhou/LoginSelect.vue"),
+  // },
   {
     path: "/login-caregiver",
     component: () => import("@/yuuhou/LoginCaregiver.vue"),
