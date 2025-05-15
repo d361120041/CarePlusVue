@@ -1,10 +1,11 @@
 <template>
-  <div class="edit-patient-container p-6 shadow rounded overflow-y-auto h-full">
+  <div class="edit-patient-container">
     <h2 class="text-xl font-bold mb-4">編輯患者</h2>
     <form @submit.prevent="onSubmit" class="space-y-4">
       <div>
         <label class="block font-medium mb-1">姓名</label>
         <input
+         style="margin-left: 96px"
           v-model="form.name"
           type="text"
           class="w-full border rounded p-2"
@@ -106,20 +107,20 @@
       </div>
 
       <div class="flex space-x-4">
-        <button
-          type="submit"
-          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          儲存修改
-        </button>
-        <button
-          type="button"
-          @click="cancel"
-          class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-        >
-          取消
-        </button>
-      </div>
+  <button
+    type="submit"
+    class="btn-save"
+  >
+    儲存修改
+  </button>
+  <button
+    type="button"
+    @click="cancel"
+    class="btn-cancel"
+  >
+    取消
+  </button>
+</div>
     </form>
   </div>
 </template>
@@ -322,5 +323,41 @@ textarea:focus {
 /* 新增這段 */
 .edit-patient-container {
   background-color: #fff8f0;
+  max-width: 700px;
+  margin: 2rem auto;        /* 上下留白，左右置中 */
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: none;         /* 移除陰影 */
+  border: none;             /* 若有邊框也移除 */
 }
+.btn-save {
+  background-color: #4db6ac;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-save:hover {
+  background-color: #3ba99e;
+}
+
+.btn-cancel {
+  background-color: #ff9999;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-cancel:hover {
+  background-color: #ff6666;
+}
+
 </style>
