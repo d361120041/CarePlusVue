@@ -4,28 +4,33 @@
     <div class="login-box">
       <h2>照服員登入</h2>
 
-      <input v-model="email" type="email" placeholder="Email" />
+      <!-- ✅ Email Label -->
+      <label class="input-label">電子郵件</label>
+      <input v-model="email" type="email" placeholder="請輸入Email" />
       <p v-if="emailError" class="error">{{ emailError }}</p>
 
-      <input v-model="password" type="password" placeholder="密碼" />
+      <!-- ✅ Password Label -->
+      <label class="input-label">密碼</label>
+      <input v-model="password" type="password" placeholder="請輸入密碼" />
       <p v-if="passwordError" class="error">{{ passwordError }}</p>
 
       <p v-if="generalError" class="error">{{ generalError }}</p>
 
-      <button @click="login">Login</button>
+      <button @click="login">登入</button>
 
       <div class="extra-buttons">
-        <router-link to="/register" class="text-link">Sign Up</router-link>
-        <router-link to="/forgot" class="text-link">Forgot Password?</router-link>
+        <router-link to="/register" class="text-link">註冊帳號</router-link>
+        <router-link to="/forgot" class="text-link">忘記密碼?</router-link>
       </div>
 
       <div class="footer">
-        <div>© 2025 CarePlus 長照學習平台｜</div>
+        <div>© 2025 CarePlus 長照平台｜</div>
         <div>All rights reserved.</div>
       </div>
     </div>
   </div>
 </template>
+
 
 
 <script setup>
@@ -89,6 +94,15 @@ const login = async () => {
 </script>
 
 <style scoped>
+
+.input-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  text-align: left;
+  display: block;
+}
 .caregiver-login {
   display: flex;
   justify-content: center;
