@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 bg-white shadow rounded overflow-y-auto h-full">
+  <div class="edit-patient-container p-6 shadow rounded overflow-y-auto h-full">
     <h2 class="text-xl font-bold mb-4">編輯患者</h2>
     <form @submit.prevent="onSubmit" class="space-y-4">
       <div>
@@ -125,6 +125,7 @@
 </template>
 
 <script setup>
+import Swal from 'sweetalert2';
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "@/plugins/axios";
@@ -162,6 +163,62 @@ const availableDays = computed(() => {
   return Array.from({ length: daysInMonth }, (_, i) => i + 1);
 });
 
+// const loadPatient = async () => {
+//   try {
+//     const res = await axios.get(`/patient/${patientId}`);
+//     form.value = res.data;
+
+//     // 分解生日為 年月日
+//     const birth = new Date(form.value.birthday);
+//     selectedYear.value = birth.getFullYear();
+//     selectedMonth.value = birth.getMonth() + 1;
+//     selectedDay.value = birth.getDate();
+//   } catch {
+//     alert("讀取失敗");
+//     router.push("/user-center/patients");
+//   }
+// };
+
+// const onSubmit = async () => {
+//   // 組合生日
+//   if (!selectedYear.value || !selectedMonth.value || !selectedDay.value) {
+//     alert("請完整選擇生日");
+//     return;
+//   }
+
+//   const monthStr = String(selectedMonth.value).padStart(2, "0");
+//   const dayStr = String(selectedDay.value).padStart(2, "0");
+//   form.value.birthday = `${selectedYear.value}-${monthStr}-${dayStr}`;
+
+//   // 年齡驗證
+//   const birthdayDate = new Date(form.value.birthday);
+//   const today = new Date();
+//   const age =
+//     today.getFullYear() -
+//     birthdayDate.getFullYear() -
+//     (today <
+//     new Date(
+//       today.getFullYear(),
+//       birthdayDate.getMonth(),
+//       birthdayDate.getDate()
+//     )
+//       ? 1
+//       : 0);
+//   if (age < 18) {
+//     alert("患者必須年滿 18 歲");
+//     return;
+//   }
+
+//   try {
+//     await axios.put(`/patient/update/${patientId}`, form.value);
+//     alert("更新成功");
+//     router.push("/user-center/patients");
+//   } catch (err) {
+//     alert(err.response?.data || "更新失敗");
+//   }
+// };
+
+
 const loadPatient = async () => {
   try {
     const res = await axios.get(`/patient/${patientId}`);
@@ -173,15 +230,23 @@ const loadPatient = async () => {
     selectedMonth.value = birth.getMonth() + 1;
     selectedDay.value = birth.getDate();
   } catch {
-    alert("讀取失敗");
+    await Swal.fire({
+      icon: 'error',
+      title: '讀取失敗',
+      text: '將返回患者列表',
+      confirmButtonColor: '#d33'
+    });
     router.push("/user-center/patients");
   }
 };
 
 const onSubmit = async () => {
-  // 組合生日
   if (!selectedYear.value || !selectedMonth.value || !selectedDay.value) {
-    alert("請完整選擇生日");
+    await Swal.fire({
+      icon: 'warning',
+      title: '請完整選擇生日',
+      confirmButtonColor: '#f6c343'
+    });
     return;
   }
 
@@ -195,25 +260,34 @@ const onSubmit = async () => {
   const age =
     today.getFullYear() -
     birthdayDate.getFullYear() -
-    (today <
-    new Date(
-      today.getFullYear(),
-      birthdayDate.getMonth(),
-      birthdayDate.getDate()
-    )
-      ? 1
-      : 0);
+    (today < new Date(today.getFullYear(), birthdayDate.getMonth(), birthdayDate.getDate()) ? 1 : 0);
+
   if (age < 18) {
-    alert("患者必須年滿 18 歲");
+    await Swal.fire({
+      icon: 'warning',
+      title: '年齡限制',
+      text: '患者必須年滿 18 歲',
+      confirmButtonColor: '#f6c343'
+    });
     return;
   }
 
   try {
     await axios.put(`/patient/update/${patientId}`, form.value);
-    alert("更新成功");
+    await Swal.fire({
+      icon: 'success',
+      title: '更新成功',
+      text: '已儲存患者資訊',
+      confirmButtonColor: '#4db6ac'
+    });
     router.push("/user-center/patients");
   } catch (err) {
-    alert(err.response?.data || "更新失敗");
+    await Swal.fire({
+      icon: 'error',
+      title: '更新失敗',
+      text: err.response?.data || '請稍後再試',
+      confirmButtonColor: '#d33'
+    });
   }
 };
 
@@ -224,8 +298,29 @@ const cancel = () => {
 onMounted(loadPatient);
 </script>
 
+
 <style scoped>
+input,
+select,
+textarea {
+  background-color: #fff8f0;
+  border: none;
+  outline: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  background-color: #f7f1e8;
+}
 .patients-content {
   height: 100%;
+}
+
+/* 新增這段 */
+.edit-patient-container {
+  background-color: #fff8f0;
 }
 </style>
