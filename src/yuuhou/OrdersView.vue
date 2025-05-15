@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <h2 class="section-title">📝 我的訂單紀錄</h2>
+    <h2 class="section-title"> 我的訂單紀錄</h2>
 
     <!-- Loading state -->
     <div v-if="isLoading" class="loading-state">

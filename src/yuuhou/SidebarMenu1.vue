@@ -1,19 +1,21 @@
 <template>
   <div class="sidebar">
-    <h1>🌱 我的工作平台</h1>
+    <h1> 我的工作平台</h1>
     <div class="menu-items">
+      <!-- 📊 統計總覽 -->
+      <button @click="go('/caregiver')">首頁</button>
+
       <!-- 📝 個人資訊管理 -->
       <div class="dropdown">
         <button class="dropdown-title">👤 個人資訊管理</button>
         <div class="dropdown-content">
-          <button @click="go('/caregiver/profile')">📝 編輯個人資料</button>
-          <button @click="go('/caregiver/pricing')">💰 可服務區域與收費設定</button>
+          <button @click="go('/caregiver/profile')"> 編輯個人資料</button>
+          <button @click="go('/caregiver/pricing')"> 可服務區域與收費設定</button>
         </div>
       </div>
 
       <!-- 其他選項 -->
-      <button @click="go('/caregiver/orderss')">📦 我的訂單紀錄</button>
-     
+      <button @click="go('/caregiver/orderss')"> 我的訂單紀錄</button>
     </div>
   </div>
 </template>
@@ -23,9 +25,11 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const go = (path) => {
+  console.log(`Navigating to: ${path}`);
   router.push(path);
 };
 </script>
+
 
 <style scoped>
 .sidebar {

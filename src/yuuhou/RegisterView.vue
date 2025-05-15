@@ -230,8 +230,8 @@ const handleRegister = async () => {
 
     // ✅ 使用 SweetAlert2 顯示驗證提示
     Swal.fire({
-  title: "📩 註冊成功！",
-  text: "驗證碼已寄送至您的信箱，請前往驗證後再登入。",
+  title: "驗證碼已寄送至您的信箱！",
+  text: "請前往驗證後再登入。",
   icon: "info",
   confirmButtonText: "了解",
   confirmButtonColor: "#3085d6",

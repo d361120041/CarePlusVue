@@ -1,6 +1,6 @@
-LoginCaregiver.vue:
 <template>
   <div class="caregiver-login">
+    <div class="background-overlay"></div>
     <div class="login-box">
       <h2>照服員登入</h2>
 
@@ -12,19 +12,21 @@ LoginCaregiver.vue:
 
       <p v-if="generalError" class="error">{{ generalError }}</p>
 
-      <button @click="login">登入</button>
+      <button @click="login">Login</button>
 
       <div class="extra-buttons">
-        <router-link to="/register">
-          <button class="register">註冊照顧者</button>
-        </router-link>
-        <router-link to="/forgot">
-          <button class="forgot">忘記密碼</button>
-        </router-link>
+        <router-link to="/register" class="text-link">Sign Up</router-link>
+        <router-link to="/forgot" class="text-link">Forgot Password?</router-link>
+      </div>
+
+      <div class="footer">
+        <div>© 2025 CarePlus 長照學習平台｜</div>
+        <div>All rights reserved.</div>
       </div>
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from "vue";
@@ -92,85 +94,111 @@ const login = async () => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-image: url('@/assets/yuuhou/caregiver-bg.jpg'); /* ✅ 自訂圖片 */
+  background-image: url('@/assets/yuuhou/caregiver-bg.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  position: relative;
+}
+
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(6px);
+  z-index: 0;
 }
 
 .login-box {
-  background-color: rgba(255, 255, 255, 0.95);
-  padding: 2rem;
-  border-radius: 10px;
-  width: 350px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
+  background: #ffffffee;
+  padding: 3rem;
+  border-radius: 15px;
+  width: 360px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  z-index: 1;
+  border: 2px solid #f0f0f0;
+  border-top: 6px solid #007bff;
+  border-bottom: 6px solid #00c6ff;
 }
 
 h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
   color: #333;
+  margin-bottom: 2.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #007bff, #00c6ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 input {
   display: block;
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.9rem;
   margin-bottom: 1rem;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 1rem;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+input:focus {
+  border-color: #007bff;
+  background-color: #f0f9ff;
+  outline: none;
 }
 
 button {
   width: 100%;
-  padding: 0.75rem;
-  background-color: #28a745;
+  padding: 0.9rem;
+  background-color: #007bff;
   color: white;
-  font-size: 1rem;
+  font-size: 1.1rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   margin-bottom: 1rem;
-  transition: background 0.2s ease;
+  transition: background 0.3s, transform 0.2s;
 }
 
 button:hover {
-  background-color: #218838;
+  background-color: #0056b3;
+  transform: scale(1.03);
 }
 
 .extra-buttons {
   display: flex;
   justify-content: space-between;
+  margin-top: 1rem;
 }
 
-.register {
-  background-color: #007bff;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+.text-link {
+  color: #666;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 0.3s;
 }
 
-.forgot {
-  background-color: #6c757d;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+.text-link:hover {
+  color: #007bff;
+  text-decoration: underline;
 }
 
-.register:hover {
-  background-color: #0056b3;
-}
-.forgot:hover {
-  background-color: #5a6268;
+.footer {
+  margin-top: 2rem;
+  font-size: 0.75rem;
+  color: #999;
 }
 
 .error {
-  color: red;
+  color: #e74c3c;
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
 }
