@@ -6,7 +6,7 @@
         <input 
           v-model="newPassword" 
           type="password" 
-          placeholder="🔑 請輸入新密碼" 
+          placeholder="請輸入新密碼" 
           required 
         />
         <button type="submit">送出</button>
