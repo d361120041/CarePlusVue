@@ -38,6 +38,11 @@
     <router-link to="/user-center/orders" class="sidebar-button" active-class="active">
       我的預約
     </router-link>
+
+    <router-link to="/user-center/courses" class="sidebar-button" active-class="active">
+      我的課程
+    </router-link>
+
     
   </nav>
 </template>

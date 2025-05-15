@@ -285,7 +285,6 @@ const caregiverLogout = () => {
   top: 100%;
   left: 0;
   background-color: #ffffff;
-  /* 改成你想要的底色 */
   padding: 0.5rem 0;
   margin: 0;
   border-radius: 4px;
@@ -339,7 +338,7 @@ const caregiverLogout = () => {
 .dropdown-menu li a:hover {
   background-color: #f0f0f0;
   /* hover 時的淺灰底色 */
-  color: #000;
+  color: #4db6ac
 }
 /* ----- yuni 結束 -----
 
@@ -501,6 +500,7 @@ const caregiverLogout = () => {
 /* 顯示下拉選單 */
 .dropdown-login:hover .dropdown-login-menu {
   display: block;
+  
 }
 /* ===== RWD 結束 ===== */
 </style>

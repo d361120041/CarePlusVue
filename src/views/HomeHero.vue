@@ -7,9 +7,9 @@
                 <router-link to="/caregivers/search" class="button-green">
                     立即找看護
                 </router-link>
-                <router-link to="/course" class="button-pink">
+                <!-- <router-link to="/course" class="button-pink">
                     探索課程
-                </router-link>
+                </router-link> -->
             </div>
         </section>
     </GlobalBanner>
@@ -52,7 +52,8 @@
 
     <!-- yuni -->
     <div>
-        <div>
+        <div style="  background-color: #ffe2bd;
+">
             <CourseFeat />
         </div>
     </div>

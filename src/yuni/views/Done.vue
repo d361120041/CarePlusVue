@@ -4,7 +4,7 @@
 <template>
   <div class="done-wrapper d-flex justify-content-center align-items-center">
     <div class="card p-5 text-center shadow-sm done-card">
-      <h1 class="text-success mb-4">🎉 恭喜{{ auth.userName }}完成課程！</h1>
+      <h1 class="text-success mb-4">恭喜{{ auth.userName }}完成課程！</h1>
       <h3 class="mb-3">{{ course.title }}</h3>
       <p class="text-muted mb-4">
         你已完成 {{ totalChapters }} 個章節，完成時間：{{ completionDate }}

@@ -21,6 +21,7 @@ import CourseLearn from "@/yuni/views/CourseLearn.vue";
 import CourseProgress from "@/yuni/views/CourseProgress.vue";
 import Done from "@/yuni/views/Done.vue";
 import RitaOrder from "@/yuni/views/RitaOrder.vue";
+import UserCourse from "@/yuni/views/UserCourse.vue";
 // ------------------ yuni ------------------
 
 // ------------------ allen ------------------
@@ -293,6 +294,8 @@ const routes = [
         component: () => import("@/rita/views/OrderList.vue"),
         name: "orderList",
       },
+      { path:"courses", component: UserCourse, name: "userCourse" },
+
     ],
   },
   // { path: "/user-center", component: UserCenter, name: "userCenter" }

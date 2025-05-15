@@ -36,7 +36,7 @@
           </ul>
         </div>
 
-        <!-- 區塊 4：課程導覽 -->
+        <!-- 區塊 4：課程導覽
         <div class="footer-column">
           <h5 class="footer-title">課程導覽</h5>
           <ul>
@@ -45,8 +45,16 @@
             <li><a href="#">最新課程</a></li>
             <li><a href="#">熱門課程</a></li>
           </ul>
+        </div> -->
+        <div class="footer-column">
+          <h5 class="footer-title">合作專區</h5>
+          <ul>
+            <li><a href="#">成為講師</a></li>
+            <li><a href="#">企業合作</a></li>
+            <li><a href="#">加入照顧者夥伴</a></li>
+            <li><a href="#">媒體聯繫</a></li>
+          </ul>
         </div>
-
         <!-- 區塊 5：社群與聯繫 -->
         <div class="footer-column">
           <h5 class="footer-title">關注我們</h5>
@@ -95,8 +103,8 @@
 }
 
 .footer-column a:hover {
-  color: #007bff;
-  text-decoration: underline;
+  color: #4db6ac;
+  text-decoration: none;
 }
 
 .footer-bottom {
