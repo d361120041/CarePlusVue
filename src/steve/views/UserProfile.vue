@@ -149,7 +149,7 @@
 
 <script setup>
 import Swal from "sweetalert2";
-import oldImage from "@/assets/images/old.png";
+import oldImage from "@/assets/images/grandPa.png";
 import { ref, onMounted, nextTick } from "vue";
 import axios from "@/plugins/axios";
 import { useAuthStore } from "@/stores/auth";

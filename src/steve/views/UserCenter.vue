@@ -26,7 +26,8 @@ onMounted(() => {
 <style scoped>
 .user-center-layout {
   display: flex;
-  height: 100%;
+  /* 改用 min-height 讓整個區塊至少佔滿視窗高度 */
+  min-height: 100vh;
   overflow: hidden;
 }
 

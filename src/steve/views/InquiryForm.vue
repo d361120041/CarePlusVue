@@ -1,96 +1,109 @@
 <template>
-  <div class="inquiry-wrapper">
-    <h2 class="text-2xl font-bold mb-4">客服信件</h2>
+  <div class="inquiry-page-wrapper">
+    <!-- 左側內容 -->
+    <div class="inquiry-wrapper">
+      <h2 class="text-2xl font-bold mb-4">客服信件</h2>
 
-    <!-- 公版按鈕 -->
-    <div class="flex flex-wrap gap-2 mb-4">
-      <button
-        class="template-btn"
-        :class="{ active: selectedTemplate === 1 }"
-        @click="fillTemplate(1)"
-      >
-        諮詢看護
-      </button>
-      <button
-        class="template-btn"
-        :class="{ active: selectedTemplate === 2 }"
-        @click="fillTemplate(2)"
-      >
-        諮詢課程
-      </button>
-      <button
-        class="template-btn"
-        :class="{ active: selectedTemplate === 3 }"
-        @click="fillTemplate(3)"
-      >
-        申訴
-      </button>
-      <button
-        class="template-btn"
-        :class="{ active: selectedTemplate === 4 }"
-        @click="fillTemplate(4)"
-      >
-        其他
-      </button>
+      <!-- 公版按鈕 -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button
+          class="template-btn"
+          :class="{ active: selectedTemplate === 1 }"
+          @click="fillTemplate(1)"
+        >
+          諮詢看護
+        </button>
+        <button
+          class="template-btn"
+          :class="{ active: selectedTemplate === 2 }"
+          @click="fillTemplate(2)"
+        >
+          諮詢課程
+        </button>
+        <button
+          class="template-btn"
+          :class="{ active: selectedTemplate === 3 }"
+          @click="fillTemplate(3)"
+        >
+          申訴
+        </button>
+        <button
+          class="template-btn"
+          :class="{ active: selectedTemplate === 4 }"
+          @click="fillTemplate(4)"
+        >
+          其他
+        </button>
+      </div>
+
+      <form @submit.prevent="submitInquiry" class="space-y-4">
+        <div>
+          <label class="block font-medium mb-1">Email</label>
+          <input
+            style="margin-left: 88px; width: 30%"
+            type="email"
+            v-model="inquiry.email"
+            disabled
+            class="w-full"
+          />
+        </div>
+
+        <div>
+          <label class="block font-medium mb-1">內容</label>
+
+          <div v-if="selectedTemplate === 1" class="mb-4">
+            <label class="block font-medium mb-1">看護 ID（必填）</label>
+            <input
+              type="text"
+              v-model="caregiverIdentifier"
+              placeholder="看護 ID"
+              style="width: 8ch"
+              class="w-1/2 border rounded p-2"
+              maxlength="2"
+              inputmode="numeric"
+            />
+          </div>
+
+          <div v-if="selectedTemplate === 2" class="mb-4">
+            <label class="block font-medium mb-1">課程 ID（必填）</label>
+            <input
+              type="text"
+              v-model="courseIdentifier"
+              placeholder="課程 ID"
+              class="w-1/2 border rounded p-2"
+              style="width: 8ch"
+              maxlength="2"
+              inputmode="numeric"
+            />
+          </div>
+
+          <br />
+          <textarea
+            style="width: 70%; height: 150px"
+            v-model="inquiry.inquiryText"
+            rows="6"
+            placeholder="請在此輸入您的問題或建議…"
+            class="border rounded p-2 bg-gray-100"
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit" class="btn-fav" :disabled="loading">
+          {{ loading ? "送出中…" : "送出" }}
+        </button>
+      </form>
     </div>
 
-    <form @submit.prevent="submitInquiry" class="space-y-4">
-      <div>
-        <label class="block font-medium mb-1">Email</label>
-        <input
-          style="margin-left: 88px; width: 30%"
-          type="email"
-          v-model="inquiry.email"
-          disabled
-         class="w-full"
-        />
-      </div>
-
-      <div>
-        <label class="block font-medium mb-1">內容</label>
-        <!-- 看護姓名或 ID -->
-        <!-- 僅當選擇「諮詢看護」時顯示 ID 輸入框 -->
-        <div v-if="selectedTemplate === 1" class="mb-4">
-          <label class="block font-medium mb-1">看護 ID（必填）</label>
-          <input
-            type="text"
-            v-model="caregiverIdentifier"
-            placeholder="看護 ID"
-            style="width: 8ch"
-            class="w-1/2 border rounded p-2"
-            maxlength="2"
-            inputmode="numeric"
-          />
-        </div>
-
-        <div v-if="selectedTemplate === 2" class="mb-4">
-          <label class="block font-medium mb-1">課程 ID（必填）</label>
-          <input
-            type="text"
-            v-model="courseIdentifier"
-            placeholder="課程 ID"
-            class="w-1/2 border rounded p-2"
-            style="width: 8ch"
-            maxlength="2"
-            inputmode="numeric"
-          />
-        </div>
-
-        <br />
-        <textarea
-          style="width: 70%; height: 150px"
-          v-model="inquiry.inquiryText"
-          rows="6"
-          placeholder="請在此輸入您的問題或建議…"
-          class="border rounded p-2 bg-gray-100"
-          required
-        ></textarea>
-      </div>
-
-      <button type="submit" class="btn-fav" :disabled="loading">
-        {{ loading ? "送出中…" : "送出" }}
-      </button>
-    </form>
+    <!-- 右側插圖 -->
+    <div class="static-image-wrapper">
+      <img
+        src="@/assets/images/client.png"
+        class="static-decoration"
+        width="300"
+        height="300"
+        loading="eager"
+      />
+    </div>
   </div>
 </template>
 
@@ -245,12 +258,33 @@ textarea {
   border-color: #a8dad4;
   cursor: not-allowed;
 }
+.inquiry-page-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 2rem;
+  background-color: #fff8f0;
+  max-width: 1500px;
+  margin: 0 auto;
+}
 .inquiry-wrapper {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  background-color: transparent; /* ✅ 從 #fff8f0 改為 transparent */
-  border-radius: 0;               /* ✅ 移除圓角 */
-  box-shadow: none;               /* ✅ 拿掉陰影 */
+  flex: 1;
+  min-width: 0;
+}
+.static-image-wrapper {
+  flex-shrink: 0;
+  width: 300px;
+  height: 300px;
+  overflow: hidden;
+}
+
+.static-decoration {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 9999px;
+  opacity: 0.9;
+  pointer-events: none;
 }
 </style>

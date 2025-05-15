@@ -3,7 +3,7 @@
     class="patients-content flex h-full gap-6 items-start"
     style="background-color: #fff8f0"
   >
-    <section class="list-section p-6 rounded overflow-y-auto h-full">
+    <section class="list-section rounded overflow-y-auto h-full">
       <!-- 1. 改這行 -->
       <div class="flex items-center mb-4 space-x-2">
         <h2 class="text-xl font-bold">家屬管理</h2>
@@ -49,10 +49,20 @@
       </table>
     </section>
     <!-- 插圖區塊已移除 -->
+    <div class="static-image-wrapper">
+      <img
+        :src="oldImage"
+        class="static-decoration"
+        width="300"
+        height="300"
+        loading="eager"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
+import oldImage from "@/assets/images/old.png";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "@/plugins/axios";
@@ -91,24 +101,28 @@ const deletePatient = async (id) => {
 </script>
 
 <style scoped>
+.static-image-wrapper {
+  flex-shrink: 0;
+  width: 300px;
+  height: 300px;
+}
+
 .patients-content {
   height: 100%;
   background-color: #fff8f0;
   display: flex;
-  justify-content: center;  /* ✅ 讓內容水平置中 */
-  align-items: flex-start;  /* ✅ 元素對齊上方 */
+  justify-content: center; /* ✅ 讓內容水平置中 */
+  align-items: flex-start; /* ✅ 元素對齊上方 */
   padding: 2rem;
 }
 
 .list-section {
-  flex: none;
-  width: 100%;
-  max-width: 900px;
-  border-radius: 16px;
-  padding: 1rem;
+  padding: 1.2rem;
+  border-radius: 16px; /* Tailwind 的 .rounded */
+  overflow-y: auto; /* Tailwind 的 .overflow-y-auto */
+  height: 100%; /* Tailwind 的 .h-full */
   background-color: #fff7ed;
-  overflow-y: auto;
-  justify-content: center;
+  /* 其餘樣式保留 */
 }
 
 /* 浅绿色圆形按钮，只显示“＋” */
