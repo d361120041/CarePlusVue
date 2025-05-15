@@ -1,6 +1,9 @@
 <template>
   <GlobalBanner :imgSrc="bannerImg">
-    <h1>新聞列表</h1>
+    <div class="banner-text">
+      <h1>新聞快訊</h1>
+      <p class="sub-text">即時新聞，第一時間掌握</p>
+    </div>
   </GlobalBanner>  
 
   <div class="news-page flex gap-6">
@@ -550,5 +553,23 @@ onMounted(() => {
   background-color: var(--color-btn-secondary-bg-hover);
   color: #fff;
 }
+.banner-text {
+  font-weight: 800;
+  color: #2D3748;
+  text-shadow: 3px 3px 6px rgba(255, 255, 255, 0.8);  /* 更明顯的光暈效果 */
+  letter-spacing: 1px;  /* 增加字間距 */
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  text-align: center;
+}
 
+.sub-text {
+  font-size: 1.5rem;  /* 縮小副標題 */
+  font-weight: 600;
+  color: #2D3748;
+  margin-top: 10px;
+}
 </style>
