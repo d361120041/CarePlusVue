@@ -7,6 +7,8 @@
 </template>
 
 <script setup>
+import "sweetalert2/dist/sweetalert2.min.css";
+import Swal from "sweetalert2";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "@/plugins/axios"; // 你自己設定好的 axios
@@ -16,22 +18,33 @@ const router = useRouter();
 
 const sendVerification = async () => {
   if (!email.value) {
-    alert("請先輸入 Email");
+    Swal.fire({
+      icon: "warning",
+      title: "請先輸入 Email",
+    });
     return;
   }
   try {
     await axios.post("/user/request-password-reset", null, {
       params: { emailAddress: email.value },
     });
-    alert("驗證碼已寄出，請到信箱查看");
+    Swal.fire({
+      icon: "success",
+      title: "驗證碼已寄出",
+      text: "請到信箱查看",
+    });
 
     // 暫存 email，後面 reset password 頁會用到
     localStorage.setItem("resetEmail", email.value);
 
-    // ✅ 寄完後導向下一頁（這裡先停留或導去 /resetPassword，看你想怎樣）
+    // 寄完後導向下一頁
     router.push("/resetPassword");
   } catch (error) {
-    alert("寄送失敗：" + (error.response?.data || "無法連線到後端"));
+    Swal.fire({
+      icon: "error",
+      title: "寄送失敗",
+      text: error.response?.data || "無法連線到後端",
+    });
   }
 };
 </script>

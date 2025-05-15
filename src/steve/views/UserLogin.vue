@@ -15,6 +15,8 @@
 </template>
 
 <script setup>
+import "sweetalert2/dist/sweetalert2.min.css";
+import Swal from "sweetalert2";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "@/plugins/axios";
@@ -37,19 +39,25 @@ const login = async () => {
     await auth.checkAuth();
 
     // 導向首頁並強制刷新頁面
-    // 登入成功後自動跳轉到先前想去的頁面（若有）
     const redirectPath = sessionStorage.getItem("redirectAfterLogin");
     sessionStorage.removeItem("redirectAfterLogin");
-
     const target = redirectPath || "/";
     router.push(target).then(() => {
       window.location.reload();
     });
   } catch (error) {
     if (error.response && error.response.data) {
-      alert("登入失敗：" + error.response.data);
+      Swal.fire({
+        icon: "error",
+        title: "登入失敗",
+        text: error.response.data,
+      });
     } else {
-      alert("登入失敗（無法連線後端）");
+      Swal.fire({
+        icon: "error",
+        title: "登入失敗",
+        text: "無法連線後端",
+      });
     }
   }
 };
@@ -95,11 +103,9 @@ button {
   justify-content: space-between;
 }
 .extra-buttons .register {
-  gap: 1rem;
   background-color: #5299e6;
 }
 .extra-buttons .forgot {
-  gap: 1rem;
   background-color: #ff9999;
 }
 </style>
