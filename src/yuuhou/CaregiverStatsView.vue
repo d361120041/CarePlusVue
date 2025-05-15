@@ -1,9 +1,9 @@
 <template>
   <div class="stats-view">
-    <h2> 照服員統計</h2>
+    <h2> 照服員分布地區</h2>
     <div class="rank-container">
-      <RankCard title=" 城市註冊人數 Top 3" :items="cities" />
-      <RankCard title=" 區域註冊人數 Top 3" :items="districts" />
+      <RankCard title=" 城市人數 Top 3" :items="cities" />
+      <RankCard title=" 區域人數 Top 3" :items="districts" />
     </div>
   </div>
 </template>
