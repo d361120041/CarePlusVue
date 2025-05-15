@@ -33,14 +33,14 @@
         </div>
     </router-link>
 
-    <!-- "更多新聞" Card -->
     <router-link to="/news" class="news-preview-card">
-        <img :src="moreNewsImage" alt="更多新聞圖片" class="news-image" />
-
-        <div class="news-content">
-            <h3 class="more-news-title">更多新聞....</h3>
-        </div>
+    <img :src="moreNewsImage" alt="更多新聞圖片" class="news-image" />
+    <div class="news-content">
+        <h3 class="more-news-title">更多新聞....</h3>
+    </div>
     </router-link>
+
+
 </div>
     <!-- allen end-->
 
@@ -81,10 +81,11 @@ import { ref, onMounted } from 'vue';
 import myAxios from '@/plugins/axios';
 import { getFullImageUrl } from '@/allen/utils/urlHelper';
 import { useRouter } from "vue-router";
+import moreNewsImage from '@/assets/allen/more_news.png';
 
 const previewNews = ref([]);
 const loading = ref(false);
-const moreNewsImage =  'src/assets/allen/more_news.png'; 
+
 
 //按鈕導到新聞首頁
 const router = useRouter();
