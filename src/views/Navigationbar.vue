@@ -16,8 +16,9 @@
       <li>
         <router-link to="/social">討論區</router-link>
       </li>
+      <li><router-link to="/course">課程列表</router-link></li>
       <!-- Dropdown menu -->
-      <li class="dropdown">
+      <!-- <li class="dropdown">
         <span class="dropdown-label">線上課程 &#9662;</span>
         <ul class="dropdown-menu">
           <li><router-link to="/course">課程列表</router-link></li>
@@ -25,7 +26,7 @@
             <router-link to="/my-courses">我的課程</router-link>
           </li>
         </ul>
-      </li>
+      </li> -->
     </ul>
 
     <div class="login-button">
