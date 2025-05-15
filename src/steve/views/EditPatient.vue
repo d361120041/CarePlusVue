@@ -4,7 +4,12 @@
     <form @submit.prevent="onSubmit">
       <div class="form-row">
         <label>姓名</label>
-        <input v-model="form.name" type="text" required />
+        <input
+          v-model="form.name"
+          style="background-color: white"
+          type="text"
+          required
+        />
       </div>
 
       <div class="form-row">
@@ -42,12 +47,20 @@
 
       <div class="form-row">
         <label>緊急聯絡</label>
-        <input v-model="form.emergencyContact" type="text" />
+        <input
+          v-model="form.emergencyContact"
+          type="text"
+          style="background-color: white"
+        />
       </div>
 
       <div class="form-row">
         <label>地址</label>
-        <input v-model="form.address" type="text" />
+        <input
+          v-model="form.address"
+          type="text"
+          style="background-color: white"
+        />
       </div>
 
       <div class="form-row">
@@ -78,9 +91,8 @@
   </div>
 </template>
 
-
 <script setup>
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "@/plugins/axios";
@@ -173,7 +185,6 @@ const availableDays = computed(() => {
 //   }
 // };
 
-
 const loadPatient = async () => {
   try {
     const res = await axios.get(`/patient/${patientId}`);
@@ -186,10 +197,10 @@ const loadPatient = async () => {
     selectedDay.value = birth.getDate();
   } catch {
     await Swal.fire({
-      icon: 'error',
-      title: '讀取失敗',
-      text: '將返回患者列表',
-      confirmButtonColor: '#d33'
+      icon: "error",
+      title: "讀取失敗",
+      text: "將返回患者列表",
+      confirmButtonColor: "#d33",
     });
     router.push("/user-center/patients");
   }
@@ -198,9 +209,9 @@ const loadPatient = async () => {
 const onSubmit = async () => {
   if (!selectedYear.value || !selectedMonth.value || !selectedDay.value) {
     await Swal.fire({
-      icon: 'warning',
-      title: '請完整選擇生日',
-      confirmButtonColor: '#f6c343'
+      icon: "warning",
+      title: "請完整選擇生日",
+      confirmButtonColor: "#f6c343",
     });
     return;
   }
@@ -215,14 +226,21 @@ const onSubmit = async () => {
   const age =
     today.getFullYear() -
     birthdayDate.getFullYear() -
-    (today < new Date(today.getFullYear(), birthdayDate.getMonth(), birthdayDate.getDate()) ? 1 : 0);
+    (today <
+    new Date(
+      today.getFullYear(),
+      birthdayDate.getMonth(),
+      birthdayDate.getDate()
+    )
+      ? 1
+      : 0);
 
   if (age < 18) {
     await Swal.fire({
-      icon: 'warning',
-      title: '年齡限制',
-      text: '患者必須年滿 18 歲',
-      confirmButtonColor: '#f6c343'
+      icon: "warning",
+      title: "年齡限制",
+      text: "患者必須年滿 18 歲",
+      confirmButtonColor: "#f6c343",
     });
     return;
   }
@@ -230,18 +248,18 @@ const onSubmit = async () => {
   try {
     await axios.put(`/patient/update/${patientId}`, form.value);
     await Swal.fire({
-      icon: 'success',
-      title: '更新成功',
-      text: '已儲存患者資訊',
-      confirmButtonColor: '#4db6ac'
+      icon: "success",
+      title: "更新成功",
+      text: "已儲存患者資訊",
+      confirmButtonColor: "#4db6ac",
     });
     router.push("/user-center/patients");
   } catch (err) {
     await Swal.fire({
-      icon: 'error',
-      title: '更新失敗',
-      text: err.response?.data || '請稍後再試',
-      confirmButtonColor: '#d33'
+      icon: "error",
+      title: "更新失敗",
+      text: err.response?.data || "請稍後再試",
+      confirmButtonColor: "#d33",
     });
   }
 };
@@ -253,11 +271,10 @@ const cancel = () => {
 onMounted(loadPatient);
 </script>
 
-
 <style scoped>
+/* 通用輸入框 & 下拉選單 */
 input,
-select,
-textarea {
+select {
   background-color: #fff8f0;
   border: none;
   outline: none;
@@ -265,16 +282,30 @@ textarea {
   border-radius: 0.5rem;
 }
 
+/* 米白色 textarea */
+textarea {
+  background-color: white; /* 米白色 */
+  border: none;
+  outline: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+/* Focus 狀態 */
 input:focus,
-select:focus,
-textarea:focus {
+select:focus {
   background-color: #f7f1e8;
 }
+textarea:focus {
+  background-color: #f0eadd; /* 淡米白 */
+}
+
+/* 整體內容高度 */
 .patients-content {
   height: 100%;
 }
 
-/* 新增這段 */
+/* 編輯患者容器 */
 .edit-patient-container {
   background-color: #fff8f0;
   max-width: 700px;
@@ -283,28 +314,27 @@ textarea:focus {
   border-radius: 12px;
 }
 
+/* 標題 */
 .form-title {
   font-size: 1.25rem;
   font-weight: bold;
   margin-bottom: 1.5rem;
 }
 
+/* 單行欄位排版 */
 .form-row {
   display: flex;
   align-items: center;
   margin-bottom: 1rem;
 }
-
 .form-row label {
   width: 100px;
   font-weight: 500;
   margin-right: 1rem;
   text-align: right;
 }
-
 .form-row input,
-.form-row select,
-.form-row textarea {
+.form-row select {
   flex: 1;
   background-color: #fff8f0;
   border: none;
@@ -313,24 +343,21 @@ textarea:focus {
   outline: none;
   font-size: 1rem;
 }
-
 .form-row textarea {
+  flex: 1;
   resize: vertical;
   min-height: 80px;
+  font-size: 1rem;
 }
 
-.form-row input:focus,
-.form-row select:focus,
-.form-row textarea:focus {
-  background-color: #f7f1e8;
-}
-
+/* 生日選單 */
 .birthday-group {
   display: flex;
   gap: 0.5rem;
   flex: 1;
 }
 
+/* 按鈕列 */
 .form-actions {
   display: flex;
   justify-content: center;
@@ -338,6 +365,7 @@ textarea:focus {
   margin-top: 2rem;
 }
 
+/* 儲存按鈕 */
 .btn-save {
   background-color: #4db6ac;
   color: white;
@@ -348,11 +376,11 @@ textarea:focus {
   cursor: pointer;
   transition: background-color 0.3s;
 }
-
 .btn-save:hover {
   background-color: #3ba99e;
 }
 
+/* 取消按鈕 */
 .btn-cancel {
   background-color: #ff9999;
   color: white;
@@ -363,10 +391,7 @@ textarea:focus {
   cursor: pointer;
   transition: background-color 0.3s;
 }
-
 .btn-cancel:hover {
   background-color: #ff6666;
 }
-
-
 </style>
