@@ -101,7 +101,7 @@
               />
             </div>
             <div class="form-item">
-              <label>交通路線或注意事项</label>
+              <label>交通路線或注意事項</label>
               <input
                 type="text"
                 v-model="appointmentStore.appointment.hospitalTransportNote"

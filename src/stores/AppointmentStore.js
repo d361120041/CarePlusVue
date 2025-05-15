@@ -1,7 +1,9 @@
 import { defineStore } from "pinia";
 import { ref, toRaw, isProxy } from "vue";
 import { useAuthStore } from "@/stores/auth";
-import authApi from "@/api/auth"; 
+import authApi from "@/api/auth";
+import myAxios from "@/plugins/axios";
+
 export const useAppointmentStore = defineStore("appointment", {
   state: () => ({
     appointment: {
@@ -83,35 +85,35 @@ export const useAppointmentStore = defineStore("appointment", {
     },
 
     physicalMap: {
-      0: "無",
-      1: "長期臥床",
-      2: "使用輔具",
-      3: "褥瘡、傷口",
-      4: "管路（鼻胃管、尿管、氣切管、引流管等）",
-      5: "腸造口/胃造口",
-      6: "自殘傾向",
-      7: "攻擊傾向",
-      8: "情緒低落",
-      9: "其他",
+      1: "無",
+      2: "長期臥床",
+      3: "使用輔具",
+      4: "褥瘡、傷口",
+      5: "管路（鼻胃管、尿管、氣切管、引流管等）",
+      6: "腸造口/胃造口",
+      7: "自殘傾向",
+      8: "攻擊傾向",
+      9: "情緒低落",
+      10: "其他",
     },
 
     serviceMap: {
-      0: "無",
-      1: "協助進食、用藥（按醫囑給藥）",
-      2: "陪同外出或就醫",
-      3: "代購物品",
-      4: "身心靈陪伴及安全維護",
-      5: "備餐（限被照顧者及其伴侶）",
-      6: "環境整理、洗衣",
-      7: "翻身拍背、簡易肢體關節活動",
-      8: "身體清潔",
-      9: "大小便處理",
-      10: "協助移位",
-      11: "鼻胃管灌食",
-      12: "管路清潔照護",
-      13: "協助穿脫衣物",
-      14: "協助如廁",
-      15: "其他",
+      1: "無",
+      2: "協助進食、用藥（按醫囑給藥）",
+      3: "陪同外出或就醫",
+      4: "代購物品",
+      5: "身心靈陪伴及安全維護",
+      6: "備餐（限被照顧者及其伴侶）",
+      7: "環境整理、洗衣",
+      8: "翻身拍背、簡易肢體關節活動",
+      9: "身體清潔",
+      10: "大小便處理",
+      11: "協助移位",
+      12: "鼻胃管灌食",
+      13: "管路清潔照護",
+      14: "協助穿脫衣物",
+      15: "協助如廁",
+      16: "其他",
     },
   }),
 
@@ -150,17 +152,16 @@ export const useAppointmentStore = defineStore("appointment", {
       }
       this.saveToLocalStorage();
     },
-   
-    
+
     setPatientInfo(patientData) {
       const plainData = toRaw(patientData);
-      
+
       // 設置基本病患資訊
       this.appointment.patientId = plainData.patientId || null;
       this.appointment.patientInfo = {
         name: plainData.name || "",
         gender:
-        plainData.gender === 1 || plainData.gender === "1" ? "男" : "女",
+          plainData.gender === 1 || plainData.gender === "1" ? "男" : "女",
       };
 
       this.saveToLocalStorage();
@@ -198,31 +199,28 @@ export const useAppointmentStore = defineStore("appointment", {
       });
     },
 
-//yuuhou
+    //yuuhou
 
-// ✅ 追加：從後端載入使用者的所有預約紀錄
-//     async loadAppointments(userId) {
-//   try {
-//     const response = await authApi.getUserAppointments(userId);
+    // ✅ 追加：從後端載入使用者的所有預約紀錄
+    //     async loadAppointments(userId) {
+    //   try {
+    //     const response = await authApi.getUserAppointments(userId);
 
-//     // 確保 API 回傳的是陣列
-//     if (!Array.isArray(response.data)) {
-//       console.error("❌ 預約紀錄回傳格式錯誤，應該是陣列:", response.data);
-//       return [];
-//     }
+    //     // 確保 API 回傳的是陣列
+    //     if (!Array.isArray(response.data)) {
+    //       console.error("❌ 預約紀錄回傳格式錯誤，應該是陣列:", response.data);
+    //       return [];
+    //     }
 
-//     console.log("📅 已載入預約紀錄:", response.data);
-//     return response.data;
-//   } catch (error) {
-//     console.error("❌ 載入預約紀錄失敗:", error);
-//     throw error;
-//   }
-// },
+    //     console.log("📅 已載入預約紀錄:", response.data);
+    //     return response.data;
+    //   } catch (error) {
+    //     console.error("❌ 載入預約紀錄失敗:", error);
+    //     throw error;
+    //   }
+    // },
 
-
-//yuuhou
-
-
+    //yuuhou
 
     setAppointmentBase(payload) {
       this.appointment = { ...this.appointment, ...payload };
@@ -313,6 +311,19 @@ export const useAppointmentStore = defineStore("appointment", {
 
     async submitAppointment() {
       try {
+        const authStore = useAuthStore();
+
+        // ✅ 確保 userId 正確
+        if (!authStore.user || !authStore.user.userId) {
+          throw new Error(
+            "User is not authenticated. 請先登入再嘗試提交預約。"
+          );
+        }
+        console.log("user:", authStore.user);
+
+        // 🚫 **在這裡清除 appointmentId**
+        this.appointment.appointmentId = null;
+
         const appointmentData = {
           appointment: {
             ...this.appointment,
@@ -331,7 +342,6 @@ export const useAppointmentStore = defineStore("appointment", {
             serviceId: id,
           })),
         };
-
         // 設置時間資料
         if (
           this.appointment.timeType === "continuous" &&
@@ -355,33 +365,32 @@ export const useAppointmentStore = defineStore("appointment", {
 
         console.log("送出資料:", appointmentData);
 
-        const response = await fetch(
-          "http://localhost:8082/api/appointment/full",
+        // ✅ 改用 axios 發送請求
+        const response = await myAxios.post(
+          "/api/appointment/full",
+          appointmentData,
           {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(appointmentData),
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
         );
 
-        const result = await response.json();
-        if (response.ok) {
-          console.log("Appointment created successfully:", result);
+        // 處理成功回應
+        console.log("Appointment Ｆcreated successfully:", response.data);
 
-           // ✅ 儲存 appointmentId 和 userId
-           this.appointment.appointmentId = result.appointmentId;
-           this.appointment.userId = result.userId;
-           this.appointment.totalPrice = result.totalPrice;
+        // ✅ 正確設置新的 appointmentId
+        this.appointment.appointmentId = response.data.appointmentId;
+        this.appointment.userId = response.data.userId;
+        this.appointment.totalPrice = response.data.totalPrice;
 
-           return result.appointmentId;
-        } else {
-          console.error("Appointment creation failed:", result);
-          alert("預約建立失敗，請稍後再試");
-          throw new Error("Appointment creation failed");
-        }
+        // ✅ 保存到 LocalStorage
+        this.saveToLocalStorage();
+
+        return response.data.appointmentId;
       } catch (error) {
         console.error("Error creating appointment:", error);
-        alert("發生錯誤，請稍後再試");
+        alert("預約建立失敗，請稍後再試");
         throw error;
       }
     },
