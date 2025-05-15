@@ -218,7 +218,7 @@ import { useRouter } from "vue-router";
 import { useCaregiverStore } from "@/stores/caregiverStore";
 import { useAppointmentStore } from "@/stores/AppointmentStore";
 import myAxios from "@/plugins/axios";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 const router = useRouter();
 const caregiverStore = useCaregiverStore();
@@ -227,10 +227,10 @@ const appointmentStore = useAppointmentStore();
 // 🗓️ 日期和時間格式化函數
 const formatDateTime = (isoString) => {
   if (!isoString) return "未填寫";
-  
+
   // 確保是 ISO 8601 格式
   const [date, time] = isoString.split("T");
-  
+
   // 只返回 yyyy-MM-dd HH:mm 格式
   return `${date} ${time}`;
 };
@@ -240,17 +240,21 @@ const submitAppointment = async () => {
   try {
     // 顯示「建立預約中...」的 SweetAlert
     const swalLoading = Swal.fire({
-      title: '建立預約中...',
-      text: '請稍候，我們正在處理您的預約。',
+      title: "建立預約中...",
+      text: "請稍候，我們正在處理您的預約。",
       allowOutsideClick: false, // 禁止外部點擊關閉彈窗
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
     // ✅ 呼叫 Store Action 建立預約
     const appointmentId = await appointmentStore.submitAppointment();
 
     console.log("預約建立成功，預約 ID:", appointmentId);
+
+    // ✅ 清空 LocalStorage 以避免污染
+    localStorage.removeItem("appointmentData");
+    localStorage.removeItem("appointmentId");
 
     // ✅ 將 appointmentId 儲存到 localStorage
     localStorage.setItem("appointmentId", appointmentId);
@@ -266,8 +270,6 @@ const submitAppointment = async () => {
   }
 };
 
-
-
 // 返回需求單頁面
 const goBackToRequest = () => {
   router.push("/request/location");
@@ -276,8 +278,6 @@ const goBackToRequest = () => {
 onMounted(() => {
   appointmentStore.loadFromLocalStorage();
 });
-
-
 </script>
 
 <style scoped>
@@ -286,7 +286,8 @@ onMounted(() => {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem 1rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
 }
 
 /* Card styling */
@@ -403,7 +404,8 @@ onMounted(() => {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.3s ease;
 }
 
 .edit-button:hover {
