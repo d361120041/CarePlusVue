@@ -93,17 +93,22 @@ const deletePatient = async (id) => {
 <style scoped>
 .patients-content {
   height: 100%;
-  display: flex;
-  gap: 1.5rem;
   background-color: #fff8f0;
+  display: flex;
+  justify-content: center;  /* ✅ 讓內容水平置中 */
+  align-items: flex-start;  /* ✅ 元素對齊上方 */
+  padding: 2rem;
 }
 
 .list-section {
-  flex: 1;
+  flex: none;
+  width: 100%;
+  max-width: 900px;
   border-radius: 16px;
   padding: 1rem;
   background-color: #fff7ed;
   overflow-y: auto;
+  justify-content: center;
 }
 
 /* 浅绿色圆形按钮，只显示“＋” */
