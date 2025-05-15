@@ -13,7 +13,7 @@ import { createPinia } from "pinia";
 import router from "@/router/router.js";
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
-
+import "animate.css";
 // ---------------- daniel ----------------
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -29,6 +29,7 @@ library.add(far, fas); //allen 新增
 
 // ---------------- yuuhou ----------------
 import { useCaregiverAuth } from "@/stores/useCaregiverAuth";
+
 // ---------------- yuuhou ----------------
 
 import App from "@/App.vue";

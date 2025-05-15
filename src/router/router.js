@@ -35,6 +35,7 @@ import AdminNewsPreview from "@/allen/views/AdminNewsPreview.vue";
 // ------------------ allen ------------------
  
 // ------------------ yuuhou ------------------
+import OrdersView from "@/yuuhou/OrdersView.vue";
 import VerifyCodeView from "@/yuuhou/VerifyCodeView.vue";
 import CaregiverLogin from "@/yuuhou/LoginCaregiver.vue";
 import CaregiverProfileView from "@/yuuhou/CaregiverProfileView.vue";
@@ -133,15 +134,24 @@ const routes = [
 
   
   {
-    path: "/caregiver",
-    component: CaregiverDashboard,
-    children: [
-      { path: "profile", component: CaregiverProfileView },
-      { path: "pricing", component: CaregiverPricing },
-      // { path: "schedule", component: ScheduleView },
-      // { path: "orders", component: OrdersView },
-    ],
-  },
+  path: "/caregiver",
+  component: CaregiverDashboard,
+  children: [
+    { path: "profile", component: CaregiverProfileView },
+    { path: "pricing", component: CaregiverPricing },
+
+    // ✅ 加入 OrdersView 路徑
+    { 
+      path: "orderss", 
+      component: OrdersView, 
+      meta: { requiresAuth: true },
+      name: "CaregiverOrders"
+    },
+
+    // { path: "schedule", component: ScheduleView },
+  ],
+},
+
 
 
   // {
@@ -174,10 +184,7 @@ const routes = [
   { path: "/verify-success", component: VerifySuccess, name: "verifySuccess" },
   { path: "/verify-reminder", component: VerifyReminder },
   { path: "/verify-failed", component: VerifyFailed },
-  {
-    path: "/login-select",
-    component: () => import("@/yuuhou/LoginSelect.vue"),
-  },
+  
   {
     path: "/login-caregiver",
     component: () => import("@/yuuhou/LoginCaregiver.vue"),

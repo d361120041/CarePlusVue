@@ -47,7 +47,7 @@
         <label><span class="required">*</span> 國籍</label>
         <select v-model="nationality" required>
           <option value="中華民國">中華民國</option>
-          <option value="其他">其他</option>
+          <option value="其他">其它</option>
         </select>
         <div v-if="nationality === '其他'">
           <input v-model="customNationality" type="text" placeholder="請輸入您的國籍" />
@@ -107,6 +107,7 @@ import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from '@/plugins/axios'
 import auth from '@/api/auth'
+import Swal from "sweetalert2";
 
 const router = useRouter()
 
@@ -136,9 +137,9 @@ const showVerificationCodeInput = ref(false)
 
 // 城市與區域
 const cityDistricts = {
-  台北市: ['中正區', '大同區', '中山區', '萬華區', '信義區'],
+  臺北市: ['中正區', '大同區', '中山區', '萬華區', '信義區'],
   新北市: ['板橋區', '新莊區', '三重區', '淡水區'],
-  台中市: ['西區', '北區', '南區', '東區']
+  臺中市: ['西區', '北區', '南區', '東區']
 }
 const currentDistricts = computed(() => cityDistricts[serviceCity.value] || [])
 const onCityChange = () => (serviceDistrict.value = '')
@@ -196,21 +197,18 @@ watch(email, async (newEmail) => {
 // ✅ 改用 Promise 包裝 FileReader
 const handleRegister = async () => {
   if (emailExists.value) {
-    message.value = '❌ 此信箱已被註冊，請使用其他信箱'
-    return
+    message.value = '❌ 此信箱已被註冊，請使用其他信箱';
+    return;
   }
 
-  // ✅ 檢查是否有上傳大頭貼
   if (!photoFile.value) {
-    message.value = '❌ 請選擇大頭貼'
-    return
+    message.value = '❌ 請選擇大頭貼';
+    return;
   }
 
   try {
-    // ✅ 轉換圖片為 Base64
-    const base64Photo = await readFileAsBase64(photoFile.value)
+    const base64Photo = await readFileAsBase64(photoFile.value);
 
-    // ✅ 發送註冊請求
     await auth.register({
       email: email.value,
       password: password.value,
@@ -228,18 +226,34 @@ const handleRegister = async () => {
       halfDayRate: halfDayRate.value,
       fullDayRate: fullDayRate.value,
       base64Photo: base64Photo
-    })
+    });
 
-    // ✅ 跳轉到驗證頁面
-    router.push({
-      path: '/verify-code',
-      query: { email: email.value }
-    })
+    // ✅ 使用 SweetAlert2 顯示驗證提示
+    Swal.fire({
+  title: "📩 註冊成功！",
+  text: "驗證碼已寄送至您的信箱，請前往驗證後再登入。",
+  icon: "info",
+  confirmButtonText: "了解",
+  confirmButtonColor: "#3085d6",
+  showClass: {
+    popup: "animate__animated animate__fadeInDown",
+  },
+  hideClass: {
+    popup: "animate__animated animate__fadeOutUp",
+  },
+}).then(() => {
+  // ✅ 跳轉到驗證頁面
+  router.push({
+    path: '/verify-code',
+    query: { email: email.value }
+  });
+});
+
 
   } catch (error) {
-    message.value = error.response?.data || '❌ 註冊失敗！'
+    message.value = error.response?.data || '❌ 註冊失敗！';
   }
-}
+};
 
 // ✅ 把 FileReader 包裝成 Promise
 const readFileAsBase64 = (file) => {

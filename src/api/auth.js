@@ -27,5 +27,7 @@ export default {
   resetPassword(payload) {
     return myAxios.post('/api/auth/reset-password', payload)
   },
-}
-;
+   getMyAppointments() {
+    return myAxios.get('/api/caregivers/me/appointments');
+  },
+};
