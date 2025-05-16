@@ -5,15 +5,17 @@
     </router-link>
     <ul>
       <li>
-        <router-link to="/caregivers/search">找看護</router-link>
+        <router-link to="/caregivers/search">找照服員</router-link>
       </li>
       <li>
-        <router-link to="/news">新聞快訊</router-link>
+        <router-link to="/course">找課程</router-link>
       </li>
       <li>
-        <router-link to="/social">討論區</router-link>
+        <router-link to="/news">找新聞</router-link>
       </li>
-      <li><router-link to="/course">照護課程</router-link></li>
+      <li>
+        <router-link to="/social">找貼文</router-link>
+      </li>
     </ul>
 
     <div class="login-button">
@@ -179,7 +181,8 @@ const caregiverLogout = () => {
   padding: 0;
   position: relative;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: 60px;
+  height: 80px;
+  font-size: 26px;
 }
 
 /* ----- Logo 開始 ----- */
