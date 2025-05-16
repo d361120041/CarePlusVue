@@ -76,21 +76,20 @@ import moreNewsImage from '@/assets/allen/more_news.png';
 const previewNews = ref([]);
 const loading = ref(false);
 
-//日期格式化
-const formatDate = (isoString) => {
-  if (!isoString) return '';
+//時間格式化
+const formatDate = (datetime) => {
+  if (!datetime) return '';
 
-  const date = new Date(isoString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const date = new Date(datetime);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
 
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
 };
-
 
 //按鈕導到新聞首頁
 const router = useRouter();

@@ -17,17 +17,10 @@ export function extractRelativePath(fullUrl) {
  * @returns {string} http://localhost:8082/uploads/xxx.png 或 assets 中的預設圖片
  */
 export function getFullImageUrl(path) {
-  if (!path) {
-    return defaultThumbnail;  // 若 path 為空，返回 assets 中的預設圖片
-  }
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
 
-  // 如果 path 是完整 URL，直接返回
-  if (path.startsWith('http')) {
-    return path;
-  }
-
-  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+  // 確保 baseUrl 與 path 之間不會重複或缺少 `/`
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-
-  return `${normalizedBaseUrl}${normalizedPath}`;
+  return `${baseUrl}${normalizedPath}`;
 }
