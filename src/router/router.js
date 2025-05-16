@@ -36,7 +36,7 @@ import AdminNewsPreview from "@/allen/views/AdminNewsPreview.vue";
 // ------------------ allen ------------------
  
 // ------------------ yuuhou ------------------
-// import RankCard from "@/yuuhou/RankCard.vue";
+import RankCard from "@/yuuhou/RankCard.vue";
 import OrdersView from "@/yuuhou/OrdersView.vue";
 import VerifyCodeView from "@/yuuhou/VerifyCodeView.vue";
 import CaregiverLogin from "@/yuuhou/LoginCaregiver.vue";
@@ -127,7 +127,7 @@ const routes = [
   // ------------------ allen ------------------
 
   // ------------------ yuuhou ------------------
-//  { path: '/RankCard' ,component: RankCard},
+ { path: '/RankCard' ,component: RankCard},
  {
   path: '/verify-code',
   name: 'VerifyCode',
