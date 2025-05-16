@@ -1,7 +1,10 @@
 <template>
 
     <GlobalBanner :imgSrc="homeBannerImg">
-        <h1>討論區</h1>
+        <div class="banner-text">
+            <h1>討論區</h1>
+            <p class="sub-text">即時新聞，第一時間掌握</p>
+        </div>
     </GlobalBanner>
 
     <div class="social-layout">
@@ -98,6 +101,29 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.banner-text {
+    font-weight: 800;
+    color: #2D3748;
+    text-shadow: 3px 3px 6px rgba(255, 255, 255, 0.8);
+    /* 更明顯的光暈效果 */
+    letter-spacing: 1px;
+    /* 增加字間距 */
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    text-align: center;
+}
+
+.sub-text {
+    font-size: 1.5rem;
+    /* 縮小副標題 */
+    font-weight: 600;
+    color: #2D3748;
+    margin-top: 10px;
+}
+
 .social-layout {
     display: grid;
     grid-template-columns: 1fr minmax(300px, 2fr) 1fr;
@@ -135,20 +161,24 @@ main {
 
 /* 針對 WebKit 瀏覽器的捲軸樣式 */
 .sidebar::-webkit-scrollbar {
-    width: 8px; /* 設定捲軸寬度 */
+    width: 8px;
+    /* 設定捲軸寬度 */
 }
 
 .sidebar::-webkit-scrollbar-track {
-    background: transparent; /* 設定捲軸軌道背景透明 */
+    background: transparent;
+    /* 設定捲軸軌道背景透明 */
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.1); /* 設定捲軸滑塊初始顏色，較淡 */
+    background-color: rgba(0, 0, 0, 0.1);
+    /* 設定捲軸滑塊初始顏色，較淡 */
     border-radius: 4px;
 }
 
 .sidebar:hover::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.3); /* 滑鼠懸停時滑塊顏色，更明顯 */
+    background-color: rgba(0, 0, 0, 0.3);
+    /* 滑鼠懸停時滑塊顏色，更明顯 */
 }
 
 .widget-title,
@@ -158,7 +188,7 @@ main {
     border-bottom: 2px solid var(--color-primary);
     padding-bottom: var(--space-xxs);
     color: var(--color-text-tertiary);
-    
+
     /* background: linear-gradient(to right, var(--color-primary), var(--color-tertiary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
