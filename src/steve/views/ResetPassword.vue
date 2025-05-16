@@ -8,6 +8,8 @@
 </template>
 
 <script setup>
+import "sweetalert2/dist/sweetalert2.min.css";
+import Swal from "sweetalert2";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "@/plugins/axios";
@@ -20,7 +22,10 @@ const resetPassword = async () => {
   const email = localStorage.getItem("resetEmail"); // 之前存在 localStorage 的
 
   if (!email) {
-    alert("請先回忘記密碼頁面重新操作");
+    Swal.fire({
+      icon: "warning",
+      title: "請先回忘記密碼頁面重新操作",
+    });
     router.push("/forgotPassword");
     return;
   }
@@ -34,11 +39,19 @@ const resetPassword = async () => {
       },
     });
 
-    alert("密碼已成功重設，請重新登入！");
+    Swal.fire({
+      icon: "success",
+      title: "密碼已成功重設",
+      text: "請重新登入！",
+    });
     localStorage.removeItem("resetEmail"); // 🔥 清掉暫存
     router.push("/userlogin");
   } catch (error) {
-    alert("重設失敗：" + (error.response?.data || "無法連線到後端"));
+    Swal.fire({
+      icon: "error",
+      title: "重設失敗",
+      text: error.response?.data || "無法連線到後端",
+    });
   }
 };
 </script>

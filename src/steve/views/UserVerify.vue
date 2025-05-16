@@ -7,6 +7,8 @@
 </template>
 
 <script setup>
+import "sweetalert2/dist/sweetalert2.min.css";
+import Swal from "sweetalert2";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "@/plugins/axios";
@@ -22,7 +24,11 @@ onMounted(() => {
 
 const verify = async () => {
   if (!email.value) {
-    alert("錯誤：找不到註冊時的 Email，請重新註冊");
+    Swal.fire({
+      icon: "error",
+      title: "錯誤",
+      text: "找不到註冊時的 Email，請重新註冊",
+    });
     return;
   }
   try {
@@ -32,14 +38,20 @@ const verify = async () => {
         code: code.value,
       },
     });
-    alert("註冊成功！請重新登入");
-
+    Swal.fire({
+      icon: "success",
+      title: "註冊成功！",
+      text: "請重新登入",
+    });
     // 🔥 成功驗證後清掉 localStorage
     localStorage.removeItem("pendingEmail");
-
     router.push("/userlogin"); // 🔥 成功跳回登入頁
   } catch (error) {
-    alert("驗證失敗：" + (error.response?.data || "無法連線"));
+    Swal.fire({
+      icon: "error",
+      title: "驗證失敗",
+      text: error.response?.data || "無法連線",
+    });
   }
 };
 </script>

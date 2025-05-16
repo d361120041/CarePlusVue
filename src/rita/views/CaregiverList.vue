@@ -104,8 +104,10 @@
           <button
             @click.stop="toggleFavorite(caregiver.caregiverId)"
             class="flex items-center justify-center p-2 bg-transparent border-0 rounded-full hover:bg-gray-200 transition duration-300 ease-in-out"
+            :title="
+              isFavorited(caregiver.caregiverId) ? '取消收藏' : '加入收藏'
+            "
           >
-            <!-- 使用過渡效果和顏色變化 -->
             <span
               v-if="isFavorited(caregiver.caregiverId)"
               class="text-red-500 text-3xl transform transition-transform duration-300 ease-in-out"

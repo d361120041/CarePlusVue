@@ -162,7 +162,7 @@ const formatDate = (dateStr) => {
 // };
 
 const startNewAppointment = () => {
-  router.push('/request/location');
+  router.push('/caregivers/search');
 };
 
 onMounted(async () => {

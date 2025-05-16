@@ -190,7 +190,8 @@ main {
     border-radius: var(--radius-md);
     cursor: pointer;
     transition: var(--transition-medium);
-    font-size: var(--font-size-sm);
+    /* font-size: 16px; */
+    font-size: var(--font-size-lg);
     background: var(--color-bg-card);
     color: var(--color-text-muted);
     will-change: transform, box-shadow;

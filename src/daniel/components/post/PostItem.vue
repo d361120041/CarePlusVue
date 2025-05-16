@@ -183,7 +183,7 @@ onMounted(async () => {
 
 <style scoped>
 .post-item {
-    width: 450px;
+    width: 500px;
     max-width: 600px;
     background: #fff;
     border-radius: 8px;

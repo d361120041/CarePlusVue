@@ -129,7 +129,7 @@
         </div>
 
         <button @click="updateUser" :disabled="loading" class="save-button">
-          {{ loading ? "儲存中..." : "儲存變更" }}
+          {{ loading ? "儲存中..." : "儲存" }}
         </button>
       </div>
     </div>
@@ -148,7 +148,8 @@
 </template>
 
 <script setup>
-import oldImage from "@/assets/images/old.png";
+import Swal from "sweetalert2";
+import oldImage from "@/assets/images/grandPa.png";
 import { ref, onMounted, nextTick } from "vue";
 import axios from "@/plugins/axios";
 import { useAuthStore } from "@/stores/auth";
@@ -274,10 +275,21 @@ const updateUser = async () => {
       imageFile.value = null;
     }
 
-    alert("資料更新成功，即將重新整理頁面");
+    await Swal.fire({
+      icon: "success",
+      title: "資料更新成功",
+      text: "即將重新整理頁面",
+      confirmButtonColor: "#4db6ac",
+    });
+
     location.reload(); // ✅ 重整頁面
   } catch {
-    alert("更新失敗");
+    await Swal.fire({
+      icon: "error",
+      title: "更新失敗",
+      text: "請稍後再試",
+      confirmButtonColor: "#e57373",
+    });
   } finally {
     loading.value = false;
   }
@@ -297,21 +309,22 @@ onMounted(() => {
   color: #00332e;
   text-decoration: none;
   margin-bottom: 6px;
-  /* 增加每個按鈕的分隔感 */
-  width: 10%;
-  display: block;
+  width: auto; /* ✅ 改為自適應寬度 */
+  min-width: 100px; /* ✅ 保持最小寬度避免太窄 */
+  display: inline-block; /* ✅ 避免整行佔滿 */
   text-align: center;
-  padding: 0.75rem;
+  padding: 0.75rem 1.5rem; /* ✅ 調整左右內距讓文字更寬鬆 */
   border-radius: 12px;
-  background-color: #80ccc3;
+  background-color: #ff8c42;
   transition: box-shadow 0.3s, background-color 0.3s;
   font-weight: 500;
-  border: 1px solid #4db6ac;
+  border: 1px solid #ff8c42;
+  white-space: nowrap; /* ✅ 不允許文字換行 */
 }
 .save-button:hover {
-  box-shadow: 0 0 8px #66cfc4;
+  box-shadow: 0 0 8px #ffa76b;
   /* 藍色光暈 */
-  background-color: #b3e2da;
+  background-color: #ffa76b;
 }
 .gif-decoration {
   position: absolute;

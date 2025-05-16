@@ -37,11 +37,14 @@
       我的預約
     </router-link>
 
-    <router-link to="/user-center/courses" class="sidebar-button" active-class="active">
+    <router-link
+      to="/user-center/courses"
+      class="sidebar-button"
+      active-class="active"
+    >
       我的課程
     </router-link>
 
-    
     <router-link
       to="/user-center/support"
       class="sidebar-button"
@@ -75,12 +78,12 @@ nav {
 
 /* hover 時底色浮出，使用原本 hover 色 */
 .sidebar-button:hover {
-  background-color: #b3e2da;
+  background-color: #ffa76b;
 }
 
 /* 當前頁面選中效果，使用原本 active 色 */
 .active {
-  background-color: #3ca094;
+  background-color: #ff8c42;
   font-weight: 600;
 }
 </style>

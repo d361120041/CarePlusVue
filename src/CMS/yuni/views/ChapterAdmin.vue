@@ -18,6 +18,34 @@
 
       <!-- ────────── 表格 ────────── -->
       <div class="table-wrapper">
+        <!-- Skeleton 載入中 -->
+<div v-if="isLoading" class="table-wrapper">
+  <table class="course-table">
+    <thead>
+      <tr>
+        <th class="col-idx">#</th>
+        <th class="col-title">標題</th>
+        <th>位置</th>
+        <th>內容類型</th>
+        <th>內容網址</th>
+        <th>所屬課程 ID</th>
+        <th class="col-action">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="n in 5" :key="n">
+        <td><div class="skeleton-box shimmer" style="width: 24px; height: 16px;"></div></td>
+        <td><div class="skeleton-box shimmer" style="width: 140px; height: 20px;"></div></td>
+        <td><div class="skeleton-box shimmer" style="width: 60px; height: 20px;"></div></td>
+        <td><div class="skeleton-box shimmer" style="width: 80px; height: 20px;"></div></td>
+        <td><div class="skeleton-box shimmer" style="width: 160px; height: 20px;"></div></td>
+        <td><div class="skeleton-box shimmer" style="width: 60px; height: 20px;"></div></td>
+        <td><div class="skeleton-box shimmer" style="width: 80px; height: 20px;"></div></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
         <table class="course-table">
           <thead>
             <!-- 新增模式 -->
@@ -139,6 +167,7 @@ const chapters = ref([])
 const selectedCourseId = ref('')
 const editingId = ref(null)
 const isCreating = ref(false)
+const isLoading = ref(true)
 
 const contentTypes = ['video', 'article']
 const getContentType = (key) => (key === 'video' ? '影片' : key === 'article' ? '文章' : key)
@@ -252,8 +281,10 @@ const createChapter = saveChapter
 const truncateUrl = (url) => (url && url.length > 50 ? url.slice(0, 50) + '...' : url)
 
 onMounted(async () => {
+  isLoading.value = true
   await fetchCourses()
   await fetchChapters()
+  isLoading.value = false
 })
 </script>
 
@@ -486,5 +517,26 @@ td.action-cell {
   background-color: #2563eb;
   color: #fff;
 }
+
+.skeleton-box {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+}
+
+.shimmer {
+  background-image: linear-gradient(90deg, #e0e0e0 0px, #f5f5f5 40px, #e0e0e0 80px);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+
 
 </style>
