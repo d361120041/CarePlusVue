@@ -167,6 +167,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import axios from "@/plugins/axios";
+import Swal from "sweetalert2";
 
 const router = useRouter();
 const form = ref({
@@ -212,13 +213,21 @@ onMounted(async () => {
 
 const onSubmit = async () => {
   if (patientCount.value >= 5) {
-    alert("已達上限，無法新增更多病患");
+    await Swal.fire({
+      icon: "warning",
+      title: "人數限制",
+      text: "已達上限，無法新增更多病患",
+      confirmButtonColor: "#f6c343",
+    });
     return;
   }
 
-  // 組合生日
   if (!selectedYear.value || !selectedMonth.value || !selectedDay.value) {
-    alert("請完整選擇生日");
+    await Swal.fire({
+      icon: "warning",
+      title: "請完整選擇生日",
+      confirmButtonColor: "#f6c343",
+    });
     return;
   }
 
@@ -226,7 +235,6 @@ const onSubmit = async () => {
   const dayStr = String(selectedDay.value).padStart(2, "0");
   form.value.birthday = `${selectedYear.value}-${monthStr}-${dayStr}`;
 
-  // 檢查年齡是否 >= 18
   const birthdayDate = new Date(form.value.birthday);
   const today = new Date();
   const age =
@@ -240,18 +248,34 @@ const onSubmit = async () => {
     )
       ? 1
       : 0);
+
   if (age < 18) {
-    alert("患者必須年滿 18 歲");
+    await Swal.fire({
+      icon: "warning",
+      title: "年齡限制",
+      text: "患者必須年滿 18 歲",
+      confirmButtonColor: "#f6c343",
+    });
     return;
   }
 
   try {
     await axios.post("/patient/add", form.value);
-    alert("新增患者成功");
+    await Swal.fire({
+      icon: "success",
+      title: "新增成功",
+      text: "已成功新增患者",
+      confirmButtonColor: "#4db6ac",
+    });
     router.push("/user-center/patients");
   } catch (err) {
     console.error(err);
-    alert(err.response?.data || "新增失敗");
+    await Swal.fire({
+      icon: "error",
+      title: "新增失敗",
+      text: err.response?.data || "請稍後再試",
+      confirmButtonColor: "#d33",
+    });
   }
 };
 
