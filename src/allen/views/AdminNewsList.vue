@@ -109,7 +109,7 @@ import { ref, computed, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import myAxios from '@/plugins/axios';
 import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue';
-import noImage from '@/assets/allen/no-image.jpg';
+import defaultThumbnail from '@/assets/allen/no-image.jpg';
 import { getFullImageUrl } from '@/allen/utils/urlHelper';
 import { useRouter } from 'vue-router';
 
@@ -120,7 +120,6 @@ const page = ref(0);
 const size = ref(5);
 const hasNextPage = ref(true);
 const loading = ref(false);
-const defaultThumbnail = noImage;
 const hasSearched = ref(false);
 const searchSnapshot = ref({});
 

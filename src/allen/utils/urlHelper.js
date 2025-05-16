@@ -17,6 +17,9 @@ export function extractRelativePath(fullUrl) {
  */
 export function getFullImageUrl(path) {
   if (!path) return '';
-  if (path.startsWith('http')) return path; // 以防萬一資料已經是完整的
-  return baseUrl + path;
+  if (path.startsWith('http')) return path;
+
+  // 確保 baseUrl 與 path 之間不會重複或缺少 `/`
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${baseUrl}${normalizedPath}`;
 }

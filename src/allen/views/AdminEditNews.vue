@@ -83,7 +83,7 @@ const news = ref({
   status: 0 // 預設為 0 (草稿狀態)
 });
 const categories = ref([]);
-const previewUrl = ref(NO_IMAGE_URL);
+const previewUrl = ref(defaultThumbnail);
 const isDirty = ref(false);
 const quillRef = ref(null);
 
@@ -222,7 +222,7 @@ const fetchNews = async () => {
       ? thumbnailPath.startsWith('http')
         ? thumbnailPath 
         : `http://localhost:8082${thumbnailPath}`
-      : NO_IMAGE_URL;
+      : defaultThumbnail;
 
   } catch (error) {
     alert('載入新聞失敗，可能不存在該筆資料');
@@ -231,14 +231,13 @@ const fetchNews = async () => {
 };
 
 //圖片相關控制
-const NO_IMAGE_URL = 'http://localhost:8082/uploads/news_thumbnails/no-image.jpg';
-
+import defaultThumbnail from '@/assets/allen/no-image.jpg';
 //刪除圖片
 const removeImage = () => {
-  news.value.thumbnail = '';
-  previewUrl.value = NO_IMAGE_URL;
-  isDirty.value = true;
+  news.value.thumbnail = '';  // 傳遞空字串給後端，表示清除圖片
+  previewUrl.value = defaultThumbnail; // 前端顯示預設圖片
 };
+
 
 const handleFileChange = async (e) => {
   const file = e.target.files[0];
@@ -307,8 +306,8 @@ const handleSubmit = async () => {
     // ✅ 確保 `status` 為 0 (草稿狀態)
     news.value.status = 0;
 
-    // 如果沒有縮圖，設置為 NO_IMAGE_URL
-    news.value.thumbnail = news.value.thumbnail ? news.value.thumbnail : NO_IMAGE_URL;
+    // 如果沒有縮圖，設置為 defaultThumbnail
+    news.value.thumbnail = news.value.thumbnail ? news.value.thumbnail : defaultThumbnail;
 
     // 儲存新聞
     if (isEditMode) {
@@ -340,7 +339,7 @@ const handleSubmit = async () => {
 
 // 圖片加載錯誤處理
 const handleImageError = (event) => {
-  event.target.src = NO_IMAGE_URL;
+  event.target.src = defaultThumbnail;
 };
 
 const handleBack = async () => {
