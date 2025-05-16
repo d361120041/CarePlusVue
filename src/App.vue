@@ -22,6 +22,9 @@
     <Footer />
   </footer>
   <!-- 頁尾 結束-->
+
+  <BackToTop />
+
 </template>
 
 <script setup>
@@ -32,6 +35,7 @@ import { computed } from "vue";
 
 import Navigationbar from "@/views/Navigationbar.vue";
 import Footer from "@/views/Footer.vue";
+import BackToTop from "@/components/BackToTop.vue";
 
 const route = useRoute();
 // ✅ 檢查是否為 admin 開頭的頁面
@@ -48,5 +52,4 @@ nav {
 /* .footer {
   margin-top: 40px;
 } */
-
 </style>
