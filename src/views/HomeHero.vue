@@ -2,8 +2,8 @@
     <GlobalBanner :imgSrc="homeBannerImg">
         <section class="hero-section">
             <div class="container text-center">
-                <h1>歡迎來到 Care+ 照護平台</h1>
-                <p>一站式長期照護解決方案…</p>
+                <h1>照護更簡單，陪伴更長久</h1>
+                <p>一Care+用心守護每一刻，讓愛與關懷更貼近</p>
                 <router-link to="/caregivers/search" class="button-green">
                     立即找看護
                 </router-link>
