@@ -4,7 +4,7 @@
 
             <!-- 使用者資訊區塊 -->
             <div class="user-header">
-                <UserAvatar :imageUrl="imageUrl" />
+                <UserAvatar :imageUrl="imageUrl" style="margin-right: 0.5rem;" />
                 <div class="user-info">
                     <div class="user-name">{{ authStore.user.userName }}</div>
                 </div>
