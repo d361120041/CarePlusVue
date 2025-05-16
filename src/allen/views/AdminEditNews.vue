@@ -64,6 +64,8 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
+import defaultThumbnail from '@/assets/allen/no-image.jpg';
+import { getFullImageUrl } from '@/allen/utils/urlHelper.js';
 import { useRoute, useRouter } from 'vue-router';
 import myAxios from '@/plugins/axios';
 import { QuillEditor } from '@vueup/vue-quill';
@@ -75,6 +77,8 @@ const router = useRouter();
 const newsId = route.params.id;
 const isEditMode = !!newsId;
 
+const uploadedFile = ref(null); // 用於儲存上傳的檔案
+
 const news = ref({
   title: '',
   content: '',
@@ -82,26 +86,63 @@ const news = ref({
   thumbnail: '',
   status: 0 // 預設為 0 (草稿狀態)
 });
+
 const categories = ref([]);
-const previewUrl = ref(NO_IMAGE_URL);
 const isDirty = ref(false);
 const quillRef = ref(null);
 
-//新增分類
+//-----------------圖片start
+
+// ✅ 圖片加載錯誤處理
+const handleImageError = (event) => {
+  event.target.src = defaultThumbnail;
+};
+
+// ✅ 圖片上傳處理
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+
+  if (file) {
+    uploadedFile.value = file;
+    previewUrl.value = URL.createObjectURL(file);
+    news.value.thumbnail = '';  // 當上傳新圖片時，不保留後端路徑
+  } else {
+    removeImage();
+  }
+};
+
+// ✅ 移除圖片
+const removeImage = () => {
+  uploadedFile.value = null;
+  previewUrl.value = defaultThumbnail; // 使用靜態資源的預設圖片
+  news.value.thumbnail = '';           // 後端數據清空
+};
+
+//-----------------圖片end
+
+
+
+//-----------------分類start
+
+//分類更新後，下拉式選單更新
 const handleCategoryChange = async (e) => {
   const selectedValue = e.target.value;
 
-  // 如果選擇的是 "新增分類"
   if (selectedValue === "add") {
-    await addCategory();
-    // 重設下拉選單
-    news.value.category.categoryId = '';
+    const newCategoryId = await addCategory();
+    
+    // 新增完成後自動選中新增的分類
+    if (newCategoryId) {
+      news.value.category.categoryId = newCategoryId;
+    }
   }
 };
 
 //刪除分類
 const handleDeleteCategory = async () => {
-  if (!news.value.category.categoryId) {
+  const selectedCategoryId = news.value.category.categoryId;
+
+  if (!selectedCategoryId) {
     Swal.fire({
       icon: 'warning',
       title: '請先選擇要刪除的分類！',
@@ -110,7 +151,7 @@ const handleDeleteCategory = async () => {
     return;
   }
 
-  const selectedCategory = categories.value.find(cat => cat.categoryId === news.value.category.categoryId);
+  const selectedCategory = categories.value.find(cat => cat.categoryId === selectedCategoryId);
 
   if (!selectedCategory) {
     Swal.fire({
@@ -133,7 +174,7 @@ const handleDeleteCategory = async () => {
 
   if (isConfirmed) {
     try {
-      const response = await myAxios.delete(`/news/category/${selectedCategory.categoryId}`);
+      await myAxios.delete(`/news/category/${selectedCategoryId}`);
 
       Swal.fire({
         icon: 'success',
@@ -141,14 +182,15 @@ const handleDeleteCategory = async () => {
         confirmButtonText: '確定'
       });
 
-      // 重新加載分類列表
       await fetchCategories();
-      // 重置分類選擇
-      news.value.category.categoryId = '';
+
+      // 若當前選中的分類為被刪除的分類，重置為空
+      if (news.value.category.categoryId === selectedCategoryId) {
+        news.value.category.categoryId = '';
+      }
 
     } catch (err) {
       console.error('刪除分類失敗：', err);
-
       const errorMessage = err.response?.data?.message || '刪除分類失敗，請稍後再試';
 
       Swal.fire({
@@ -160,15 +202,30 @@ const handleDeleteCategory = async () => {
   }
 };
 
+//loading 狀態標誌，用於控制加載狀態
+const isLoadingCategories = ref(false);
+
+//獲取新聞分類
 const fetchCategories = async () => {
+  isLoadingCategories.value = true;
+
   try {
     const res = await myAxios.get('/news/category');
     categories.value = res.data;
   } catch (err) {
     console.error('載入分類失敗：', err);
+
+    Swal.fire({
+      icon: 'error',
+      title: '載入分類失敗，請稍後再試',
+      confirmButtonText: '確定'
+    });
+  } finally {
+    isLoadingCategories.value = false;
   }
 };
 
+//新增分類按鈕
 const addCategory = async () => {
   try {
     const { value: categoryName } = await Swal.fire({
@@ -187,139 +244,111 @@ const addCategory = async () => {
     });
 
     if (categoryName) {
-      // 發送新增分類請求
       const res = await myAxios.post('/news/category', { categoryName: categoryName.trim() });
 
-      // 提示成功訊息
       Swal.fire({
         icon: 'success',
         title: `分類「${res.data.categoryName}」新增成功！`,
         confirmButtonText: '確定'
       });
 
-      // 重新加載分類列表
       await fetchCategories();
+
+      // 返回新增的分類 ID，供 `handleCategoryChange` 使用
+      return res.data.categoryId;
     }
   } catch (err) {
     console.error('新增分類失敗：', err);
+
     Swal.fire({
       icon: 'error',
       title: '新增分類失敗，請稍後再試',
       confirmButtonText: '確定'
     });
   }
+
+  return null; // 若取消或新增失敗，返回 null
 };
 
+//-------------------------分類end
+
+
+
+//-------------------------新聞start
+
+// ✅ 獲取新聞詳情（編輯模式）
+// ✅ 獲取新聞詳情（編輯模式）
 const fetchNews = async () => {
   try {
     const res = await myAxios.get(`/news/admin/${newsId}`);
     news.value = res.data;
 
-    const thumbnailPath = res.data.thumbnail;
-
-     // 檢查是否為完整 URL 或相對路徑
-    previewUrl.value = thumbnailPath 
-      ? thumbnailPath.startsWith('http')
-        ? thumbnailPath 
-        : `http://localhost:8082${thumbnailPath}`
-      : NO_IMAGE_URL;
+    // 縮圖處理邏輯統一
+    previewUrl.value = getFullImageUrl(news.value.thumbnail);
 
   } catch (error) {
-    alert('載入新聞失敗，可能不存在該筆資料');
-    router.push('/admin/news');
+    console.error('載入新聞失敗：', error);
+
+    Swal.fire({
+      icon: 'error',
+      title: '載入新聞失敗！',
+      text: error.response?.data?.message || '該新聞不存在或已被刪除',
+      confirmButtonText: '確定'
+    }).then(() => {
+      router.push('/admin/news');
+    });
   }
 };
 
-//圖片相關控制
-const NO_IMAGE_URL = 'http://localhost:8082/uploads/news_thumbnails/no-image.jpg';
+// ✅ 驗證新聞內容
+const validateNews = () => {
+  const { title, category, content } = news.value;
 
-//刪除圖片
-const removeImage = () => {
-  news.value.thumbnail = '';
-  previewUrl.value = NO_IMAGE_URL;
-  isDirty.value = true;
-};
-
-const handleFileChange = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const formData = new FormData();
-  formData.append('file', file);
-
-  try {
-    const res = await myAxios.post('/news/admin/upload-thumbnail', formData);
-    news.value.thumbnail = res.data.path;
-    previewUrl.value = res.data.url;
-    isDirty.value = true;
-  } catch (err) {
-    alert('圖片上傳失敗');
+  if (!title.trim()) {
+    Swal.fire({ icon: 'warning', title: '標題不得為空', confirmButtonText: '確定' });
+    return false;
   }
+
+  if (title.trim().length > 30) {
+    Swal.fire({ icon: 'warning', title: '標題不得超過 30 字', confirmButtonText: '確定' });
+    return false;
+  }
+
+  if (!category.categoryId) {
+    Swal.fire({ icon: 'warning', title: '請選擇分類', confirmButtonText: '確定' });
+    return false;
+  }
+
+  const cleanedContent = content
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, '')
+    .trim();
+
+  if (!cleanedContent) {
+    Swal.fire({ icon: 'warning', title: '內容不得為空', confirmButtonText: '確定' });
+    return false;
+  }
+
+  return true;
 };
 
+// ✅ 提交新聞
 const handleSubmit = async () => {
   try {
-    // 驗證標題
-    if (!news.value.title.trim()) {
-      Swal.fire({
-        icon: 'warning',
-        title: '標題不得為空！',
-        confirmButtonText: '確定'
-      });
-      return;
-    }
-    
-    // 驗證標題字數限制
-    if (news.value.title.trim().length > 30) {
-      Swal.fire({
-        icon: 'warning',
-        title: '標題不得超過30字！',
-        confirmButtonText: '確定'
-      });
-      return;
-    }
+    if (!validateNews()) return;
 
-    // 驗證分類
-    if (!news.value.category.categoryId) {
-      Swal.fire({
-        icon: 'warning',
-        title: '請選擇分類！',
-        confirmButtonText: '確定'
-      });
-      return;
-    }
-
-    //驗證內容
-    const cleanedContent = news.value.content
-      .replace(/<[^>]*>/g, '')  // 移除 HTML 標籤
-      .replace(/&nbsp;/g, '')   // 移除 HTML 空格符
-      .trim();
-
-    if (!cleanedContent) {
-      Swal.fire({
-        icon: 'warning',
-        title: '內容不得為空！',
-        confirmButtonText: '確定'
-      });
-      return;
-    }
-
-    // ✅ 確保 `status` 為 0 (草稿狀態)
+    // 確保 `status` 為 0 (草稿狀態)
     news.value.status = 0;
 
-    // 如果沒有縮圖，設置為 NO_IMAGE_URL
-    news.value.thumbnail = news.value.thumbnail ? news.value.thumbnail : NO_IMAGE_URL;
+    // 縮圖處理：若無縮圖，設置為空，避免存儲 NO_IMAGE_URL
+    news.value.thumbnail = news.value.thumbnail || '';
 
-    // 儲存新聞
     if (isEditMode) {
       await myAxios.put(`/news/admin/${newsId}`, news.value);
     } else {
       await myAxios.post('/news/admin', news.value);
     }
 
-    isDirty.value = false;
-
-    // 儲存成功提示
     Swal.fire({
       icon: 'success',
       title: '儲存成功！',
@@ -330,91 +359,150 @@ const handleSubmit = async () => {
 
   } catch (err) {
     console.error('儲存失敗：', err);
+
+    const errorMessage = err.response?.data?.message || '儲存失敗，請稍後再試';
+
     Swal.fire({
       icon: 'error',
-      title: '儲存失敗，請稍後再試',
+      title: errorMessage,
+      confirmButtonText: '確定'
+    });
+
+  } finally {
+    isDirty.value = false; // 重置編輯狀態
+  }
+};
+
+//------------------------------新聞end
+
+
+
+//-------------------------------其他功能start
+
+// ✅ 通用保存方法
+const saveNews = async (status = 0) => {
+  try {
+    news.value.status = status;  // 設置狀態 (0 = 草稿, 1 = 發布)
+
+    if (!validateNews()) return null;
+
+    let savedNewsId = newsId;
+
+    if (isEditMode) {
+      await myAxios.put(`/news/admin/${newsId}`, news.value);
+    } else {
+      const res = await myAxios.post('/news/admin', news.value);
+      savedNewsId = res.data.id;
+    }
+
+    return savedNewsId;
+
+  } catch (err) {
+    console.error('保存新聞失敗：', err);
+    Swal.fire({
+      icon: 'error',
+      title: '保存失敗，請稍後再試',
+      text: err.response?.data?.message || '系統錯誤，請稍後重試',
+      confirmButtonText: '確定'
+    });
+    return null;
+  }
+};
+
+// ✅ 返回按鈕
+const handleBack = async () => {
+  if (isDirty.value) {
+    const { isConfirmed } = await Swal.fire({
+      title: '您有尚未儲存的變更',
+      text: '是否要儲存後再離開？',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '儲存並返回',
+      cancelButtonText: '直接返回',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33'
+    });
+
+    if (isConfirmed) {
+      const savedNewsId = await saveNews();
+      if (savedNewsId) {
+        router.push('/admin/news');
+      }
+      return;
+    }
+  }
+
+  router.push('/admin/news');
+};
+
+// ✅ 新聞預覽
+const handlePreview = async () => {
+  try {
+    const savedNewsId = await saveNews(0);  // 保持草稿狀態
+
+    if (savedNewsId) {
+      // 跳轉到 AdminNewsPreview.vue 頁面
+      router.push(`/admin/news/preview/${savedNewsId}`);
+    }
+
+  } catch (err) {
+    console.error('預覽失敗：', err);
+
+    Swal.fire({
+      icon: 'error',
+      title: '預覽失敗',
+      text: err.response?.data?.message || '請確認資料完整性',
       confirmButtonText: '確定'
     });
   }
 };
 
-// 圖片加載錯誤處理
-const handleImageError = (event) => {
-  event.target.src = NO_IMAGE_URL;
-};
+// ✅ Tooltip 初始化方法
+const initializeTooltips = () => {
+  const tooltipMap = {
+    bold: '粗體',
+    italic: '斜體',
+    underline: '底線',
+    link: '插入連結',
+    image: '插入圖片',
+    clean: '清除格式',
+    'list-ordered': '編號列表',
+    'list-bullet': '項目列表'
+  };
 
-const handleBack = async () => {
-  if (isDirty.value) {
-    const confirmed = confirm('您有尚未儲存的變更，是否要儲存後再離開？');
-    if (confirmed) {
-      await handleSubmit();
-      return;
+  Object.entries(tooltipMap).forEach(([key, label]) => {
+    // 針對常規按鈕
+    const btn = document.querySelector(`.ql-${key}`);
+    if (btn) btn.setAttribute('title', label);
+
+    // 特殊處理：`list-ordered` 與 `list-bullet`
+    if (key === 'list-ordered' || key === 'list-bullet') {
+      const listBtn = document.querySelector(`.ql-list[value="${key.split('-')[1]}"]`);
+      if (listBtn) listBtn.setAttribute('title', label);
     }
-  }
-  router.push('/admin/news');
+  });
 };
 
-const handlePreview = async () => {
-  try {
-    let updatedNewsId = newsId;
+const previewUrl = ref(defaultThumbnail); // 初始化為預設圖片
 
-    if (isEditMode) {
-      // 僅保存編輯內容，但不改變狀態
-      await myAxios.put(`/news/admin/${newsId}`, news.value);
-    } else {
-      // 新增新聞，狀態保持為 0（未發布）
-      const res = await myAxios.post('/news/admin', {
-        ...news.value,
-        status: 0
-      });
-      updatedNewsId = res.data.id;
-    }
-
-    // 跳轉到 AdminNewsPreview.vue 頁面
-    router.push(`/admin/news/preview/${updatedNewsId}`);
-
-  } catch (err) {
-    console.error('預覽失敗：', err);
-    alert('預覽失敗，請確認資料完整性');
-  }
-};
-
-// ✅ 加入 tooltip 標籤
 onMounted(() => {
-
   fetchCategories();
-  
+
   if (isEditMode) {
     fetchNews();
+  } else {
+    previewUrl.value = news.value.thumbnail ? getFullImageUrl(news.value.thumbnail) : defaultThumbnail;
   }
 
+  // 確保 Quill DOM 結構完全加載後再初始化 Tooltips
   nextTick(() => {
-    const tooltipMap = {
-      bold: '粗體',
-      italic: '斜體',
-      underline: '底線',
-      link: '插入連結',
-      image: '插入圖片',
-      clean: '清除格式',
-      'list-ordered': '編號列表',
-      'list-bullet': '項目列表'
-    };
-
-    Object.keys(tooltipMap).forEach((key) => {
-      const btn = document.querySelector(`.ql-${key}`);
-      if (btn) btn.setAttribute('title', tooltipMap[key]);
-
-      if (key === 'list-ordered') {
-        const ordered = document.querySelector('.ql-list[value="ordered"]');
-        if (ordered) ordered.setAttribute('title', tooltipMap[key]);
-      }
-      if (key === 'list-bullet') {
-        const bullet = document.querySelector('.ql-list[value="bullet"]');
-        if (bullet) bullet.setAttribute('title', tooltipMap[key]);
-      }
-    });
+    setTimeout(() => {
+      initializeTooltips();
+    }, 100); // 適當延遲，防止 DOM 尚未完全加載
   });
 });
+
+
 </script>
 
 <style scoped>
