@@ -10,19 +10,19 @@
       <div class="form-row">
         <label>生日</label>
         <div class="birthday-group">
-          <select v-model="selectedYear">
+          <select v-model="selectedYear" class="birth-select">
             <option value="">年</option>
             <option v-for="year in years" :key="year" :value="year">
               {{ year }}
             </option>
           </select>
-          <select v-model="selectedMonth">
+          <select v-model="selectedMonth" class="birth-select">
             <option value="">月</option>
             <option v-for="month in 12" :key="month" :value="month">
               {{ month }}
             </option>
           </select>
-          <select v-model="selectedDay">
+          <select v-model="selectedDay" class="birth-select">
             <option value="">日</option>
             <option v-for="day in availableDays" :key="day" :value="day">
               {{ day }}
@@ -33,7 +33,7 @@
 
       <div class="form-row">
         <label>性別</label>
-        <select v-model="form.gender" required>
+        <select v-model="form.gender" required class="gender-select">
           <option value="">請選擇</option>
           <option :value="0">女性</option>
           <option :value="1">男性</option>
@@ -78,9 +78,8 @@
   </div>
 </template>
 
-
 <script setup>
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "@/plugins/axios";
@@ -173,7 +172,6 @@ const availableDays = computed(() => {
 //   }
 // };
 
-
 const loadPatient = async () => {
   try {
     const res = await axios.get(`/patient/${patientId}`);
@@ -186,10 +184,10 @@ const loadPatient = async () => {
     selectedDay.value = birth.getDate();
   } catch {
     await Swal.fire({
-      icon: 'error',
-      title: '讀取失敗',
-      text: '將返回患者列表',
-      confirmButtonColor: '#d33'
+      icon: "error",
+      title: "讀取失敗",
+      text: "將返回患者列表",
+      confirmButtonColor: "#d33",
     });
     router.push("/user-center/patients");
   }
@@ -198,9 +196,9 @@ const loadPatient = async () => {
 const onSubmit = async () => {
   if (!selectedYear.value || !selectedMonth.value || !selectedDay.value) {
     await Swal.fire({
-      icon: 'warning',
-      title: '請完整選擇生日',
-      confirmButtonColor: '#f6c343'
+      icon: "warning",
+      title: "請完整選擇生日",
+      confirmButtonColor: "#f6c343",
     });
     return;
   }
@@ -215,14 +213,21 @@ const onSubmit = async () => {
   const age =
     today.getFullYear() -
     birthdayDate.getFullYear() -
-    (today < new Date(today.getFullYear(), birthdayDate.getMonth(), birthdayDate.getDate()) ? 1 : 0);
+    (today <
+    new Date(
+      today.getFullYear(),
+      birthdayDate.getMonth(),
+      birthdayDate.getDate()
+    )
+      ? 1
+      : 0);
 
   if (age < 18) {
     await Swal.fire({
-      icon: 'warning',
-      title: '年齡限制',
-      text: '患者必須年滿 18 歲',
-      confirmButtonColor: '#f6c343'
+      icon: "warning",
+      title: "年齡限制",
+      text: "患者必須年滿 18 歲",
+      confirmButtonColor: "#f6c343",
     });
     return;
   }
@@ -230,18 +235,18 @@ const onSubmit = async () => {
   try {
     await axios.put(`/patient/update/${patientId}`, form.value);
     await Swal.fire({
-      icon: 'success',
-      title: '更新成功',
-      text: '已儲存患者資訊',
-      confirmButtonColor: '#4db6ac'
+      icon: "success",
+      title: "更新成功",
+      text: "已儲存患者資訊",
+      confirmButtonColor: "#4db6ac",
     });
     router.push("/user-center/patients");
   } catch (err) {
     await Swal.fire({
-      icon: 'error',
-      title: '更新失敗',
-      text: err.response?.data || '請稍後再試',
-      confirmButtonColor: '#d33'
+      icon: "error",
+      title: "更新失敗",
+      text: err.response?.data || "請稍後再試",
+      confirmButtonColor: "#d33",
     });
   }
 };
@@ -253,12 +258,11 @@ const cancel = () => {
 onMounted(loadPatient);
 </script>
 
-
 <style scoped>
 input,
 select,
 textarea {
-  background-color: #fff8f0;
+  background-color: #ffffff; /* ✅ 改為白色 */
   border: none;
   outline: none;
   padding: 0.5rem;
@@ -268,7 +272,7 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  background-color: #f7f1e8;
+  background-color: #f7f1e8; /* 保留 focus 時是霧白感 */
 }
 .patients-content {
   height: 100%;
@@ -306,7 +310,7 @@ textarea:focus {
 .form-row select,
 .form-row textarea {
   flex: 1;
-  background-color: #fff8f0;
+  background-color: #ffffff; /* ✅ 改為白色 */
   border: none;
   border-radius: 8px;
   padding: 0.5rem;
@@ -367,6 +371,11 @@ textarea:focus {
 .btn-cancel:hover {
   background-color: #ff6666;
 }
-
-
+.gender-select {
+  flex: none !important;
+  width: 150px; /* 或 33%，你可以微調 */
+}
+.birth-select {
+  width: 80px;
+}
 </style>

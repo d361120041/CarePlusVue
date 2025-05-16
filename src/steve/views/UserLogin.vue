@@ -103,7 +103,7 @@ button {
   justify-content: space-between;
 }
 .extra-buttons .register {
-  background-color: #a8d5ba;
+  background-color: #114425;
 }
 .extra-buttons .forgot {
   background-color: #6e6259;

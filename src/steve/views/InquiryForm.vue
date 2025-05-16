@@ -219,45 +219,51 @@ textarea {
   box-shadow: none;
   outline: none;
 }
+
+/* 公版按鈕（Tabs）*/
 .template-btn {
   padding: 0.5rem 0.5rem;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
-  border: 2px solid #4db6ac;
-  background-color: #b3e2da;
+  border: 2px solid #ff8c42; /* 橘色邊框 */
+  background-color: #ffeae0; /* 極淺暖杏色背景 */
   color: #333;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
 }
-
+.template-btn:hover {
+  background-color: #ffd1b3; /* 淺橘背景 */
+}
 .template-btn.active {
-  background-color: #4db6ac;
-  color: white;
+  background-color: #ff8c42; /* 主橘色 */
+  border-color: #ff8c42;
+  color: #ffffff;
 }
 
+/* 送出按鈕 */
 .btn-fav {
-  background-color: #4db6ac;
-  color: white;
+  background-color: #ff8c42;
+  color: #ffffff;
   padding: 0.5rem 1rem;
-  border: 2px solid #4db6ac;
+  border: 2px solid #ff8c42;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s, border-color 0.3s;
 }
-
 .btn-fav:hover {
-  background-color: #3ba99e;
-  border-color: #3ba99e;
+  background-color: #ffa76b; /* 淺橘 hover */
+  border-color: #ffa76b;
 }
-
 .btn-fav:disabled {
-  background-color: #a8dad4;
-  border-color: #a8dad4;
+  background-color: #ffd9b3; /* 更淡的橘色作為 disabled */
+  border-color: #ffd9b3;
   cursor: not-allowed;
 }
+
+/* 版面結構（不動） */
 .inquiry-page-wrapper {
   display: flex;
   justify-content: space-between;
@@ -278,7 +284,6 @@ textarea {
   height: 300px;
   overflow: hidden;
 }
-
 .static-decoration {
   width: 100%;
   height: 100%;

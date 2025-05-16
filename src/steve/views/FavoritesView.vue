@@ -18,7 +18,7 @@
           :class="currentTab === 'employees' ? 'btn-fav' : 'btn-outline-fav'"
           @click="currentTab = 'employees'"
         >
-          照護者
+          照護
         </button>
       </div>
 
@@ -65,7 +65,7 @@
       <!-- 收藏照護者 -->
       <div v-if="currentTab === 'employees'">
         <div v-if="favoriteCaregivers.length === 0" class="text-muted">
-          尚未收藏任何照護者。
+          尚未收藏任何照護人員。
         </div>
         <div v-else class="d-flex flex-column gap-3">
           <div
@@ -100,7 +100,7 @@
             </template>
             <template v-else>
               <p class="text-danger">
-                ⚠️ 照護者資料遺失（ID: {{ item.caregiverId }})
+                ⚠️ 照護資料遺失（ID: {{ item.caregiverId }})
               </p>
             </template>
           </div>
@@ -185,33 +185,29 @@ onMounted(fetchFavorites);
 
 <style scoped>
 .favorites-container {
-  flex: none;
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  padding-left: 0.1rem; /* 可選：讓左側有內距 */
-  padding-right: 0.5rem;
+  flex: 1;
+  min-width: 0;
+  padding-right: 2rem;
 }
 
 .btn-fav {
-  background-color: #4db6ac;
-  color: #fff;
-  border: 1px solid #4db6ac;
+  background-color: #ff8c42; /* 主橘 */
+  color: #ffffff;
+  border: 1px solid #ff8c42;
 }
 
 .btn-fav:hover {
-  background-color: #3ba99e;
-  border-color: #3ba99e;
+  background-color: #ffa76b; /* 溼度提升後的淺橘 */
+  border-color: #ffa76b;
 }
 
 .btn-outline-fav {
   background-color: transparent;
-  color: #4db6ac;
-  border: 1px solid #4db6ac;
+  color: #ff8c42;
+  border: 1px solid #ff8c42;
 }
-
 .btn-outline-fav:hover {
-  background-color: #e6f5f3;
+  background-color: #fff0e5; /* 極淺暖杏色背景 */
 }
 
 .course-card,
@@ -242,7 +238,7 @@ onMounted(fetchFavorites);
   gap: 2rem;
   padding: 2rem;
   background-color: #fff8f0;
-  max-width: 1000px;
+  max-width: 1000px; /* 原本是 800px，太窄 */
   margin: 0 auto;
 }
 

@@ -14,16 +14,6 @@
         <router-link to="/social">討論區</router-link>
       </li>
       <li><router-link to="/course">照護課程</router-link></li>
-      <!-- Dropdown menu -->
-      <!-- <li class="dropdown">
-        <span class="dropdown-label">線上課程 &#9662;</span>
-        <ul class="dropdown-menu">
-          <li><router-link to="/course">課程列表</router-link></li>
-          <li v-if="isUserLogin">
-            <router-link to="/my-courses">我的課程</router-link>
-          </li>
-        </ul>
-      </li> -->
     </ul>
 
     <div class="login-button">
@@ -341,7 +331,7 @@ const caregiverLogout = () => {
 .dropdown-menu li a:hover {
   background-color: #f0f0f0;
   /* hover 時的淺灰底色 */
-  color: #4db6ac
+  color: #4db6ac;
 }
 /* ----- yuni 結束 -----
 
@@ -497,13 +487,12 @@ const caregiverLogout = () => {
 }
 
 .dropdown-login-menu button:hover {
-  background-color: #46b6ab;
+  background-color: #4db6ac;
 }
 
 /* 顯示下拉選單 */
 .dropdown-login:hover .dropdown-login-menu {
   display: block;
-  
 }
 /* ===== RWD 結束 ===== */
 </style>

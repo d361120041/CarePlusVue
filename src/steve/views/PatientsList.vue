@@ -132,15 +132,15 @@ const deletePatient = async (id) => {
   justify-content: center;
   width: 2.5rem;
   height: 2.5rem;
-  background-color: #006400; /* 墨綠 */
-  border: 1px solid #004d00; /* 深綠邊框 */
+  background-color: #ffa76b;
+  border: 1px solid #ffa76b;
   border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.2s;
   padding: 0;
 }
 .addPatient:hover:not(:disabled) {
-  background-color: #005f00; /* hover 深一點 */
+  background-color: #ff8c42; /* hover 深一點 */
 }
 .addPatient:disabled {
   background-color: #eeeeee;
@@ -167,13 +167,13 @@ const deletePatient = async (id) => {
   transition: background-color 0.3s, border-color 0.3s;
 }
 .edit {
-  background-color: #3e9bdc;
-  border-color: #3e9bdc;
+  background-color: #4db6ac;
+  border-color: #4db6ac;
   margin-right: 0.25rem;
 }
 .edit:hover {
-  background-color: #2c82c9;
-  border-color: #2c82c9;
+  background-color: #34978d;
+  border-color: #34978d;
 }
 .delete {
   background-color: #ff9999;
