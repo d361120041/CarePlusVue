@@ -29,7 +29,6 @@
         <div class="news-content">
             <h3 class="news-title">{{ news.title }}</h3>
             <p class="news-date">發布日期：{{ formatDate(news.publishAt) }}</p>
-            <p class="news-date">發布日期：{{ formatDate(news.publishAt) }}</p>
             <p class="news-views">瀏覽次數：{{ news.viewCount }}</p>
         </div>
     </router-link>
@@ -86,7 +85,6 @@ import moreNewsImage from '@/assets/allen/more_news.png';
 
 const previewNews = ref([]);
 const loading = ref(false);
-
 
 //時間格式化
 const formatDate = (datetime) => {
