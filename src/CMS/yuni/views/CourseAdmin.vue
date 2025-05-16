@@ -423,11 +423,11 @@ const submitCreateCourse = async () => {
     await fetchCourses()
 
     Swal.fire({
-  icon: 'success',
-  title: '新增成功',
-  showConfirmButton: false,
-  timer: 1200
-})
+      icon: 'success',
+      title: '新增成功',
+      showConfirmButton: false,
+      timer: 1200
+    })
     showModal.value = false
 
     await nextTick()
