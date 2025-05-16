@@ -15,6 +15,8 @@ body {
   width: 100%;
 }
 
+
+
 body {
   display: flex; /* 啟用 Flex 容器 */
   flex-direction: column; /* 垂直從上到下 */
@@ -118,3 +120,83 @@ h3 {
 .button-blue:hover {
   background-color: var(--color-btn-tertiary-bg-hover);
 }
+
+/* font */
+
+/* 1 香菜 */
+/* @font-face {
+  font-family: 'iansui';
+  src: url('/src/assets/fonts/Iansui.ttf') format('truetype');
+  font-weight: bolder; 
+  font-style: normal;
+}
+
+html,body, header, footer, main {
+  font-family: 'iansui'
+} */
+
+/* 2 粉圓 */
+/* @font-face {
+  font-family: 'huninn';
+  src: url('/src/assets/fonts/huninn.ttf') format('truetype');
+  font-weight: bolder; 
+  font-style: normal;
+}
+
+html,body, header, footer, main {
+  font-family: 'huninn'
+} */
+
+/* 3
+
+@font-face {
+  font-family: 'mun';
+  src: url('/src/assets/fonts/UoqMunThenKhung-Regular.ttf') format('truetype');
+  font-weight: bolder; 
+  font-style: normal;
+}
+
+html,body, header, footer, main {
+  font-family: 'mun'
+} 
+  */
+
+/* 4
+@font-face {
+  font-family: 'GBK';
+  src: url('/src/assets/fonts/GBK.ttf') format('truetype');
+  font-weight: bolder; 
+  font-style: normal;
+}
+
+html,body, header, footer, main {
+  font-family: 'GBK'
+} 
+  
+*/
+
+/* 5
+@font-face {
+  font-family: 'kong';
+  src: url('/src/assets/fonts/kong.ttf') format('truetype');
+  font-weight: bolder; 
+  font-style: normal;
+}
+
+html,body, header, footer, main {
+  font-family: 'kong'
+} 
+  */
+
+  /* 6
+@font-face {
+  font-family: 'cheng';
+  src: url('/src/assets/fonts/cheng.ttf') format('truetype');
+  font-weight: bolder; 
+  font-style: normal;
+}
+
+html,body, header, footer, main {
+  font-family: 'cheng'
+}
+    */
