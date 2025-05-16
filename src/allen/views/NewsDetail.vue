@@ -5,7 +5,7 @@
 
     <!-- 顯示資料 -->
     <div v-else-if="news">
-      <!-- 標題 -->
+      <!-- 標題...... -->
       <h1 class="text-3xl font-bold mb-4">{{ news.title }}</h1>
 
       <!-- 發布資訊 -->

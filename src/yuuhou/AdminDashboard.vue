@@ -7,7 +7,7 @@
       <input 
         type="text" 
         v-model="searchKeyword" 
-        placeholder="🔍 搜尋姓名、Email、電話、性別 或生日"
+        placeholder=" 搜尋姓名、Email、電話、性別 或生日"
         class="search-input"
       />
       <button @click="searchCaregivers" class="search-button">搜尋</button>
@@ -214,7 +214,7 @@ const deleteCaregiver = async (id) => {
   }
 };
 </script>
-
+  
 <style scoped>
 .admin-dashboard {
   max-width: 1200px;

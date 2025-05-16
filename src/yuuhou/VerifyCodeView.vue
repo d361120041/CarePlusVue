@@ -1,13 +1,13 @@
 <template>
   <div class="verify-container">
     <div class="verify-card">
-      <h2>🔑 輸入驗證碼</h2>
-      <p>✨ 我們已經發送驗證碼到您的信箱，請輸入驗證碼以完成註冊。</p>
+      <h2> 輸入驗證碼</h2>
+      <p> 我們已經發送驗證碼到您的信箱。</p>
 
       <input 
         v-model="verificationCode" 
         type="text" 
-        placeholder="📩 請輸入驗證碼" 
+        placeholder="請輸入6位數驗證碼" 
         class="verify-input"
       />
       <button @click="handleVerifyCode" class="verify-button">確認</button>

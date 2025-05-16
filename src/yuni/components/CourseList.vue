@@ -54,10 +54,41 @@
     </div>
 
 
+    <!-- 載入畫面 -->
+    <!-- <div v-if="isLoading" class="text-center py-5">資料載入中...</div> -->
+ <!-- bootstrap的轉圈loading -->
+    <!-- <div v-if="isLoading" class="text-center py-5">
+  <div class="spinner-border text-success" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div> -->
+
+
+<div v-if="isLoading" class="d-flex flex-column gap-3 w-100 align-items-center">
+  <div v-for="n in 4" :key="n" class="card course-card mx-auto skeleton-card">
+    <div class="d-flex h-100">
+      <!-- 圖片骨架 -->
+      <div class="p-3">
+        <div class="skeleton-img shimmer"></div>
+      </div>
+      <!-- 右側文字骨架 -->
+      <div class="card-body d-flex flex-column justify-content-center">
+        <div class="skeleton-title shimmer mb-2"></div>
+        <div class="skeleton-tag shimmer mb-2"></div>
+        <div class="skeleton-text shimmer w-100 mb-2"></div>
+        <div class="skeleton-text shimmer w-75"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
     <!-- 課程卡片清單 -->
-    <div v-if="courses.length > 0" :class="[
+    <!-- <div v-if="courses.length > 0" :class="[
+      'd-flex flex-column gap-3 w-100',
+      'align-items-center'
+    ]"> -->
+    <div v-else-if="courses.length > 0" :class="[
       'd-flex flex-column gap-3 w-100',
       'align-items-center'
     ]">
@@ -67,7 +98,8 @@
           <div class="d-flex h-100">
             <!-- 封面圖片 -->
             <div class="p-3">
-              <img :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`" class="course-img rounded" alt="課程封面" />
+              <img :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`" class="course-img rounded" alt="課程封面"
+                loading="lazy" />
             </div>
 
             <!-- 課程標題＋簡介有的沒的 -->
@@ -157,13 +189,29 @@ const getCategoryLabel = (key) => {
   return map[key] || key;
 };
 
+const isLoading = ref(true);
+
+
 // 初始載入所有課程
+// const fetchCourses = async () => {
+//   try {
+//     const res = await axios.get("/api/courses");
+//     courses.value = res.data;
+//   } catch (err) {
+//     console.error(err);
+//   }
+// };
+
+
 const fetchCourses = async () => {
+  isLoading.value = true;
   try {
     const res = await axios.get("/api/courses");
     courses.value = res.data;
   } catch (err) {
     console.error(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -334,4 +382,53 @@ onMounted(fetchCourses);
   background-color: #399e95 !important;
   border-color: #399e95 !important;
 }
+
+.skeleton-card {
+  width: 90%;
+  max-width: 1100px;
+  height: 332px;
+}
+
+.skeleton-img {
+  width: 300px;
+  height: 300px;
+  border-radius: 8px;
+  background-color: #e0e0e0;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 60%;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+}
+
+.skeleton-tag {
+  height: 16px;
+  width: 40%;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+}
+
+.skeleton-text {
+  height: 14px;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+}
+
+.shimmer {
+  background-image: linear-gradient(90deg, #e0e0e0 0px, #f5f5f5 40px, #e0e0e0 80px);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+
 </style>

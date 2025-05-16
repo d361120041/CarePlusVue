@@ -3,23 +3,16 @@
     class="patients-content flex h-full gap-6 items-start"
     style="background-color: #fff8f0"
   >
-    <!-- 左側：病患管理卡片 -->
-    <section
-      class="list-section p-6 rounded overflow-y-auto h-full"
-      style="background-color: #fff7ed"
-    >
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">病患管理</h2>
+    <section class="list-section rounded overflow-y-auto h-full">
+      <!-- 1. 改這行 -->
+      <div class="flex items-center mb-4 space-x-2">
+        <h2 class="text-xl font-bold">家屬管理</h2>
         <button
-          @click="patientCount < 5 ? goAdd() : alert('已達到登記上線')"
-          :class="
-            patientCount < 5
-              ? 'bg-blue-500 hover:bg-blue-600'
-              : 'bg-gray-400 cursor-not-allowed'
-          "
+          @click="patientCount < 5 && goAdd()"
           class="addPatient"
+          :disabled="patientCount >= 5"
         >
-          {{ patientCount < 5 ? "新增患者" : "已達到登記上線" }}
+          <span class="plus-icon">＋</span>
         </button>
       </div>
       <table class="min-w-full bg-transparent border">
@@ -40,7 +33,7 @@
               {{ p.gender === 1 ? "男性" : "女性" }}
             </td>
             <td class="px-4 py-2 border">{{ p.emergencyContact }}</td>
-            <td class="px-4 py-2 border space-x-2">
+            <td class="px-4 py-2 border space-x-1">
               <button @click="goEdit(p.patientId)" class="edit">編輯</button>
               <button @click="deletePatient(p.patientId)" class="delete">
                 刪除
@@ -56,10 +49,20 @@
       </table>
     </section>
     <!-- 插圖區塊已移除 -->
+    <div class="static-image-wrapper">
+      <img
+        :src="oldImage"
+        class="static-decoration"
+        width="300"
+        height="300"
+        loading="eager"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
+import oldImage from "@/assets/images/old.png";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "@/plugins/axios";
@@ -98,40 +101,64 @@ const deletePatient = async (id) => {
 </script>
 
 <style scoped>
+.static-image-wrapper {
+  flex-shrink: 0;
+  width: 300px;
+  height: 300px;
+}
+
 .patients-content {
   height: 100%;
-  display: flex;
-  gap: 1.5rem;
   background-color: #fff8f0;
+  display: flex;
+  justify-content: center; /* ✅ 讓內容水平置中 */
+  align-items: flex-start; /* ✅ 元素對齊上方 */
+  padding: 2rem;
 }
 
 .list-section {
-  flex: 1;
-  border-radius: 16px;
-  padding: 1rem;
+  padding: 1.2rem;
+  border-radius: 16px; /* Tailwind 的 .rounded */
+  overflow-y: auto; /* Tailwind 的 .overflow-y-auto */
+  height: 100%; /* Tailwind 的 .h-full */
   background-color: #fff7ed;
-  overflow-y: auto;
+  /* 其餘樣式保留 */
 }
 
+/* 浅绿色圆形按钮，只显示“＋” */
 .addPatient {
-  color: white;
-  margin-bottom: 6px;
-  width: 25%;
-  text-align: center;
-  padding: 0.75rem;
-  border-radius: 12px;
-  background-color: #80ccc3;
-  transition: box-shadow 0.3s, background-color 0.3s;
-  font-weight: 500;
-  border: 1px solid #4db6ac;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #ffa76b;
+  border: 1px solid #ffa76b;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  padding: 0;
 }
-.addPatient:hover {
-  background-color: #66cfc4;
+.addPatient:hover:not(:disabled) {
+  background-color: #ff8c42; /* hover 深一點 */
+}
+.addPatient:disabled {
+  background-color: #eeeeee;
+  border-color: #cccccc;
+  cursor: not-allowed;
 }
 
+/* 白色加號 */
+.plus-icon {
+  color: white;
+  font-size: 1.25rem;
+  line-height: 1;
+}
 .edit,
 .delete {
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.75rem; /* 由原本 0.5rem 1rem 縮小 */
+  font-size: 0.875rem; /* 由原本約 1rem 縮小 */
+  border-radius: 6px; /* 邊角也可微調 */
   color: white;
   border-radius: 8px;
   font-weight: 500;
@@ -140,12 +167,13 @@ const deletePatient = async (id) => {
   transition: background-color 0.3s, border-color 0.3s;
 }
 .edit {
-  background-color: #3e9bdc;
-  border-color: #3e9bdc;
+  background-color: #4db6ac;
+  border-color: #4db6ac;
+  margin-right: 0.25rem;
 }
 .edit:hover {
-  background-color: #2c82c9;
-  border-color: #2c82c9;
+  background-color: #34978d;
+  border-color: #34978d;
 }
 .delete {
   background-color: #ff9999;

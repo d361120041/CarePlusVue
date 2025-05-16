@@ -1,6 +1,6 @@
 <template>
   <div class="edit-service">
-    <h2>📍 服務地區與收費設定</h2>
+    <h2>服務地區與收費設定</h2>
     <form @submit.prevent="handleSave">
       <div>
         <label><span class="required"></span> 服務縣市</label>

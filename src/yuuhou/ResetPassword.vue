@@ -1,12 +1,12 @@
 <template>
   <div class="reset-password-container">
     <div class="reset-password-card">
-      <h2>🔒 重設密碼</h2>
+      <h2> 重設密碼</h2>
       <form @submit.prevent="handleResetPassword">
         <input 
           v-model="newPassword" 
           type="password" 
-          placeholder="🔑 請輸入新密碼" 
+          placeholder="請輸入新密碼" 
           required 
         />
         <button type="submit">送出</button>

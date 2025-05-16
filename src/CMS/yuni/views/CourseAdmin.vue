@@ -1,55 +1,45 @@
 <template>
   <div class="page-wrapper">
-    <!-- ────────── 白色卡片 ────────── -->
     <div class="card">
-
+      
       <!-- ────────── 搜尋列 ────────── -->
       <div class="search-row">
         <input v-model.trim="searchKeyword" placeholder="輸入關鍵字搜尋" class="search-input" />
-
         <button class="btn btn-primary" @click="$event.target.blur()">搜尋</button>
         <button class="btn btn-secondary" @click="resetFilters">✕</button>
- 
         <div class="add-button-wrapper">
-  <button class="btn btn-add" style="border: solid 1px;" @click="startCreate">
- 新增課程
-  </button>
-</div>
-
-      <div class="table-wrapper">
-      <table class="course-table">
-        <thead>
-          <!-- 新增模式 -->
-          <tr v-if="isCreating" class="row-creating">
-              <td>{{ filteredCourses.length + 1 }}</td>
-              <!-- <td>{{ (currentPage - 1) * pageSize + paginatedCourses.length + 1 }}</td> -->
-
-              <td><input type="file" @change="handleFileUpload" /></td>
-              <td><input v-model="editingCourse.title" class="input-create" placeholder="請輸入標題" /></td>
-              <td><input v-model="editingCourse.description" class="input-create" placeholder="請輸入介紹" /></td>
-              <td>
-                <select v-model="editingCourse.category" class="input-create">
-                  <option disabled value="">請選擇分類</option>
-                  <option v-for="cat in categories" :key="cat" :value="cat">
-                    {{ getCategoryLabel(cat) }}
-                  </option>
-                </select>
-              </td>
-              <td><input v-model="editingCourse.duration" type="number" class="input-create" placeholder="時數" /></td>
-              <td class="action-cell">
-                <button @click="create" class="link green">送出</button>
-                <button @click="cancelCreate" class="link gray">取消</button>
-              </td>
-            </tr>
-
-            <!-- 新增按鈕列（只有沒在搜尋且非新增模式才顯示）
-            <tr v-if="!isCreating && !searchKeyword" class="row-add" @click="startCreate">
-              <td style="text-align: center;" colspan="7">➕ 新增課程</td>
-            </tr> -->
-        </thead>
-      </table>
+          <button class="btn btn-add" style="border: solid 1px;" @click="startCreate">新增課程</button>
+        </div>
       </div>
-    </div>
+
+      <!-- ────────── Skeleton 載入中 ────────── -->
+      <div class="table-wrapper" v-if="isLoading">
+        <table class="course-table">
+          <thead>
+            <tr>
+              <th class="col-idx">#</th>
+              <th class="col-cover">封面</th>
+              <th class="col-title">標題</th>
+              <th>介紹</th>
+              <th class="col-cat">分類</th>
+              <th class="col-duration">時數</th>
+              <th class="col-action">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="n in 5" :key="n">
+              <td><div class="skeleton-box shimmer" style="width: 24px; height: 16px;"></div></td>
+              <td><div class="skeleton-box shimmer cover-img"></div></td>
+              <td><div class="skeleton-box shimmer" style="width: 120px; height: 20px;"></div></td>
+              <td><div class="skeleton-box shimmer" style="width: 180px; height: 20px;"></div></td>
+              <td><div class="skeleton-box shimmer" style="width: 80px; height: 20px;"></div></td>
+              <td><div class="skeleton-box shimmer" style="width: 40px; height: 20px;"></div></td>
+              <td><div class="skeleton-box shimmer" style="width: 60px; height: 20px;"></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <!-- ────────── 課程表格 ────────── -->
       <div class="table-wrapper">
         <table class="course-table">
@@ -67,8 +57,11 @@
 
           <!-- ── 有資料 ── -->
           <tbody v-if="filteredCourses.length">
-            <tr v-for="course in paginatedCourses" :key="course.courseId"
-              :class="{ 'row-hover': editingId !== course.courseId }">
+            <tr
+              v-for="course in paginatedCourses"
+              :key="course.courseId"
+              :class="{ 'row-hover': editingId !== course.courseId }"
+            >
               <!-- 編輯模式 -->
               <template v-if="editingId === course.courseId">
                 <td>{{ course.courseId }}</td>
@@ -98,28 +91,11 @@
               <template v-else>
                 <td>{{ course.courseId }}</td>
                 <td>
-                  <!-- <router-link :to="`/courses/${course.courseId}`">
-                    <img
-                      :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`"
-                      class="cover-img"
-                      style="cursor:pointer"
-                    />
-                  </router-link> -->
-                  <!-- 封面圖片連結（開新分頁） -->
                   <a :href="`/courses/${course.courseId}`" target="_blank" rel="noopener noreferrer">
-                    <img :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`" class="cover-img"
-                      style="cursor: pointer" />
+                    <img :src="`${apiBaseUrl}/api/courses/${course.courseId}/image`" class="cover-img" style="cursor: pointer" />
                   </a>
-
                 </td>
                 <td>
-                  <!-- <router-link
-                    :to="`/courses/${course.courseId}`"
-                    class="link-title"
-                  >
-                    {{ course.title }}
-                  </router-link> -->
-                  <!-- 標題連結（開新分頁） -->
                   <a :href="`/courses/${course.courseId}`" class="link-title" target="_blank" rel="noopener noreferrer">
                     {{ course.title }}
                   </a>
@@ -129,49 +105,40 @@
                 <td>{{ formatDuration(course.duration) }}</td>
                 <td class="action-cell">
                   <button @click="startEdit(course)" class="link blue">編輯</button>
-                  <button @click="deleteOne(course.courseId)" class="link red"> <i class="fas fa-trash-alt"></i></button>
+                  <button @click="deleteOne(course.courseId)" class="link red">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
                 </td>
               </template>
             </tr>
-
-            
           </tbody>
 
           <!-- ── 查無資料 ── -->
           <tbody v-else>
             <tr>
-              <td colspan="7" class="text-center py-4 text-muted">
-                查無課程資料。
-              </td>
+              <td colspan="7" class="text-center py-4 text-muted">查無課程資料。</td>
             </tr>
           </tbody>
         </table>
-        <!-- 分頁控制列 -->
-<!-- <div class="pagination">
-  <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">« 上一頁</button>
-  <span>第 {{ currentPage }} / {{ totalPages }} 頁</span>
-  <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">下一頁 »</button>
-</div> -->
 
-
-<div class="pagination">
-  <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">«</button>
-  
-  <button
-    v-for="page in totalPages"
-    :key="page"
-    :class="{ 'active-page': page === currentPage }"
-    @click="goToPage(page)">
-    {{ page }}
-  </button>
-
-  <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">»</button>
-</div>
-
+        <!-- ────────── 分頁控制列 ────────── -->
+        <div class="pagination">
+          <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">«</button>
+          <button
+            v-for="page in totalPages"
+            :key="page"
+            :class="{ 'active-page': page === currentPage }"
+            @click="goToPage(page)"
+          >
+            {{ page }}
+          </button>
+          <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">»</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
@@ -193,6 +160,8 @@ const searchKeyword = ref('')
 const editingId = ref(null)
 const isCreating = ref(false)
 const selectedImage = ref(null)
+
+const isLoading = ref(true)
 
 const emptyCourse = () => ({
   title: '', category: '', description: '', duration: '', price: 0, isProgressLimited: false
@@ -217,6 +186,8 @@ const getCategoryLabel = k => ({
 // }
 
 const fetchCourses = async () => {
+  isLoading.value = true
+
   const { data } = await getAllCourses()
   courses.value = data
 
@@ -224,7 +195,11 @@ const fetchCourses = async () => {
   if (currentPage.value > totalPages.value) {
     currentPage.value = totalPages.value || 1
   }
+  isLoading.value = false
 }
+
+
+
 const filteredCourses = computed(() => {
   const kw = searchKeyword.value.trim().toLowerCase()
   if (!kw) return courses.value
@@ -390,6 +365,8 @@ const goToPage = page => {
 const resetFilters = () => { searchKeyword.value = '' }   // 清空即可，computed 會自動回全列表
 
 onMounted(fetchCourses)
+
+
 
 watch(filteredCourses, () => {
   currentPage.value = 1
@@ -671,5 +648,24 @@ watch(filteredCourses, () => {
 }
 
 
+.skeleton-box {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+}
+
+.shimmer {
+  background-image: linear-gradient(90deg, #e0e0e0 0px, #f5f5f5 40px, #e0e0e0 80px);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
 
 </style>

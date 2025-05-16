@@ -11,7 +11,7 @@
 
 <style scoped>
 .skeleton-card {
-    width: 450px;
+    width: 500px;
     display: flex;
     gap: 1rem;
     background: #eee;

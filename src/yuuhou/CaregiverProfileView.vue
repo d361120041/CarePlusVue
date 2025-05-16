@@ -1,6 +1,6 @@
 <template>
   <div class="profile-container">
-    <h2>📝 編輯個人資料</h2>
+    <h2> 編輯個人資料</h2>
 
     <div class="avatar-section">
       <div class="avatar-wrapper" @click="triggerFileInput">

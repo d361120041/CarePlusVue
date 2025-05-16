@@ -1,12 +1,12 @@
 <template>
   <div class="forgot-password-container">
     <div class="forgot-password-card">
-      <h2>🔒 忘記密碼</h2>
+      <h2> 忘記密碼</h2>
       <form @submit.prevent="handleForgotPassword">
         <input 
           v-model="email" 
           type="email" 
-          placeholder="📩 請輸入您的 Email" 
+          placeholder="請輸入您的 Email" 
           required 
         />
         <button type="submit">送出重設密碼連結</button>

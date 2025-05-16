@@ -1,7 +1,7 @@
 <template>
   <div class="patients-content">
     <div class="form-card">
-      <h2 class="text-xl font-bold mb-4">新增患者</h2>
+      <h2 class="text-xl font-bold mb-4">新增家屬</h2>
       <form @submit.prevent="onSubmit" class="space-y-4">
         <p v-if="patientCount >= 5" class="text-red-500 mb-2">
           已達上限，最多只能新增五位病患。
@@ -104,7 +104,7 @@
         </div>
 
         <div>
-          <label class="block font-medium mb-1">病患詳情</label>
+          <label class="block font-medium mb-1">家屬詳情</label>
           <br />
           <textarea
             style="width: 70%; height: 100px"
@@ -276,10 +276,10 @@ const cancel = () => {
 }
 
 .btn-fav {
-  background-color: #4db6ac;
-  color: white;
+  background-color: #ff8c42;
+  color: #ffffff;
   padding: 0.5rem 1.5rem;
-  border: 2px solid #4db6ac;
+  border: 2px solid #ff8c42;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
@@ -287,13 +287,13 @@ const cancel = () => {
 }
 
 .btn-fav:hover {
-  background-color: #3ba99e;
-  border-color: #3ba99e;
+  background-color: #ffa76b;
+  border-color: #ffa76b;
 }
 
 .btn-fav:disabled {
-  background-color: #a8dad4;
-  border-color: #a8dad4;
+  background-color: #ffd9b3;
+  border-color: #ffd9b3;
   cursor: not-allowed;
 }
 

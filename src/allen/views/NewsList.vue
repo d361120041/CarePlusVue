@@ -73,14 +73,14 @@
             :key="news.newsId"
             class="news-item flex items-start gap-4 mb-6 border-b pb-4"
           >
-            <router-link :to="`/news/${news.newsId}`" class="flex-shrink-0">
-              <img
-              :src="getFullImageUrl(news.thumbnail) || defaultThumbnail"
-              alt="縮圖"
-              class="thumbnail w-20 h-20 object-cover rounded-lg shadow"
-              @error="handleImgError"
-              />
-            </router-link>
+              <router-link :to="`/news/${news.newsId}`" class="flex-shrink-0">
+                <img
+                :src="getFullImageUrl(news.thumbnail)"
+                alt="縮圖"
+                class="thumbnail w-20 h-20 object-cover rounded-lg shadow"
+                @error="handleImgError"
+                />
+              </router-link>
 
             <div class="flex-1">
               <router-link :to="`/news/${news.newsId}`" class="text-lg font-semibold hover:underline block mb-1"
@@ -109,7 +109,7 @@ import { ref, onMounted, computed } from 'vue';
 import myAxios from '@/plugins/axios';
 import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue';
 import GlobalBanner from '@/components/GlobalBanner.vue';
-import noImage from '@/assets/allen/no-image.jpg';
+import defaultThumbnail from '@/assets/allen/no-image.jpg';
 import { getFullImageUrl } from '@/allen/utils/urlHelper.js';
 
 const newsList = ref([]);
@@ -118,7 +118,6 @@ const page = ref(0);
 const size = ref(5);
 const hasNextPage = ref(true);
 const loading = ref(false);
-const defaultThumbnail = noImage;
 const hasSearched = ref(false);
 const searchSnapshot = ref({});
 const search = ref({keyword: '', categoryId: '', dateRange: '', sortBy: ''});
@@ -242,15 +241,6 @@ const summaryText = computed(() => {
   return parts.length ? parts.join('、') : '';
 });
 
-const clearSearch = () => {
-  // ✅ 清空篩選條件
-  search.value = { keyword: '', categoryId: '', dateRange: '', status: '', sortBy: ''};
-  searchSnapshot.value = {}; // ✅ 清除摘要內容來源
-  hasSearched.value = false;
-  page.value = 0;
-  loadNews();
-};
-
 const loadNews = async () => {
   loading.value = true;
   const { dateFrom, dateTo } = buildDateRange();
@@ -344,7 +334,10 @@ const nextPage = () => {
   }
 };
 
-const handleImgError = (e) => { if (e.target.src !== defaultThumbnail) e.target.src = defaultThumbnail; }; 
+// 圖片加載錯誤時，切換至預設圖片
+const handleImgError = (event) => {
+  event.target.src = getFullImageUrl(''); // 空路徑將回退至 `defaultThumbnail`
+};
 
 const fetchCategories = async () => {
   try {

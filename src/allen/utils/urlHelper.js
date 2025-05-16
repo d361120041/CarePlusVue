@@ -1,3 +1,4 @@
+import defaultThumbnail from '@/assets/allen/no-image.jpg';
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 /**
@@ -13,7 +14,7 @@ export function extractRelativePath(fullUrl) {
 /**
  * 從相對路徑轉為完整 URL (顯示圖片用)
  * @param {string} path e.g. /uploads/xxx.png
- * @returns {string} http://localhost:8082/uploads/xxx.png
+ * @returns {string} http://localhost:8082/uploads/xxx.png 或 assets 中的預設圖片
  */
 export function getFullImageUrl(path) {
   if (!path) return '';
