@@ -153,7 +153,7 @@ main {
     color: var(--color-text-tertiary);
 
     position: sticky;
-    top: 75px;
+    top: 100px;
     align-self: start;
     max-height: 85vh;
     overflow-y: auto;
