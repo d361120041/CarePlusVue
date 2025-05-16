@@ -6,7 +6,7 @@
         <input 
           v-model="email" 
           type="email" 
-          placeholder="📩 請輸入您的 Email" 
+          placeholder="請輸入您的 Email" 
           required 
         />
         <button type="submit">送出重設密碼連結</button>

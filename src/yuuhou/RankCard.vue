@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="rank-card">
     <h3 class="rank-title">{{ title }}</h3>
     <ul class="rank-list">
@@ -91,4 +91,4 @@ const props = defineProps({
   color: #666;
   font-size: 1.2rem;
 }
-</style>
+</style> -->
