@@ -3,7 +3,8 @@
 
         <!-- 左欄：使用者資訊 -->
         <aside class="user-info">
-            <img :src="imageUrl || '/default-avatar.png'" alt="頭貼" class="user-avatar" />
+            <UserAvatar :imageUrl="imageUrl" style="margin-right: 0.5rem;" />
+            <!-- <img :src="imageUrl" alt="頭貼" class="user-avatar" /> -->
             <h2 class="user-name">
                 {{ authStore.user.userName }}
             </h2>
@@ -41,6 +42,7 @@ import { useAuthStore } from '@/stores/auth';
 import PostMain from '@/daniel/components/post/PostMain.vue'
 import FilterModal from '@/daniel/components/modal/FilterModal.vue'
 import filterImg from '@/assets/daniel/sliders-solid.svg'
+import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
 
 const postStore = usePostStore()
 const categoryStore = useCategoryStore()
@@ -133,6 +135,7 @@ onMounted(async () => {
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
+    margin-top: 1rem;
     margin-bottom: 1rem;
 }
 

@@ -174,20 +174,19 @@ onBeforeUnmount(() => {
 <style scoped>
 .social-container {
     grid-column: 2;
-    max-width: 500px;
     margin: 0 auto;
     padding: 1rem;
 }
 
 .new-post-card {
-    width: 500px;
+    width: 650px;
     display: flex;
     align-items: center;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 0.75rem 1rem;
-    margin-bottom: 1.5rem;
+    margin: 0 auto 1.5rem;
     transition: background 0.2s;
 }
 

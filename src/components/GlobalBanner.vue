@@ -48,11 +48,11 @@ const props = defineProps({
 }
 
 /* 若想讓背景有更暗的遮罩層， 可以再加一層偽元素： */
-.global-banner::before {
+/* .global-banner::before {
     content: '';
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.2);
     z-index: 0;
-}
+} */
 </style>

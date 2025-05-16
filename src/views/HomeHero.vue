@@ -14,55 +14,45 @@
         </section>
     </GlobalBanner>
 
-    <!-- allen: 新聞預覽區塊 -->
-    <!-- 最新消息標籤 -->
-    <div class="news-preview-container">
-    <!-- 單一新聞卡片 -->
-    <router-link
-        v-for="news in previewNews.slice(0, 3)"
-        :key="news.newsId"
-        :to="`/news/${news.newsId}`"
-        class="news-preview-card"
-    >
-        <img :src="getFullImageUrl(news.thumbnail)" alt="新聞圖片" class="news-image" @error="handleImgError" />
-
-        <div class="news-content">
-            <h3 class="news-title">{{ news.title }}</h3>
-            <p class="news-date">發布日期：{{ formatDate(news.publishAt) }}</p>
-            <p class="news-views">瀏覽次數：{{ news.viewCount }}</p>
-        </div>
-    </router-link>
-
-    <router-link to="/news" class="news-preview-card">
-    <img :src="moreNewsImage" alt="更多新聞圖片" class="news-image" />
-    <div class="news-content">
-        <h3 class="more-news-title">更多新聞....</h3>
-    </div>
-    </router-link>
-
-
-</div>
-    <!-- allen end-->
-
-
     <!-- rita -->
-    <div >
+    <div>
         <div>
             <Rita />
         </div>
     </div>
+    <!-- rita -->
 
+    <!-- allen: 新聞預覽區塊 -->
+    <!-- 最新消息標籤 -->
+    <div style="background-color: #fff0de;" class="news-preview-container">
+        <!-- 單一新聞卡片 -->
+        <router-link v-for="news in previewNews.slice(0, 3)" :key="news.newsId" :to="`/news/${news.newsId}`"
+            class="news-preview-card">
+            <img :src="getFullImageUrl(news.thumbnail)" alt="新聞圖片" class="news-image" @error="handleImgError" />
+
+            <div class="news-content">
+                <h3 class="news-title">{{ news.title }}</h3>
+                <p class="news-date">發布日期：{{ news.publishAt }}</p>
+                <p class="news-views">瀏覽次數：{{ news.viewCount }}</p>
+            </div>
+        </router-link>
+
+        <router-link to="/news" class="news-preview-card">
+            <img :src="moreNewsImage" alt="更多新聞圖片" class="news-image" />
+            <div class="news-content">
+                <h3 class="more-news-title">更多新聞....</h3>
+            </div>
+        </router-link>
+    </div>
+    <!-- allen end-->
 
     <!-- yuni -->
     <div>
-        <div style="  background-color: #ffe2bd;
-">
+        <div>
             <CourseFeat />
         </div>
     </div>
     <!-- yuni -->
-
-
 </template>
 
 <script setup>
@@ -156,7 +146,7 @@ onMounted(() => {
     margin-bottom: 2rem;
 }
 
-/*allen start*/ 
+/*allen start*/
 .news-content {
     text-align: center;
     padding: 8px 0;
@@ -237,8 +227,10 @@ onMounted(() => {
 }
 
 .news-content {
-    width: 100%;  /* 讓它與 .news-preview-card 同寬 */
-    max-width: 348px;  /* 與 .news-preview-card - padding */
+    width: 100%;
+    /* 讓它與 .news-preview-card 同寬 */
+    max-width: 348px;
+    /* 與 .news-preview-card - padding */
     padding: 8px 0;
     position: relative;
     flex-grow: 1;
@@ -259,9 +251,11 @@ onMounted(() => {
     max-height: calc(1.4em * 2);
     font-size: var(--font-size-lg);
     margin-bottom: 16px;
-    margin-top: 40px;  /* 向下移動 40px */
+    margin-top: 40px;
+    /* 向下移動 40px */
     z-index: 1;
 }
+
 .more-news-title {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -271,10 +265,12 @@ onMounted(() => {
     white-space: normal;
     line-height: 1.4;
     max-height: calc(1.4em * 2);
-    font-size: var(--font-size-xxl);  /* 調整為較大字體 */
+    font-size: var(--font-size-xxl);
+    /* 調整為較大字體 */
     font-weight: bold;
     margin-bottom: 16px;
-    margin-top: 32px;  /* 與圖片間距 */
+    margin-top: 32px;
+    /* 與圖片間距 */
     z-index: 1;
     text-align: center;
 }
@@ -298,5 +294,4 @@ onMounted(() => {
 }
 
 /* allen end */
-
 </style>
