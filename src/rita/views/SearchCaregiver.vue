@@ -1,6 +1,6 @@
 <template>
   <!-- 背景圖片 -->
-  <div class="background-image"></div>
+  <div class="background-image" loading="lazy"></div>
   <div class="container">
     <!-- 1. 預約流程 -->
     <div class="reservation-process card-section">
@@ -721,7 +721,6 @@ h3 {
   left: 0;
   width: 100%;
   height: 570px; /* 覆蓋預約流程和填寫需求區塊的高度 */
-  /* background-image: url('/images/GlobalBanner/appointmentHeader.jpg'); */
   background-size: cover;
   background-position: center 10%;
   text-align: center;
@@ -729,7 +728,7 @@ h3 {
 }
 
 .background-image {
-  background-image: url("@/assets/images/GlobalBanner/appointmentHeader.jpg");
+  background-image: url("@/assets/images/GlobalBanner/appointmentHeaderFinal.webp");
 }
 
 /* 預約流程 */
