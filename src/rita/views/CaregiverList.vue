@@ -1,56 +1,11 @@
 <template>
   <div class="wrapper">
-    <!-- <div class="search-conditions card-section mb-6">
-      <div class="flex justify-between items-center"> -->
-    <!-- <div class="conditions-container">
-          <h3 class="text-xl font-semibold text-gray-800 mb-3">您的搜尋條件</h3>
-          <div class="condition-tags">
-            <span class="condition-tag">
-              <span class="label">服務縣市：</span>
-              <span class="value">{{
-                caregiverStore.filters.serviceCity || "未指定"
-              }}</span>
-            </span>
-            <span class="condition-tag">
-              <span class="label">服務地區：</span>
-              <span class="value">{{ caregiverStore.filters.serviceDistrict || '全部區域' }}</span>
-            </span>
-            <span class="condition-tag">
-              <span class="label">時間選擇：</span>
-              <span class="value">
-                <span
-                  v-if="appointmentStore.appointment.timeType === 'continuous'"
-                >
-                  {{ formatDateTime(appointmentStore.continuous.startTime) }} -
-                  {{
-                    formatDateTime(appointmentStore.continuous.endTime)
-                  }}（連續時間）
-                </span>
-                <span v-else>
-                  {{ formatDate(appointmentStore.multi.startDate) }} -
-                  {{ formatDate(appointmentStore.multi.endDate) }}
-                  （每日
-                  {{
-                    formatTimeRange(
-                      appointmentStore.multi.dailyStartTime,
-                      appointmentStore.multi.dailyEndTime
-                    )
-                  }}，多時段預訂）
-                </span>
-              </span>
-            </span>
-          </div>
-        </div> -->
     <button
       @click="goBackToSearch"
       class="goBackToSearch px-4 py-2 bg-teal-600 text-white rounded-md text-sm font-medium hover:bg-teal-700 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 focus:ring-opacity-50"
     >
       ⬅︎ 返回搜尋
     </button>
-
-    <!-- </div> -->
-    <!-- </div> -->
-
     <div class="header flex justify-between items-center mb-6">
       <h3 class="text-xl font-semibold text-gray-800">
         搜尋結果：共 {{ sortedCaregivers.length }} 位照服員

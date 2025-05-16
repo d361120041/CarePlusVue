@@ -337,7 +337,8 @@ const confirmBooking = () => {
 .info-container {
   background-color: #f8fafc;
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: 2rem; /* 增加內距 */
+  margin-bottom: 2rem; /* 增加外距  */
 }
 
 .info-grid {
