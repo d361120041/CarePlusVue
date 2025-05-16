@@ -1,58 +1,60 @@
 <template>
-    <GlobalBanner :imgSrc="homeBannerImg">
-        <section class="hero-section">
-            <div class="container text-center">
-                <h1>照護更簡單，陪伴更長久</h1>
-                <p>一Care+用心守護每一刻，讓愛與關懷更貼近</p>
-                <router-link to="/caregivers/search" class="button-green">
-                    立即找看護
-                </router-link>
-                <!-- <router-link to="/course" class="button-pink">
-                    探索課程
-                </router-link> -->
-            </div>
-        </section>
-    </GlobalBanner>
-
-    <!-- rita -->
-    <div>
+    <div class="hero-font" >
+        <GlobalBanner :imgSrc="homeBannerImg">
+            <section class="hero-section">
+                <div class="container text-center">
+                    <h1>照護更簡單，陪伴更長久</h1>
+                    <p>一Care+用心守護每一刻，讓愛與關懷更貼近</p>
+                    <router-link to="/caregivers/search" class="button-green">
+                        立即找看護
+                    </router-link>
+                    <!-- <router-link to="/course" class="button-pink">
+                        探索課程
+                    </router-link> -->
+                </div>
+            </section>
+        </GlobalBanner>
+    
+        <!-- rita -->
         <div>
-            <Rita />
+            <div>
+                <Rita />
+            </div>
         </div>
-    </div>
-    <!-- rita -->
-
-    <!-- allen: 新聞預覽區塊 -->
-    <!-- 最新消息標籤 -->
-    <div style="background-color: #fff0de;" class="news-preview-container">
-        <!-- 單一新聞卡片 -->
-        <router-link v-for="news in previewNews.slice(0, 3)" :key="news.newsId" :to="`/news/${news.newsId}`"
-            class="news-preview-card">
-            <img :src="getFullImageUrl(news.thumbnail)" alt="新聞圖片" class="news-image" @error="handleImgError" />
-
-            <div class="news-content">
-                <h3 class="news-title">{{ news.title }}</h3>
-                <p class="news-date">發布日期：{{ news.publishAt }}</p>
-                <p class="news-views">瀏覽次數：{{ news.viewCount }}</p>
-            </div>
-        </router-link>
-
-        <router-link to="/news" class="news-preview-card">
-            <img :src="moreNewsImage" alt="更多新聞圖片" class="news-image" />
-            <div class="news-content">
-                <h3 class="more-news-title">更多新聞....</h3>
-            </div>
-        </router-link>
-    </div>
-    <!-- allen end-->
-
-    <!-- yuni -->
-    <div>
+        <!-- rita -->
+    
+        <!-- allen: 新聞預覽區塊 -->
+        <!-- 最新消息標籤 -->
+        <div style="background-color: #fff0de;" class="news-preview-container">
+            <!-- 單一新聞卡片 -->
+            <router-link v-for="news in previewNews.slice(0, 3)" :key="news.newsId" :to="`/news/${news.newsId}`"
+                class="news-preview-card">
+                <img :src="getFullImageUrl(news.thumbnail)" alt="新聞圖片" class="news-image" @error="handleImgError" />
+    
+                <div class="news-content">
+                    <h3 class="news-title">{{ news.title }}</h3>
+                    <p class="news-date">發布日期：{{ news.publishAt }}</p>
+                    <p class="news-views">瀏覽次數：{{ news.viewCount }}</p>
+                </div>
+            </router-link>
+    
+            <router-link to="/news" class="news-preview-card">
+                <img :src="moreNewsImage" alt="更多新聞圖片" class="news-image" />
+                <div class="news-content">
+                    <h3 class="more-news-title">更多新聞....</h3>
+                </div>
+            </router-link>
+        </div>
+        <!-- allen end-->
+    
+        <!-- yuni -->
         <div>
-            <CourseFeat />
+            <div>
+                <CourseFeat />
+            </div>
         </div>
+        <!-- yuni -->
     </div>
-    <!-- yuni -->
 </template>
 
 <script setup>
@@ -130,6 +132,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.hero-font {
+    font-size: 28px;
+}
+
 .hero-section {
     color: var(--color-text-primary);
     padding: 6rem 0;
