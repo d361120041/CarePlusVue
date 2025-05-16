@@ -62,8 +62,8 @@
 
       <!-- 課程列表 -->
       <div v-if="courses.length > 0" class="row row-cols-1 row-cols-md-2 g-4">
-        <!-- <div v-for="course in sortedCourses" :key="course.courseId" class="col"> -->
-        <div v-for="course in paginatedCourses" :key="course.courseId" class="col">
+        <div v-for="course in sortedCourses" :key="course.courseId" class="col">
+        <!-- <div v-for="course in paginatedCourses" :key="course.courseId" class="col"> -->
 
 
           <div class="card h-100 position-relative">
