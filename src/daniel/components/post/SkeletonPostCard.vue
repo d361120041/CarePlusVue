@@ -11,13 +11,13 @@
 
 <style scoped>
 .skeleton-card {
-    width: 500px;
+    width: 650px;
     display: flex;
     gap: 1rem;
     background: #eee;
     border-radius: 8px;
     padding: 1rem;
-    margin-bottom: 1.5rem;
+    margin: 0 auto 1.5rem;
     overflow: hidden;
     position: relative;
 }

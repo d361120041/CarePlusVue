@@ -135,6 +135,7 @@ onMounted(async () => {
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
+    margin-top: 1rem;
     margin-bottom: 1rem;
 }
 

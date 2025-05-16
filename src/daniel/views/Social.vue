@@ -111,7 +111,7 @@ main {
     border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: var(--space-sm);
 }
 
 /* 共用側欄樣式 */
