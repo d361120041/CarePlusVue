@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="stats-view">
     <h2> 照服員分布地區</h2>
     <div class="rank-container">
@@ -82,4 +82,4 @@ onMounted(async () => {
   -webkit-text-fill-color: transparent;
   text-shadow: 3px 6px 20px rgba(0, 0, 0, 0.2);
 }
-</style>
+</style> -->

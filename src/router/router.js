@@ -36,13 +36,13 @@ import AdminNewsPreview from "@/allen/views/AdminNewsPreview.vue";
 // ------------------ allen ------------------
  
 // ------------------ yuuhou ------------------
-import RankCard from "@/yuuhou/RankCard.vue";
+// import RankCard from "@/yuuhou/RankCard.vue";
 import OrdersView from "@/yuuhou/OrdersView.vue";
 import VerifyCodeView from "@/yuuhou/VerifyCodeView.vue";
 import CaregiverLogin from "@/yuuhou/LoginCaregiver.vue";
 import CaregiverProfileView from "@/yuuhou/CaregiverProfileView.vue";
 import CaregiverPricing from "@/yuuhou/EditService.vue";
-import CaregiverStatsView from '@/yuuhou/CaregiverStatsView.vue';
+// import CaregiverStatsView from '@/yuuhou/CaregiverStatsView.vue';
 import UserForgotPwd from "@/yuuhou/UserForgotPwd.vue";
 // import Navigationbar from "@/views/Navigationbar.vue";
 
@@ -127,7 +127,7 @@ const routes = [
   // ------------------ allen ------------------
 
   // ------------------ yuuhou ------------------
- { path: '/RankCard' ,component: RankCard},
+//  { path: '/RankCard' ,component: RankCard},
  {
   path: '/verify-code',
   name: 'VerifyCode',
@@ -140,11 +140,11 @@ const routes = [
   path: "/caregiver",
   component: CaregiverDashboard,
   children: [
-    { 
-        path: "",  // 預設進入照服員首頁
-        component: CaregiverStatsView,
-        name: "CaregiverStatsView"
-      },
+    // { 
+    //     path: "",  // 預設進入照服員首頁
+    //     component: CaregiverStatsView,
+    //     name: "CaregiverStatsView"
+    //   },
     { path: "profile", component: CaregiverProfileView },
     { path: "pricing", component: CaregiverPricing },
 

@@ -15,12 +15,11 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-//yuuhou
- optimizeDeps: {
-    include: ['recharts'],  // ✅ 確保 Vite 正確處理 Recharts
-  },
-//yuuhou
   server: {
+    // host: '0.0.0.0',
+    // port: 5173,
+    // strictPort: true,
+    // historyApiFallback: true,
     proxy: {
       '/patient': {
         target: 'http://localhost:8082', 
