@@ -20,7 +20,6 @@
       </div> -->
 
     <!-- 麵包屑 + 排序按鈕 同排 -->
-    <!-- 麵包屑 + 排序按鈕 同排 -->
     <div class="d-flex justify-content-between align-items-center flex-wrap mb-3 gap-2">
       <!-- 麵包屑 -->
       <nav aria-label="breadcrumb">
@@ -60,8 +59,38 @@
       </div>
     </div>
 
+
+
+
+
+
+
+
+    <!-- Skeleton 載入中 -->
+<div v-if="isLoading" class="row row-cols-1 row-cols-md-2 g-4">
+  <div v-for="n in 2" :key="n" class="col">
+    <div class="card h-100 position-relative">
+      <div class="row g-0 h-100">
+        <div class="col-md-4">
+          <div class="skeleton-img shimmer w-100 h-100 rounded-start"></div>
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <div class="skeleton-title shimmer mb-2"></div>
+            <div class="skeleton-tag shimmer mb-2"></div>
+            <div class="skeleton-text shimmer w-100 mb-2"></div>
+            <div class="skeleton-text shimmer w-75"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
       <!-- 課程列表 -->
-      <div v-if="courses.length > 0" class="row row-cols-1 row-cols-md-2 g-4">
+      <div v-else-if="courses.length > 0" class="row row-cols-1 row-cols-md-2 g-4">
         <div v-for="course in sortedCourses" :key="course.courseId" class="col">
         <!-- <div v-for="course in paginatedCourses" :key="course.courseId" class="col"> -->
 
@@ -132,7 +161,6 @@
       </div> -->
   
 
-
     <!-- 空狀態 -->
     <div v-else class="text-muted text-center mt-4">
       尚未加入任何課程。
@@ -169,6 +197,8 @@ const getCategoryLabel = (key) => {
   }
   return map[key] || key
 }
+
+const isLoading = ref(true)
 
 const fetchMyCourses = async () => {
   try {
@@ -243,12 +273,30 @@ const removeCourse = async (courseId, courseTitle) => {
 }
 // 先取得使用者，再載入課程
 
+// onMounted(async () => {
+//   try {
+//     const res = await axios.get('/user/profile', { withCredentials: true })
+//     userId.value = res.data.userId
+
+//     // 拿到 userId 再載入資料
+//     const completedRes = await axios.get(`/api/progress/user/${userId.value}/completed-courses`)
+//     completedCourseIds.value = completedRes.data
+
+//     await fetchMyCourses()
+//   } catch (err) {
+//     console.error('無法取得使用者資訊', err)
+//     alert('尚未登入或 session 失效')
+//     router.push('/login') // 導回登入頁
+//   }
+// })
+
+
 onMounted(async () => {
+  isLoading.value = true
   try {
     const res = await axios.get('/user/profile', { withCredentials: true })
     userId.value = res.data.userId
 
-    // 拿到 userId 再載入資料
     const completedRes = await axios.get(`/api/progress/user/${userId.value}/completed-courses`)
     completedCourseIds.value = completedRes.data
 
@@ -256,7 +304,9 @@ onMounted(async () => {
   } catch (err) {
     console.error('無法取得使用者資訊', err)
     alert('尚未登入或 session 失效')
-    router.push('/login') // 導回登入頁
+    router.push('/login')
+  } finally {
+    isLoading.value = false
   }
 })
 
@@ -379,4 +429,44 @@ onMounted(async () => {
   position: relative;
   z-index: 10;
 }
+
+.skeleton-img {
+  background-color: #e0e0e0;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 60%;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+}
+
+.skeleton-tag {
+  height: 16px;
+  width: 40%;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+}
+
+.skeleton-text {
+  height: 14px;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+}
+
+.shimmer {
+  background-image: linear-gradient(90deg, #e0e0e0 0px, #f5f5f5 40px, #e0e0e0 80px);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+
 </style>
