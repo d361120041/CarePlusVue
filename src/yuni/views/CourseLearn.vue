@@ -1,89 +1,56 @@
 <template>
-  <div class="container py-4" v-if="chapter">
-    <!-- <div class="mt-3 text-end">
-      <button class="btn btn-outline-secondary" @click="backToProgress">
-        回到{{ auth.userName }}的課程進度總覽
-      </button>
+  <!-- loading骨架 -->
+  <div v-if="isLoading" class="container py-4">
+    <div class="mb-3 placeholder-glow">
+      <div class="skeleton-title shimmer mb-3" style="width: 30%; height: 30px;"></div>
+      <div class="skeleton-text shimmer mb-4" style="width: 60%; height: 20px;"></div>
     </div>
-   
-<nav aria-label="breadcrumb" class="mt-2 mb-4">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item">
-      <router-link :to="`/courses/${courseId}`">{{ courseTitle || '課程' }}</router-link>
-    </li>
-    <li class="breadcrumb-item active" aria-current="page">
-      {{ chapter?.title || '章節' }}
-    </li>
-  </ol>
-</nav> -->
+    <div class="skeleton-frame shimmer rounded" style="width: 100%; height: 600px;"></div>
+    <div class="d-flex justify-content-between mt-4">
+      <div class="skeleton-button shimmer" style="width: 120px; height: 40px; border-radius: 5px;"></div>
+      <div class="skeleton-button shimmer" style="width: 120px; height: 40px; border-radius: 5px;"></div>
+    </div>
+  </div>
 
-<!-- ⬇️ 同行排列：左側麵包屑，右側按鈕 -->
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-  <!-- 麵包屑 -->
-  <nav aria-label="breadcrumb" class="m-0">
-    <!-- <ol class="breadcrumb mb-0">
-      <li class="breadcrumb-item">
-        <router-link :to="`/course-progress/${courseId}`">{{ courseTitle || '課程' }}</router-link>
-      </li>
-      <li class="breadcrumb-item active" aria-current="page">
-        {{ chapter?.title || '章節' }}
-      </li>
-    </ol> -->
-
-
-    <ol class="breadcrumb mb-0">
-  <li class="breadcrumb-item">
-    <router-link :to="`/course-progress/${courseId}`" class="breadcrumb-dynamic">
-      我的「{{ courseTitle || '課程' }}」
-    </router-link>
-  </li>
-  <li class="breadcrumb-item active" aria-current="page">
-    {{ chapter?.title || '章節' }}
-  </li>
-</ol>
-  </nav>
-
-</div>
-
-    <!-- <h3 class="mb-3">{{ courseTitle }}｜{{ chapter.title }}</h3> -->
+  <!-- 影片或文章 -->
+  <div v-else-if="chapter" class="container py-4">
+    <!-- 麵包屑 -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <nav aria-label="breadcrumb" class="m-0">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item">
+            <router-link :to="`/course-progress/${courseId}`" class="breadcrumb-dynamic">
+              我的「{{ courseTitle || '課程' }}」
+            </router-link>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            {{ chapter?.title || '章節' }}
+          </li>
+        </ol>
+      </nav>
+    </div>
 
     <!-- 顯示影片或文章 -->
     <div class="mb-4">
-      <!-- <iframe
-          v-if="chapter.contentType === 'video'"
-          :src="embedUrl"
-          frameborder="0"
-          allowfullscreen
-          class="w-100 rounded content-frame"
-        ></iframe>
-        <iframe
-          v-else-if="chapter.contentType === 'article'"
-          :src="chapter.contentUrl"
-          frameborder="0"
-          class="w-100 rounded content-frame"
-        ></iframe> -->
-
       <iframe v-if="chapter.contentType === 'video'" :src="embedUrl" frameborder="0" allowfullscreen
         class="content-frame video-frame" />
-
       <iframe v-else-if="chapter.contentType === 'article'" :src="embedUrl" frameborder="0"
         class="content-frame article-frame" />
-
-      <div v-else class="text-muted">無法顯示的內容類型</div>
+      <div v-else class="text-center text-muted">無法載入章節內容。</div>
     </div>
 
-    <!-- 上一章 + 下一章 -->
+    <!-- 上下章節按鈕 -->
     <div class="d-flex justify-content-between">
       <button class="button-green" :disabled="currentIndex <= 0" @click="goPrevious">上一章</button>
-
-      <button class="button-green" @click="handleNextOrFinish">{{ currentIndex >= chapters.length - 1 ? '完成' : '下一章'
-        }}</button>
-
-
+      <button class="button-green" @click="handleNextOrFinish">
+        {{ currentIndex >= chapters.length - 1 ? '完成' : '下一章' }}
+      </button>
     </div>
+  </div>
 
-
-
+  <!-- 沒資料 -->
+  <div v-else class="container py-4 text-center text-muted">
+    無法載入章節內容。
   </div>
 </template>
 
@@ -103,6 +70,8 @@ const chapters = ref([])
 const chapter = ref(null)
 const currentIndex = ref(0)
 const courseTitle = ref('')
+
+const isLoading = ref(true)
 
 const embedUrl = computed(() => {
   if (!chapter.value?.contentUrl) return ''
@@ -283,10 +252,15 @@ const fetchUserProfile = async () => {
 // })
 
 onMounted(async () => {
-  await fetchUserProfile()
-  await fetchCourseTitle();
-  await fetchChapters()
-  await loadChapterFromQuery()
+  isLoading.value = true
+  try {
+    await fetchUserProfile()
+    await fetchCourseTitle()
+    await fetchChapters()
+    await loadChapterFromQuery()
+  } finally {
+    isLoading.value = false
+  }
 })
 </script>
 
@@ -338,7 +312,7 @@ onMounted(async () => {
   font-size: 0.9rem;
 }
 
-.breadcrumb-item + .breadcrumb-item::before {
+.breadcrumb-item+.breadcrumb-item::before {
   content: ">";
   color: #6c757d;
 }
@@ -352,8 +326,31 @@ onMounted(async () => {
 
 .breadcrumb-dynamic:hover {
   transform: scale(1.05);
-  color:  #4db6ac;
+  color: #4db6ac;
   text-decoration: none;
 }
 
+.skeleton-title,
+.skeleton-text,
+.skeleton-frame,
+.skeleton-button {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+}
+
+.shimmer {
+  background-image: linear-gradient(90deg, #e0e0e0 0px, #f5f5f5 40px, #e0e0e0 80px);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+
+  100% {
+    background-position: 200px 0;
+  }
+}
 </style>
