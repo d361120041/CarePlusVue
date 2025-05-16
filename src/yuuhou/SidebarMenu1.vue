@@ -3,8 +3,7 @@
     <h1> 我的工作平台</h1>
     <div class="menu-items">
       <!-- 📊 統計總覽 -->
-      
-
+      <button @click="go('/caregiver')"> 統計總覽</button>
       <!-- 📝 個人資訊管理 -->
       <div class="dropdown">
         <button class="dropdown-title">個人資訊管理</button>
