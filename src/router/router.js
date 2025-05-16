@@ -42,7 +42,7 @@ import VerifyCodeView from "@/yuuhou/VerifyCodeView.vue";
 import CaregiverLogin from "@/yuuhou/LoginCaregiver.vue";
 import CaregiverProfileView from "@/yuuhou/CaregiverProfileView.vue";
 import CaregiverPricing from "@/yuuhou/EditService.vue";
-// import CaregiverStatsView from '@/yuuhou/CaregiverStatsView.vue';
+import CaregiverStatsView from '@/yuuhou/CaregiverStatsView.vue';
 import UserForgotPwd from "@/yuuhou/UserForgotPwd.vue";
 // import Navigationbar from "@/views/Navigationbar.vue";
 
@@ -140,11 +140,11 @@ const routes = [
   path: "/caregiver",
   component: CaregiverDashboard,
   children: [
-    // { 
-    //     path: "",  // 預設進入照服員首頁
-    //     component: CaregiverStatsView,
-    //     name: "CaregiverStatsView"
-    //   },
+    { 
+        path: "",  // 預設進入照服員首頁
+        component: CaregiverStatsView,
+        name: "CaregiverStatsView"
+      },
     { path: "profile", component: CaregiverProfileView },
     { path: "pricing", component: CaregiverPricing },
 
