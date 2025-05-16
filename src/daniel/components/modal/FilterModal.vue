@@ -77,7 +77,7 @@
                 <button type="button" @click="onClose" class="action-cancel">
                     取消
                 </button>
-                <button type="submit" class="action-apply">
+                <button type="submit" @click="onApply" class="action-apply">
                     套用篩選
                 </button>
             </div>
