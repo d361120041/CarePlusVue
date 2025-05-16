@@ -5,9 +5,6 @@
   </nav>
   <!-- 導覽列 結束 -->
 
-  <!-- 輪播圖 開始-->
-  <!-- 輪播圖 結束 -->
-
   <!-- 主內容 開始-->
   <main>
     <RouterView />
@@ -16,9 +13,6 @@
 
   <!-- 頁尾 開始-->
   <footer v-if="!isAdminRoute" class="footer">
-    <!-- <div class="container text-center">
-      <h1>&copy; 2025 Care+ 照護平台</h1>
-    </div> -->
     <Footer />
   </footer>
   <!-- 頁尾 結束-->
@@ -48,8 +42,4 @@ nav {
   top: 0;
   z-index: 1000;
 }
-
-/* .footer {
-  margin-top: 40px;
-} */
 </style>
