@@ -269,6 +269,42 @@ main {
     color: var(--color-tertiary)
 }
 
+/* 超小螢幕：< 480px */
+@media (max-width: 480px) {
+    .social-layout {
+        display: flex;
+        flex-direction: column;
+        padding: var(--space-sm);
+    }
+
+    .sidebar {
+        position: static;
+        max-height: none;
+        margin: 0;
+    }
+
+    main,
+    .sidebar {
+        margin-bottom: var(--space-sm);
+    }
+}
+
+/* 手機到平板：480px ~ 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+    .social-layout {
+        display: grid;
+        grid-template-areas:
+            "banner"
+            "main"
+            "sidebar-filter"
+            "sidebar-info";
+        grid-template-columns: 1fr;
+    }
+
+    /* 如果想把 banner 單獨區塊，也可加上 .banner-area */
+}
+
+/* 現有的 md ~ lg 保留 */
 @media (max-width: var(--breakpoint-md)) {
     .social-layout {
         grid-template-columns: 1fr;
@@ -293,6 +329,20 @@ main {
         grid-template-areas:
             "sidebar-filter main"
             "sidebar-info main";
+    }
+}
+
+/* 超大螢幕：> 1200px */
+@media (min-width: 1201px) {
+    .social-layout {
+        grid-template-columns: 1fr 2fr 1fr;
+        gap: calc(var(--space-md) * 1.5);
+        padding: calc(var(--space-md) * 1.5);
+    }
+
+    .sidebar {
+        top: 120px;
+        max-height: 80vh;
     }
 }
 </style>
