@@ -66,6 +66,7 @@ import oldImage from "@/assets/images/old.png";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import axios from "@/plugins/axios";
+import Swal from "sweetalert2";
 
 const patients = ref([]);
 const router = useRouter();
@@ -90,12 +91,34 @@ const formatDate = (dateStr) =>
 const goAdd = () => router.push("/user-center/patients/add");
 const goEdit = (id) => router.push(`/user-center/patients/edit/${id}`);
 const deletePatient = async (id) => {
-  if (!confirm("確定要刪除此病患？")) return;
+  const result = await Swal.fire({
+    title: "確定要刪除嗎？",
+    text: "刪除後將無法復原",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "刪除",
+    cancelButtonText: "取消",
+    confirmButtonColor: "#e74c3c",
+    cancelButtonColor: "#aaa",
+  });
+
+  if (!result.isConfirmed) return;
+
   try {
     await axios.delete(`/patient/delete/${id}`);
-    fetchPatients();
+    await fetchPatients();
+    Swal.fire({
+      icon: "success",
+      title: "刪除成功",
+      timer: 1500,
+      showConfirmButton: false,
+    });
   } catch {
-    alert("刪除失敗");
+    Swal.fire({
+      icon: "error",
+      title: "刪除失敗",
+      text: "請稍後再試",
+    });
   }
 };
 </script>
