@@ -3,7 +3,8 @@
     <GlobalBanner :imgSrc="homeBannerImg">
         <div class="banner-text">
             <h1>討論區</h1>
-            <p class="sub-text">即時新聞，第一時間掌握</p>
+            <p class="sub-text">長照交流，一起分享與成長</p>
+            <!-- <p class="sub-text">提問解惑，經驗共享的溫暖角落</p> -->
         </div>
     </GlobalBanner>
 
