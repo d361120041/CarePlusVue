@@ -44,7 +44,14 @@
             歡迎：{{ auth.user.userName }}
           </span>
 
-          <button @click="userLogout" class="logout-button">登出</button>
+          <button
+            @click="userLogout"
+            class="logout-button"
+            style="font-size: 1.25rem"
+          >
+            登出
+            <span style="font-size: 1.5rem">⍈</span>
+          </button>
         </div>
       </template>
 
@@ -360,6 +367,7 @@ const caregiverLogout = () => {
   display: flex;
   align-items: center;
   margin-right: 1rem;
+  font-size: 80%;
 }
 
 .login-button button {
@@ -370,10 +378,12 @@ const caregiverLogout = () => {
   padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 80%;
 }
 
 .login-button .logout-button {
   background-color: #dc3545;
+  font-size: 80%;
 }
 
 .welcome {

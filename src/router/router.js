@@ -7,10 +7,11 @@ import Home from "@/views/Home.vue";
 import NotFound from "@/views/NotFound.vue";
 import Forbidden from "@/views/Forbidden.vue";
 import HomeHero from "@/views/HomeHero.vue";
+import Swal from "sweetalert2";
 
 // ------------------ daniel ------------------
-import Social from '@/daniel/views/Social.vue'
-import MyPost from '@/daniel/views/MyPost.vue'
+import Social from "@/daniel/views/Social.vue";
+import MyPost from "@/daniel/views/MyPost.vue";
 // ------------------ daniel ------------------
 
 // ------------------ yuni ------------------
@@ -34,7 +35,7 @@ import AdminNewsDetail from "@/allen/views/AdminNewsDetail.vue";
 import AdminNewsPreview from "@/allen/views/AdminNewsPreview.vue";
 
 // ------------------ allen ------------------
- 
+
 // ------------------ yuuhou ------------------
 import RankCard from "@/yuuhou/RankCard.vue";
 import OrdersView from "@/yuuhou/OrdersView.vue";
@@ -42,7 +43,7 @@ import VerifyCodeView from "@/yuuhou/VerifyCodeView.vue";
 import CaregiverLogin from "@/yuuhou/LoginCaregiver.vue";
 import CaregiverProfileView from "@/yuuhou/CaregiverProfileView.vue";
 import CaregiverPricing from "@/yuuhou/EditService.vue";
-import CaregiverStatsView from '@/yuuhou/CaregiverStatsView.vue';
+import CaregiverStatsView from "@/yuuhou/CaregiverStatsView.vue";
 import UserForgotPwd from "@/yuuhou/UserForgotPwd.vue";
 // import Navigationbar from "@/views/Navigationbar.vue";
 
@@ -81,16 +82,15 @@ import FavoritesView from "@/steve/views/FavoritesView.vue";
 
 import AdminLayout from "@/CMS/AdminLayout.vue";
 import CmsDashboard from "@/CMS/CmsDashboard.vue";
-import CourseAdmin from '@/CMS/yuni/views/CourseAdmin.vue'
-import ChapterAdmin from '@/CMS/yuni/views/ChapterAdmin.vue'
-import ProgressAdmin from '@/CMS/yuni/views/ProgressAdmin.vue'
+import CourseAdmin from "@/CMS/yuni/views/CourseAdmin.vue";
+import ChapterAdmin from "@/CMS/yuni/views/ChapterAdmin.vue";
+import ProgressAdmin from "@/CMS/yuni/views/ProgressAdmin.vue";
 // ------------------ 後台cms ------------------
 
 // ================== 匯入套件 結束==================
 
 // ================== 設定路徑 開始==================
 const routes = [
-  
   { path: "/", component: HomeHero, name: "homeHero" },
   { path: "/home", component: Home, name: "home" },
   { path: "/:pathMatch(.*)*", component: NotFound, name: "notfound" },
@@ -120,47 +120,55 @@ const routes = [
   { path: "/news/:id", component: NewsDetail, name: "newsDetail" }, //前台新聞內容
   { path: "/admin/news", component: AdminNewsList, name: "adminNewsList" }, //後台新聞主頁
   { path: "/admin/news/new", component: AdminEditNews, name: "adminNewsNew" }, //後台新增新聞
-  { path: "/admin/news/edit/:id", component: AdminEditNews, name: "adminNewsEdit", }, //後台編輯新聞
-  { path: "/admin/news/:id", component: AdminNewsDetail, name: "adminNewsDetail", }, //後台新聞內容
-  { path: '/admin/news/preview/:id', component: AdminNewsPreview, name: 'AdminNewsPreview' }, //後台新聞預覽
+  {
+    path: "/admin/news/edit/:id",
+    component: AdminEditNews,
+    name: "adminNewsEdit",
+  }, //後台編輯新聞
+  {
+    path: "/admin/news/:id",
+    component: AdminNewsDetail,
+    name: "adminNewsDetail",
+  }, //後台新聞內容
+  {
+    path: "/admin/news/preview/:id",
+    component: AdminNewsPreview,
+    name: "AdminNewsPreview",
+  }, //後台新聞預覽
 
   // ------------------ allen ------------------
 
   // ------------------ yuuhou ------------------
- { path: '/RankCard' ,component: RankCard},
- {
-  path: '/verify-code',
-  name: 'VerifyCode',
-  component: () => import('@/yuuhou/VerifyCodeView.vue')
-},
-
-
-  
+  { path: "/RankCard", component: RankCard },
   {
-  path: "/caregiver",
-  component: CaregiverDashboard,
-  children: [
-    { 
-        path: "",  // 預設進入照服員首頁
+    path: "/verify-code",
+    name: "VerifyCode",
+    component: () => import("@/yuuhou/VerifyCodeView.vue"),
+  },
+
+  {
+    path: "/caregiver",
+    component: CaregiverDashboard,
+    children: [
+      {
+        path: "", // 預設進入照服員首頁
         component: CaregiverStatsView,
-        name: "CaregiverStatsView"
+        name: "CaregiverStatsView",
       },
-    { path: "profile", component: CaregiverProfileView },
-    { path: "pricing", component: CaregiverPricing },
+      { path: "profile", component: CaregiverProfileView },
+      { path: "pricing", component: CaregiverPricing },
 
-    // ✅ 加入 OrdersView 路徑
-    { 
-      path: "orderss", 
-      component: OrdersView, 
-      meta: { requiresAuth: true },
-      name: "CaregiverOrders"
-    },
+      // ✅ 加入 OrdersView 路徑
+      {
+        path: "orderss",
+        component: OrdersView,
+        meta: { requiresAuth: true },
+        name: "CaregiverOrders",
+      },
 
-    // { path: "schedule", component: ScheduleView },
-  ],
-},
-
-
+      // { path: "schedule", component: ScheduleView },
+    ],
+  },
 
   // {
   //   path: "/caregiver",
@@ -169,7 +177,6 @@ const routes = [
   // },
   // { path: "/caregiver/profile", component: CaregiverProfileView },
   // { path: "/caregiver/pricing", component: CaregiverPricing },
-
 
   {
     path: "/caregiverLogin",
@@ -183,16 +190,13 @@ const routes = [
   // { path: "/navigationbar" , component: Navigationbar, name: "navigationBar" },
   { path: "/user/dashboard", component: UserDashboard },
 
-
   // { path: '/adminLogin', component: AdminLogin, name: 'adminLogin' },
-
-
 
   { path: "/reset/yuuhou", component: ResetPasswordYuuhou },
   { path: "/verify-success", component: VerifySuccess, name: "verifySuccess" },
   { path: "/verify-reminder", component: VerifyReminder },
   { path: "/verify-failed", component: VerifyFailed },
-  
+
   {
     path: "/login-caregiver",
     component: () => import("@/yuuhou/LoginCaregiver.vue"),
@@ -308,8 +312,7 @@ const routes = [
         component: () => import("@/rita/views/OrderList.vue"),
         name: "orderList",
       },
-      { path:"courses", component: UserCourse, name: "userCourse" },
-
+      { path: "courses", component: UserCourse, name: "userCourse" },
     ],
   },
   // { path: "/user-center", component: UserCenter, name: "userCenter" }
@@ -325,10 +328,22 @@ const routes = [
       // ✅ 新聞模組路由整合
       { path: "news", component: AdminNewsList, name: "adminNewsList" },
       { path: "news/new", component: AdminEditNews, name: "adminNewsNew" },
-      { path: "news/edit/:id", component: AdminEditNews, name: "adminNewsEdit" },
+      {
+        path: "news/edit/:id",
+        component: AdminEditNews,
+        name: "adminNewsEdit",
+      },
       { path: "news/:id", component: AdminNewsDetail, name: "adminNewsDetail" },
-      { path: "news/preview/:id", component: AdminNewsPreview, name: "AdminNewsPreview" },
-      { path: "admin/dashboard", component: AdminDashboard, name: "adminDashboard", },
+      {
+        path: "news/preview/:id",
+        component: AdminNewsPreview,
+        name: "AdminNewsPreview",
+      },
+      {
+        path: "admin/dashboard",
+        component: AdminDashboard,
+        name: "adminDashboard",
+      },
     ],
   },
 ];
@@ -360,15 +375,20 @@ router.beforeEach(async (to, from, next) => {
   }
   // ✅ 使用者中心頁面但沒登入
   if (to.path.startsWith("/user-center") && !auth.isAuthenticated) {
-    alert("請先登入使用者帳號");
+    await Swal.fire({
+      icon: "warning",
+      title: "請先登入使用者帳號",
+    });
     return next("/userlogin");
   }
 
   //討論區驗證
   if (to.path === "/social" && !auth.isAuthenticated) {
-    // 記住使用者想前往的路徑
     sessionStorage.setItem("redirectAfterLogin", to.fullPath);
-    alert("請先登入使用者帳號");
+    await Swal.fire({
+      icon: "warning",
+      title: "請先登入使用者帳號",
+    });
     return next("/userlogin");
   }
 

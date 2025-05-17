@@ -5,21 +5,21 @@
       class="sidebar-button"
       active-class="active"
     >
-      個人資料
+      個人資料 👤
     </router-link>
     <router-link
       to="/user-center/patients"
       class="sidebar-button"
       active-class="active"
     >
-      管理患者
+      管理家屬 👨‍👨‍👦‍👦
     </router-link>
     <router-link
       to="/user-center/favorites"
       class="sidebar-button"
       active-class="active"
     >
-      收藏庫
+      收藏庫 💼
     </router-link>
 
     <router-link
@@ -27,14 +27,14 @@
       class="sidebar-button"
       active-class="active"
     >
-      我的貼文
+      我的貼文 💭
     </router-link>
     <router-link
       to="/user-center/orders"
       class="sidebar-button"
       active-class="active"
     >
-      我的預約
+      我的預約 📅
     </router-link>
 
     <router-link
@@ -42,7 +42,7 @@
       class="sidebar-button"
       active-class="active"
     >
-      我的課程
+      我的課程 📚
     </router-link>
 
     <router-link
@@ -50,7 +50,7 @@
       class="sidebar-button"
       active-class="active"
     >
-      聯絡客服
+      聯絡客服 ☎️
     </router-link>
   </nav>
 </template>
@@ -62,6 +62,7 @@ import { RouterLink } from "vue-router";
 <style scoped>
 nav {
   padding-top: 2rem;
+  width: 350px;
 }
 
 .sidebar-button {
