@@ -112,6 +112,7 @@ onMounted(async () => {
     gap: 3rem;
     /* 欄間距 */
     padding: 1rem;
+    align-items: flex-start;
 }
 
 /* 左欄固定寬度或比例 */
@@ -139,14 +140,36 @@ onMounted(async () => {
     margin-bottom: 1rem;
 }
 
-/* bio 與 intro */
-.user-bio,
-.user-intro {
+/* name */
+.user-name {
     width: 100%;
     text-align: center;
-    margin-bottom: 0.75rem;
-    color: #555;
+    margin-bottom: 1rem;
+    color: var(--color-text-primary);
     line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+/* bio */
+.user-bio {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--color-text-tertiary);
+    line-height: 1.4;
+    white-space: pre-wrap;
+    padding: 0 1rem;
+}
+
+/* intro */
+.user-intro {
+    width: 100%;
+    text-align: justify;
+    margin-bottom: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+    white-space: pre-wrap;
+    padding: 0 1rem;
 }
 
 /* 右欄用剩下的空間 */
