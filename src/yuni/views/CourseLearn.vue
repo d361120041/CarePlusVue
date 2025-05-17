@@ -124,9 +124,13 @@ const goNext = async () => {
     chapter.value = chapters.value[currentIndex.value]
     await ensureProgress()
   }
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+
 }
 
 const goPrevious = async () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+
   if (currentIndex.value > 0) {
     currentIndex.value--
     chapter.value = chapters.value[currentIndex.value]
@@ -252,6 +256,8 @@ const fetchUserProfile = async () => {
 // })
 
 onMounted(async () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+
   isLoading.value = true
   try {
     await fetchUserProfile()
@@ -353,4 +359,24 @@ onMounted(async () => {
     background-position: 200px 0;
   }
 }
+
+.button-green {
+  background-color: #4db6ac;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.button-green:hover {
+  background-color: #3ca394;
+}
+
+.button-green:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  color: #666;
+}
+
 </style>

@@ -3,7 +3,7 @@
 
     <div class="banner-text">
       <h1>線上課程</h1>
-      <p class="sub-text">讓學習成為照顧之路上最堅實的力量。</p>
+      <p class="sub-text">讓學習成為照顧之路上最堅實的力量</p>
     </div>
   </GlobalBanner>
 

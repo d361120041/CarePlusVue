@@ -49,7 +49,7 @@ const pageTitle = computed(() => {
 
 </script>
 
-<style scoped>
+<!-- <style scoped>
 /* .navbar {
   display: flex;
   justify-content: space-between;
@@ -107,5 +107,53 @@ const pageTitle = computed(() => {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+</style> -->
+
+
+<style scoped>
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 1rem 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  height: 80px;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 600; 
+  color: #374151;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.logout-button {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.logout-button:hover {
+  background-color: #c53030;
 }
 </style>

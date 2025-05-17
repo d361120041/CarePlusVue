@@ -139,17 +139,16 @@ const goPrevious = async () => {
 }
 
 onMounted(async () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
   try {
-    // 先取得目前登入的使用者資訊
     const res = await axios.get('/user/profile', { withCredentials: true })
     userId.value = res.data.userId
 
-    // 拿到 userId 後再載入課程與進度資料
     await fetchData()
   } catch (err) {
     console.error('無法取得使用者資訊', err)
     alert('尚未登入或 session 失效')
-    router.push('/login') // 導回登入頁或首頁
+    router.push('/login') 
   }
 })
 

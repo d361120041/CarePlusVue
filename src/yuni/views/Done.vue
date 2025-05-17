@@ -71,6 +71,8 @@ const fetchUserProfile = async () => {
 
 
 onMounted(async () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+
   // 先取得 session 中的使用者資訊
   await fetchUserProfile()
   // 確保 userId 已經不為 null 再呼叫後續 API
