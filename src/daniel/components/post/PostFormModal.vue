@@ -3,12 +3,12 @@
         <form @submit.prevent="onSubmit" class="form-container">
 
             <!-- 使用者資訊區塊 -->
-            <div class="user-header">
+            <!-- <div class="user-header">
                 <UserAvatar :imageUrl="imageUrl" style="margin-right: 0.5rem;" />
                 <div class="user-info">
                     <div class="user-name">{{ authStore.user.userName }}</div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- 第一部分：分類與主題 -->
             <div v-if="step === 1">
@@ -35,7 +35,7 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" @click="nextStep" :disabled="!canProceedToContent"
-                    class="btn-tertiary btn">下一步</button>
+                        class="btn-tertiary btn">下一步</button>
                 </div>
             </div>
 
@@ -49,23 +49,35 @@
                 </div>
                 <div class="form-group">
                     <label>內容：</label>
-                    <textarea v-model="form.content" required></textarea>
-                </div>
-
-                <!-- 圖片縮圖列表 -->
-                <div v-if="thumbnails.length" class="form-images">
-                    <p>已選圖片：</p>
-                    <div class="thumb-wrapper" v-for="(thumb, idx) in thumbnails" :key="thumb.key">
-                        <img class="thumb" :src="thumb.src" />
-                        <button type="button" class="delete-btn" @click="removeThumbnail(thumb, idx)">✕</button>
-                    </div>
+                    <textarea v-model="form.content" required rows="10"></textarea>
                 </div>
 
                 <!-- 選擇圖片 -->
                 <div class="upload-form">
-                    <input ref="fileInput" type="file" multiple @change="onFileChange" accept="image/*" />
-                    <p v-if="files.length">{{ files.length }} 個新檔案已選</p>
+
+                    <!-- 隱藏的檔案輸入框 -->
+                    <input ref="fileInput" type="file" multiple @change="onFileChange" accept="image/*"
+                        style="display: none;" />
+
+                    <!-- 顯示的「＋」按鈕 -->
+                    <p>選擇圖片</p>
+                    <button type="button" class="add-image-btn" @click="triggerFileInput">
+                        ＋
+                    </button>
+
+                    <!-- 已選檔案數量顯示 -->
+                    <!-- <p v-if="files.length">{{ files.length }} 個新檔案已選</p> -->
+
+                    <!-- 圖片縮圖列表 -->
+                    <div v-if="thumbnails.length" class="form-images">
+                        <!-- <p>已選圖片：</p> -->
+                        <div class="thumb-wrapper" v-for="(thumb, idx) in thumbnails" :key="thumb.key">
+                            <img class="thumb" :src="thumb.src" />
+                            <button type="button" class="delete-btn" @click="removeThumbnail(thumb, idx)">✕</button>
+                        </div>
+                    </div>
                 </div>
+
 
                 <!-- 提交表單 -->
                 <div class="modal-actions">
@@ -88,7 +100,7 @@ import { useAuthStore } from '@/stores/auth'
 
 import myAxios from '@/plugins/axios'
 import BaseModal from '@/daniel/components/BaseModal.vue'
-import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
+// import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
 
 const props = defineProps({
     visible: Boolean,
@@ -247,6 +259,13 @@ function onFileChange(e) {
     if (fileInput.value) fileInput.value.value = ''
 }
 
+// 觸發隱藏 input 的 click
+function triggerFileInput() {
+    if (fileInput.value) {
+        fileInput.value.click()
+    }
+}
+
 async function onSubmit() {
     try {
         const saved = await postStore.savePost({
@@ -395,7 +414,7 @@ async function onSubmit() {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    /* margin: 0.5rem 0; */
+    /* margin: 1rem 0; */
 }
 
 .thumb-wrapper {
@@ -427,6 +446,10 @@ async function onSubmit() {
 }
 
 .upload-form {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
     margin: 10px 0;
 }
 
@@ -441,5 +464,44 @@ async function onSubmit() {
 .modal-actions button[disabled] {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* 「＋」按鈕樣式 */
+.add-image-btn {
+    font-size: 2rem;
+    line-height: 1;
+    width: 3rem;
+    height: 3rem;
+    border: 2px dashed var(--color-primary);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.add-image-btn:hover {
+    background: var(--color-primary);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* 滾動條淡化 */
+.form-container textarea {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.form-container textarea::-webkit-scrollbar {
+    width: 6px;
+}
+
+.form-container textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.form-container textarea::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
 }
 </style>
