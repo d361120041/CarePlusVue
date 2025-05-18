@@ -34,79 +34,88 @@
             </h1>
           </div>
 
+          
           <!-- 📋 基本資訊與薪資資訊 -->
           <div class="info-container">
-            <h3 class="section-title mb-4">基本資訊</h3>
-            <div class="info-grid">
-              <div class="info-item">
-                <span class="label">性別</span>
-                <span class="value">{{ caregiver.gender || "未知" }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">國籍</span>
-                <span class="value">{{ caregiver.nationality || "未知" }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">語言</span>
-                <span class="value">
-                  <template v-if="Array.isArray(caregiver?.languages)">
-                    {{ caregiver.languages.join(", ") }}
-                  </template>
-                  <template v-else>
-                    {{ caregiver?.languages || "未知" }}
-                  </template>
-                </span>
-              </div>
-              <div class="info-item">
-                <span class="label">經驗年數</span>
-                <span class="value">{{ caregiver.yearOfExperience }} 年</span>
+            <!-- 基本資訊 -->
+            <div class="info-section">
+              <h3 class="section-title">基本資訊</h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">性別</span>
+                  <span class="value">{{ caregiver.gender || "未知" }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">國籍</span>
+                  <span class="value">{{
+                    caregiver.nationality || "未知"
+                  }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">語言</span>
+                  <span class="value">
+                    <template v-if="Array.isArray(caregiver?.languages)">
+                      {{ caregiver.languages.join(", ") }}
+                    </template>
+                    <template v-else>
+                      {{ caregiver?.languages || "未知" }}
+                    </template>
+                  </span>
+                </div>
+                <div class="info-item">
+                  <span class="label">經驗年數</span>
+                  <span class="value">{{ caregiver.yearOfExperience }} 年</span>
+                </div>
               </div>
             </div>
 
-            <h3 class="section-title mt-8 mb-4">薪資資訊</h3>
-            <div class="info-grid salary-grid">
-              <div class="info-item">
-                <span class="label">時薪</span>
-                <span class="value">{{
-                  caregiver.hourlyRate
-                    ? `${caregiver.hourlyRate} 元/小時`
-                    : "未提供"
-                }}</span>
+            <!-- 薪資資訊 -->
+            <div class="info-section salary-section mb-8">
+              <h3 class="section-title">薪資資訊</h3>
+              <div class="info-grid salary-grid">
+                <div class="info-item">
+                  <span class="label">時薪</span>
+                  <span class="value">{{
+                    caregiver.hourlyRate
+                      ? `${caregiver.hourlyRate} 元/小時`
+                      : "未提供"
+                  }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">半日薪</span>
+                  <span class="value">{{
+                    caregiver.halfDayRate
+                      ? `${caregiver.halfDayRate} 元/6小時`
+                      : "未提供"
+                  }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">日薪</span>
+                  <span class="value">{{
+                    caregiver.fullDayRate
+                      ? `${caregiver.fullDayRate} 元/8小時`
+                      : "未提供"
+                  }}</span>
+                </div>
               </div>
-              <div class="info-item">
-                <span class="label">半日薪</span>
-                <span class="value">{{
-                  caregiver.halfDayRate
-                    ? `${caregiver.halfDayRate} 元/6小時`
-                    : "未提供"
-                }}</span>
-              </div>
-              <div class="info-item">
-                <span class="label">日薪</span>
-                <span class="value">{{
-                  caregiver.fullDayRate
-                    ? `${caregiver.fullDayRate} 元/8小時`
-                    : "未提供"
-                }}</span>
-              </div>
+
+         <!-- 📄 詳細介紹 -->
+         <div class="info-section description-section mt-8">
+              <h3 class="section-title">詳細介紹</h3>
+              <p class="text-gray-600 leading-relaxed">{{ caregiver.description || "尚無詳細介紹" }}</p>
             </div>
           </div>
-
-          <!-- 📄 詳細介紹 -->
-          <div>
-            <h3 class="section-title mb-4">詳細介紹</h3>
-            <p class="text-gray-600 leading-relaxed">
-              {{ caregiver.description || "尚無詳細介紹" }}
-            </p>
-          </div>
+        </div>
 
           <!-- 預估總價 -->
           <!-- 修改：將預估總價移至左側容器內，與其他資訊垂直對齊 -->
           <div>
-            <h4 class="section-title mb-4">預估總價</h4>
+            <h4 class="section-title mb-4">預估總價：</h4>
             <p class="text-xl font-semibold text-teal-700">
               {{
-                caregiver.totalPrice ? `${caregiver.totalPrice} 元` : "計算中..."
+                caregiver.totalPrice
+                  ? `${caregiver.totalPrice} 元`
+                  : "計算中..."
               }}
             </p>
           </div>
@@ -341,6 +350,10 @@ const confirmBooking = () => {
   margin-bottom: 2rem; /* 增加外距  */
 }
 
+.info-section {
+  margin-bottom: 2rem;
+}
+
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -356,6 +369,11 @@ const confirmBooking = () => {
   display: flex;
   flex-direction: column;
 }
+
+.description-section {
+  margin-top: 2rem; /* 增加上方間隔 */
+}
+
 
 .label {
   font-size: 0.875rem;
