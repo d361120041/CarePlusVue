@@ -158,8 +158,8 @@ watch(
 
 // 初始載入分類與貼文
 onMounted(async () => {
-    await categoryStore.loadCategories()
-    await topicStore.loadTopics()
+    // await categoryStore.loadCategories()
+    // await topicStore.loadTopics()
     await reloadPosts()
     setupObserver()
 })
