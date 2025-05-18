@@ -79,26 +79,37 @@ const topicStore = useTopicStore()
 const hotPosts = ref([])
 const recentPosts = ref([])
 
+const isInitialLoading = ref(true)
+
 onMounted(async () => {
-    categoryStore.loadCategories()
-    topicStore.loadTopics()
+    try {
+        isInitialLoading.value = true
 
-    // 熱門：按 views 排序、最多拿 5 筆
-    const hotRes = await myAxios.post('/api/posts/search', {
-        sort: 'views',
-        dir: 'desc',
-        rows: 5
-    })
-    hotPosts.value = hotRes.data
+        const [_, __, hotRes, newRes] = await Promise.all([
+            categoryStore.loadCategories(),
+            topicStore.loadTopics(),
 
-    // 最新：按 createdAt 排序、最多拿 5 筆
-    const newRes = await myAxios.post('/api/posts/search', {
-        sort: 'createdAt',
-        dir: 'desc',
-        rows: 5
-    })
-    recentPosts.value = newRes.data
+            // 熱門：按 views 排序、最多拿 5 筆
+            myAxios.post('/api/posts/search', {
+                sort: 'views',
+                dir: 'desc',
+                rows: 5
+            }),
+
+            // 最新：按 createdAt 排序、最多拿 5 筆
+            myAxios.post('/api/posts/search', {
+                sort: 'createdAt',
+                dir: 'desc',
+                rows: 5
+            })
+        ])
+        hotPosts.value = hotRes.data
+        recentPosts.value = newRes.data
+    } finally {
+        isInitialLoading.value = false
+    }
 })
+
 </script>
 
 <style scoped>

@@ -36,7 +36,18 @@ export const usePostStore = defineStore('posts', () => {
 
     // 多條件查詢貼文
     async function loadPosts(filter = {}, { page = 1, append = false } = {}) {
+
+        // 防止重複請求
+        if (isLoading.value) return
+
         if (append && !hasMore.value) return  // 沒有更多就別再叫了
+
+        // 添加請求去重邏輯
+        const requestKey = JSON.stringify({ filter, page })
+        if (this.currentRequest === requestKey) return
+        this.currentRequest = requestKey
+
+        try {
 
         isLoading.value = true
         error.value = null
@@ -44,8 +55,6 @@ export const usePostStore = defineStore('posts', () => {
         // 計算 start & rows
         const start = (page - 1) * pageSize.value
         const rows = pageSize.value
-
-        try {
 
             const payload = {
                 ...filter,
