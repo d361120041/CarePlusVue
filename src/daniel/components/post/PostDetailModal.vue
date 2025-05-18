@@ -116,15 +116,17 @@ const commentList = ref(null)
 async function onDelete() {
     toggleMenu()
 
-    const { isConfirmed } = await Swal.fire({
-        title: '確定要刪除此貼文？',
-        text: '此操作無法復原',
+    const result = await Swal.fire({
+        title: '確定要刪除嗎？',
+        text: '刪除後將無法復原',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: '是的，刪除吧',
+        confirmButtonText: '刪除',
         cancelButtonText: '取消',
+        confirmButtonColor: '#e74c3c',
+        cancelButtonColor: '#aaa',
     })
-    if (!isConfirmed) return
+    if (!result.isConfirmed) return
 
     try {
         await postStore.deletePost(props.post.postId)
@@ -132,16 +134,16 @@ async function onDelete() {
         postStore.closeDetailModal()
 
         await Swal.fire({
-            title: '已刪除！',
-            icon: 'success',
-            timer: 1500,
-            showConfirmButton: false,
+            icon: "success",
+            title: "成功刪除貼文",
+            confirmButtonColor: "#4db6ac",
         })
     } catch {
         Swal.fire({
-            title: '刪除失敗',
-            text: '請稍後再試',
             icon: 'error',
+            title: '發生錯誤',
+            text: '請稍後再試',
+            confirmButtonColor: '#3e9bdc',
         })
     }
 }

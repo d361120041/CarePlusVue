@@ -87,6 +87,7 @@ import { useAuthStore } from '@/stores/auth'
 
 import VueEasyLightbox from 'vue-easy-lightbox'
 import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
+import Swal from 'sweetalert2'
 
 const props = defineProps({
     post: Object, required: true
@@ -130,12 +131,35 @@ async function onEdit(post) {
 // 刪除貼文
 async function onDelete() {
     toggleMenu()
-    if (!confirm('確定要刪除此貼文？此操作無法復原')) return
+
+    const result = await Swal.fire({
+        title: '確定要刪除嗎？',
+        text: '刪除後將無法復原',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '刪除',
+        cancelButtonText: '取消',
+        confirmButtonColor: '#e74c3c',
+        cancelButtonColor: '#aaa',
+    })
+    if (!result.isConfirmed) return
+
     try {
         await postStore.deletePost(props.post.postId)
         emit('refresh')
+
+        await Swal.fire({
+            icon: "success",
+            title: "成功刪除貼文",
+            confirmButtonColor: "#4db6ac",
+        })
     } catch {
-        alert('刪除失敗，請稍後再試')
+        Swal.fire({
+            icon: 'error',
+            title: '發生錯誤',
+            text: '請稍後再試',
+            confirmButtonColor: '#3e9bdc',
+        })
     }
 }
 

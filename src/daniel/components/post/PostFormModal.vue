@@ -100,6 +100,7 @@ import { useAuthStore } from '@/stores/auth'
 
 import myAxios from '@/plugins/axios'
 import BaseModal from '@/daniel/components/BaseModal.vue'
+import Swal from 'sweetalert2'
 // import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
 
 const props = defineProps({
@@ -274,7 +275,12 @@ async function onSubmit() {
         })
         emit('saved', saved)
     } catch (error) {
-        alert('送出失敗，請稍後重試')
+        Swal.fire({
+            icon: 'error',
+            title: '發生錯誤',
+            text: '請稍後再試',
+            confirmButtonColor: '#3e9bdc',
+        })
     }
 }
 </script>

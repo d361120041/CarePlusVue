@@ -41,6 +41,7 @@ import { useToggle } from '@/daniel/composables/useToggle'
 import myAxios from '@/plugins/axios.js'
 import EditReplyForm from '@/daniel/components/reply/EditReplyForm.vue'
 import UserAvatar from '@/daniel/components/user/UserAvatar.vue'
+import Swal from 'sweetalert2'
 
 const props = defineProps({ reply: Object })
 const emit = defineEmits(['updated', 'deleted'])
@@ -73,13 +74,30 @@ function onUpdated(newReply) {
 // 刪除功能
 async function confirmDelete() {
     menuOpen.value = false
-    if (!window.confirm('確定要刪除此則回覆？此操作無法復原')) return
+
+    const result = await Swal.fire({
+        title: '確定要刪除嗎？',
+        text: '刪除後將無法復原',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '刪除',
+        cancelButtonText: '取消',
+        confirmButtonColor: '#e74c3c',
+        cancelButtonColor: '#aaa',
+    })
+    if (!result.isConfirmed) return
+
     try {
         await myAxios.delete(`/api/replies/${props.reply.replyId}`)
         emit('deleted', props.reply.replyId)
     } catch (err) {
         console.error('刪除回覆失敗', err)
-        alert('刪除回覆失敗，請稍後再試')
+        Swal.fire({
+            icon: 'error',
+            title: '發生錯誤',
+            text: '請稍後再試',
+            confirmButtonColor: '#3e9bdc',
+        })
     }
 }
 
