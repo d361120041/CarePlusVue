@@ -5,7 +5,7 @@
             <UserAvatar :imageUrl="imageUrl" style="margin-right: 0.5rem;" />
             <div class="user-info">
                 <div class="user-name">{{ post.user.userName }}
-                    <span v-if="post.createdAt !== post.modifiedAt" class="edited-marker">已編輯</span>
+                    <!-- <span v-if="post.createdAt !== post.modifiedAt" class="edited-marker">已編輯</span> -->
                 </div>
                 <div class="post-time">{{ formattedTime }}</div>
             </div>
@@ -30,7 +30,7 @@
                 <button class="hamburger-btn" @click.stop="toggleMenu" v-if="post.user.userId === currentUser.userId">⋯
                 </button>
                 <ul v-if="menuOpen" class="post-dropdown">
-                    <li @click="() => postStore.edit(post)">編輯貼文</li>
+                    <li @click="onEdit(post)">編輯貼文</li>
                     <li @click="onDelete">刪除貼文</li>
                 </ul>
             </div>
@@ -119,6 +119,12 @@ const imgList = computed(() => props.post.images.map(img => `data:image/jpeg;bas
 
 function closeMenu() {
     menuOpen.value = false
+}
+
+// 編輯貼文
+async function onEdit(post) {
+    toggleMenu()
+    postStore.edit(post)
 }
 
 // 刪除貼文
