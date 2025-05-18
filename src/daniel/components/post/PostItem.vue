@@ -67,7 +67,7 @@
         <!-- 貼文動作列 -->
         <div class="post-actions">
             <button class="action-btn" @click="likePost">
-                👍 按讚({{ formatCount(post.reactions.length ?? 0) }})
+                👍 讚({{ formatCount(post.reactions.length ?? 0) }})
             </button>
             <button class="action-btn" @click="() => postStore.openDetailModal(post)"> 💬 留言</button>
             <button class="action-btn" @click="sharePost">
