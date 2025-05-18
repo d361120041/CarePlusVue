@@ -21,8 +21,11 @@
         <!-- 無限捲動偵測器 -->
         <div ref="sentinel" class="sentinel"></div>
 
-        <!-- 載入中 Spinner -->
-        <div v-if="postStore.isLoading" class="loading" :class="{ active: postStore.isLoading }">載入中…</div>
+        <!-- 載入中 Spinner + 文字 -->
+        <div v-if="postStore.isLoading" class="loading-spinner">
+            <div class="spinner"></div>
+            <span class="loading-text">載入中…</span>
+        </div>
 
         <!-- 沒有更多貼文 提示 -->
         <div v-if="!postStore.hasMore && !postStore.isLoading" class="no-more">
@@ -211,22 +214,33 @@ onBeforeUnmount(() => {
     height: 1px;
 }
 
-/* 載入中 / 沒有更多貼文 */
-.loading {
-    text-align: center;
+/* 轉圈圈 Spinner */
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
     padding: 1rem;
-    font-size: 0.9rem;
-    color: #666;
-    opacity: 0;
-    /* 初始時設定為完全透明 */
-    transition: opacity 0.3s ease-in-out;
-    /* 添加一個 0.3 秒的淡入淡出效果 */
 }
 
-/* 當 postStore.isLoading 為 true 時，添加一個 active 類名來改變 opacity */
-.loading.active {
-    opacity: 1;
-    /* 載入時設定為完全不透明 */
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-top-color: var(--color-primary, #3498db);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.loading-text {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .no-more {
