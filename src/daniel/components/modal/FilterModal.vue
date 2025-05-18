@@ -20,11 +20,11 @@
                 <div class="date-field">
                     <span>建立時間 起</span>
                     <div class="select-group">
-                        <select v-model.number="local.startYear" class="flex-1 border rounded px-2 py-1">
+                        <select v-model.number="local.startYear">
                             <option :value="null">-- 年</option>
                             <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
                         </select>
-                        <select v-model.number="local.startMonth" class="flex-1 border rounded px-2 py-1">
+                        <select v-model.number="local.startMonth">
                             <option :value="null">-- 月</option>
                             <option v-for="m in months" :key="m" :value="m">{{ m }}</option>
                         </select>
@@ -33,11 +33,11 @@
                 <div class="date-field">
                     <span>建立時間 訖</span>
                     <div class="select-group">
-                        <select v-model.number="local.endYear" class="flex-1 border rounded px-2 py-1">
+                        <select v-model.number="local.endYear">
                             <option :value="null">-- 年</option>
                             <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
                         </select>
-                        <select v-model.number="local.endMonth" class="flex-1 border rounded px-2 py-1">
+                        <select v-model.number="local.endMonth">
                             <option :value="null">-- 月</option>
                             <option v-for="m in months" :key="m" :value="m">{{ m }}</option>
                         </select>
@@ -127,7 +127,7 @@ watch(
 )
 
 // 年份陣列 1980–2025
-const years = Array.from({ length: 46 }, (_, i) => 1980 + i)
+const years = Array.from({ length: 2 }, (_, i) => 2024 + i)
 // 月份 1–12
 const months = Array.from({ length: 12 }, (_, i) => i + 1)
 
