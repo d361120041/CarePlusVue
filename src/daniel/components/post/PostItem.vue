@@ -5,7 +5,7 @@
             <UserAvatar :imageUrl="imageUrl" style="margin-right: 0.5rem;" />
             <div class="user-info">
                 <div class="user-name">{{ post.user.userName }}
-                    <span v-if="post.createdAt !== post.modifiedAt" class="edited-marker">已編輯</span>
+                    <!-- <span v-if="post.createdAt !== post.modifiedAt" class="edited-marker">已編輯</span> -->
                 </div>
                 <div class="post-time">{{ formattedTime }}</div>
             </div>
@@ -30,7 +30,7 @@
                 <button class="hamburger-btn" @click.stop="toggleMenu" v-if="post.user.userId === currentUser.userId">⋯
                 </button>
                 <ul v-if="menuOpen" class="post-dropdown">
-                    <li @click="() => postStore.edit(post)">編輯貼文</li>
+                    <li @click="onEdit(post)">編輯貼文</li>
                     <li @click="onDelete">刪除貼文</li>
                 </ul>
             </div>
@@ -67,7 +67,7 @@
         <!-- 貼文動作列 -->
         <div class="post-actions">
             <button class="action-btn" @click="likePost">
-                👍 按讚({{ formatCount(post.reactions.length ?? 0) }})
+                👍 讚({{ formatCount(post.reactions.length ?? 0) }})
             </button>
             <button class="action-btn" @click="() => postStore.openDetailModal(post)"> 💬 留言</button>
             <button class="action-btn" @click="sharePost">
@@ -119,6 +119,12 @@ const imgList = computed(() => props.post.images.map(img => `data:image/jpeg;bas
 
 function closeMenu() {
     menuOpen.value = false
+}
+
+// 編輯貼文
+async function onEdit(post) {
+    toggleMenu()
+    postStore.edit(post)
 }
 
 // 刪除貼文
@@ -183,7 +189,8 @@ onMounted(async () => {
 
 <style scoped>
 .post-item {
-    width: 650px;
+    /* min-width: 600px; */
+    width: 700px;
     max-width: 800px;
     background: #fff;
     border-radius: 8px;

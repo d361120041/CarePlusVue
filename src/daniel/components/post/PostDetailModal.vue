@@ -44,7 +44,7 @@
             <!-- 貼文動作列 -->
             <div class="post-actions">
                 <button class="action-btn" @click="likePost">
-                    👍 按讚({{ formatCount(likeCount) }})
+                    👍 讚({{ formatCount(likeCount) }})
                 </button>
                 <button class="action-btn"> 💬 留言</button>
                 <button class="action-btn" @click="sharePost">

@@ -91,8 +91,21 @@ const emit = defineEmits(['close'])
     overflow-y: auto;
     padding: 1.5rem 1.5rem 0;
     background: #fff;
+    /* 滾動條淡化 */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
-/* .post-modal-footer {
-} */
+.post-modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.post-modal-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.post-modal-body::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
 </style>

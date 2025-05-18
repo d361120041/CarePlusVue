@@ -179,7 +179,8 @@ onBeforeUnmount(() => {
 }
 
 .new-post-card {
-    width: 650px;
+    /* min-width: 600px; */
+    width: 700px;
     display: flex;
     align-items: center;
     background: #fff;
