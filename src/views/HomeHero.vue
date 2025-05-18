@@ -67,7 +67,9 @@
     <!-- rita -->
     <div>
       <div>
+        <router-link to="/caregivers/search" class="rita-link">
         <Rita />
+      </router-link>
       </div>
     </div>
     <!-- rita -->
@@ -298,6 +300,18 @@ onMounted(() => {
   font-size: 1.5rem;
   margin-right: 10px;
 }
+
+.rita-link {
+  display: block;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.rita-link:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
 
 
 /* rita end */

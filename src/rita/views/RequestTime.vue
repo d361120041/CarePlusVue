@@ -23,7 +23,7 @@
       <!-- 左邊區塊 -->
       <div class="main-section">
         <div class="card-section">
-          <h3>居家/醫院看護需求單</h3>
+          <h3>居家/醫院照服員需求單</h3>
           <!-- 時間類型 -->
           <div class="form-item">
             <label>時間類型</label>
@@ -134,9 +134,9 @@
     <h3>預約流程指南</h3>
     <p style="color: gray;">為了保障您的權益並提升媒合效率，平台將以以下步驟協助您預約服務：</p>
     <ol style="margin-top: 1rem;">
-      <li><strong>填寫需求單</strong><br>讓看護能快速了解您的照護需求。</li>
-      <li><strong>資訊分享</strong><br>您的預約資訊（不含個人資料）將提供給合適的看護進行初步評估。</li>
-      <li><strong>進一步聯繫</strong><br>若看護有意願接案，即可進行合約確認及付款程序。</li>
+      <li><strong>填寫需求單</strong><br>讓照服員能快速了解您的照護需求。</li>
+      <li><strong>資訊分享</strong><br>您的預約資訊（不含個人資料）將提供給合適的照服員進行初步評估。</li>
+      <li><strong>進一步聯繫</strong><br>若照服員有意願接案，即可進行合約確認及付款程序。</li>
     </ol>
   </div>
 </div>
