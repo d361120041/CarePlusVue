@@ -14,7 +14,13 @@
             <!-- 類別篩選 -->
             <section class="filter-section">
                 <h4 class="filter-title">貼文分類</h4>
-                <div class="categories">
+
+                <!-- 載入中顯示骨架，否則真正按鈕 -->
+                <div v-if="isCatLoading" class="spinner-wrapper">
+                    <div class="spinner"></div>
+                </div>
+
+                <div v-else class="categories">
                     <button v-for="cat in categoryStore.categories" :key="cat.id"
                         @click="categoryStore.toggleCategory(cat.id)" :class="{
                             'category-btn': true,
@@ -28,7 +34,11 @@
             <!-- 主題篩選 -->
             <section class=" filter-section">
                 <h4 class="filter-title">貼文主題</h4>
-                <div class="topics">
+
+                <div v-if="isTopicLoading" class="spinner-wrapper">
+                    <div class="spinner"></div>
+                </div>
+                <div v-else class="topics">
                     <button v-for="top in topicStore.topics" :key="top.id" @click="topicStore.toggleTopic(top.id)"
                         :class="['category-btn', { active: topicStore.selectedIds.includes(top.id) }]">
                         {{ top.name }}
@@ -45,15 +55,27 @@
         <aside class="sidebar sidebar-info">
             <section class="widget popular-posts">
                 <h4 class="widget-title">本週熱門</h4>
-                <ul class="widget-list">
+
+                <!-- 載入中顯示骨架項目 -->
+                <div v-if="isHotLoading" class="spinner-wrapper">
+                    <div class="spinner"></div>
+                </div>
+
+                <ul v-else class="widget-list">
                     <li v-for="post in hotPosts" :key="post.postId">
                         <a :href="`/posts/${post.postId}`">{{ post.title }}</a>
                     </li>
                 </ul>
             </section>
+
             <section class="widget recent-posts">
                 <h4 class="widget-title">最新貼文</h4>
-                <ul class="widget-list">
+
+                <div v-if="isNewLoading" class="spinner-wrapper">
+                    <div class="spinner"></div>
+                </div>
+
+                <ul v-else class="widget-list">
                     <li v-for="post in recentPosts" :key="post.postId">
                         <a :href="`/posts/${post.postId}`">{{ post.title }}</a>
                     </li>
@@ -79,37 +101,38 @@ const topicStore = useTopicStore()
 const hotPosts = ref([])
 const recentPosts = ref([])
 
-const isInitialLoading = ref(true)
+const isCatLoading = ref(true)
+const isTopicLoading = ref(true)
+const isHotLoading = ref(true)
+const isNewLoading = ref(true)
 
-onMounted(async () => {
-    try {
-        isInitialLoading.value = true
+onMounted(() => {
+    // 分類
+    categoryStore.loadCategories()
+        .finally(() => { isCatLoading.value = false })
 
-        const [_, __, hotRes, newRes] = await Promise.all([
-            categoryStore.loadCategories(),
-            topicStore.loadTopics(),
+    // 主題
+    topicStore.loadTopics()
+        .finally(() => { isTopicLoading.value = false })
 
-            // 熱門：按 views 排序、最多拿 5 筆
-            myAxios.post('/api/posts/search', {
-                sort: 'views',
-                dir: 'desc',
-                rows: 5
-            }),
+    // 熱門：按 views 排序、最多拿 5 筆
+    myAxios.post('/api/posts/search', {
+        sort: 'views',
+        dir: 'desc',
+        rows: 5
+    })
+        .then(res => hotPosts.value = res.data)
+        .finally(() => { isHotLoading.value = false })
 
-            // 最新：按 createdAt 排序、最多拿 5 筆
-            myAxios.post('/api/posts/search', {
-                sort: 'createdAt',
-                dir: 'desc',
-                rows: 5
-            })
-        ])
-        hotPosts.value = hotRes.data
-        recentPosts.value = newRes.data
-    } finally {
-        isInitialLoading.value = false
-    }
+    // 最新：按 createdAt 排序、最多拿 5 筆
+    myAxios.post('/api/posts/search', {
+        sort: 'createdAt',
+        dir: 'desc',
+        rows: 5
+    })
+        .then(res => recentPosts.value = res.data)
+        .finally(() => { isNewLoading.value = false })
 })
-
 </script>
 
 <style scoped>
@@ -354,6 +377,30 @@ main {
     .sidebar {
         top: 120px;
         max-height: 80vh;
+    }
+}
+
+/* 包在中央，extra padding 看整體排版 */
+.spinner-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-md);
+}
+
+/* 最經典的 CSS 轉圈圈 */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
 }
 </style>

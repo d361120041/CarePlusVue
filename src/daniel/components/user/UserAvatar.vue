@@ -1,6 +1,6 @@
 <template>
     <!-- <router-link to="/user-center/myPost"> -->
-    <img class="user-avatar" :src="src" alt="User Avatar" loading="lazy" />
+    <img class="user-avatar" :src="src" alt="User Avatar" />
     <!-- </router-link> -->
 
 </template>
