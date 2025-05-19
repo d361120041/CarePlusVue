@@ -86,5 +86,5 @@ const fetchProfile = async () => {
   };
 
 
-  return { token, role, email, photo,login, setToken, logout, restoreLogin };
+  return { token, role, email, photo,login, setToken, logout, restoreLogin, fetchProfile };
 });
