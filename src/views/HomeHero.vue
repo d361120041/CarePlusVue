@@ -19,7 +19,8 @@
       :slides-per-view="1"
       :space-between="0"
       loop
-      :autoplay="{ delay: 3000, disableOnInteraction: false }"
+      :autoplay="{ delay: 8000, disableOnInteraction: false }"
+      :speed="2250" 
       :modules="[Autoplay, Navigation, Pagination]"
       navigation
       :pagination="{ clickable: true }"
