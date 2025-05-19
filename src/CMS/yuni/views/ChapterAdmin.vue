@@ -122,10 +122,22 @@
               <template v-else>
                 <td>{{ chapter.chapterId }}</td>
                 <td>
-                  <a :href="`/courses/${chapter.course?.courseId}`" class="link-title" target="_blank"
+                  <!-- <a :href="`/courses/${chapter.course?.courseId}`" class="link-title" target="_blank"
                     rel="noopener noreferrer" v-if="chapter.course?.courseId">
                     {{ chapter.title }}
-                  </a>
+                  </a> -->
+<a
+  :href="`/learn/${chapter.course?.courseId}?chapterId=${chapter.chapterId}`"
+  class="link-title"
+  target="_blank"
+  rel="noopener noreferrer"
+  v-if="chapter.course?.courseId"
+>
+  {{ chapter.title }}
+</a>
+
+
+
                   <span v-else>{{ chapter.title }}</span>
                 </td>
                 <td>{{ chapter.position }}</td>
