@@ -297,13 +297,13 @@ const resetFilters = async () => {
   await fetchCourses();
 };
 
-onMounted(fetchCourses);
+// onMounted(fetchCourses);
 
 
-// onMounted(async () => {
-//   await fetchCourses()
-//   window.scrollTo({ top: 0, behavior: 'smooth' })
-// });
+onMounted(async () => {
+  await fetchCourses()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+});
 
 </script>
 
