@@ -18,7 +18,7 @@
     
                 <!-- 漢堡選單 -->
                 <div class="comment-menu-wrapper" v-click-outside="closeMenu">
-                    <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
+                    <button class="hamburger-btn" @click.stop="toggleMenu" v-if="comment.user.userId === currentUser.userId">...</button>
                     <ul v-if="menuOpen" class="comment-dropdown">
                         <li @click="startEdit">編輯</li>
                         <li @click="confirmDelete">刪除</li>
@@ -46,6 +46,7 @@
 import { ref, onMounted } from 'vue'
 import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
 import { useToggle } from '@/daniel/composables/useToggle'
+import { useAuthStore } from '@/stores/auth'
 
 import myAxios from '@/plugins/axios.js'
 import ReplyList from '@/daniel/components/reply/ReplyList.vue'
@@ -59,6 +60,9 @@ const emit = defineEmits(['replied', 'updated', 'deleted', 'toggle-reply'])
 const { formattedTime } = useTimeFormat(props.comment.createdAt)
 const [menuOpen, toggleMenu] = useToggle(false)
 const [showReplyForm, toggleReply] = useToggle(false)
+const authStore = useAuthStore()
+
+const currentUser = authStore.user
 
 function closeMenu() {
     menuOpen.value = false
@@ -115,7 +119,7 @@ async function confirmDelete() {
 const likeCount = ref(props.comment.reactions?.length || 0)
 async function likeComment() {
     try {
-        const res = await myAxios.post(`/api/reactions/comments/${props.comment.commentId}?userId=${props.comment.user.userId}&type=1`)
+        const res = await myAxios.post(`/api/reactions/comments/${props.comment.commentId}?userId=${currentUser.userId}&type=1`)
         likeCount.value = res.data
     } catch (error) {
         console.error('評論按讚失敗', error);
