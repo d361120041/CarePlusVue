@@ -1,20 +1,15 @@
 <template>
   <div class="page-wrapper">
     <div class="card">
-
-      <!-- ────────── 搜尋列 ────────── -->
       <div class="search-row">
         <input v-model.trim="searchKeyword" placeholder="輸入關鍵字搜尋" class="search-input" />
         <button class="btn btn-primary" @click="$event.target.blur()">搜尋</button>
         <button class="btn btn-secondary" @click="resetFilters">✕</button>
         <div class="add-button-wrapper">
           <!-- <button class="btn btn-add" style="border: solid 1px;" @click="startCreate">新增課程</button> -->
-          <!-- 新增課程按鈕 -->
+          <!-- 新增課程 -->
 
           <button class="btn btn-add" style="border:1px solid black;" @click="showModal = true">新增課程</button>
-
-          <!-- Modal -->
-
           <div class="modal fade" :class="{ show: showModal }" style="display: block;" v-if="showModal">
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
@@ -44,7 +39,6 @@
         </div>
       </div>
 
-      <!-- ────────── Skeleton 載入中 ────────── -->
       <div class="table-wrapper" v-if="isLoading">
         <table class="course-table">
           <thead>
@@ -86,7 +80,6 @@
         </table>
       </div>
 
-      <!-- ────────── 課程表格 ────────── -->
       <div class="table-wrapper">
         <table class="course-table">
           <thead>
@@ -101,11 +94,10 @@
             </tr>
           </thead>
 
-          <!-- ── 有資料 ── -->
           <tbody v-if="filteredCourses.length">
             <tr v-for="course in paginatedCourses" :key="course.courseId"
               :class="{ 'row-hover': editingId !== course.courseId }">
-              <!-- 編輯模式 -->
+              <!-- 編輯 -->
               <template v-if="editingId === course.courseId">
                 <td>{{ course.courseId }}</td>
                 <td>
@@ -130,7 +122,7 @@
                 </td>
               </template>
 
-              <!-- 顯示模式 -->
+              <!-- 顯示 -->
               <template v-else>
                 <td>{{ course.courseId }}</td>
                 <td>
@@ -157,7 +149,6 @@
             </tr>
           </tbody>
 
-          <!-- ── 查無資料 ── -->
           <tbody v-else>
             <tr>
               <td colspan="7" class="text-center py-4 text-muted">查無課程資料。</td>
@@ -165,7 +156,6 @@
           </tbody>
         </table>
 
-        <!-- ────────── 分頁控制列 ────────── -->
         <div class="pagination">
           <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">«</button>
           <button v-for="page in totalPages" :key="page" :class="{ 'active-page': page === currentPage }"
@@ -192,11 +182,9 @@ import {
 
 import Swal from 'sweetalert2'
 
-/* ---------- 公用 ---------- */
 const formatDuration = v => (v ? `${String(v).replace(/[^\d]/g, '')}小時` : '')
 const apiBaseUrl = ref(import.meta.env.VITE_API_BASE_URL)
 
-/* ---------- 資料 ---------- */
 const courses = ref([])
 const searchKeyword = ref('')
 const editingId = ref(null)
@@ -210,7 +198,6 @@ const emptyCourse = () => ({
 })
 const editingCourse = ref(emptyCourse())
 
-/* ---------- 分類 ---------- */
 const categories = [
   'daily_care', 'dementia', 'nutrition', 'psychology',
   'assistive', 'resource', 'endoflife', 'skills', 'selfcare'
@@ -221,7 +208,6 @@ const getCategoryLabel = k => ({
   skills: '技能訓練', selfcare: '自主健康'
 })[k] || k
 
-/* ---------- 取得 / 過濾課程 ---------- */
 // const fetchCourses = async () => {
 //   const { data } = await getAllCourses()
 //   courses.value = data
@@ -233,7 +219,6 @@ const fetchCourses = async () => {
   const { data } = await getAllCourses()
   courses.value = data
 
-  // 如果目前頁碼 > 總頁數，則自動退回到最後一頁或第 1 頁
   if (currentPage.value > totalPages.value) {
     currentPage.value = totalPages.value || 1
   }
@@ -251,10 +236,8 @@ const filteredCourses = computed(() => {
   )
 })
 
-/* ---------- 圖片 ---------- */
 const handleFileUpload = e => { selectedImage.value = e.target.files[0] }
 
-/* ---------- CRUD ---------- */
 const startEdit = c => { editingId.value = c.courseId; editingCourse.value = { ...c } }
 const cancelEdit = () => { editingId.value = null; editingCourse.value = emptyCourse() }
 
@@ -275,7 +258,6 @@ const deleteOne = async id => {
   }
 }
 
-/* ---------- 新增 ---------- */
 
 
 
@@ -283,111 +265,6 @@ const showModal = ref(false)
 const popupCourse = ref({
   title: '', description: '', duration: '', category: '', image: null
 })
-
-
-
-// const submitCreateCourse = async () => {
-//   const { title, description, duration, category, image } = popupCourse.value
-//   if (!title || !description || !duration || !category) {
-//     alert('請填寫所有欄位')
-//     return
-//   }
-//   if (!Number.isInteger(duration) || duration < 1) {
-//     alert('請輸入有效的正整數時數')
-//     return
-//   }
-//   const payload = {
-//     title,
-//     description,
-//     duration: Number(duration),
-//     category,
-//     price: 0,
-//     isProgressLimited: false
-//   }
-
-//   const formData = new FormData()
-//   formData.append('course', new Blob([JSON.stringify(payload)], { type: 'application/json' }))
-//   if (image) formData.append('image', image)
-
-//   try {
-//     isLoading.value = true
-//     await axios.post(`${apiBaseUrl.value}/api/courses/admin`, formData, {
-//       headers: { 'Content-Type': 'multipart/form-data' }
-//     })
-//     await fetchCourses()
-//     showModal.value = false
-//     nextTick(() => {
-//       const lastRow = document.querySelector('tbody tr\:last-child')
-//       if (lastRow) lastRow.scrollIntoView({ behavior: 'smooth', block: 'end' })
-//     })
-//   } catch (err) {
-//     alert('新增失敗：' + (err?.response?.data || err.message))
-//   } finally {
-//     isLoading.value = false
-//   }
-// }
-
-// const submitCreateCourse = async () => {
-//   const { title, description, duration, category, image } = popupCourse.value
-//   if (!title || !description || !duration || !category) {
-//     alert('請填寫所有欄位')
-//     return
-//   }
-
-//   if (!Number.isInteger(duration) || duration < 1) {
-//     alert('請輸入有效的正整數時數')
-//     return
-//   }
-
-//   const payload = {
-//     title,
-//     description,
-//     duration: Number(duration),
-//     category,
-//     price: 0,
-//     isProgressLimited: false
-//   }
-
-//   const formData = new FormData()
-//   formData.append('course', new Blob([JSON.stringify(payload)], { type: 'application/json' }))
-//   if (image) formData.append('image', image)
-
-//   try {
-//     isLoading.value = true
-//     await axios.post(`${apiBaseUrl.value}/api/courses/admin`, formData, {
-//       headers: { 'Content-Type': 'multipart/form-data' }
-//     })
-
-//     // 重新抓課程
-//     await fetchCourses()
-
-//     // 找到新課程在 filteredCourses 中的 index
-//     const index = filteredCourses.value.findIndex(c =>
-//       c.title === title &&
-//       c.description === description &&
-//       c.duration === duration
-//     )
-
-//     // 如果找到了，跳轉分頁
-//     if (index !== -1) {
-//       currentPage.value = Math.floor(index / pageSize) + 1
-//     }
-
-//     // 關閉 modal 並滑動到新課程
-//     showModal.value = false
-//     await nextTick()
-
-//     setTimeout(() => {
-//       const lastRow = document.querySelector('tbody tr:last-child')
-//       if (lastRow) lastRow.scrollIntoView({ behavior: 'smooth', block: 'end' })
-//     }, 200)
-
-//   } catch (err) {
-//     alert('新增失敗：' + (err?.response?.data || err.message))
-//   } finally {
-//     isLoading.value = false
-//   }
-// }
 
 
 const submitCreateCourse = async () => {
@@ -423,11 +300,11 @@ const submitCreateCourse = async () => {
     await fetchCourses()
 
     Swal.fire({
-  icon: 'success',
-  title: '新增成功',
-  showConfirmButton: false,
-  timer: 1200
-})
+      icon: 'success',
+      title: '新增成功',
+      showConfirmButton: false,
+      timer: 1200
+    })
     showModal.value = false
 
     await nextTick()
@@ -446,7 +323,6 @@ const submitCreateCourse = async () => {
 
 const validateDuration = () => {
   const value = popupCourse.value.duration
-  // 若不是正整數或為 NaN，就設回 1
   if (!Number.isInteger(value) || value < 1) {
     popupCourse.value.duration = 1
   }
@@ -462,7 +338,6 @@ const create = async () => {
   cancelCreate()
 }
 
-/* ---------- 分頁 ---------- */
 const pageSize = 10
 const currentPage = ref(1)
 
@@ -480,11 +355,12 @@ const goToPage = page => {
   }
 }
 
-/* ---------- 其他 ---------- */
-const resetFilters = () => { searchKeyword.value = '' }   // 清空即可，computed 會自動回全列表
+const resetFilters = () => { searchKeyword.value = '' }
 
-onMounted(fetchCourses)
-
+onMounted(() => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+  fetchCourses()
+})
 watch(filteredCourses, () => {
   currentPage.value = 1
 })
@@ -492,7 +368,6 @@ watch(filteredCourses, () => {
 </script>
 
 <style scoped>
-/* ---------- 版型 ---------- */
 .page-wrapper {
   height: 100%;
   padding: 24px;
@@ -525,7 +400,6 @@ watch(filteredCourses, () => {
   border-radius: 4px
 }
 
-/* ---------- 按鈕 ---------- */
 .btn {
   padding: 8px 16px;
   border-radius: 4px;
@@ -552,7 +426,6 @@ watch(filteredCourses, () => {
   background: #f3f4f6
 }
 
-/* ---------- 表格 ---------- */
 .table-wrapper {
   overflow-x: auto
 }
@@ -601,7 +474,6 @@ watch(filteredCourses, () => {
   width: 110px
 }
 
-/* ---------- 其他 ---------- */
 .cover-img {
   width: 80px;
   height: 80px;

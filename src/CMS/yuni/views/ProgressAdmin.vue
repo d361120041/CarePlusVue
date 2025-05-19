@@ -21,7 +21,7 @@
               <th>完成</th>
               <!-- <th>觀看秒數</th> -->
               <th>紀錄時間</th>
-              <th class="col-action">操作</th>
+              <!-- <th class="col-action">操作</th> -->
             </tr>
           </thead>
           <tbody>
@@ -51,10 +51,10 @@
                 <!-- <td><input v-model.number="form.lastWatched" type="number" class="input-edit" /></td> -->
                 <td>{{ p.recordedAt }}</td>
 
-                <td class="action-cell">
+                <!-- <td class="action-cell">
                   <button @click="save" class="link green">儲存</button>
                   <button @click="cancel" class="link gray">取消</button>
-                </td>
+                </td> -->
               </template>
               <template v-else>
                 <td>{{ p.progressId }}</td>
@@ -67,10 +67,10 @@
                 <td>{{ p.isCompleted ? '✔' : '✘' }}</td>
                 <!-- <td>{{ p.lastWatched ?? '-' }}</td> -->
                 <td>{{ p.recordedAt }}</td>
-                <td class="action-cell">
+                <!-- <td class="action-cell">
                   <button @click="edit(p)" class="link blue">編輯</button>
                   <button @click="remove(p.progressId)" class="link red"><i class="fas fa-trash-alt"></i></button>
-                </td>
+                </td> -->
               </template>
             </tr>
             <tr v-if="creating" class="row-creating">
@@ -95,10 +95,10 @@
               <!-- <td><input v-model.number="form.lastWatched" type="number" class="input-create" /></td> -->
               <td>{{ new Date().toLocaleString() }}</td>
 
-              <td class="action-cell">
+              <!-- <td class="action-cell">
                 <button @click="save" class="link green">送出</button>
                 <button @click="cancel" class="link gray">取消</button>
-              </td>
+              </td> -->
             </tr>
             <!-- <tr v-else class="row-add" @click="startCreate">
               <td colspan="8">➕ 新增進度</td>
@@ -220,7 +220,7 @@ const startCreate = () => { creating.value = true; editingId.value = null; form.
 const cancel = () => { creating.value = false; editingId.value = null; form.value = empty() }
 const resetFilters = () => { searchKeyword.value = ''; fetchAll() }
 
-const pageSize = 80
+const pageSize = 10
 const currentPage = ref(1)
 const paginatedProgresses = computed(() => {
   const start = (currentPage.value - 1) * pageSize

@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrapper">
     <div class="card">
-      <!-- ────────── 搜尋列（改為下拉式選單）────────── -->
+      <!-- ────────── 下拉式搜尋────────── -->
       <div class="search-row">
         <select v-model="selectedCourseId" @change="searchChapters" class="search-input">
           <option disabled value="">請選擇課程</option>
@@ -18,41 +18,55 @@
 
       <!-- ────────── 表格 ────────── -->
       <div class="table-wrapper">
-        <!-- Skeleton 載入中 -->
-<div v-if="isLoading" class="table-wrapper">
-  <table class="course-table">
-    <thead>
-      <tr>
-        <th class="col-idx">#</th>
-        <th class="col-title">標題</th>
-        <th>位置</th>
-        <th>內容類型</th>
-        <th>內容網址</th>
-        <th>所屬課程 ID</th>
-        <th class="col-action">操作</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="n in 5" :key="n">
-        <td><div class="skeleton-box shimmer" style="width: 24px; height: 16px;"></div></td>
-        <td><div class="skeleton-box shimmer" style="width: 140px; height: 20px;"></div></td>
-        <td><div class="skeleton-box shimmer" style="width: 60px; height: 20px;"></div></td>
-        <td><div class="skeleton-box shimmer" style="width: 80px; height: 20px;"></div></td>
-        <td><div class="skeleton-box shimmer" style="width: 160px; height: 20px;"></div></td>
-        <td><div class="skeleton-box shimmer" style="width: 60px; height: 20px;"></div></td>
-        <td><div class="skeleton-box shimmer" style="width: 80px; height: 20px;"></div></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+        <div v-if="isLoading" class="table-wrapper">
+          <table class="course-table">
+            <thead>
+              <tr>
+                <th class="col-idx">#</th>
+                <th class="col-title">標題</th>
+                <th>位置</th>
+                <th>內容類型</th>
+                <th>內容網址</th>
+                <th>所屬課程 ID</th>
+                <th class="col-action">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="n in 5" :key="n">
+                <td>
+                  <div class="skeleton-box shimmer" style="width: 24px; height: 16px;"></div>
+                </td>
+                <td>
+                  <div class="skeleton-box shimmer" style="width: 140px; height: 20px;"></div>
+                </td>
+                <td>
+                  <div class="skeleton-box shimmer" style="width: 60px; height: 20px;"></div>
+                </td>
+                <td>
+                  <div class="skeleton-box shimmer" style="width: 80px; height: 20px;"></div>
+                </td>
+                <td>
+                  <div class="skeleton-box shimmer" style="width: 160px; height: 20px;"></div>
+                </td>
+                <td>
+                  <div class="skeleton-box shimmer" style="width: 60px; height: 20px;"></div>
+                </td>
+                <td>
+                  <div class="skeleton-box shimmer" style="width: 80px; height: 20px;"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <table class="course-table">
           <thead>
-            <!-- 新增模式 -->
+            <!-- 新增 -->
             <tr v-if="isCreating" class="row-creating">
               <td>{{ chapters.length + 1 }}</td>
               <td><input v-model="editingChapter.title" class="input-create" placeholder="請輸入章節標題" /></td>
-              <td><input v-model.number="editingChapter.position" type="number" class="input-create" placeholder="章節位置" /></td>
+              <td><input v-model.number="editingChapter.position" type="number" class="input-create"
+                  placeholder="章節位置" /></td>
               <td>
                 <select v-model="editingChapter.contentType" class="input-create">
                   <option disabled value="">選擇類型</option>
@@ -62,7 +76,8 @@
               </td>
               <td><input v-model="editingChapter.contentUrl" class="input-create" placeholder="請輸入內容網址" /></td>
               <td>
-                <input v-model.number="editingChapter.courseId" type="number" class="input-create" placeholder="所屬課程 ID" />
+                <input v-model.number="editingChapter.courseId" type="number" class="input-create"
+                  placeholder="所屬課程 ID" />
               </td>
               <td class="action-cell">
                 <button @click="createChapter" class="link green">送出</button>
@@ -70,7 +85,6 @@
               </td>
             </tr>
 
-            <!-- 表頭列 -->
             <tr>
               <th class="col-idx">#</th>
               <th class="col-title">標題</th>
@@ -82,12 +96,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-      
-
-              v-for="chapter in paginatedChapters" :key="chapter.chapterId"
-              :class="{ 'row-hover': editingId !== chapter.chapterId }"
-            >
+            <tr v-for="chapter in paginatedChapters" :key="chapter.chapterId"
+              :class="{ 'row-hover': editingId !== chapter.chapterId }">
               <template v-if="editingId === chapter.chapterId">
                 <td>{{ chapter.chapterId }}</td>
                 <td><input v-model="editingChapter.title" class="input-edit" /></td>
@@ -101,7 +111,8 @@
                 </td>
                 <td><input v-model="editingChapter.contentUrl" class="input-edit" /></td>
                 <td>
-                  <input v-model.number="editingChapter.courseId" type="number" class="input-edit" placeholder="課程 ID" />
+                  <input v-model.number="editingChapter.courseId" type="number" class="input-edit"
+                    placeholder="課程 ID" />
                 </td>
                 <td class="action-cell">
                   <button @click="saveChapter" class="link green">儲存</button>
@@ -111,13 +122,8 @@
               <template v-else>
                 <td>{{ chapter.chapterId }}</td>
                 <td>
-                  <a
-                    :href="`/courses/${chapter.course?.courseId}`"
-                    class="link-title"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    v-if="chapter.course?.courseId"
-                  >
+                  <a :href="`/courses/${chapter.course?.courseId}`" class="link-title" target="_blank"
+                    rel="noopener noreferrer" v-if="chapter.course?.courseId">
                     {{ chapter.title }}
                   </a>
                   <span v-else>{{ chapter.title }}</span>
@@ -133,25 +139,23 @@
                 <td>{{ chapter.course?.courseId ?? '-' }}</td>
                 <td class="action-cell">
                   <button @click="startEditChapter(chapter)" class="link blue">編輯</button>
-                  <button @click="deleteChapter(chapter.chapterId)" class="link red"><i class="fas fa-trash-alt"></i></button>
+                  <button @click="deleteChapter(chapter.chapterId)" class="link red"><i
+                      class="fas fa-trash-alt"></i></button>
                 </td>
               </template>
             </tr>
           </tbody>
         </table>
         <div class="pagination">
-  <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">«</button>
+          <button :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">«</button>
 
-  <button
-    v-for="page in totalPages"
-    :key="page"
-    :class="{ 'active-page': page === currentPage }"
-    @click="goToPage(page)">
-    {{ page }}
-  </button>
+          <button v-for="page in totalPages" :key="page" :class="{ 'active-page': page === currentPage }"
+            @click="goToPage(page)">
+            {{ page }}
+          </button>
 
-  <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">»</button>
-</div>
+          <button :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">»</button>
+        </div>
       </div>
     </div>
   </div>
@@ -289,8 +293,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* 樣式與 CourseAdmin.vue 相同，這裡省略以避免重複 */
-/* ─── 版型 ─────────────────────────────── */
 .page-wrapper {
   height: 100%;
   width: 100%;
@@ -309,7 +311,6 @@ onMounted(async () => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, .05);
 }
 
-/* ─── 搜尋列 ─────────────────────────────── */
 .search-row {
   display: flex;
   gap: 8px;
@@ -352,7 +353,6 @@ onMounted(async () => {
   background: #f3f4f6;
 }
 
-/* ─── 表格 ─────────────────────────────── */
 .table-wrapper {
   overflow-x: auto;
 }
@@ -389,7 +389,6 @@ onMounted(async () => {
   width: 120px;
 }
 
-/* ─── 編輯 / 建立模式輸入 ───────────────── */
 .input-edit,
 .input-create {
   width: 100%;
@@ -398,12 +397,10 @@ onMounted(async () => {
   border-radius: 4px;
 }
 
-/* 建立行背景 */
 .row-creating {
   background: #fef9c3;
 }
 
-/* 新增按鈕列 */
 .row-add {
   background: #f9fafb;
   cursor: pointer;
@@ -416,7 +413,6 @@ onMounted(async () => {
   text-decoration: underline;
 }
 
-/* ─── 小型文字連結按鈕 ──────────────────── */
 .link {
   font-weight: 500;
   cursor: pointer;
@@ -464,7 +460,7 @@ onMounted(async () => {
   gap: 8px;
   justify-content: flex-start;
   align-items: center;
-  height: 55px; /* 調整 action cell 的高度以適應內容 */
+  height: 55px;
 }
 
 td.action-cell {
@@ -533,10 +529,9 @@ td.action-cell {
   0% {
     background-position: -200px 0;
   }
+
   100% {
     background-position: 200px 0;
   }
 }
-
-
 </style>

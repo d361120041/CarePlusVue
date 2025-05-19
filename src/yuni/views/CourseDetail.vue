@@ -22,7 +22,7 @@
               <h2 class="mb-3">{{ course.title }}</h2>
               <p class="course-category">＃{{ getCategoryLabel(course.category) }}</p>
               <p class="course-description">{{ course.description }}</p>
-              <p class="course-duration">時長：{{ course.duration }}</p>
+              <p class="course-duration">時長：{{ course.duration }}小時</p>
             </div>
 
             <div class="text-end" style="min-width: 200px; padding-right: 80px; padding-top: 150px;">

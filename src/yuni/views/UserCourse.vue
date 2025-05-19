@@ -29,7 +29,9 @@
               線上課程
             </router-link>
           </li>
-          <li class="breadcrumb-item active" aria-current="page">我的課程</li>
+          <li class="breadcrumb-item active" aria-current="page">            <router-link to="/my-courses" class="breadcrumb-dynamic">我的課程</router-link>
+          </li>
+          
         </ol>
       </nav>
 
@@ -292,6 +294,8 @@ const removeCourse = async (courseId, courseTitle) => {
 
 
 onMounted(async () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+
   isLoading.value = true
   try {
     const res = await axios.get('/user/profile', { withCredentials: true })
