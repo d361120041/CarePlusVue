@@ -47,7 +47,6 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getFullImageUrl } from '@/allen/utils/urlHelper';
 import myAxios from '@/plugins/axios';
-import noImage from '@/assets/allen/no-image.jpg';
 
 const route = useRoute();
 const router = useRouter();
@@ -55,7 +54,7 @@ const newsId = route.params.id;
 const news = ref(null);
 const loading = ref(false);
 const errorMessage = ref('');
-const defaultThumbnail = noImage;
+const defaultThumbnail = '/allen/no-image.jpg';
 
 const loadNews = async () => {
 loading.value = true;

@@ -109,7 +109,7 @@ import { ref, computed, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import myAxios from '@/plugins/axios';
 import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue';
-import defaultThumbnail from '@/assets/allen/no-image.jpg';
+// import defaultThumbnail from '@/assets/allen/no-image.jpg';
 import { getFullImageUrl } from '@/allen/utils/urlHelper';
 import { useRouter } from 'vue-router';
 
@@ -122,6 +122,7 @@ const hasNextPage = ref(true);
 const loading = ref(false);
 const hasSearched = ref(false);
 const searchSnapshot = ref({});
+const defaultThumbnail = '/allen/no-image.jpg'; // 設定預設縮圖路徑
 
 const search = ref({ keyword: '', categoryId: '', dateRange: '', status: '' });
 

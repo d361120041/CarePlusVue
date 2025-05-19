@@ -231,7 +231,7 @@ const fetchNews = async () => {
 };
 
 //圖片相關控制
-import defaultThumbnail from '@/assets/allen/no-image.jpg';
+const defaultThumbnail = '/allen/no-image.jpg';
 //刪除圖片
 const removeImage = () => {
   news.value.thumbnail = '';  // 傳遞空字串給後端，表示清除圖片

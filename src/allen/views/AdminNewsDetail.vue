@@ -28,7 +28,7 @@
       <!-- 縮圖區塊 -->
       <div class="col-span-1 flex justify-center items-center bg-gray-50 p-4 rounded-lg shadow-inner mb-6">
         <img
-          :src="getFullImageUrl(news.thumbnail)"
+          :src="getFullImageUrl(news.thumbnail) || defaultThumbnail"
           alt="新聞縮圖"
           class="thumbnail object-cover w-full h-56 rounded-lg"
           @error="handleImgError"
@@ -74,11 +74,10 @@
   const news = ref(null);
   const loading = ref(false);
   const errorMessage = ref('');
+  const defaultThumbnail = '/allen/no-image.jpg';
   
   import { getFullImageUrl } from '@/allen/utils/urlHelper';
-  const handleImgError = (event) => {
-    event.target.src = '/src/assets/allen/no-image.jpg';
-  };
+  const handleImgError = (e) => { if (e.target.src !== defaultThumbnail) e.target.src = defaultThumbnail; }; 
 
   const loadNews = async () => {
     loading.value = true;

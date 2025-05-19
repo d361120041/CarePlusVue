@@ -109,7 +109,6 @@ import { ref, onMounted, computed } from 'vue';
 import myAxios from '@/plugins/axios';
 import NewsListSkeleton from '@/allen/components/NewsListSkeleton.vue';
 import GlobalBanner from '@/components/GlobalBanner.vue';
-import defaultThumbnail from '@/assets/allen/no-image.jpg';
 import { getFullImageUrl } from '@/allen/utils/urlHelper.js';
 
 const newsList = ref([]);
@@ -121,6 +120,7 @@ const loading = ref(false);
 const hasSearched = ref(false);
 const searchSnapshot = ref({});
 const search = ref({keyword: '', categoryId: '', dateRange: '', sortBy: ''});
+const defaultThumbnail = '/allen/no-image.jpg'; // 設定預設縮圖路徑
 
 const formatDate = (date) => {
   if (typeof date === 'string') {
@@ -335,9 +335,7 @@ const nextPage = () => {
 };
 
 // 圖片加載錯誤時，切換至預設圖片
-const handleImgError = (event) => {
-  event.target.src = getFullImageUrl(''); // 空路徑將回退至 `defaultThumbnail`
-};
+const handleImgError = (e) => { if (e.target.src !== defaultThumbnail) e.target.src = defaultThumbnail; }; 
 
 const fetchCategories = async () => {
   try {
