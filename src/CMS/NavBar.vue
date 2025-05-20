@@ -7,6 +7,8 @@
 
     <!-- 使用者資訊與登出 -->
 
+   
+
     <div class="right navbar-user">
       <span>👤 Admin </span>
       <button class="logout-button" @click="handleLogout">登出</button>
@@ -42,6 +44,7 @@ const pageTitle = computed(() => {
   if (path.includes('/admin/cms/chapters')) return '章節後台管理'
   if (path.includes('/admin/cms/progress')) return '進度後台管理'
   if (path.includes('/admin/news')) return '新聞後台管理'
+  if (path.includes('/admin/admin/dashboard')) return '照服員管理'
   if (path === '/admin') return '後台首頁'
   return 'Care+ 後台'
 })
@@ -155,5 +158,37 @@ const pageTitle = computed(() => {
 
 .logout-button:hover {
   background-color: #c53030;
+}
+
+
+
+/* ✅ 鈴鐺樣式 */
+.notification-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-right: -58rem; /* ✅ 左邊縮小間距 */
+}
+
+/* ✅ 鈴鐺本體 */
+.notification-icon {
+  font-size: 1.0rem;
+}
+
+/* ✅ 假通知數量 */
+.notification-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: #ef4444;
+  color: #ffffff;
+  border-radius: 50%;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.5rem;
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+  pointer-events: none; /* ✅ 確保點不到 */
 }
 </style>
