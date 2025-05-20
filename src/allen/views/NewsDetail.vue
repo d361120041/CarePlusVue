@@ -95,21 +95,25 @@ onMounted(() => {
   padding: 1.5rem;
 }
 
-.detail-thumbnail {
-  width: 100%;
-  max-height: 400px;
-  object-fit: cover;
-  margin: 1.5rem 0;
+.thumbnail{
+  max-width: 512px;
+  max-height: 512px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
 }
 
 .news-content {
-  margin-top: 1.5rem;
+  text-align: left;
+  margin-top: 1.0rem;
   font-size: 1rem;
-  line-height: 1.8;
+  line-height: 1.2;
   white-space: pre-wrap;
   color: #333;
+
+}
+
+.news-content p {
+   margin: 0;
 }
 
 .btn-primary {
