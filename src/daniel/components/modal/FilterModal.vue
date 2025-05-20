@@ -71,9 +71,9 @@
         <template #footer>
             <!-- 按鈕區：sticky at bottom -->
             <div class="actions-bar">
-                <button type="button" @click="onClear" class="action-clear">
+                <!-- <button type="button" @click="onClear" class="action-clear">
                     清除條件
-                </button>
+                </button> -->
                 <button type="button" @click="onClose" class="action-cancel">
                     取消
                 </button>

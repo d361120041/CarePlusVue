@@ -14,7 +14,7 @@
                     <div class="reply-content">{{ reply.content }}</div>
                 </div>
                 <div class="reply-menu-wrapper" v-click-outside="closeMenu">
-                    <button class="hamburger-btn" @click.stop="toggleMenu">...</button>
+                    <button class="hamburger-btn" @click.stop="toggleMenu" v-if="reply.user.userId === currentUser.userId">...</button>
                     <ul v-if="menuOpen" class="reply-dropdown">
                         <li @click="startEdit">編輯</li>
                         <li @click="confirmDelete">刪除</li>
@@ -37,6 +37,7 @@
 import { ref, onMounted } from 'vue'
 import { useTimeFormat } from '@/daniel/composables/useTimeFormat'
 import { useToggle } from '@/daniel/composables/useToggle'
+import { useAuthStore } from '@/stores/auth'
 
 import myAxios from '@/plugins/axios.js'
 import EditReplyForm from '@/daniel/components/reply/EditReplyForm.vue'
@@ -48,12 +49,14 @@ const emit = defineEmits(['updated', 'deleted'])
 
 const { formattedTime } = useTimeFormat(props.reply.createdAt)
 const [menuOpen, toggleMenu] = useToggle(false)
+const authStore = useAuthStore()
 
 function closeMenu() {
     menuOpen.value = false
 }
 
 // 使用者資訊區塊
+const currentUser = authStore.user
 const imageUrl = ref(null)
 imageUrl.value = `data:image/png;base64,${props.reply.user.profilePicture}`
 
@@ -104,7 +107,7 @@ async function confirmDelete() {
 const likeCount = ref(props.reply.reactions?.length || 0)
 async function likeReply() {
     try {
-        const res = await myAxios.post(`/api/reactions/replies/${props.reply.replyId}?userId=${props.reply.user.userId}&type=1`)
+        const res = await myAxios.post(`/api/reactions/replies/${props.reply.replyId}?userId=${currentUser.userId}&type=1`)
         likeCount.value = res.data
     } catch (e) {
         console.error('回覆按讚失敗', e)
