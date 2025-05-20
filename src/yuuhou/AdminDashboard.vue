@@ -1,6 +1,6 @@
 <template>
   <div class="admin-dashboard">
-    <h2>照服員管理</h2>
+ 
 
     <!-- 🔍 搜尋框 -->
     <div class="search-bar">
@@ -34,8 +34,8 @@
 
         <!-- 操作按鈕 -->
         <div class="card-actions">
-          <button @click="editCaregiver(caregiver)" class="edit-button">📝 編輯</button>
-          <button @click="deleteCaregiver(caregiver.caregiverId)" class="delete-button">🗑️ 刪除</button>
+          <button @click="editCaregiver(caregiver)" class="edit-button"> 編輯</button>
+          <button @click="deleteCaregiver(caregiver.caregiverId)" class="delete-button"> 刪除</button>
         </div>
       </div>
     </div>
