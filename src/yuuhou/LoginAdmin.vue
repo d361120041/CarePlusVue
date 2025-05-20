@@ -4,7 +4,7 @@
         <h2>系統管理員登入</h2>
   
         <!-- 帳號欄位 -->
-        <input v-model="email" type="email" placeholder="Email" />
+        <input v-model="email" type="email" placeholder="帳號" />
         <p v-if="emailError" class="error">{{ emailError }}</p>
   
         <!-- 密碼欄位 -->
