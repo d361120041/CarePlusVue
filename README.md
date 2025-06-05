@@ -83,7 +83,6 @@ src/
 1. **clone專案**
 ```bash
 git clone https://github.com/d361120041/CarePlusVue.git
-cd care-plus
 ```
 
 2. **安裝依賴**
