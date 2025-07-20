@@ -1,0 +1,134 @@
+@import "@/assets/css/settings.css";
+
+/* 1. 全局重置與基底設定 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+
+
+body {
+  display: flex; /* 啟用 Flex 容器 */
+  flex-direction: column; /* 垂直從上到下 */
+
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-tertiary);
+
+  background-color: var(--color-bg-page);
+}
+
+/* 2. 頁首與頁尾 */
+header {
+  background-color: var(--color-bg-card);
+  color: var(--color-primary-text);
+  text-align: center;
+  padding: 1rem 0;
+  flex-shrink: 0; /* 不隨容器縮小 */
+}
+
+footer {
+  /* background-color: var(--color-bg-card); */
+  color: var(--color-primary-text);
+  text-align: center;
+  flex-shrink: 0; /* 不隨容器縮小 */
+  /* margin-top: 40px; */
+}
+
+/* 3. 主內容區塊 */
+main {
+  flex: 1; /* 撐滿剩餘空間，實現黏性 footer */
+  /* padding: 1.5rem; */
+  /* overflow-y: auto; */
+}
+
+/* 4. 全站連結預設 */
+a {
+  color: #0366d6;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--color-text-primary);
+}
+
+#app {
+  position: relative;
+  background-color: transparent;
+}
+
+.button-green {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+
+  border-radius: var(--radius-lg);
+  border: none;
+
+  padding: var(--space-sm) var(--space-lg);
+  transition: var(--transition-medium);
+  cursor: pointer;
+}
+
+.button-green:hover {
+  background-color: var(--color-btn-primary-bg-hover);
+}
+
+.button-pink {
+  background-color: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+
+  border-radius: var(--radius-lg);
+  border: none;
+
+  padding: var(--space-sm) var(--space-lg);
+  transition: var(--transition-medium);
+  cursor: pointer;
+}
+
+.button-pink:hover {
+  background-color: var(--color-btn-secondary-bg-hover);
+}
+
+.button-blue {
+  background-color: var(--color-btn-tertiary-bg);
+  color: var(--color-btn-tertiary-text);
+
+  border-radius: var(--radius-lg);
+  border: none;
+
+  padding: var(--space-sm) var(--space-lg);
+  transition: var(--transition-medium);
+  cursor: pointer;
+}
+
+.button-blue:hover {
+  background-color: var(--color-btn-tertiary-bg-hover);
+}
+
+/* 粉圓 */
+@font-face {
+  font-family: 'huninn';
+  src: url('/src/assets/fonts/huninn.ttf') format('truetype');
+  font-weight: bolder; 
+  font-style: normal;
+}
+
+html,body, header, footer, main {
+  font-family: 'huninn';
+}

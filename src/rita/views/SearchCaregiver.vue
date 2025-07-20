@@ -647,11 +647,6 @@ const showTimeOptions = (type) => {
   form.value.timeType = type;
 };
 
-// 新增多時段時間區間
-const addTimeSlot = () => {
-  form.value.multi.timeSlots.push({ startTime: "", endTime: "" });
-};
-
 const serviceImages = [
   "/images/service1.jpg",
   "/images/service2.jpg",

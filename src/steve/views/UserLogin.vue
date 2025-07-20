@@ -32,8 +32,11 @@ const login = async () => {
     // 把使用者輸入的帳密丟給後端
     await axios.post("/user/login", {
       userAccount: userAccount.value,
-      userPassword: password.value,
-    });
+      userPassword: password.value,},
+      {
+        withCredentials: true
+      }
+    );
 
     // 呼叫 Pinia auth store 裡的 checkAuth() 方法（可保留）
     await auth.checkAuth();
@@ -42,9 +45,10 @@ const login = async () => {
     const redirectPath = sessionStorage.getItem("redirectAfterLogin");
     sessionStorage.removeItem("redirectAfterLogin");
     const target = redirectPath || "/";
-    router.push(target).then(() => {
-      window.location.reload();
-    });
+    router.push(target);
+    // .then(() => {
+    //   window.location.reload();
+    // });
   } catch (error) {
     if (error.response && error.response.data) {
       Swal.fire({

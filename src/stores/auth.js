@@ -12,7 +12,9 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     async checkAuth() {
       try {
-        const res = await axios.get("/user/profile");
+        const res = await axios.get("/user/profile", {
+          withCredentials: true
+        });
         this.isAuthenticated = true;
         this.user = res.data;
         await this.fetchUserPhoto(); // ✅ 登入時順便抓頭貼

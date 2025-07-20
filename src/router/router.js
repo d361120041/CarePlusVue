@@ -249,11 +249,11 @@ const routes = [
   },
 
   // 看護確認預約
-  {
-    path: "/caregiver/confirm/:appointmentId",
-    component: () => import("@/rita/views/CaregiverConfirm.vue"),
-    name: "caregiverConfirm",
-  },
+  // {
+  //   path: "/caregiver/confirm/:appointmentId",
+  //   component: () => import("@/rita/views/CaregiverConfirm.vue"),
+  //   name: "caregiverConfirm",
+  // },
 
   // 使用者查看訂單與付款
   {

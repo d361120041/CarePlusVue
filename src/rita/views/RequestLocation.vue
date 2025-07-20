@@ -23,7 +23,7 @@
       <!-- 左邊區塊 -->
       <div class="main-section">
         <div class="card-section">
-          <h3>服務地點及服務項目</h3>
+          <h3>服務地點</h3>
 
           <!-- 选择医院或居家 -->
           <div class="form-item">

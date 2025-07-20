@@ -73,6 +73,7 @@
         <input
           type="checkbox"
           v-model="isContractConfirmed"
+          @change="confirmContract"
           id="contract-checkbox"
           class="h-5 w-5 text-teal-600 rounded focus:ring-teal-500"
         />
@@ -162,12 +163,11 @@ const confirmContract = async () => {
   }
 
   try {
-    const appointmentId = appointment.value.id;
+    const appointmentId = appointment.value.appointmentId;
     const response = await myAxios.put(
       `/api/appointment/${appointmentId}/contract`
     );
     appointment.value = response.data; // 更新本地預約資料
-    appointmentStore.setAppointment(response.data); // 更新 Pinia Store
     Swal.fire({
       title: "成功",
       text: "合約已確認！",
