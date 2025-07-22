@@ -1,42 +1,38 @@
 <template>
-  
-    <!-- 🔙 返回按鈕 -->
-    <button
-      @click="goBack"
-      class="back-button flex items-center text-teal-600 hover:text-teal-700 transition-colors duration-200 py-2 px-2 rounded-md mt-2 ml-4 mb-9"
-      aria-label="返回搜尋結果"
-    >
-      ⬅︎ 返回搜尋結果
-    </button>
-    <div class="wrapper">
+  <!-- 🔙 返回按鈕 -->
+  <button
+    @click="goBack"
+    class="back-button flex items-center text-teal-600 hover:text-teal-700 transition-colors duration-200 py-2 px-2 rounded-md mt-2 ml-4 mb-9"
+    aria-label="返回搜尋結果"
+  >
+    ⬅︎ 返回搜尋結果
+  </button>
+  <div class="wrapper">
     <!-- 👤 看護個人資料區塊 -->
     <div v-if="caregiver" class="caregiver-profile card-section">
       <div class="flex flex-col md:flex-row gap-12">
         <!-- 左側：看護資訊 -->
         <div class="flex-1 space-y-10">
-         <!-- 📸 看護照片和姓名 -->
-<div class="flex items-center gap-6 profile-header">
-  <!-- 📸 圓形大頭貼 -->
-  <div class="flex-shrink-0 relative">
-    <img
-      class="caregiver-image"
-      :src="
-        caregiver.photoPath ||
-        'https://finalimagesbucket.s3.ap-northeast-1.amazonaws.com/default-placeholder.jpg'
-      "
-      :alt="`看護 ${caregiver.caregiverName}`"
-      loading="lazy"
-    />
-  </div>
+          <!-- 📸 看護照片和姓名 -->
+          <div class="flex items-center gap-6 profile-header">
+            <!-- 📸 圓形大頭貼 -->
+            <div class="flex-shrink-0 relative">
+              <img
+                class="caregiver-image"
+                :src="
+                  caregiver.photoPath ||
+                  'https://finalimagesbucket.s3.ap-northeast-1.amazonaws.com/default-placeholder.jpg'
+                "
+                :alt="`看護 ${caregiver.caregiverName}`"
+                loading="lazy"
+              />
+            </div>
 
-  <!-- 🧾 姓名 -->
-  <h1 class="caregiver-name">
-    {{ caregiver.caregiverName }}
-  </h1>
-</div>
-
-
-          
+            <!-- 🧾 姓名 -->
+            <h1 class="caregiver-name">
+              {{ caregiver.caregiverName }}
+            </h1>
+          </div>
           <!-- 📋 基本資訊與薪資資訊 -->
           <div class="info-container">
             <!-- 基本資訊 -->
@@ -101,16 +97,17 @@
                 </div>
               </div>
 
-         <!-- 📄 詳細介紹 -->
-         <div class="info-section description-section mt-8">
-              <h3 class="section-title">詳細介紹</h3>
-              <p class="text-gray-600 leading-relaxed">{{ caregiver.description || "尚無詳細介紹" }}</p>
+              <!-- 📄 詳細介紹 -->
+              <div class="info-section description-section mt-8">
+                <h3 class="section-title">詳細介紹</h3>
+                <p class="text-gray-600 leading-relaxed">
+                  {{ caregiver.description || "尚無詳細介紹" }}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
           <!-- 預估總價 -->
-          <!-- 修改：將預估總價移至左側容器內，與其他資訊垂直對齊 -->
           <div>
             <h4 class="section-title mb-4">預估總價：</h4>
             <p class="text-xl font-semibold text-teal-700">
@@ -122,27 +119,14 @@
             </p>
           </div>
         </div>
-
         <!-- 分隔線 -->
         <div class="divider"></div>
-
         <!-- 右側：使用者輸入資訊 -->
         <div class="flex-1 space-y-6">
-          <div class="info-grid">
-            <!-- <div class="info-item">
-              <span class="label">服務縣市</span>
-              <span class="value">{{ appointmentStore.appointment.city || '未選擇' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">時間需求</span>
-              <span class="value">{{ appointmentStore.appointment.timeRequirements || '未提供' }}</span>
-            </div> -->
-          </div>
+          <div class="info-grid"></div>
         </div>
       </div>
-
       <!-- ✅ 預約按鈕 -->
-      <!-- 修改：保留預約按鈕在卡片底部，獨立於左側容器 -->
       <div class="mt-8">
         <button
           @click="confirmBooking"
@@ -153,7 +137,6 @@
         </button>
       </div>
     </div>
-
     <!-- ⏳ 載入狀態 -->
     <div
       v-else
@@ -168,41 +151,48 @@
 </template>
 
 <script setup>
+/* 👉 1️⃣ 匯入區 */
 import { ref, onMounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useCaregiverStore } from "@/stores/caregiverStore";
 import { useAppointmentStore } from "@/stores/AppointmentStore";
 import myAxios from "@/plugins/axios";
 
+/* 👉 2️⃣ 初始化區 */
 const router = useRouter();
 const route = useRoute();
 const caregiverStore = useCaregiverStore();
 const appointmentStore = useAppointmentStore();
-
 const caregiver = ref(null);
 
-// 🔄 當使用者選擇看護時儲存 ID
-const selectCaregiver = (caregiverId) => {
-  localStorage.setItem("caregiverId", caregiverId);
-  appointmentStore.setCaregiverId(caregiverId);
+/* 👉 3️⃣ 導頁函式 */
+const goBack = () => {
+  router.push("/caregivers/list");
 };
 
+const confirmBooking = () => {
+  if (caregiver.value && caregiver.value.caregiverId) {
+    selectCaregiver(caregiver.value.caregiverId);
+    appointmentStore.appointment.totalPrice = caregiver.value.totalPrice;
+    router.push(`/request/time?caregiverId=${caregiver.value.caregiverId}`);
+  } else {
+    console.warn("無法確認預約，看護資料未載入。");
+  }
+};
+
+/* 👉 4️⃣ onMounted - 取得看護資料與還原預約資訊 */
 onMounted(async () => {
   const caregiverId = route.params.id;
-  console.log("Caregiver ID from route:", caregiverId);
-
   if (
     caregiverStore.selectedCaregiver &&
     caregiverStore.selectedCaregiver.caregiverId === parseInt(caregiverId)
   ) {
     caregiver.value = caregiverStore.selectedCaregiver;
-    console.log("Caregiver from store:", caregiver.value);
   } else if (caregiverId) {
     try {
       const response = await myAxios.get(`/api/caregivers/${caregiverId}`);
       caregiver.value = response.data;
       caregiverStore.selectCaregiver(response.data); // 更新 store
-      console.log("Caregiver details fetched from API:", caregiver.value);
     } catch (error) {
       console.error("Failed to fetch caregiver details:", error);
       // 處理錯誤
@@ -241,25 +231,7 @@ onMounted(async () => {
     appointmentStore.multi.multi.timeSlots = [];
   }
 
-  if (caregiverStore.selectedCaregiver) {
-    caregiver.value = caregiverStore.selectedCaregiver;
-  } else {
-    const storedCaregiver = localStorage.getItem("selectedCaregiver");
-    if (storedCaregiver) {
-      try {
-        caregiver.value = JSON.parse(storedCaregiver);
-      } catch (error) {
-        console.error("Error parsing stored caregiver:", error);
-        localStorage.removeItem("selectedCaregiver");
-      }
-    }
-  }
-
   if (!caregiver.value) {
-    const caregiverId = route.params.caregiverId;
-    const foundCaregiver = caregiverStore.caregivers.find(
-      (c) => c.caregiverId === caregiverId
-    );
     if (foundCaregiver) {
       caregiver.value = foundCaregiver;
       caregiverStore.selectCaregiver(foundCaregiver);
@@ -271,18 +243,10 @@ onMounted(async () => {
   }
 });
 
-const goBack = () => {
-  router.push("/caregivers/list");
-};
-
-const confirmBooking = () => {
-  if (caregiver.value && caregiver.value.caregiverId) {
-    selectCaregiver(caregiver.value.caregiverId);
-    appointmentStore.appointment.totalPrice = caregiver.value.totalPrice;
-    router.push(`/request/time?caregiverId=${caregiver.value.caregiverId}`);
-  } else {
-    console.warn("無法確認預約，看護資料未載入。");
-  }
+// 🔄 當使用者選擇看護時儲存 ID
+const selectCaregiver = (caregiverId) => {
+  localStorage.setItem("caregiverId", caregiverId);
+  appointmentStore.setCaregiverId(caregiverId);
 };
 </script>
 
@@ -395,7 +359,6 @@ const confirmBooking = () => {
   margin-top: 2rem; /* 增加上方間隔 */
 }
 
-
 .label {
   font-size: 0.875rem;
   color: #6b7280;
@@ -472,10 +435,10 @@ const confirmBooking = () => {
 
 @media (max-width: 768px) {
   .wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 4rem 1rem; /* 增加頂部間距 */
-}
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 1rem; /* 增加頂部間距 */
+  }
 
   .card-section {
     padding: 1.5rem;
@@ -488,9 +451,9 @@ const confirmBooking = () => {
 
   .flex-nowrap {
     display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 1.5rem; /* 控制頭貼與名字的間距 */
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 1.5rem; /* 控制頭貼與名字的間距 */
   }
 
   .truncate {

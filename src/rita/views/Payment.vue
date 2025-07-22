@@ -1,6 +1,5 @@
 <template>
   <div class="wrapper">
-
     <!-- 📋 訂單資訊區塊 -->
     <div class="card-section mb-8">
       <h2 class="section-title">訂單資訊</h2>
@@ -86,7 +85,9 @@
     <!-- 💳 付款按鈕 -->
     <div class="card-section">
       <h2 class="section-title">付款</h2>
-      <p class="text-gray-600 mb-4">本平台使用第三方支付「綠界ECPAY」進行付款</p>
+      <p class="text-gray-600 mb-4">
+        本平台使用第三方支付「綠界ECPAY」進行付款
+      </p>
       <button
         @click="proceedToPayment"
         :disabled="!appointment"
@@ -203,18 +204,17 @@ const proceedToPayment = async () => {
 
     // 使用 URLSearchParams 將資料格式化為 x-www-form-urlencoded 格式
     const formData = new URLSearchParams();
-    formData.append('appointmentId', appointmentId);
+    formData.append("appointmentId", appointmentId);
 
-   // 發送 GET 請求，並將 appointmentId 作為查詢參數傳遞
-   const response = await myAxios.post("/payment/ecpay", formData);
+    // 發送 GET 請求，並將 appointmentId 作為查詢參數傳遞
+    const response = await myAxios.post("/payment/ecpay", formData);
     console.log(response.data);
 
     // 將返回的表單 HTML 插入到頁面並提交
     const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = response.data;  // 假設返回的內容是 HTML 表單
+    tempDiv.innerHTML = response.data; // 假設返回的內容是 HTML 表單
     document.body.appendChild(tempDiv);
-    tempDiv.querySelector("form").submit();  // 直接提交該表單
-
+    tempDiv.querySelector("form").submit(); // 直接提交該表單
 
     // // 跳轉到支付成功頁面（在當前頁面，非新分頁）
     router.push("/payment/success");
@@ -360,7 +360,6 @@ const goBack = () => {
   box-shadow: none; /* 禁用時去掉陰影 */
   cursor: not-allowed; /* 禁用時顯示禁用指標 */
 }
-
 
 .loading-state {
   display: flex;

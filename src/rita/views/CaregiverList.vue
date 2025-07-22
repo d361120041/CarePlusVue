@@ -1,11 +1,13 @@
 <template>
   <div class="wrapper">
+     <!-- 🔙 返回搜尋按鈕 -->
     <button
       @click="goBackToSearch"
       class="goBackToSearch px-4 py-2 bg-teal-600 text-white rounded-md text-sm font-medium hover:bg-teal-700 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300 focus:ring-opacity-50"
     >
       ⬅︎ 返回搜尋
     </button>
+ <!-- 🧭 結果標題與排序選單 -->
     <div class="header flex justify-between items-center mb-6">
       <h3 class="text-xl font-semibold text-gray-800">
         搜尋結果：共 {{ sortedCaregivers.length }} 位照服員
@@ -18,7 +20,7 @@
         <option value="experience">按年資排序</option>
       </select>
     </div>
-
+    <!-- 🚫 無搜尋結果時的提示畫面 -->
     <div
       v-if="sortedCaregivers.length === 0"
       class="text-center py-10 bg-white rounded-lg shadow-sm"
@@ -34,7 +36,7 @@
         </router-link>
       </p>
     </div>
-
+  <!-- ✅ 有搜尋結果時，顯示看護卡片 -->
     <div class="caregiver-grid">
       <div
         class="caregiver-card"
@@ -42,6 +44,7 @@
         :key="caregiver.caregiverId"
         @click="goToCaregiverDetail(caregiver)"
       >
+ <!-- 📸 看護照片 -->
         <img
           class="caregiver-image"
           :src="
@@ -51,7 +54,7 @@
           :alt="`看護 ${caregiver.caregiverName}`"
           loading="lazy"
         />
-
+ <!-- 🧑‍⚕️ 看護名稱與收藏按鈕 -->
         <div class="flex justify-between items-center mb-2">
           <h3 class="caregiver-name text-lg font-semibold text-teal-600">
             {{ caregiver.caregiverName }}
@@ -77,6 +80,7 @@
             </span>
           </button>
         </div>
+ <!-- 📄 看護詳細資料 -->       
         <div class="caregiver-info">
           <div class="info-row text-sm text-gray-600">
             <span>性別：{{ caregiver.gender }}</span>
@@ -86,8 +90,6 @@
           <p class="text-sm text-gray-600">
             年資：{{ caregiver.yearOfExperience }} 年
           </p>
-          <!--  <p class="text-sm text-gray-600">時薪：{{ caregiver.hourlyRate ? `${caregiver.hourlyRate} 元/小時` : '未提供' }}</p>
-          <p class="text-sm text-gray-600">半日薪水：{{ caregiver.halfDayRate ? `${caregiver.halfDayRate} 元/半日` : '未提供' }}</p><p class="text-sm text-gray-600">全日薪水：{{ caregiver.fullDayRate ? `${caregiver.fullDayRate} 元/全日` : '未提供' }}</p>  -->
           <p class="text-sm text-gray-600 mt-2 line-clamp-2">
             {{ caregiver.description || "尚無詳細介紹" }}
           </p>
@@ -103,31 +105,83 @@
 </template>
 
 <script setup>
+/* 👉 1️⃣ Imports 匯入區 */
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useCaregiverStore } from "@/stores/caregiverStore";
-import { useAppointmentStore } from "@/stores/AppointmentStore";
 import myAxios from "@/plugins/axios";
 
+/* 👉 2️⃣ 初始化資料 */
 const router = useRouter();
 const caregiverStore = useCaregiverStore();
-const appointmentStore = useAppointmentStore();
 const favoriteCaregiverIds = ref([]);
-
-// 排序選項，從 localStorage 讀取，預設為 'price'
 const sortOption = ref(localStorage.getItem("sortOption") || "price");
-const estimatedPrices = ref({}); // 用於儲存每個看護的預估價格，key 是 caregiverId
 
+/* 👉 3️⃣ 收藏相關邏輯 */
 const isFavorited = (caregiverId) => {
   return favoriteCaregiverIds.value.includes(caregiverId);
 };
 
+const toggleFavorite = async (caregiverId) => {
+  const isNowFavorited = isFavorited(caregiverId);
+
+  try {
+    if (isNowFavorited) {
+      await myAxios.delete("/favorites/deleteEmployee", {
+        params: { caregiverId },
+      });
+      favoriteCaregiverIds.value = favoriteCaregiverIds.value.filter(
+        (id) => id !== caregiverId
+      );
+    } else {
+      await myAxios.post("/favorites/addEmployee", null, {
+        params: { caregiverId },
+      });
+      favoriteCaregiverIds.value.push(caregiverId);
+    }
+  } catch (error) {
+    console.error("收藏操作失敗", error);
+    if (error.response?.status === 401) {
+      alert("請先登入才能操作收藏");
+      router.push("/userlogin");
+    }
+  }
+};
+
+/* 👉 4️⃣ 排序邏輯 */
 // 監看排序選項的變化，並儲存到 localStorage
 watch(sortOption, (newSortOption) => {
   localStorage.setItem("sortOption", newSortOption);
 });
 
-// 監看 filters 和 caregivers 的變化，同步到 localStorage
+const sortedCaregivers = computed(() => {
+  const list = [...caregiverStore.caregivers];
+  if (sortOption.value === "price") {
+    list.sort((a, b) => {
+      const priceA = a.totalPrice ?? Infinity;
+      const priceB = b.totalPrice ?? Infinity;
+      return priceA - priceB;
+    });
+  } else if (sortOption.value === "experience") {
+    list.sort((a, b) => b.yearOfExperience - a.yearOfExperience);
+  }
+  return list;
+});
+
+/* 👉 5️⃣ 導頁相關方法 */
+const goToCaregiverDetail = (caregiver) => {
+  console.log("Selected caregiver:", caregiver); // 檢查完整的 caregiver 物件
+  console.log("Selected caregiver ID:", caregiver.caregiverId); // 檢查 caregiverId 的值
+  caregiverStore.selectCaregiver(caregiver);
+  localStorage.setItem("selectedCaregiver", JSON.stringify(caregiver));
+  router.push(`/caregivers/${caregiver.caregiverId}`);
+};
+
+const goBackToSearch = () => {
+  router.push("/caregivers/search");
+};
+
+/* 👉  6️⃣ 資料監聽 - filters 變動時同步 localStorage */
 watch(
   () => caregiverStore.filters,
   (newFilters) => {
@@ -144,33 +198,8 @@ watch(
   { deep: true }
 );
 
+/* 👉 7️⃣ onMounted 初始化：從 localStorage 還原資料 */
 onMounted(() => {
-  appointmentStore.appointment.timeType =
-    localStorage.getItem("timeType") || "continuous";
-  appointmentStore.continuous.startTime =
-    localStorage.getItem("continuousStartTime") || "";
-  appointmentStore.continuous.endTime =
-    localStorage.getItem("continuousEndTime") || "";
-  appointmentStore.continuous.startDate =
-    localStorage.getItem("continuousStartDate") || "";
-  appointmentStore.continuous.endDate =
-    localStorage.getItem("continuousEndDate") || "";
-  appointmentStore.multi.startDate =
-    localStorage.getItem("multiStartDate") || "";
-  appointmentStore.multi.endDate = localStorage.getItem("multiEndDate") || "";
-  appointmentStore.multi.dailyStartTime = JSON.parse(
-    localStorage.getItem("multiDailyStartTime") || "{}"
-  );
-  appointmentStore.multi.dailyEndTime = JSON.parse(
-    localStorage.getItem("multiDailyEndTime") || "{}"
-  );
-  appointmentStore.multi.repeatDays = JSON.parse(
-    localStorage.getItem("multiRepeatDays") || "{}"
-  );
-  appointmentStore.multi.timeSlots = JSON.parse(
-    localStorage.getItem("multiTimeSlots") || "[]"
-  );
-
   caregiverStore.setFilters({
     serviceCity: localStorage.getItem("serviceCity") || "",
     serviceDistrict: localStorage.getItem("serviceDistrict") || "",
@@ -217,113 +246,7 @@ onMounted(() => {
   }
 });
 
-const sortedCaregivers = computed(() => {
-  const list = [...caregiverStore.caregivers];
-  if (sortOption.value === "price") {
-    list.sort(
-      (a, b) =>
-        (estimatedPrices.value[a.caregiverId] === "無法估價"
-          ? Infinity
-          : estimatedPrices.value[a.caregiverId]) -
-        (estimatedPrices.value[b.caregiverId] === "無法估價"
-          ? Infinity
-          : estimatedPrices.value[b.caregiverId])
-    );
-  } else if (sortOption.value === "experience") {
-    list.sort((a, b) => b.yearOfExperience - a.yearOfExperience);
-  }
-  return list;
-});
-
-const formatDateTime = (dateTimeStr) => {
-  console.log("收到的日期時間字串：", dateTimeStr);
-  if (!dateTimeStr || isNaN(Date.parse(dateTimeStr))) return "未指定";
-  const date = new Date(dateTimeStr);
-  return date.toLocaleString("zh-TW", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-};
-
-const formatDate = (dateStr) => {
-  if (!dateStr) return "未指定";
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("zh-TW", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-};
-
-const formatTimeObject = (timeObj) => {
-  if (
-    !timeObj ||
-    typeof timeObj.hour === "undefined" ||
-    typeof timeObj.minute === "undefined"
-  )
-    return "未指定";
-  const hour = parseInt(timeObj.hour, 10);
-  const minute = timeObj.minute.padStart(2, "0");
-  let period = "AM";
-  let formattedHour = hour;
-  if (hour === 0) {
-    formattedHour = 12;
-  } else if (hour === 12) {
-    period = "PM";
-  } else if (hour > 12) {
-    formattedHour = hour - 12;
-    period = "PM";
-  }
-  return `${formattedHour}:${minute} ${period}`;
-};
-
-const formatTimeRange = (startTimeObj, endTimeObj) => {
-  const startTime = formatTimeObject(startTimeObj);
-  const endTime = formatTimeObject(endTimeObj);
-  return `${startTime} - ${endTime}`;
-};
-
-const goToCaregiverDetail = (caregiver) => {
-  console.log("Selected caregiver:", caregiver); // 檢查完整的 caregiver 物件
-  console.log("Selected caregiver ID:", caregiver.caregiverId); // 檢查 caregiverId 的值
-  caregiverStore.selectCaregiver(caregiver);
-  localStorage.setItem("selectedCaregiver", JSON.stringify(caregiver));
-  router.push(`/caregivers/${caregiver.caregiverId}`);
-};
-
-const goBackToSearch = () => {
-  router.push("/caregivers/search");
-};
-const toggleFavorite = async (caregiverId) => {
-  const isNowFavorited = isFavorited(caregiverId);
-
-  try {
-    if (isNowFavorited) {
-      await myAxios.delete("/favorites/deleteEmployee", {
-        params: { caregiverId },
-      });
-      favoriteCaregiverIds.value = favoriteCaregiverIds.value.filter(
-        (id) => id !== caregiverId
-      );
-    } else {
-      await myAxios.post("/favorites/addEmployee", null, {
-        params: { caregiverId },
-      });
-      favoriteCaregiverIds.value.push(caregiverId);
-    }
-  } catch (error) {
-    console.error("收藏操作失敗", error);
-    if (error.response?.status === 401) {
-      alert("請先登入才能操作收藏");
-      router.push("/userlogin");
-    }
-  }
-};
-
+/* 👉 8️⃣ onMounted：取得收藏清單 */
 onMounted(async () => {
   try {
     const res = await myAxios.get("/favorites/employees"); // ✅ 改用 myAxios

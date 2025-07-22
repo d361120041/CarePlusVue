@@ -37,15 +37,15 @@
                 @change="showTimeOptions('continuous')"
               />
               <label for="continuous">連續時間</label>
-              <input
+              <!-- <input
                 type="radio"
                 id="multi"
                 name="time-type"
                 value="multi"
                 v-model="form.timeType"
                 @change="showTimeOptions('multi')"
-              />
-              <label for="multi">多時段預訂</label>
+              /> -->
+              <!-- <label for="multi">多時段預訂</label> -->
             </div>
           </div>
 
@@ -69,7 +69,7 @@
             </div>
           </div>
 
-          <!-- 多時段預訂選項 -->
+          <!-- 多時段預訂選項
           <div
             id="multi-time"
             class="time-options"
@@ -115,7 +115,7 @@
               </div>
               <div class="add-time-slot" @click="addTimeSlot">＋新增時間</div>
             </div>
-          </div>
+          </div> -->
 
           <button
             class="submit-btn"
@@ -145,26 +145,18 @@
 </template>
 
 <script setup>
+/* 👉 1️⃣ 匯入區 */
 import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAppointmentStore } from '@/stores/AppointmentStore';
-import { useCaregiverStore } from '@/stores/caregiverStore'; 
 
+/* 👉 2️⃣ Store & Router 設定 */
 const route = useRoute(); 
-const caregiverStore = useCaregiverStore();
+const appointmentStore = useAppointmentStore();
+const router = useRouter();
 
+/* 👉 3️⃣ 狀態資料 */
 const caregiverId = ref(null);
-
-onMounted(() => {
-  caregiverId.value = route.query.caregiverId;
-  console.log('Caregiver ID from route query:', caregiverId.value);
-  // 在這裡，您可以選擇將 caregiverId 儲存到 appointmentStore 或 caregiverStore
-  if (caregiverId.value) {
-    appointmentStore.setCaregiverId(caregiverId.value);
-    // 或者，如果您希望在 caregiverStore 中也儲存，可以這樣做：
-    // caregiverStore.setSelectedCaregiverId(caregiverId.value);
-  }
-});
 
 const form = ref({
   timeType: 'continuous',
@@ -184,10 +176,7 @@ const form = ref({
 
 const days = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
 
-const appointmentStore = useAppointmentStore();
-const router = useRouter();
-
-// 檢查表單是否填寫完整
+/* 👉 4️⃣ 表單填寫檢查 */
 const isFormComplete = computed(() => {
   if (form.value.timeType === 'continuous') {
     return (
@@ -206,14 +195,17 @@ const isFormComplete = computed(() => {
   }
 });
 
+/* 👉 5️⃣ 切換時間模式 */
 const showTimeOptions = (type) => {
   form.value.timeType = type;
 };
 
+/* 👉 6️⃣ 動態新增多時段區塊 */
 const addTimeSlot = () => {
   form.value.multi.timeSlots.push({ startTime: '', endTime: '' });
 };
 
+/* 👉 7️⃣ 表單送出邏輯 */
 const submitForm = () => {
   if (!isFormComplete.value) return;
 
@@ -235,6 +227,14 @@ const submitForm = () => {
 
   router.push('/request/patient');
 };
+
+/* 👉 8️⃣ 初始化：從 route 取得 caregiverId 並儲存 */
+onMounted(() => {
+  caregiverId.value = route.query.caregiverId;
+  if (caregiverId.value) {
+    appointmentStore.setCaregiverId(caregiverId.value);
+  }
+});
 </script>
 
 <style scoped>

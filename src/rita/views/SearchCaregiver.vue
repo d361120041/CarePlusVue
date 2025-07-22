@@ -25,7 +25,6 @@
         <button class="search-btn" @click="scrollToRequestForm">
           搜尋人選
         </button>
-        <button class="request-btn" @click="goToRequestTime">填寫需求單</button>
       </div>
     </div>
 
@@ -87,7 +86,7 @@
               />
               連續時間
             </label>
-            <label class="flex items-center text-base text-gray-700">
+            <!-- <label class="flex items-center text-base text-gray-700">
               <input
                 type="radio"
                 name="time-type"
@@ -97,7 +96,7 @@
                 class="w-5 h-5 mr-2"
               />
               多時段預訂
-            </label>
+            </label> -->
           </div>
         </div>
       </div>
@@ -149,7 +148,7 @@
         </div>
       </div>
 
-      <!-- 多時段預訂選項 -->
+      <!-- 多時段預訂選項
       <div
         id="multi-time"
         class="time-options mt-4"
@@ -239,7 +238,7 @@
             ＋新增時間
           </div>
         </div>
-      </div>
+      </div> -->
       <!-- 搜尋人選按鈕 -->
       <div class="form-group mt-6">
         <button
@@ -315,6 +314,7 @@
 </template>
 
 <script setup>
+// 👉 1️⃣ Imports 匯入區
 import Swal from "sweetalert2";
 import { ref, onMounted, computed } from "vue";
 import myAxios from "@/plugins/axios";
@@ -322,11 +322,114 @@ import { useRouter } from "vue-router";
 import { useCaregiverStore } from "@/stores/caregiverStore";
 import { useAppointmentStore } from "@/stores/AppointmentStore";
 
+// 👉 2️⃣ Stores、Router、Refs 初始化
 const router = useRouter();
 const store = useCaregiverStore();
 const appointmentStore = useAppointmentStore();
 
-// 🛠️ 改善後的 validateTime 函數
+// 👉 3️⃣ 表單資料與選項定義
+//表單數據
+const form = ref({
+  city: "",
+  district: "",
+  timeType: "continuous",
+  continuous: {
+    startDate: "",
+    startTime: "",
+    endDate: "",
+    endTime: "",
+  },
+  multi: {
+    startDate: "",
+    endDate: "",
+    repeatDays: {
+      monday: false,
+      tuesday: false,
+      wednesday: false,
+      thursday: false,
+      friday: false,
+      saturday: false,
+      sunday: false,
+    },
+    timeSlots: [{ startTime: "", endTime: "" }],
+  },
+});
+
+const days = [
+  "星期一",
+  "星期二",
+  "星期三",
+  "星期四",
+  "星期五",
+  "星期六",
+  "星期日",
+];
+const dayMap = {
+  星期一: "monday",
+  星期二: "tuesday",
+  星期三: "wednesday",
+  星期四: "thursday",
+  星期五: "friday",
+  星期六: "saturday",
+  星期日: "sunday",
+};
+
+const cities = ref([]);
+
+const districts = ref([]);
+
+// 👉 4️⃣ onMounted() 初始化資料
+onMounted(async () => {
+  try {
+    const res = await fetch("/data/TwCities.json");
+    cities.value = await res.json();
+  } catch (error) {
+    console.error("Failed to load cities:", error);
+  }
+  form.value.timeType = "continuous"; // Ensure continuous is default
+});
+
+// 👉 5️⃣ Computed 與 UI 控制
+// 確認表單是否完整
+const isFormComplete = computed(() => {
+  const { continuous, multi } = form.value;
+  const continuousFilled =
+    continuous.startDate &&
+    continuous.startTime &&
+    continuous.endDate &&
+    continuous.endTime;
+  const multiFilled =
+    multi.startDate && multi.endDate && multi.timeSlots.length > 0;
+  return (
+    (continuousFilled || multiFilled) && form.value.city && form.value.district
+  );
+});
+
+// 顯示時間選項
+const showTimeOptions = (type) => {
+  form.value.timeType = type;
+};
+
+// 自動滑到填寫區域
+const scrollToRequestForm = () => {
+  const requestForm = document.querySelector(".request-form.card-section");
+  if (requestForm)
+    requestForm.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+// 👉 6️⃣ 城市切換邏輯
+// 城市選擇變更
+const onCityChange = () => {
+  const city = cities.value.find((c) => c.name === form.value.city);
+  if (city) {
+    districts.value = ["全部區域", ...city.districts];
+  } else {
+    districts.value = [];
+  }
+  form.value.district = "";
+};
+
+// 👉 7️⃣ 公用工具函式（🛠️ 抽出工具）
 const validateTime = () => {
   // 取出連續時間表單數據
   const { startDate, startTime, endDate, endTime } = form.value.continuous;
@@ -373,14 +476,31 @@ const validateTime = () => {
     });
     return false;
   }
-
-  // 通過驗證
   return true;
 };
 
-//搜尋看護
+  // 轉換時間格式給後端
+  const toLocalDateTimeString = (dateStr, timeStr) => {
+    if (!dateStr || !timeStr) return "";
+    return `${dateStr}T${timeStr}`;
+  };
+
+
+// 👉 8️⃣ 主功能邏輯 🔍 搜尋看護
+// [點擊搜尋] 
+//    ↓
+// 顯示 Loading
+//    ↓
+// 驗證時間是否合理 → ❌不合理則中斷
+//    ↓
+// 驗證表單欄位是否完整 → ❌不完整則中斷
+//    ↓
+// 組成 filters → 發送 GET API 請求
+//    ↓
+// 儲存資料至 store、localStorage
+//    ↓
+// 跳轉 /caregivers/list 並顯示結果
 const searchCaregivers = async () => {
-  // 顯示搜尋中的 SweetAlert
   const swalLoading = Swal.fire({
     title: "搜尋中...",
     text: "請稍等，我們正在搜尋最適合的看護人選。",
@@ -428,35 +548,7 @@ const searchCaregivers = async () => {
     });
     return;
   }
-  // 新增多時段時間區間
-  const addTimeSlot = () => {
-    form.value.multi.timeSlots.push({ startTime: "", endTime: "" });
-  };
-
-  // 轉換時間格式
-  const toLocalDateTimeString = (dateStr, timeStr) => {
-    if (!dateStr || !timeStr) return "";
-    return `${dateStr}T${timeStr}`;
-  };
-
-  // 確認表單是否完整
-  const isFormComplete = computed(() => {
-    const { continuous, multi } = form.value;
-    const continuousFilled =
-      continuous.startDate &&
-      continuous.startTime &&
-      continuous.endDate &&
-      continuous.endTime;
-    const multiFilled =
-      multi.startDate && multi.endDate && multi.timeSlots.length > 0;
-    return (
-      (continuousFilled || multiFilled) &&
-      form.value.city &&
-      form.value.district
-    );
-  });
-
-  //組合篩選條件
+  //組合篩選條件(準備交給後端)
   const filters = {
     serviceCity: city,
     serviceDistrict:
@@ -481,20 +573,16 @@ const searchCaregivers = async () => {
     hourlyRateMax: form.value.hourlyRateMax || null,
   };
 
-  // 確保這些值不為空字串或無效的格式
+  // 驗證時間格式轉換結果是否有效
   if (!filters.desiredStartTime || !filters.desiredEndTime) {
     alert("請填寫有效的開始時間與結束時間");
     return;
   }
 
-  // 在這裡檢查過濾條件
-  console.log("過濾條件:", filters);
-
   try {
     const res = await myAxios.get("/api/appointment/caregiver/available", {
       params: filters,
     });
-    console.log("看護列表:", res.data);
 
     // `totalPrice`更新到 appointmentStore
     res.data.forEach((caregiver) => {
@@ -534,119 +622,15 @@ const searchCaregivers = async () => {
 
     router.push("/caregivers/list");
 
-    // 關閉 SweetAlert
     swalLoading.close();
   } catch (err) {
     console.error("搜尋失敗", err);
     alert("搜尋失敗，請稍後再試");
-
-    // 關閉 SweetAlert
     swalLoading.close();
   }
 };
 
-// 確認表單是否完整
-const isFormComplete = computed(() => {
-  const { continuous, multi } = form.value;
-  const continuousFilled =
-    continuous.startDate &&
-    continuous.startTime &&
-    continuous.endDate &&
-    continuous.endTime;
-  const multiFilled =
-    multi.startDate && multi.endDate && multi.timeSlots.length > 0;
-  return (
-    (continuousFilled || multiFilled) && form.value.city && form.value.district
-  );
-});
-
-// 自動滑到填寫區域
-const scrollToRequestForm = () => {
-  const requestForm = document.querySelector(".request-form.card-section");
-  if (requestForm)
-    requestForm.scrollIntoView({ behavior: "smooth", block: "start" });
-};
-
-const goToRequestTime = () => {
-  router.push("/request/time");
-};
-
-//表單數據
-const form = ref({
-  city: "",
-  district: "",
-  timeType: "continuous",
-  continuous: {
-    startDate: "",
-    startTime: "",
-    endDate: "",
-    endTime: "",
-  },
-  multi: {
-    startDate: "",
-    endDate: "",
-    repeatDays: {
-      // 修改為物件
-      monday: false,
-      tuesday: false,
-      wednesday: false,
-      thursday: false,
-      friday: false,
-      saturday: false,
-      sunday: false,
-    },
-    timeSlots: [{ startTime: "", endTime: "" }],
-  },
-});
-
-const days = [
-  "星期一",
-  "星期二",
-  "星期三",
-  "星期四",
-  "星期五",
-  "星期六",
-  "星期日",
-];
-const dayMap = {
-  星期一: "monday",
-  星期二: "tuesday",
-  星期三: "wednesday",
-  星期四: "thursday",
-  星期五: "friday",
-  星期六: "saturday",
-  星期日: "sunday",
-};
-const cities = ref([]);
-const districts = ref([]);
-
-// 初始化城市和區域資料
-onMounted(async () => {
-  try {
-    const res = await fetch("/data/TwCities.json");
-    cities.value = await res.json();
-  } catch (error) {
-    console.error("Failed to load cities:", error);
-  }
-  form.value.timeType = "continuous"; // Ensure continuous is default
-});
-
-// 城市選擇變更
-const onCityChange = () => {
-  const city = cities.value.find((c) => c.name === form.value.city);
-  if (city) {
-    districts.value = ["全部區域", ...city.districts];
-  } else {
-    districts.value = [];
-  }
-  form.value.district = "";
-};
-
-// 顯示時間選項
-const showTimeOptions = (type) => {
-  form.value.timeType = type;
-};
-
+// 👉 9️⃣ 常數（UI 顯示資料）
 const serviceImages = [
   "/images/service1.jpg",
   "/images/service2.jpg",

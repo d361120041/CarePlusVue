@@ -208,6 +208,7 @@
 </template>
 
 <script setup>
+/* 👉 1️⃣ 匯入與初始化 */
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useAppointmentStore } from "@/stores/AppointmentStore";
@@ -217,44 +218,13 @@ const appointmentStore = useAppointmentStore();
 const patientStore = usePatientStore();
 const router = useRouter();
 
-const form = ref({
-  patientId: "",
-  diseases: [],
-  diseaseOther: "",
-  physicalConditions: [],
-  physicalOther: "",
-  services: [],
-  serviceOther: "",
-});
-
-// 確保選項名稱列表是數組
-const selectedDiseaseNames = computed(() => {
-  return (appointmentStore.appointment.diseaseIds || []).map(
-    (id) => appointmentStore.diseaseMap[id] || "未知"
-  );
-});
-
-const selectedPhysicalNames = computed(() => {
-  return (appointmentStore.appointment.physicalIds || []).map(
-    (id) => appointmentStore.physicalMap[id] || "未知"
-  );
-});
-
-const selectedServiceNames = computed(() => {
-  return (appointmentStore.appointment.serviceIds || []).map(
-    (id) => appointmentStore.serviceMap[id] || "未知"
-  );
-});
-
-// 取得病患資料
+/* 👉 2️⃣ 取得病患清單 */
 const patients = computed(() => patientStore.myPatients);
 
 onMounted(async () => {
   try {
     await patientStore.fetchMyPatients();
     if (patientStore.myPatients.length > 0) {
-      console.log("回來的病患資料：", patientStore.myPatients);
-      // 設置初始 patientInfo，如果 patientId 已選擇
       if (appointmentStore.appointment.patientId) {
         const selectedPatient = patientStore.myPatients.find(
           (p) => p.patientId === Number(appointmentStore.appointment.patientId)
@@ -269,8 +239,7 @@ onMounted(async () => {
   }
 });
 
-
-// 計算表單是否完整
+/* 👉 3️⃣ 表單檢查 */
 const isFormComplete = computed(() => {
   const appointment = appointmentStore.appointment;
   return (
@@ -281,8 +250,7 @@ const isFormComplete = computed(() => {
   );
 });
 
-
-// 格式化日期和時間
+/* 👉 4️⃣ 格式化函式 */
 const formatDateTime = (dateTime) => {
   if (!dateTime) return "";
   const date = new Date(dateTime);
@@ -314,27 +282,7 @@ const formatTime = (time) => {
   return `${hours}:${minutes}`;
 };
 
-// 提交表單並跳轉到下一頁
-const submitForm = () => {
-  const appointment = appointmentStore.appointment;
-  
-  if (!appointment.patientId) return; // 確保選擇了病患
-
-  // 確認至少選了一項疾病、身體狀況和服務項目
-  if (
-    appointment.diseaseIds.length === 0 ||
-    appointment.physicalIds.length === 0 ||
-    appointment.serviceIds.length === 0
-  ) {
-    console.warn("請確保已選擇至少一項疾病、身體狀況和服務項目");
-    return;
-  }
-
-  console.log("提交表單：", appointment);
-  router.push("/request/location"); // 跳轉到服務地點頁面
-};
-
-// 当选择病患时，更新病患信息到 AppointmentStore
+/* 👉 5️⃣ 設定病患資訊 */
 const updatePatientInfo = () => {
   const selectedPatient = patients.value.find(
     (patient) => patient.patientId === Number(appointmentStore.appointment.patientId)
@@ -346,19 +294,43 @@ const updatePatientInfo = () => {
       name: selectedPatient.name || "",
       gender: selectedPatient.gender === 1 ? "男" : "女",
     });
-
-    console.log("病患資訊已設定：", selectedPatient);
   }
 };
 
-// 更新基本選項
-const updateBasicDetails = () => {
-  appointmentStore.setBasicDetails({
-    diseases: form.value.diseaseIds,
-    physicalConditions: form.value.physicalIds,
-    services: form.value.serviceIds,
-  });
+/* 👉 6️⃣ 表單送出 */
+const submitForm = () => {
+  const appointment = appointmentStore.appointment;
+  
+  if (!appointment.patientId) return; 
+  if (
+    appointment.diseaseIds.length === 0 ||
+    appointment.physicalIds.length === 0 ||
+    appointment.serviceIds.length === 0
+  ) {
+    console.warn("請確保已選擇至少一項疾病、身體狀況和服務項目");
+    return;
+  }
+  router.push("/request/location"); // 跳轉到服務地點頁面
 };
+
+/* 👉 7️⃣ 選項名稱對應顯示 */
+const selectedDiseaseNames = computed(() => {
+  return (appointmentStore.appointment.diseaseIds || []).map(
+    (id) => appointmentStore.diseaseMap[id] || "未知"
+  );
+});
+
+const selectedPhysicalNames = computed(() => {
+  return (appointmentStore.appointment.physicalIds || []).map(
+    (id) => appointmentStore.physicalMap[id] || "未知"
+  );
+});
+
+const selectedServiceNames = computed(() => {
+  return (appointmentStore.appointment.serviceIds || []).map(
+    (id) => appointmentStore.serviceMap[id] || "未知"
+  );
+});
 </script>
 
 <style scoped>

@@ -208,18 +208,20 @@ const routes = [
   // { path: '/caregiver/reviews', component: CaregiverReviews },
   // ------------------ yuuhou ------------------
 
-  // ------------------ rita ------------------
-  // Appointment
+  // ------------------ 🌸rita🌸 ------------------
+  // 搜尋照服員
   {
     path: "/caregivers/search",
     component: () => import("@/rita/views/SearchCaregiver.vue"),
     name: "searchCaregiver",
   },
+  // 顯示照服員列表
   {
     path: "/caregivers/list",
     component: () => import("@/rita/views/CaregiverList.vue"),
     name: "caregiverList",
   },
+  // 顯示照服員個人頁面
   {
     path: "/caregivers/:id",
     component: () => import("@/rita/views/CaregiverProfile.vue"),
@@ -242,36 +244,32 @@ const routes = [
     component: () => import("@/rita/views/RequestLocation.vue"),
     name: "requestLocation",
   },
+  // 確認預約需求單 
   {
     path: "/request/confirm",
     component: () => import("@/rita/views/Confirm.vue"),
     name: "requestConfirm",
   },
 
-  // 看護確認預約
-  // {
-  //   path: "/caregiver/confirm/:appointmentId",
-  //   component: () => import("@/rita/views/CaregiverConfirm.vue"),
-  //   name: "caregiverConfirm",
-  // },
-
-  // 使用者查看訂單與付款
+  // 使用者查看訂單
   {
     path: "/user-center/orders",
     component: () => import("@/rita/views/OrderList.vue"),
     name: "orderList",
   },
+  // 使用者查看訂單並付款
   {
     path: "/payment/:appointmentId",
     component: () => import("@/rita/views/Payment.vue"),
     name: "payment",
   },
+  // 使用者付款成功頁面
   {
     path: "/payment/success",
     component: () => import("@/rita/views/PaymentSuccess.vue"),
     name: "paymentSuccess",
   },
-  // ------------------ rita ------------------
+  // ------------------ 🌸rita🌸 ------------------
 
   //////////User//////////
   {
