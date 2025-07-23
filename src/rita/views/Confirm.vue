@@ -12,13 +12,6 @@
           }}</span>
         </div>
 
-        <!-- <div class="info-item">
-          <span class="label">看護ID</span>
-          <span class="value">{{
-            appointmentStore.appointment.caregiverId || "未指定"
-          }}</span>
-        </div> -->
-
         <div class="info-item">
           <span class="label">時間類型</span>
           <span class="value">{{
@@ -213,32 +206,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+/* 👉 1️⃣ 匯入套件與 Store */
+import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useCaregiverStore } from "@/stores/caregiverStore";
 import { useAppointmentStore } from "@/stores/AppointmentStore";
-import myAxios from "@/plugins/axios";
 import Swal from "sweetalert2";
 
 const router = useRouter();
 const caregiverStore = useCaregiverStore();
 const appointmentStore = useAppointmentStore();
 
-// 🗓️ 日期和時間格式化函數
+/* 👉 2️⃣ 格式化日期時間函式（ISO → yyyy-MM-dd HH:mm） */
 const formatDateTime = (isoString) => {
   if (!isoString) return "未填寫";
-
-  // 確保是 ISO 8601 格式
   const [date, time] = isoString.split("T");
-
-  // 只返回 yyyy-MM-dd HH:mm 格式
   return `${date} ${time}`;
 };
 
-// 送出預約
+/* 👉 3️⃣ 提交預約請求，並跳轉至付款頁 */
 const submitAppointment = async () => {
   try {
-    // 顯示「建立預約中...」的 SweetAlert
     const swalLoading = Swal.fire({
       title: "建立預約中...",
       text: "請稍候，我們正在處理您的預約。",
@@ -247,10 +235,7 @@ const submitAppointment = async () => {
         Swal.showLoading();
       },
     });
-    // ✅ 呼叫 Store Action 建立預約
     const appointmentId = await appointmentStore.submitAppointment();
-
-    console.log("預約建立成功，預約 ID:", appointmentId);
 
     // ✅ 清空 LocalStorage 以避免污染
     localStorage.removeItem("appointmentData");
@@ -263,18 +248,18 @@ const submitAppointment = async () => {
 
     swalLoading.close();
   } catch (error) {
-    console.error("預約送出失敗:", error);
     alert("發生錯誤，請稍後再試");
 
     Swal.close();
   }
 };
 
-// 返回需求單頁面
+/* 👉 4️⃣ 返回上一頁修改預約內容 */
 const goBackToRequest = () => {
   router.push("/request/location");
 };
 
+/* 👉 5️⃣ 初始化：從 localStorage 載入預約資料 */
 onMounted(() => {
   appointmentStore.loadFromLocalStorage();
 });

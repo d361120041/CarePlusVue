@@ -23,13 +23,6 @@
         您的預約已確認，我們的團隊將盡快與您聯繫<br />
         確保一切順利進行
       </p>
-      <!-- <button
-        @click="goToOrders"
-        class="view-button"
-        aria-label="查看預約"
-      >
-        查看預約
-      </button> -->
       <router-link to="/user-center/orders" class="view-button"
         >查看預約</router-link
       >
@@ -42,7 +35,7 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-// Navigate to orders page
+/* 👉 到使用者預約列表 */
 const goToOrders = () => {
   router.push("user-center/orders");
 };

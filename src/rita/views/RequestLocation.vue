@@ -25,7 +25,7 @@
         <div class="card-section">
           <h3>服務地點</h3>
 
-          <!-- 选择医院或居家 -->
+          <!-- 選擇醫院或居家 -->
           <div class="form-item">
             <label>選擇服務地點</label>
             <div>
@@ -49,7 +49,7 @@
             </div>
           </div>
 
-          <!-- 医院地址表单 -->
+          <!-- 醫院地址表單 -->
           <div v-if="appointmentStore.appointment.locationType === '醫院'">
             <div class="form-item">
               <label>醫院名稱 *</label>
@@ -109,7 +109,7 @@
             </div>
           </div>
 
-          <!-- 居家地址表单 -->
+          <!-- 居家地址表單 -->
           <div v-if="appointmentStore.appointment.locationType === '居家'">
             <div class="form-item">
               <label>居家地址 *</label>
@@ -120,7 +120,7 @@
               />
             </div>
             <div class="form-item">
-              <label>交通路線或注意事项</label>
+              <label>交通路線或注意事項</label>
               <input
                 type="text"
                 v-model="appointmentStore.appointment.homeTransportNote"
@@ -128,7 +128,7 @@
             </div>
           </div>
 
-          <!-- 下一步按钮 -->
+          <!-- 下一步按鈕 -->
           <button
             class="submit-btn"
             @click="submitForm"
@@ -223,7 +223,7 @@
               </p>
             </div>
 
-            <!-- 显示服务地点 -->
+            <!-- 顯示服務地點 -->
             <div>
               <p>
                 <strong>服務地點：</strong
@@ -260,7 +260,7 @@
             </div>
           </div>
           <div v-else>
-            <p style="color: gray">尚未填写时间信息，请返回上一步完成填写。</p>
+            <p style="color: gray">尚未填寫時間，請返回上一步填寫</p>
           </div>
         </div>
       </div>
@@ -269,19 +269,20 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+/* 👉 1️⃣ 匯入與初始化Store */
+import { computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAppointmentStore } from "@/stores/AppointmentStore";
 
 const appointmentStore = useAppointmentStore();
 const router = useRouter();
 
+/* 👉 2️⃣ 預設選擇「居家」作為地點類型 */
 onMounted(() => {
-  // 預設選擇居家
   appointmentStore.appointment.locationType = '居家';
 });
 
-/// 計算是否表單已填寫完成
+/* 👉 3️⃣ 判斷表單是否已填寫完成（根據不同地點類型） */
 const isFormComplete = computed(() => {
   const appointment = appointmentStore.appointment;
   
@@ -299,7 +300,7 @@ const isFormComplete = computed(() => {
   return false;
 });
 
-// 格式化日期和時間
+/* 👉 4️⃣ 格式化時間（用於右側摘要區顯示） */
 const formatDateTime = (dateTime) => {
   if (!dateTime) return "";
   const date = new Date(dateTime);
@@ -313,7 +314,7 @@ const formatDateTime = (dateTime) => {
   });
 };
 
-// 格式化僅日期
+/* 👉 5️⃣ 格式化日期 */
 const formatDate = (date) => {
   if (!date) return "";
   const d = new Date(date);
@@ -324,19 +325,18 @@ const formatDate = (date) => {
   });
 };
 
-// 格式化僅時間
+/* 👉 6️⃣ 格式化時間（僅時間） */
 const formatTime = (time) => {
   if (!time) return "";
   const [hours, minutes] = time.split(":");
   return `${hours}:${minutes}`;
 };
 
-/// 提交表單並跳轉到下一頁
+/* 👉 7️⃣ 送出表單並跳轉至確認頁面 */
 const submitForm = () => {
   appointmentStore.saveToLocalStorage();
   router.push({ name: "requestConfirm" });
 };
-
 </script>
 
 <style scoped>

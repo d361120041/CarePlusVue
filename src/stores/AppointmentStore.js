@@ -58,7 +58,7 @@ export const useAppointmentStore = defineStore("appointment", {
           saturday: false,
           sunday: false,
         },
-        timeSlots: [], // 支援多個時段
+        timeSlots: [],
       },
     },
 
@@ -145,18 +145,13 @@ export const useAppointmentStore = defineStore("appointment", {
       const auth = useAuthStore();
       if (auth.isAuthenticated && auth.user) {
         this.appointment.userId = auth.user.userId;
-        console.log("User ID 設置成功:", this.appointment.userId);
       } else {
-        this.appointment.userId = null;
-        console.warn("使用者未登入，無法設置 userId");
-      }
+        this.appointment.userId = null;      }
       this.saveToLocalStorage();
     },
 
     setPatientInfo(patientData) {
       const plainData = toRaw(patientData);
-
-      // 設置基本病患資訊
       this.appointment.patientId = plainData.patientId || null;
       this.appointment.patientInfo = {
         name: plainData.name || "",
@@ -165,8 +160,7 @@ export const useAppointmentStore = defineStore("appointment", {
       };
 
       this.saveToLocalStorage();
-      console.log("Patient info 設置成功:", this.appointment.patientInfo);
-    },
+        },
 
     setBasicDetails({ diseases, physicalConditions, services }) {
       this.appointment.diseaseIds = Array.isArray(diseases)
@@ -192,11 +186,6 @@ export const useAppointmentStore = defineStore("appointment", {
       }
 
       this.saveToLocalStorage();
-      console.log("基本資料設置成功:", {
-        diseases: this.appointment.diseaseIds,
-        physicalConditions: this.appointment.physicalIds,
-        services: this.appointment.serviceIds,
-      });
     },
 
     setAppointmentBase(payload) {
@@ -220,7 +209,6 @@ export const useAppointmentStore = defineStore("appointment", {
       this.saveToLocalStorage();
     },
 
-    // 設定醫院位置
     setHospitalLocation(payload) {
       Object.assign(this.appointment, {
         hospitalName: payload.hospitalName || "",
@@ -234,7 +222,6 @@ export const useAppointmentStore = defineStore("appointment", {
       this.saveToLocalStorage();
     },
 
-    // 設定居家位置
     setHomeLocation(payload) {
       Object.assign(this.appointment, {
         homeAddress: payload.homeAddress || "",
@@ -253,8 +240,6 @@ export const useAppointmentStore = defineStore("appointment", {
       this.saveToLocalStorage();
     },
 
-    // AppointmentStore.js
-
     saveToLocalStorage() {
       try {
         const data = JSON.stringify({
@@ -263,7 +248,6 @@ export const useAppointmentStore = defineStore("appointment", {
           multi: this.multi,
         });
         localStorage.setItem("appointmentData", data);
-        console.log("LocalStorage 設置成功:", data);
       } catch (error) {
         console.error("LocalStorage 儲存失敗:", error);
       }
@@ -296,7 +280,6 @@ export const useAppointmentStore = defineStore("appointment", {
             "User is not authenticated. 請先登入再嘗試提交預約。"
           );
         }
-        console.log("user:", authStore.user);
 
         // 🚫 **在這裡清除 appointmentId**
         this.appointment.appointmentId = null;
@@ -340,8 +323,6 @@ export const useAppointmentStore = defineStore("appointment", {
           };
         }
 
-        console.log("送出資料:", appointmentData);
-
         // ✅ 改用 axios 發送請求
         const response = await myAxios.post(
           "/api/appointment/full",
@@ -352,9 +333,6 @@ export const useAppointmentStore = defineStore("appointment", {
             },
           }
         );
-
-        // 處理成功回應
-        console.log("Appointment Ｆcreated successfully:", response.data);
 
         // ✅ 正確設置新的 appointmentId
         this.appointment.appointmentId = response.data.appointmentId;

@@ -106,19 +106,21 @@
 </template>
 
 <script setup>
+/* 👉 1️⃣ 匯入必要模組與套件 */
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import myAxios from "@/plugins/axios";
 import Swal from "sweetalert2";
 
 const router = useRouter();
+
+/* 👉 2️⃣ 狀態變數 */
 const appointment = ref(null);
 const isContractConfirmed = ref(false);
+const appointmentId = localStorage.getItem("appointmentId");
 
+/* 👉 3️⃣ 初始化：載入預約資訊 */
 onMounted(async () => {
-  const appointmentId = localStorage.getItem("appointmentId");
-  console.log("從 localStorage 取得的 appointmentId:", appointmentId);
-
   if (!appointmentId) {
     Swal.fire({
       title: "錯誤",
@@ -134,7 +136,6 @@ onMounted(async () => {
     // 取得 Appointment 基本資料
     const response = await myAxios.get(`/api/appointment/${appointmentId}`);
     const data = response.data;
-    console.log("Appointment data:", data);
 
     // 設定 Appointment 資料
     appointment.value = {
@@ -142,7 +143,6 @@ onMounted(async () => {
       totalPrice: data.totalPrice,
     };
   } catch (error) {
-    console.error("Failed to fetch appointment details:", error);
     Swal.fire({
       title: "錯誤",
       text: "無法載入訂單資訊，請稍後再試！",
@@ -152,6 +152,7 @@ onMounted(async () => {
   }
 });
 
+/* 👉 4️⃣ 使用者確認合約 */
 const confirmContract = async () => {
   if (!isContractConfirmed.value) {
     Swal.fire({
@@ -165,9 +166,7 @@ const confirmContract = async () => {
 
   try {
     const appointmentId = appointment.value.appointmentId;
-    const response = await myAxios.put(
-      `/api/appointment/${appointmentId}/contract`
-    );
+    const response = await myAxios.put(`/api/appointment/${appointmentId}/contract`);
     appointment.value = response.data; // 更新本地預約資料
     Swal.fire({
       title: "成功",
@@ -176,7 +175,6 @@ const confirmContract = async () => {
       confirmButtonText: "確定",
     });
   } catch (error) {
-    console.error("Failed to confirm contract:", error);
     Swal.fire({
       title: "錯誤",
       text: "合約確認失敗，請稍後再試！",
@@ -186,9 +184,10 @@ const confirmContract = async () => {
   }
 };
 
+/* 👉 5️⃣ 點擊付款（跳轉至 ECPay） */
 const proceedToPayment = async () => {
   try {
-    // ✅ 確保已從 localStorage 取得 appointmentId
+    // 確保已從 localStorage 取得 appointmentId
     const appointmentId = localStorage.getItem("appointmentId");
 
     if (!appointmentId) {
@@ -208,7 +207,6 @@ const proceedToPayment = async () => {
 
     // 發送 GET 請求，並將 appointmentId 作為查詢參數傳遞
     const response = await myAxios.post("/payment/ecpay", formData);
-    console.log(response.data);
 
     // 將返回的表單 HTML 插入到頁面並提交
     const tempDiv = document.createElement("div");
@@ -229,9 +227,7 @@ const proceedToPayment = async () => {
     localStorage.removeItem("continuousStartTime");
     localStorage.removeItem("timeType");
 
-    console.log("LocalStorage 清空完成");
   } catch (error) {
-    console.error("Failed to proceed to payment:", error);
     Swal.fire({
       title: "錯誤",
       text: "無法初始化支付，請稍後再試！",
@@ -241,6 +237,7 @@ const proceedToPayment = async () => {
   }
 };
 
+/* 👉 6️⃣ 返回預約列表 */
 const goBack = () => {
   router.push("/appointments");
 };

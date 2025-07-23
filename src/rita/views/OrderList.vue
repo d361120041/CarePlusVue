@@ -2,7 +2,7 @@
   <div class="wrapper">
     <h2 class="section-title">我的預約紀錄</h2>
 
-    <!-- Empty state -->
+    <!-- 尚無記錄顯示 -->
     <div v-if="appointments.length === 0" class="empty-state">
       <svg
         class="empty-icon"
@@ -29,7 +29,7 @@
       </button>
     </div>
 
-    <!-- Appointment list -->
+    <!-- 預約列表顯示 -->
     <div v-else class="appointment-grid">
       <div
         v-for="appointment in appointments"
@@ -44,19 +44,10 @@
                 : "未提供"
             }}
           </h5>
-          <!-- <span
-            :class="['status-badge', getStatusClass(appointment.status)]"
-          >
-            {{ appointment.status }}
-          </span> -->
         </div>
         <div class="card-body">
-          <!-- Core appointment info -->
+          <!-- 預約主要資訊 -->
           <div class="info-group">
-            <!-- <div class="info-item">
-              <span class="label">預約時間</span>
-              <span class="value">{{ formatDate(appointment.patient.birthday) }}</span>
-            </div> -->
             <div class="info-item">
               <span class="label">價格:</span>
               <span class="value">{{ appointment.totalPrice ? `${appointment.totalPrice} 元` : "未提供" }}</span>
@@ -67,7 +58,7 @@
             </div>
           </div>
 
-          <!-- Location info -->
+          <!-- 位置資訊 -->
           <div class="info-group">
             <h6 class="section-subtitle">{{ appointment.locationType === '醫院' ? '醫院資訊' : '居家資訊' }}</h6>
             <div v-if="appointment.locationType === '醫院'" class="info-item">
@@ -92,7 +83,7 @@
             </div>
           </div>
 
-          <!-- Patient info -->
+          <!-- 病人資訊 -->
           <div v-if="appointment.patientId?.length > 0" class="info-group">
             <h6 class="section-subtitle">病患資訊</h6>
             <div class="info-item">
@@ -111,6 +102,7 @@
 </template>
 
 <script setup>
+/* 👉 1️⃣ 匯入必要模組及初始化Store */
 import { ref, onMounted } from 'vue';
 import axios from '@/plugins/axios';
 import { useRouter } from 'vue-router';
@@ -121,6 +113,7 @@ const appointments = ref([]);
 const router = useRouter();
 const authStore = useAuthStore();
 
+/* 👉 3️⃣ 取得使用者的預約紀錄 */
 const fetchAppointments = async () => {
   try {
     const res = await axios.get(`/api/appointment/user/${userId.value}`);
@@ -130,6 +123,7 @@ const fetchAppointments = async () => {
   }
 };
 
+/* 👉 4️⃣ 日期格式化工具 */
 const formatDate = (dateStr) => {
   if (!dateStr) return '未提供';
   try {
@@ -148,26 +142,13 @@ const formatDate = (dateStr) => {
   }
 };
 
-// const getStatusClass = (status) => {
-//   switch (status) {
-//     case '已確認':
-//       return 'status-confirmed';
-//     case '待付款':
-//       return 'status-pending';
-//     case '已取消':
-//       return 'status-cancelled';
-//     default:
-//       return 'status-default';
-//   }
-// };
-
+/* 👉 5️⃣ 建立新預約 */
 const startNewAppointment = () => {
   router.push('/caregivers/search');
 };
 
+/* 👉 6️⃣ 頁面初始化邏輯：確認登入並載入預約資料 */
 onMounted(async () => {
-
-  console.log("User ID:", userId.value);
   // 檢查是否已經登錄
   if (!authStore.isAuthenticated) {
     router.push('/userlogin'); // 未登入，跳轉到登入頁
